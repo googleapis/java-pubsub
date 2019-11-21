@@ -56,17 +56,17 @@ See the [Authentication][authentication] section in the base directory's README.
 
 ## About Google Cloud Pub/Sub
 
-[Google Cloud Pub/Sub][cloud-pubsub] is designed to provide reliable,
+[Google Cloud Pub/Sub][api-reference] is designed to provide reliable,
 many-to-many, asynchronous messaging between applications. Publisher
 applications can send messages to a topic and other applications can
 subscribe to that topic to receive the messages. By decoupling senders and
 receivers, Google Cloud Pub/Sub allows developers to communicate between
 independently written applications.
 
-See the [Google Cloud Pub/Sub docs][cloud-pubsub-quickstart] for more details on how to activate
+See the [Google Cloud Pub/Sub docs](https://cloud.google.com/pubsub/quickstart-console#before-you-begin) for more details on how to activate
 Cloud Pub/Sub for your project.
 
-See the [Pub/Sub client library docs][pubsub-client-lib-docs] to learn how to interact with the
+See the [Pub/Sub client library docs][javadocs] to learn how to interact with the
 Cloud Pub/Sub using this Client Library.
 
 ## Getting Started
