@@ -37,6 +37,11 @@ for version in versions:
         r'setMaxInboundMessageSize\(Integer.MAX_VALUE\)',
         'setMaxInboundMessageSize(20 << 20)'
     )
+    s.replace(
+        f"proto-google-cloud-{service}-{version}/src/**/*.java",
+        java.BAD_LICENSE,
+        java.GOOD_LICENSE,
+    )
 
     java.format_code('google-cloud-pubsub/src')
     java.format_code(f'grpc-google-cloud-{service}-{version}/src')
