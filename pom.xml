@@ -78,6 +78,7 @@
     <http-client-bom.version>1.33.0</http-client-bom.version>
     <animal-sniffer.version>1.18</animal-sniffer.version>
     <autovalue.version>1.7</autovalue.version>
+    <opencensus.version>0.24.0</opencensus.version>
   </properties>
 
   <dependencyManagement>
@@ -165,7 +166,7 @@
       <dependency>
         <groupId>io.opencensus</groupId>
         <artifactId>opencensus-api</artifactId>
-        <version>0.24.0</version>
+        <version>${opencensus.version}</version>
       </dependency>
       <dependency>
         <groupId>com.google.errorprone</groupId>
