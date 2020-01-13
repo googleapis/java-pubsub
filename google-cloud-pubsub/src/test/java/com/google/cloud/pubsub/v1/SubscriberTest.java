@@ -87,9 +87,10 @@ public class SubscriberTest {
   @Test
   public void testDeliveryAttemptHelper() {
     int deliveryAttempt = 3;
-    PubsubMessage message = PubsubMessage.newBuilder()
-        .putAttributes("googclient_deliveryattempt", Integer.toString(deliveryAttempt))
-        .build();
+    PubsubMessage message =
+        PubsubMessage.newBuilder()
+            .putAttributes("googclient_deliveryattempt", Integer.toString(deliveryAttempt))
+            .build();
     assertEquals(Subscriber.getDeliveryAttempt(message), deliveryAttempt);
   }
 
