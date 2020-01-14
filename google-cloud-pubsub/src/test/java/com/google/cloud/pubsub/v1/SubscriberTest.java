@@ -92,6 +92,9 @@ public class SubscriberTest {
             .putAttributes("googclient_deliveryattempt", Integer.toString(deliveryAttempt))
             .build();
     assertEquals(Subscriber.getDeliveryAttempt(message), deliveryAttempt);
+
+    PubsubMessage emptyMessage = PubsubMessage.newBuilder().build();
+    assertEquals(Subscriber.getDeliveryAttempt(emptyMessage), 0);
   }
 
   @Test
