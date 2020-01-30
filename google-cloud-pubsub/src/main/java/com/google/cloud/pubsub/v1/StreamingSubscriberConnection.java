@@ -117,6 +117,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
   @Override
   protected void doStop() {
     messageDispatcher.stop();
+    ackOperationsWaiter.waitComplete();
 
     lock.lock();
     try {
