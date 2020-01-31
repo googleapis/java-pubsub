@@ -85,6 +85,20 @@ public class SubscriberTest {
   }
 
   @Test
+  public void testDeliveryAttemptHelper() {
+    Integer deliveryAttempt = 3;
+    PubsubMessage message =
+        PubsubMessage.newBuilder()
+            .putAttributes("googclient_deliveryattempt", Integer.toString(deliveryAttempt))
+            .build();
+    assertEquals(Subscriber.getDeliveryAttempt(message), deliveryAttempt);
+
+    // In the case where delivery attempt attribute is not populated, expect null
+    PubsubMessage emptyMessage = PubsubMessage.newBuilder().build();
+    assertEquals(Subscriber.getDeliveryAttempt(emptyMessage), null);
+  }
+
+  @Test
   public void testOpenedChannels() throws Exception {
     int expectedChannelCount = 1;
 

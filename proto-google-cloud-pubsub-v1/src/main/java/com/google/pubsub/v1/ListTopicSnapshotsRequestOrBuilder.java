@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Google LLC
+ * Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,8 @@ public interface ListTopicSnapshotsRequestOrBuilder
    * </pre>
    *
    * <code>string topic = 1;</code>
+   *
+   * @return The topic.
    */
   java.lang.String getTopic();
   /**
@@ -43,6 +45,8 @@ public interface ListTopicSnapshotsRequestOrBuilder
    * </pre>
    *
    * <code>string topic = 1;</code>
+   *
+   * @return The bytes for topic.
    */
   com.google.protobuf.ByteString getTopicBytes();
 
@@ -54,6 +58,8 @@ public interface ListTopicSnapshotsRequestOrBuilder
    * </pre>
    *
    * <code>int32 page_size = 2;</code>
+   *
+   * @return The pageSize.
    */
   int getPageSize();
 
@@ -67,6 +73,8 @@ public interface ListTopicSnapshotsRequestOrBuilder
    * </pre>
    *
    * <code>string page_token = 3;</code>
+   *
+   * @return The pageToken.
    */
   java.lang.String getPageToken();
   /**
@@ -79,6 +87,8 @@ public interface ListTopicSnapshotsRequestOrBuilder
    * </pre>
    *
    * <code>string page_token = 3;</code>
+   *
+   * @return The bytes for pageToken.
    */
   com.google.protobuf.ByteString getPageTokenBytes();
 }

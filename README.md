@@ -37,16 +37,16 @@ If you are using Maven without a BOM, add this to your pom.xml file
 <dependency>
   <groupId>com.google.cloud</groupId>
   <artifactId>google-cloud-pubsub</artifactId>
-  <version>1.101.0</version>
+  <version>1.102.1</version>
 </dependency>
 ```
 If you are using Gradle, add this to your dependencies
 ```Groovy
-compile 'com.google.cloud:google-cloud-pubsub:1.101.0'
+compile 'com.google.cloud:google-cloud-pubsub:1.102.1'
 ```
 If you are using SBT, add this to your dependencies
 ```Scala
-libraryDependencies += "com.google.cloud" % "google-cloud-pubsub" % "1.101.0"
+libraryDependencies += "com.google.cloud" % "google-cloud-pubsub" % "1.102.1"
 ```
 [//]: # ({x-version-update-end})
 
@@ -122,7 +122,10 @@ With Pub/Sub you can publish messages to a topic. Add the following import at th
 
 ```java
 import com.google.api.core.ApiFuture;
+import com.google.api.core.ApiFutureCallback;
+import com.google.api.core.ApiFutures;
 import com.google.cloud.pubsub.v1.Publisher;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.google.protobuf.ByteString;
 import com.google.pubsub.v1.PubsubMessage;
 ```
@@ -135,6 +138,16 @@ try {
   ByteString data = ByteString.copyFromUtf8("my-message");
   PubsubMessage pubsubMessage = PubsubMessage.newBuilder().setData(data).build();
   ApiFuture<String> messageIdFuture = publisher.publish(pubsubMessage);
+  ApiFutures.addCallback(messageIdFuture, new ApiFutureCallback<String>() {
+    public void onSuccess(String messageId) {
+      System.out.println("published with message id: " + messageId);
+    }
+
+    public void onFailure(Throwable t) {
+      System.out.println("failed to publish: " + t);
+    }
+  }, MoreExecutors.directExecutor());
+  //...
 } finally {
   if (publisher != null) {
     publisher.shutdown();

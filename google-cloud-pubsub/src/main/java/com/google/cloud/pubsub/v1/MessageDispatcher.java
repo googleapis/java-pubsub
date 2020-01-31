@@ -152,7 +152,7 @@ class MessageDispatcher {
     public void onFailure(Throwable t) {
       logger.log(
           Level.WARNING,
-          "MessageReceiver failed to processes ack ID: " + ackId + ", the message will be nacked.",
+          "MessageReceiver failed to process ack ID: " + ackId + ", the message will be nacked.",
           t);
       pendingNacks.add(ackId);
       forget();
@@ -341,8 +341,21 @@ class MessageDispatcher {
         // This should be a blocking flow controller and never throw an exception.
         throw new IllegalStateException("Flow control unexpected exception", unexpectedException);
       }
-      processOutstandingMessage(message.receivedMessage.getMessage(), message.ackHandler);
+      processOutstandingMessage(addDeliveryInfoCount(message.receivedMessage), message.ackHandler);
     }
+  }
+
+  private PubsubMessage addDeliveryInfoCount(ReceivedMessage receivedMessage) {
+    PubsubMessage originalMessage = receivedMessage.getMessage();
+    int deliveryAttempt = receivedMessage.getDeliveryAttempt();
+    // Delivery Attempt will be set to 0 if DeadLetterPolicy is not set on the subscription. In
+    // this case, do not populate the PubsubMessage with the delivery attempt attribute.
+    if (deliveryAttempt > 0) {
+      return PubsubMessage.newBuilder(originalMessage)
+          .putAttributes("googclient_deliveryattempt", Integer.toString(deliveryAttempt))
+          .build();
+    }
+    return originalMessage;
   }
 
   private void processOutstandingMessage(final PubsubMessage message, final AckHandler ackHandler) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Google LLC
+ * Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,8 @@ public interface MessageStoragePolicyOrBuilder
    * </pre>
    *
    * <code>repeated string allowed_persistence_regions = 1;</code>
+   *
+   * @return A list containing the allowedPersistenceRegions.
    */
   java.util.List<java.lang.String> getAllowedPersistenceRegionsList();
   /**
@@ -49,6 +51,8 @@ public interface MessageStoragePolicyOrBuilder
    * </pre>
    *
    * <code>repeated string allowed_persistence_regions = 1;</code>
+   *
+   * @return The count of allowedPersistenceRegions.
    */
   int getAllowedPersistenceRegionsCount();
   /**
@@ -63,6 +67,9 @@ public interface MessageStoragePolicyOrBuilder
    * </pre>
    *
    * <code>repeated string allowed_persistence_regions = 1;</code>
+   *
+   * @param index The index of the element to return.
+   * @return The allowedPersistenceRegions at the given index.
    */
   java.lang.String getAllowedPersistenceRegions(int index);
   /**
@@ -77,6 +84,9 @@ public interface MessageStoragePolicyOrBuilder
    * </pre>
    *
    * <code>repeated string allowed_persistence_regions = 1;</code>
+   *
+   * @param index The index of the value to return.
+   * @return The bytes of the allowedPersistenceRegions at the given index.
    */
   com.google.protobuf.ByteString getAllowedPersistenceRegionsBytes(int index);
 }

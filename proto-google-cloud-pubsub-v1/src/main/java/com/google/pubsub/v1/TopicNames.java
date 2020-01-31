@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Google LLC
+ * Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,13 @@
 
 package com.google.pubsub.v1;
 
-// AUTO-GENERATED DOCUMENTATION AND CLASS
+/**
+ * AUTO-GENERATED DOCUMENTATION AND CLASS
+ *
+ * @deprecated This resource name class will be removed in the next major version.
+ */
 @javax.annotation.Generated("by GAPIC protoc plugin")
+@Deprecated
 public class TopicNames {
   private TopicNames() {}
 

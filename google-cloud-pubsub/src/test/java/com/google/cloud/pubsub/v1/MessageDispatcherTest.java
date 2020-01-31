@@ -17,6 +17,8 @@
 package com.google.cloud.pubsub.v1;
 
 import static com.google.common.truth.Truth.assertThat;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import com.google.api.gax.batching.FlowControlSettings;
 import com.google.api.gax.batching.FlowController;
@@ -37,10 +39,13 @@ import org.junit.Test;
 import org.threeten.bp.Duration;
 
 public class MessageDispatcherTest {
+  private static final ByteString MESSAGE_DATA = ByteString.copyFromUtf8("message-data");
+  private static final int DELIVERY_INFO_COUNT = 3;
   private static final ReceivedMessage TEST_MESSAGE =
       ReceivedMessage.newBuilder()
           .setAckId("ackid")
-          .setMessage(PubsubMessage.newBuilder().setData(ByteString.EMPTY).build())
+          .setMessage(PubsubMessage.newBuilder().setData(MESSAGE_DATA).build())
+          .setDeliveryAttempt(DELIVERY_INFO_COUNT)
           .build();
   private static final Runnable NOOP_RUNNABLE =
       new Runnable() {
@@ -56,6 +61,7 @@ public class MessageDispatcherTest {
   private List<ModAckItem> sentModAcks;
   private FakeClock clock;
   private FlowController flowController;
+  private boolean messageContainsDeliveryAttempt;
 
   @AutoValue
   abstract static class ModAckItem {
@@ -78,6 +84,14 @@ public class MessageDispatcherTest {
         new MessageReceiver() {
           @Override
           public void receiveMessage(final PubsubMessage message, final AckReplyConsumer consumer) {
+            assertThat(message.getData()).isEqualTo(MESSAGE_DATA);
+            if (messageContainsDeliveryAttempt) {
+              assertTrue(message.containsAttributes("googclient_deliveryattempt"));
+              assertThat(message.getAttributesOrThrow("googclient_deliveryattempt"))
+                  .isEqualTo(Integer.toString(DELIVERY_INFO_COUNT));
+            } else {
+              assertFalse(message.containsAttributes("googclient_deliveryattempt"));
+            }
             consumers.add(consumer);
           }
         };
@@ -120,6 +134,8 @@ public class MessageDispatcherTest {
             systemExecutor,
             clock);
     dispatcher.setMessageDeadlineSeconds(Subscriber.MIN_ACK_DEADLINE_SECONDS);
+
+    messageContainsDeliveryAttempt = true;
   }
 
   @Test
@@ -128,6 +144,22 @@ public class MessageDispatcherTest {
     dispatcher.processOutstandingAckOperations();
     assertThat(sentModAcks)
         .contains(ModAckItem.of(TEST_MESSAGE.getAckId(), Subscriber.MIN_ACK_DEADLINE_SECONDS));
+  }
+
+  @Test
+  public void testReceiptNoDeliveryAttempt() {
+    messageContainsDeliveryAttempt = false;
+    ReceivedMessage messageNoDeliveryAttempt =
+        ReceivedMessage.newBuilder()
+            .setAckId("ackid")
+            .setMessage(PubsubMessage.newBuilder().setData(MESSAGE_DATA).build())
+            .build();
+    dispatcher.processReceivedMessages(Collections.singletonList(messageNoDeliveryAttempt));
+    dispatcher.processOutstandingAckOperations();
+    assertThat(sentModAcks)
+        .contains(
+            ModAckItem.of(
+                messageNoDeliveryAttempt.getAckId(), Subscriber.MIN_ACK_DEADLINE_SECONDS));
   }
 
   @Test

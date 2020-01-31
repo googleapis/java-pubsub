@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Google LLC
+ * Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,8 @@ public interface DeadLetterPolicyOrBuilder
    * </pre>
    *
    * <code>string dead_letter_topic = 1;</code>
+   *
+   * @return The deadLetterTopic.
    */
   java.lang.String getDeadLetterTopic();
   /**
@@ -55,6 +57,8 @@ public interface DeadLetterPolicyOrBuilder
    * </pre>
    *
    * <code>string dead_letter_topic = 1;</code>
+   *
+   * @return The bytes for deadLetterTopic.
    */
   com.google.protobuf.ByteString getDeadLetterTopicBytes();
 
@@ -74,6 +78,8 @@ public interface DeadLetterPolicyOrBuilder
    * </pre>
    *
    * <code>int32 max_delivery_attempts = 2;</code>
+   *
+   * @return The maxDeliveryAttempts.
    */
   int getMaxDeliveryAttempts();
 }

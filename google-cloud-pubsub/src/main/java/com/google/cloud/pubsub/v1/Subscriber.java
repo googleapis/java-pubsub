@@ -44,6 +44,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.pubsub.v1.ProjectSubscriptionName;
+import com.google.pubsub.v1.PubsubMessage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -203,6 +204,14 @@ public class Subscriber extends AbstractApiService {
    */
   public static Builder newBuilder(String subscription, MessageReceiver receiver) {
     return new Builder(subscription, receiver);
+  }
+
+  /** Returns the delivery attempt count for a received {@link PubsubMessage} */
+  public static Integer getDeliveryAttempt(PubsubMessage message) {
+    if (!message.containsAttributes("googclient_deliveryattempt")) {
+      return null;
+    }
+    return Integer.parseInt(message.getAttributesOrThrow("googclient_deliveryattempt"));
   }
 
   /** Subscription which the subscriber is subscribed to. */

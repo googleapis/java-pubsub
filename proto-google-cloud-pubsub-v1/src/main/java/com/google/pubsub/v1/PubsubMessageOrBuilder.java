@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Google LLC
+ * Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,8 @@ public interface PubsubMessageOrBuilder
    * </pre>
    *
    * <code>bytes data = 1;</code>
+   *
+   * @return The data.
    */
   com.google.protobuf.ByteString getData();
 
@@ -100,6 +102,8 @@ public interface PubsubMessageOrBuilder
    * </pre>
    *
    * <code>string message_id = 3;</code>
+   *
+   * @return The messageId.
    */
   java.lang.String getMessageId();
   /**
@@ -113,6 +117,8 @@ public interface PubsubMessageOrBuilder
    * </pre>
    *
    * <code>string message_id = 3;</code>
+   *
+   * @return The bytes for messageId.
    */
   com.google.protobuf.ByteString getMessageIdBytes();
 
@@ -126,6 +132,8 @@ public interface PubsubMessageOrBuilder
    * </pre>
    *
    * <code>.google.protobuf.Timestamp publish_time = 4;</code>
+   *
+   * @return Whether the publishTime field is set.
    */
   boolean hasPublishTime();
   /**
@@ -138,6 +146,8 @@ public interface PubsubMessageOrBuilder
    * </pre>
    *
    * <code>.google.protobuf.Timestamp publish_time = 4;</code>
+   *
+   * @return The publishTime.
    */
   com.google.protobuf.Timestamp getPublishTime();
   /**
@@ -167,6 +177,8 @@ public interface PubsubMessageOrBuilder
    * </pre>
    *
    * <code>string ordering_key = 5;</code>
+   *
+   * @return The orderingKey.
    */
   java.lang.String getOrderingKey();
   /**
@@ -183,6 +195,8 @@ public interface PubsubMessageOrBuilder
    * </pre>
    *
    * <code>string ordering_key = 5;</code>
+   *
+   * @return The bytes for orderingKey.
    */
   com.google.protobuf.ByteString getOrderingKeyBytes();
 }
