@@ -18,8 +18,10 @@ package com.google.cloud.pubsub.v1;
 
 import com.google.api.core.InternalApi;
 
-/** A barrier kind of object that helps keep track of pending actions and
- * synchronously wait until all have completed. */
+/**
+ * A barrier kind of object that helps keep track of pending actions and synchronously wait until
+ * all have completed.
+ */
 class Waiter {
   private int pendingCount;
 

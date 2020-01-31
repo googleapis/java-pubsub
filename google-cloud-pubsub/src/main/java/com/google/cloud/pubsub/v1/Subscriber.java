@@ -305,7 +305,7 @@ public class Subscriber extends AbstractApiService {
                   // stop connection is no-op if connections haven't been started.
                   stopAllStreamingConnections();
                   shutdownBackgroundResources();
-                  subStub.shutdown();
+                  subStub.shutdownNow();
                   notifyStopped();
                 } catch (Exception e) {
                   notifyFailed(e);
