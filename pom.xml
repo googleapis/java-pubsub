@@ -4,7 +4,7 @@
   <groupId>com.google.cloud</groupId>
   <artifactId>google-cloud-pubsub-parent</artifactId>
   <packaging>pom</packaging>
-  <version>1.102.2-SNAPSHOT</version><!-- {x-version-update:google-cloud-pubsub:current} -->
+  <version>1.103.0</version><!-- {x-version-update:google-cloud-pubsub:current} -->
   <name>Google Cloud Pub/Sub Parent</name>
   <url>https://github.com/googleapis/java-pubsub</url>
   <description>
@@ -67,15 +67,15 @@
     <google.api-common.version>1.8.1</google.api-common.version>
     <google.common-protos.version>1.17.0</google.common-protos.version>
     <gax.version>1.53.1</gax.version>
-    <grpc.version>1.27.0</grpc.version>
-    <protobuf.version>3.11.3</protobuf.version>
+    <grpc.version>1.27.1</grpc.version>
+    <protobuf.version>3.11.4</protobuf.version>
     <junit.version>4.13</junit.version>
     <easymock.version>3.6</easymock.version>
     <guava.version>28.2-android</guava.version>
     <threeten.version>1.4.1</threeten.version>
     <javax.annotations.version>1.3.2</javax.annotations.version>
     <errorprone.version>2.3.4</errorprone.version>
-    <http-client-bom.version>1.34.1</http-client-bom.version>
+    <http-client-bom.version>1.34.2</http-client-bom.version>
     <animal-sniffer.version>1.18</animal-sniffer.version>
     <autovalue.version>1.7</autovalue.version>
     <opencensus.version>0.24.0</opencensus.version>
@@ -86,17 +86,17 @@
       <dependency>
         <groupId>com.google.api.grpc</groupId>
         <artifactId>proto-google-cloud-pubsub-v1</artifactId>
-        <version>1.84.2-SNAPSHOT</version><!-- {x-version-update:proto-google-cloud-pubsub-v1:current} -->
+        <version>1.85.0</version><!-- {x-version-update:proto-google-cloud-pubsub-v1:current} -->
       </dependency>
       <dependency>
         <groupId>com.google.api.grpc</groupId>
         <artifactId>grpc-google-cloud-pubsub-v1</artifactId>
-        <version>1.84.2-SNAPSHOT</version><!-- {x-version-update:grpc-google-cloud-pubsub-v1:current} -->
+        <version>1.85.0</version><!-- {x-version-update:grpc-google-cloud-pubsub-v1:current} -->
       </dependency>
       <dependency>
         <groupId>com.google.cloud</groupId>
         <artifactId>google-cloud-pubsub</artifactId>
-        <version>1.102.2-SNAPSHOT</version><!-- {x-version-update:google-cloud-pubsub:current} -->
+        <version>1.103.0</version><!-- {x-version-update:google-cloud-pubsub:current} -->
       </dependency>
 
       <dependency>
