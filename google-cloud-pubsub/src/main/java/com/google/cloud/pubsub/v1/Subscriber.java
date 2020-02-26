@@ -305,6 +305,7 @@ public class Subscriber extends AbstractApiService {
                   // stop connection is no-op if connections haven't been started.
                   stopAllStreamingConnections();
                   shutdownBackgroundResources();
+                  subStub.shutdownNow();
                   notifyStopped();
                 } catch (Exception e) {
                   notifyFailed(e);
@@ -415,7 +416,10 @@ public class Subscriber extends AbstractApiService {
     private Duration maxAckExtensionPeriod = DEFAULT_MAX_ACK_EXTENSION_PERIOD;
 
     private FlowControlSettings flowControlSettings =
-        FlowControlSettings.newBuilder().setMaxOutstandingElementCount(1000L).build();
+        FlowControlSettings.newBuilder()
+            .setMaxOutstandingElementCount(1000L)
+            .setMaxOutstandingRequestBytes(100L * 1024L * 1024L) // 100MB
+            .build();
 
     private ExecutorProvider executorProvider = DEFAULT_EXECUTOR_PROVIDER;
     private ExecutorProvider systemExecutorProvider = null;
