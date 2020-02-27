@@ -19,10 +19,7 @@ package com.google.pubsub.v1;
 import com.google.common.collect.ImmutableMap;
 import java.util.Map;
 
-/**
- * AUTO-GENERATED DOCUMENTATION AND CLASS
- *
- */
+/** AUTO-GENERATED DOCUMENTATION AND CLASS */
 @javax.annotation.Generated("by GAPIC protoc plugin")
 public class DeletedTopic extends TopicName {
 
