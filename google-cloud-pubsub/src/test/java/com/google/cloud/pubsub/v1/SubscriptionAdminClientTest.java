@@ -29,6 +29,7 @@ import com.google.api.gax.rpc.ApiStreamObserver;
 import com.google.api.gax.rpc.BidiStreamingCallable;
 import com.google.api.gax.rpc.InvalidArgumentException;
 import com.google.api.gax.rpc.StatusCode;
+import com.google.api.resourcenames.ResourceName;
 import com.google.common.collect.Lists;
 import com.google.iam.v1.GetIamPolicyRequest;
 import com.google.iam.v1.Policy;
@@ -54,11 +55,9 @@ import com.google.pubsub.v1.ModifyPushConfigRequest;
 import com.google.pubsub.v1.ProjectName;
 import com.google.pubsub.v1.ProjectSnapshotName;
 import com.google.pubsub.v1.ProjectSubscriptionName;
-import com.google.pubsub.v1.ProjectTopicName;
 import com.google.pubsub.v1.PullRequest;
 import com.google.pubsub.v1.PullResponse;
 import com.google.pubsub.v1.PushConfig;
-import com.google.pubsub.v1.ReceivedMessage;
 import com.google.pubsub.v1.SeekRequest;
 import com.google.pubsub.v1.SeekResponse;
 import com.google.pubsub.v1.Snapshot;
@@ -131,7 +130,7 @@ public class SubscriptionAdminClientTest {
   @SuppressWarnings("all")
   public void createSubscriptionTest() {
     ProjectSubscriptionName name2 = ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
-    TopicName topic2 = ProjectTopicName.of("[PROJECT]", "[TOPIC]");
+    TopicName topic2 = TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]");
     int ackDeadlineSeconds2 = 921632575;
     boolean retainAckedMessages = false;
     boolean enableMessageOrdering = true;
@@ -146,7 +145,7 @@ public class SubscriptionAdminClientTest {
     mockSubscriber.addResponse(expectedResponse);
 
     ProjectSubscriptionName name = ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
-    ProjectTopicName topic = ProjectTopicName.of("[PROJECT]", "[TOPIC]");
+    TopicName topic = TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]");
     PushConfig pushConfig = PushConfig.newBuilder().build();
     int ackDeadlineSeconds = 2135351438;
 
@@ -159,7 +158,7 @@ public class SubscriptionAdminClientTest {
     Subscription actualRequest = (Subscription) actualRequests.get(0);
 
     Assert.assertEquals(name, ProjectSubscriptionName.parse(actualRequest.getName()));
-    Assert.assertEquals(Objects.toString(topic), actualRequest.getTopic());
+    Assert.assertEquals(topic, TopicName.parse(actualRequest.getTopic()));
     Assert.assertEquals(pushConfig, actualRequest.getPushConfig());
     Assert.assertEquals(ackDeadlineSeconds, actualRequest.getAckDeadlineSeconds());
     Assert.assertTrue(
@@ -176,7 +175,7 @@ public class SubscriptionAdminClientTest {
 
     try {
       ProjectSubscriptionName name = ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
-      ProjectTopicName topic = ProjectTopicName.of("[PROJECT]", "[TOPIC]");
+      TopicName topic = TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]");
       PushConfig pushConfig = PushConfig.newBuilder().build();
       int ackDeadlineSeconds = 2135351438;
 
@@ -191,7 +190,7 @@ public class SubscriptionAdminClientTest {
   @SuppressWarnings("all")
   public void getSubscriptionTest() {
     ProjectSubscriptionName name = ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
-    TopicName topic = ProjectTopicName.of("[PROJECT]", "[TOPIC]");
+    TopicName topic = TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]");
     int ackDeadlineSeconds = 2135351438;
     boolean retainAckedMessages = false;
     boolean enableMessageOrdering = true;
@@ -244,7 +243,7 @@ public class SubscriptionAdminClientTest {
   @SuppressWarnings("all")
   public void updateSubscriptionTest() {
     ProjectSubscriptionName name = ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
-    TopicName topic = ProjectTopicName.of("[PROJECT]", "[TOPIC]");
+    TopicName topic = TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]");
     int ackDeadlineSeconds2 = 921632575;
     boolean retainAckedMessages = false;
     boolean enableMessageOrdering = true;
@@ -538,10 +537,7 @@ public class SubscriptionAdminClientTest {
   @Test
   @SuppressWarnings("all")
   public void streamingPullTest() throws Exception {
-    ReceivedMessage receivedMessagesElement = ReceivedMessage.newBuilder().build();
-    List<ReceivedMessage> receivedMessages = Arrays.asList(receivedMessagesElement);
-    StreamingPullResponse expectedResponse =
-        StreamingPullResponse.newBuilder().addAllReceivedMessages(receivedMessages).build();
+    StreamingPullResponse expectedResponse = StreamingPullResponse.newBuilder().build();
     mockSubscriber.addResponse(expectedResponse);
     ProjectSubscriptionName subscription =
         ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
@@ -695,7 +691,7 @@ public class SubscriptionAdminClientTest {
   @SuppressWarnings("all")
   public void createSnapshotTest() {
     ProjectSnapshotName name2 = ProjectSnapshotName.of("[PROJECT]", "[SNAPSHOT]");
-    ProjectTopicName topic = ProjectTopicName.of("[PROJECT]", "[TOPIC]");
+    TopicName topic = TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]");
     Snapshot expectedResponse =
         Snapshot.newBuilder().setName(name2.toString()).setTopic(topic.toString()).build();
     mockSubscriber.addResponse(expectedResponse);
@@ -742,7 +738,7 @@ public class SubscriptionAdminClientTest {
   @SuppressWarnings("all")
   public void updateSnapshotTest() {
     ProjectSnapshotName name = ProjectSnapshotName.of("[PROJECT]", "[SNAPSHOT]");
-    ProjectTopicName topic = ProjectTopicName.of("[PROJECT]", "[TOPIC]");
+    TopicName topic = TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]");
     Snapshot expectedResponse =
         Snapshot.newBuilder().setName(name.toString()).setTopic(topic.toString()).build();
     mockSubscriber.addResponse(expectedResponse);
@@ -886,17 +882,19 @@ public class SubscriptionAdminClientTest {
     Policy expectedResponse = Policy.newBuilder().setVersion(version).setEtag(etag).build();
     mockIAMPolicy.addResponse(expectedResponse);
 
-    String formattedResource = ProjectSubscriptionName.format("[PROJECT]", "[SUBSCRIPTION]");
+    ResourceName resource = ProjectName.of("[PROJECT]");
     Policy policy = Policy.newBuilder().build();
+    SetIamPolicyRequest request =
+        SetIamPolicyRequest.newBuilder().setResource(resource.toString()).setPolicy(policy).build();
 
-    Policy actualResponse = client.setIamPolicy(formattedResource, policy);
+    Policy actualResponse = client.setIamPolicy(request);
     Assert.assertEquals(expectedResponse, actualResponse);
 
     List<AbstractMessage> actualRequests = mockIAMPolicy.getRequests();
     Assert.assertEquals(1, actualRequests.size());
     SetIamPolicyRequest actualRequest = (SetIamPolicyRequest) actualRequests.get(0);
 
-    Assert.assertEquals(formattedResource, actualRequest.getResource());
+    Assert.assertEquals(Objects.toString(resource), Objects.toString(actualRequest.getResource()));
     Assert.assertEquals(policy, actualRequest.getPolicy());
     Assert.assertTrue(
         channelProvider.isHeaderSent(
@@ -911,10 +909,15 @@ public class SubscriptionAdminClientTest {
     mockIAMPolicy.addException(exception);
 
     try {
-      String formattedResource = ProjectSubscriptionName.format("[PROJECT]", "[SUBSCRIPTION]");
+      ResourceName resource = ProjectName.of("[PROJECT]");
       Policy policy = Policy.newBuilder().build();
+      SetIamPolicyRequest request =
+          SetIamPolicyRequest.newBuilder()
+              .setResource(resource.toString())
+              .setPolicy(policy)
+              .build();
 
-      client.setIamPolicy(formattedResource, policy);
+      client.setIamPolicy(request);
       Assert.fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception
@@ -929,16 +932,18 @@ public class SubscriptionAdminClientTest {
     Policy expectedResponse = Policy.newBuilder().setVersion(version).setEtag(etag).build();
     mockIAMPolicy.addResponse(expectedResponse);
 
-    String formattedResource = ProjectSubscriptionName.format("[PROJECT]", "[SUBSCRIPTION]");
+    ResourceName resource = ProjectName.of("[PROJECT]");
+    GetIamPolicyRequest request =
+        GetIamPolicyRequest.newBuilder().setResource(resource.toString()).build();
 
-    Policy actualResponse = client.getIamPolicy(formattedResource);
+    Policy actualResponse = client.getIamPolicy(request);
     Assert.assertEquals(expectedResponse, actualResponse);
 
     List<AbstractMessage> actualRequests = mockIAMPolicy.getRequests();
     Assert.assertEquals(1, actualRequests.size());
     GetIamPolicyRequest actualRequest = (GetIamPolicyRequest) actualRequests.get(0);
 
-    Assert.assertEquals(formattedResource, actualRequest.getResource());
+    Assert.assertEquals(Objects.toString(resource), Objects.toString(actualRequest.getResource()));
     Assert.assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
@@ -952,9 +957,11 @@ public class SubscriptionAdminClientTest {
     mockIAMPolicy.addException(exception);
 
     try {
-      String formattedResource = ProjectSubscriptionName.format("[PROJECT]", "[SUBSCRIPTION]");
+      ResourceName resource = ProjectName.of("[PROJECT]");
+      GetIamPolicyRequest request =
+          GetIamPolicyRequest.newBuilder().setResource(resource.toString()).build();
 
-      client.getIamPolicy(formattedResource);
+      client.getIamPolicy(request);
       Assert.fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception
@@ -967,18 +974,22 @@ public class SubscriptionAdminClientTest {
     TestIamPermissionsResponse expectedResponse = TestIamPermissionsResponse.newBuilder().build();
     mockIAMPolicy.addResponse(expectedResponse);
 
-    String formattedResource = ProjectSubscriptionName.format("[PROJECT]", "[SUBSCRIPTION]");
+    ResourceName resource = ProjectName.of("[PROJECT]");
     List<String> permissions = new ArrayList<>();
+    TestIamPermissionsRequest request =
+        TestIamPermissionsRequest.newBuilder()
+            .setResource(resource.toString())
+            .addAllPermissions(permissions)
+            .build();
 
-    TestIamPermissionsResponse actualResponse =
-        client.testIamPermissions(formattedResource, permissions);
+    TestIamPermissionsResponse actualResponse = client.testIamPermissions(request);
     Assert.assertEquals(expectedResponse, actualResponse);
 
     List<AbstractMessage> actualRequests = mockIAMPolicy.getRequests();
     Assert.assertEquals(1, actualRequests.size());
     TestIamPermissionsRequest actualRequest = (TestIamPermissionsRequest) actualRequests.get(0);
 
-    Assert.assertEquals(formattedResource, actualRequest.getResource());
+    Assert.assertEquals(Objects.toString(resource), Objects.toString(actualRequest.getResource()));
     Assert.assertEquals(permissions, actualRequest.getPermissionsList());
     Assert.assertTrue(
         channelProvider.isHeaderSent(
@@ -993,10 +1004,15 @@ public class SubscriptionAdminClientTest {
     mockIAMPolicy.addException(exception);
 
     try {
-      String formattedResource = ProjectSubscriptionName.format("[PROJECT]", "[SUBSCRIPTION]");
+      ResourceName resource = ProjectName.of("[PROJECT]");
       List<String> permissions = new ArrayList<>();
+      TestIamPermissionsRequest request =
+          TestIamPermissionsRequest.newBuilder()
+              .setResource(resource.toString())
+              .addAllPermissions(permissions)
+              .build();
 
-      client.testIamPermissions(formattedResource, permissions);
+      client.testIamPermissions(request);
       Assert.fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception
