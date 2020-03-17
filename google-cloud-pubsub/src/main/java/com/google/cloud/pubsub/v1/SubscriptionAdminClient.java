@@ -49,6 +49,7 @@ import com.google.pubsub.v1.ModifyPushConfigRequest;
 import com.google.pubsub.v1.ProjectName;
 import com.google.pubsub.v1.ProjectSnapshotName;
 import com.google.pubsub.v1.ProjectSubscriptionName;
+import com.google.pubsub.v1.ProjectTopicName;
 import com.google.pubsub.v1.PullRequest;
 import com.google.pubsub.v1.PullResponse;
 import com.google.pubsub.v1.PushConfig;
@@ -358,6 +359,21 @@ public class SubscriptionAdminClient implements BackgroundResource {
    */
   public final Subscription createSubscription(Subscription request) {
     return createSubscriptionCallable().call(request);
+  }
+
+  public final Subscription createSubscription(
+      ProjectSubscriptionName name,
+      ProjectTopicName topic,
+      PushConfig pushConfig,
+      int ackDeadlineSeconds) {
+    Subscription request =
+        Subscription.newBuilder()
+            .setName(name == null ? null : name.toString())
+            .setTopic(topic == null ? null : topic.toString())
+            .setPushConfig(pushConfig)
+            .setAckDeadlineSeconds(ackDeadlineSeconds)
+            .build();
+    return createSubscription(request);
   }
 
   // AUTO-GENERATED DOCUMENTATION AND METHOD
@@ -1941,6 +1957,12 @@ public class SubscriptionAdminClient implements BackgroundResource {
     return setIamPolicyCallable().call(request);
   }
 
+  public final Policy setIamPolicy(String resource, Policy policy) {
+    SetIamPolicyRequest request =
+        SetIamPolicyRequest.newBuilder().setResource(resource).setPolicy(policy).build();
+    return setIamPolicy(request);
+  }
+
   // AUTO-GENERATED DOCUMENTATION AND METHOD
   /**
    * Sets the access control policy on the specified resource. Replaces any existing policy.
@@ -1989,6 +2011,11 @@ public class SubscriptionAdminClient implements BackgroundResource {
    */
   public final Policy getIamPolicy(GetIamPolicyRequest request) {
     return getIamPolicyCallable().call(request);
+  }
+
+  public final Policy getIamPolicy(String resource) {
+    GetIamPolicyRequest request = GetIamPolicyRequest.newBuilder().setResource(resource).build();
+    return getIamPolicy(request);
   }
 
   // AUTO-GENERATED DOCUMENTATION AND METHOD
@@ -2042,6 +2069,16 @@ public class SubscriptionAdminClient implements BackgroundResource {
    */
   public final TestIamPermissionsResponse testIamPermissions(TestIamPermissionsRequest request) {
     return testIamPermissionsCallable().call(request);
+  }
+
+  public final TestIamPermissionsResponse testIamPermissions(
+      String resource, List<String> permissions) {
+    TestIamPermissionsRequest request =
+        TestIamPermissionsRequest.newBuilder()
+            .setResource(resource)
+            .addAllPermissions(permissions)
+            .build();
+    return testIamPermissions(request);
   }
 
   // AUTO-GENERATED DOCUMENTATION AND METHOD

@@ -44,6 +44,7 @@ import com.google.pubsub.v1.ListTopicsRequest;
 import com.google.pubsub.v1.ListTopicsResponse;
 import com.google.pubsub.v1.ProjectName;
 import com.google.pubsub.v1.ProjectSubscriptionName;
+import com.google.pubsub.v1.ProjectTopicName;
 import com.google.pubsub.v1.PublishRequest;
 import com.google.pubsub.v1.PublishResponse;
 import com.google.pubsub.v1.PubsubMessage;
@@ -226,6 +227,11 @@ public class TopicAdminClient implements BackgroundResource {
    */
   public final Topic createTopic(String name) {
     Topic request = Topic.newBuilder().setName(name).build();
+    return createTopic(request);
+  }
+
+  public final Topic createTopic(ProjectTopicName name) {
+    Topic request = Topic.newBuilder().setName(name == null ? null : name.toString()).build();
     return createTopic(request);
   }
 
@@ -491,6 +497,12 @@ public class TopicAdminClient implements BackgroundResource {
     return getTopic(request);
   }
 
+  public final Topic getTopic(ProjectTopicName topic) {
+    GetTopicRequest request =
+        GetTopicRequest.newBuilder().setTopic(topic == null ? null : topic.toString()).build();
+    return getTopic(request);
+  }
+
   // AUTO-GENERATED DOCUMENTATION AND METHOD
   /**
    * Gets the configuration of a topic.
@@ -719,6 +731,14 @@ public class TopicAdminClient implements BackgroundResource {
     return listTopicSubscriptions(request);
   }
 
+  public final ListTopicSubscriptionsPagedResponse listTopicSubscriptions(ProjectTopicName topic) {
+    ListTopicSubscriptionsRequest request =
+        ListTopicSubscriptionsRequest.newBuilder()
+            .setTopic(topic == null ? null : topic.toString())
+            .build();
+    return listTopicSubscriptions(request);
+  }
+
   // AUTO-GENERATED DOCUMENTATION AND METHOD
   /**
    * Lists the names of the subscriptions on this topic.
@@ -853,6 +873,12 @@ public class TopicAdminClient implements BackgroundResource {
     deleteTopic(request);
   }
 
+  public final void deleteTopic(ProjectTopicName topic) {
+    DeleteTopicRequest request =
+        DeleteTopicRequest.newBuilder().setTopic(topic == null ? null : topic.toString()).build();
+    deleteTopic(request);
+  }
+
   // AUTO-GENERATED DOCUMENTATION AND METHOD
   /**
    * Deletes the topic with the given name. Returns `NOT_FOUND` if the topic does not exist. After a
@@ -931,6 +957,12 @@ public class TopicAdminClient implements BackgroundResource {
     return setIamPolicyCallable().call(request);
   }
 
+  public final Policy setIamPolicy(String resource, Policy policy) {
+    SetIamPolicyRequest request =
+        SetIamPolicyRequest.newBuilder().setResource(resource).setPolicy(policy).build();
+    return setIamPolicy(request);
+  }
+
   // AUTO-GENERATED DOCUMENTATION AND METHOD
   /**
    * Sets the access control policy on the specified resource. Replaces any existing policy.
@@ -979,6 +1011,11 @@ public class TopicAdminClient implements BackgroundResource {
    */
   public final Policy getIamPolicy(GetIamPolicyRequest request) {
     return getIamPolicyCallable().call(request);
+  }
+
+  public final Policy getIamPolicy(String resource) {
+    GetIamPolicyRequest request = GetIamPolicyRequest.newBuilder().setResource(resource).build();
+    return getIamPolicy(request);
   }
 
   // AUTO-GENERATED DOCUMENTATION AND METHOD
@@ -1032,6 +1069,16 @@ public class TopicAdminClient implements BackgroundResource {
    */
   public final TestIamPermissionsResponse testIamPermissions(TestIamPermissionsRequest request) {
     return testIamPermissionsCallable().call(request);
+  }
+
+  public final TestIamPermissionsResponse testIamPermissions(
+      String resource, List<String> permissions) {
+    TestIamPermissionsRequest request =
+        TestIamPermissionsRequest.newBuilder()
+            .setResource(resource)
+            .addAllPermissions(permissions)
+            .build();
+    return testIamPermissions(request);
   }
 
   // AUTO-GENERATED DOCUMENTATION AND METHOD
