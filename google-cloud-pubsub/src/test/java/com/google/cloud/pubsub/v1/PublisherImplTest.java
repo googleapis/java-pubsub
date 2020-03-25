@@ -1042,7 +1042,7 @@ public class PublisherImplTest {
             .build();
     Executor responseExecutor = Executors.newScheduledThreadPool(10);
     final CountDownLatch sendResponse1 = new CountDownLatch(1);
-    final CountDownLatch sentResponse1 = new CountDownLatch(1);
+    final CountDownLatch response1Sent = new CountDownLatch(1);
     final CountDownLatch sendResponse2 = new CountDownLatch(1);
     responseExecutor.execute(
         new Runnable() {
@@ -1052,7 +1052,7 @@ public class PublisherImplTest {
               sendResponse1.await();
               testPublisherServiceImpl.addPublishResponse(
                   PublishResponse.newBuilder().addMessageIds("1"));
-              sentResponse1.countDown();
+              response1Sent.countDown();
               sendResponse2.await();
               testPublisherServiceImpl.addPublishResponse(
                   PublishResponse.newBuilder().addMessageIds("2"));
@@ -1067,7 +1067,7 @@ public class PublisherImplTest {
 
     // Sending a third message blocks because messages are outstanding.
     final CountDownLatch publish3Completed = new CountDownLatch(1);
-    final CountDownLatch sentResponse3 = new CountDownLatch(1);
+    final CountDownLatch response3Sent = new CountDownLatch(1);
     responseExecutor.execute(
         new Runnable() {
           @Override
@@ -1083,7 +1083,7 @@ public class PublisherImplTest {
           public void run() {
             try {
               sendResponse1.countDown();
-              sentResponse1.await();
+              response1Sent.await();
               sendResponse2.countDown();
             } catch (Exception e) {
             }
@@ -1108,7 +1108,7 @@ public class PublisherImplTest {
 
     publish3Completed.await();
     testPublisherServiceImpl.addPublishResponse(PublishResponse.newBuilder().addMessageIds("3"));
-    sentResponse3.countDown();
+    response3Sent.countDown();
 
     publish4Completed.await();
   }

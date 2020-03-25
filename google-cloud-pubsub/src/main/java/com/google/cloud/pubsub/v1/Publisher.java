@@ -240,7 +240,7 @@ public class Publisher {
     if (flowController != null) {
       try {
         flowController.acquire(outstandingPublish.messageSize);
-      } catch (Exception e) {
+      } catch (FlowController.FlowControlException e) {
         if (!orderingKey.isEmpty()) {
           sequentialExecutor.stopPublish(orderingKey);
         }
@@ -846,8 +846,7 @@ public class Publisher {
           } else {
             // This message already in line stays at the head of the line.
             messageWaiter = new CountDownLatch(1);
-            awaitingMessageAcquires.removeFirst();
-            awaitingMessageAcquires.addFirst(messageWaiter);
+            awaitingMessageAcquires.set(0, messageWaiter);
           }
           lock.unlock();
           try {
@@ -883,8 +882,7 @@ public class Publisher {
           } else {
             // This message already in line stays at the head of the line.
             bytesWaiter = new CountDownLatch(1);
-            awaitingBytesAcquires.removeFirst();
-            awaitingBytesAcquires.addFirst(bytesWaiter);
+            awaitingBytesAcquires.set(0, bytesWaiter);
           }
           lock.unlock();
           try {
