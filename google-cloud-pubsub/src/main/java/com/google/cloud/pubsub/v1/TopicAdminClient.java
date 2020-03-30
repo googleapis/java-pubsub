@@ -230,7 +230,29 @@ public class TopicAdminClient implements BackgroundResource {
     return createTopic(request);
   }
 
-  /** @deprecated. Use {@link #createTopic(TopicName)} instead. */
+  // AUTO-GENERATED DOCUMENTATION AND METHOD
+  /**
+   * Creates the given topic with the given name. See the &lt;a
+   * href="https://cloud.google.com/pubsub/docs/admin#resource_names"&gt; resource name
+   * rules&lt;/a&gt;.
+   *
+   * <p>Sample code:
+   *
+   * <pre><code>
+   * try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
+   *   ProjectTopicName name = ProjectTopicName.of("[PROJECT]", "[TOPIC]");
+   *   Topic response = topicAdminClient.createTopic(name);
+   * }
+   * </code></pre>
+   *
+   * @param name Required. The name of the topic. It must have the format
+   *     `"projects/{project}/topics/{topic}"`. `{topic}` must start with a letter, and contain only
+   *     letters (`[A-Za-z]`), numbers (`[0-9]`), dashes (`-`), underscores (`_`), periods (`.`),
+   *     tildes (`~`), plus (`+`) or percent signs (`%`). It must be between 3 and 255 characters in
+   *     length, and it must not start with `"goog"`.
+   * @throws com.google.api.gax.rpc.ApiException if the remote call fails
+   * @deprecated Use {@link #createTopic(TopicName)} instead.
+   */
   public final Topic createTopic(ProjectTopicName name) {
     Topic request = Topic.newBuilder().setName(name == null ? null : name.toString()).build();
     return createTopic(request);
@@ -498,7 +520,24 @@ public class TopicAdminClient implements BackgroundResource {
     return getTopic(request);
   }
 
-  /** @deprecated. Use {@link #getTopic(TopicName)} instead. */
+  // AUTO-GENERATED DOCUMENTATION AND METHOD
+  /**
+   * Gets the configuration of a topic.
+   *
+   * <p>Sample code:
+   *
+   * <pre><code>
+   * try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
+   *   ProjectTopicName topic = ProjectTopicName.of("[PROJECT]", "[TOPIC]");
+   *   Topic response = topicAdminClient.getTopic(topic);
+   * }
+   * </code></pre>
+   *
+   * @param topic Required. The name of the topic to get. Format is
+   *     `projects/{project}/topics/{topic}`.
+   * @throws com.google.api.gax.rpc.ApiException if the remote call fails
+   * @deprecated Use {@link #getTopic(TopicName)} instead.
+   */
   public final Topic getTopic(ProjectTopicName topic) {
     GetTopicRequest request =
         GetTopicRequest.newBuilder().setTopic(topic == null ? null : topic.toString()).build();
@@ -733,7 +772,26 @@ public class TopicAdminClient implements BackgroundResource {
     return listTopicSubscriptions(request);
   }
 
-  /** @deprecated. Use {@link #listTopicSubscriptions(TopicName)} instead. */
+  // AUTO-GENERATED DOCUMENTATION AND METHOD
+  /**
+   * Lists the names of the subscriptions on this topic.
+   *
+   * <p>Sample code:
+   *
+   * <pre><code>
+   * try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
+   *   ProjectTopicName topic = ProjectTopicName.of("[PROJECT]", "[TOPIC]");
+   *   for (ProjectSubscriptionName element : topicAdminClient.listTopicSubscriptions(topic).iterateAllAsProjectSubscriptionName()) {
+   *     // doThingsWith(element);
+   *   }
+   * }
+   * </code></pre>
+   *
+   * @param topic Required. The name of the topic that subscriptions are attached to. Format is
+   *     `projects/{project}/topics/{topic}`.
+   * @throws com.google.api.gax.rpc.ApiException if the remote call fails
+   * @deprecated Use {@link #listTopicSubscriptions(TopicName)} instead.
+   */
   public final ListTopicSubscriptionsPagedResponse listTopicSubscriptions(ProjectTopicName topic) {
     ListTopicSubscriptionsRequest request =
         ListTopicSubscriptionsRequest.newBuilder()
@@ -876,7 +934,27 @@ public class TopicAdminClient implements BackgroundResource {
     deleteTopic(request);
   }
 
-  /** @deprecated. Use {@link #deleteTopic(TopicName)} instead. */
+  // AUTO-GENERATED DOCUMENTATION AND METHOD
+  /**
+   * Deletes the topic with the given name. Returns `NOT_FOUND` if the topic does not exist. After a
+   * topic is deleted, a new topic may be created with the same name; this is an entirely new topic
+   * with none of the old configuration or subscriptions. Existing subscriptions to this topic are
+   * not deleted, but their `topic` field is set to `_deleted-topic_`.
+   *
+   * <p>Sample code:
+   *
+   * <pre><code>
+   * try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
+   *   ProjectTopicName topic = ProjectTopicName.of("[PROJECT]", "[TOPIC]");
+   *   topicAdminClient.deleteTopic(topic);
+   * }
+   * </code></pre>
+   *
+   * @param topic Required. Name of the topic to delete. Format is
+   *     `projects/{project}/topics/{topic}`.
+   * @throws com.google.api.gax.rpc.ApiException if the remote call fails
+   * @deprecated Use {@link #deleteTopic(TopicName)} instead.
+   */
   public final void deleteTopic(ProjectTopicName topic) {
     DeleteTopicRequest request =
         DeleteTopicRequest.newBuilder().setTopic(topic == null ? null : topic.toString()).build();
@@ -961,7 +1039,30 @@ public class TopicAdminClient implements BackgroundResource {
     return setIamPolicyCallable().call(request);
   }
 
-  /** @deprecated. Use {@link #setIamPolicy(SetIamPolicyRequest)} instead. */
+  // AUTO-GENERATED DOCUMENTATION AND METHOD
+  /**
+   * Sets the access control policy on the specified resource. Replaces any existing policy.
+   *
+   * <p>Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
+   *
+   * <p>Sample code:
+   *
+   * <pre><code>
+   * try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
+   *   String formattedResource = ProjectTopicName.format("[PROJECT]", "[TOPIC]");
+   *   Policy policy = Policy.newBuilder().build();
+   *   Policy response = topicAdminClient.setIamPolicy(formattedResource, policy);
+   * }
+   * </code></pre>
+   *
+   * @param resource REQUIRED: The resource for which the policy is being specified. See the
+   *     operation documentation for the appropriate value for this field.
+   * @param policy REQUIRED: The complete policy to be applied to the `resource`. The size of the
+   *     policy is limited to a few 10s of KB. An empty policy is a valid policy but certain Cloud
+   *     Platform services (such as Projects) might reject them.
+   * @throws com.google.api.gax.rpc.ApiException if the remote call fails
+   * @deprecated Use {@link #setIamPolicy(SetIamPolicyRequest)} instead.
+   */
   public final Policy setIamPolicy(String resource, Policy policy) {
     SetIamPolicyRequest request =
         SetIamPolicyRequest.newBuilder().setResource(resource).setPolicy(policy).build();
@@ -1018,7 +1119,25 @@ public class TopicAdminClient implements BackgroundResource {
     return getIamPolicyCallable().call(request);
   }
 
-  /** @deprecated. Use {@link #getIamPolicy(GetIamPolicyRequest)} instead. */
+  // AUTO-GENERATED DOCUMENTATION AND METHOD
+  /**
+   * Gets the access control policy for a resource. Returns an empty policy if the resource exists
+   * and does not have a policy set.
+   *
+   * <p>Sample code:
+   *
+   * <pre><code>
+   * try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
+   *   String formattedResource = ProjectTopicName.format("[PROJECT]", "[TOPIC]");
+   *   Policy response = topicAdminClient.getIamPolicy(formattedResource);
+   * }
+   * </code></pre>
+   *
+   * @param resource REQUIRED: The resource for which the policy is being requested. See the
+   *     operation documentation for the appropriate value for this field.
+   * @throws com.google.api.gax.rpc.ApiException if the remote call fails
+   * @deprecated Use {@link #getIamPolicy(GetIamPolicyRequest)} instead.
+   */
   public final Policy getIamPolicy(String resource) {
     GetIamPolicyRequest request = GetIamPolicyRequest.newBuilder().setResource(resource).build();
     return getIamPolicy(request);
@@ -1077,7 +1196,33 @@ public class TopicAdminClient implements BackgroundResource {
     return testIamPermissionsCallable().call(request);
   }
 
-  /** @deprecated. Use {@link #testIamPermissions(TestIamPermissionsRequest)} instead. */
+  // AUTO-GENERATED DOCUMENTATION AND METHOD
+  /**
+   * Returns permissions that a caller has on the specified resource. If the resource does not
+   * exist, this will return an empty set of permissions, not a NOT_FOUND error.
+   *
+   * <p>Note: This operation is designed to be used for building permission-aware UIs and
+   * command-line tools, not for authorization checking. This operation may "fail open" without
+   * warning.
+   *
+   * <p>Sample code:
+   *
+   * <pre><code>
+   * try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
+   *   String formattedResource = ProjectTopicName.format("[PROJECT]", "[TOPIC]");
+   *   List&lt;String&gt; permissions = new ArrayList&lt;&gt;();
+   *   TestIamPermissionsResponse response = topicAdminClient.testIamPermissions(formattedResource, permissions);
+   * }
+   * </code></pre>
+   *
+   * @param resource REQUIRED: The resource for which the policy detail is being requested. See the
+   *     operation documentation for the appropriate value for this field.
+   * @param permissions The set of permissions to check for the `resource`. Permissions with
+   *     wildcards (such as '&#42;' or 'storage.&#42;') are not allowed. For more information see
+   *     [IAM Overview](https://cloud.google.com/iam/docs/overview#permissions).
+   * @throws com.google.api.gax.rpc.ApiException if the remote call fails
+   * @deprecated Use {@link #testIamPermissions(TestIamPermissionsRequest)} instead.
+   */
   public final TestIamPermissionsResponse testIamPermissions(
       String resource, List<String> permissions) {
     TestIamPermissionsRequest request =
