@@ -134,6 +134,7 @@ public class SubscriptionAdminClientTest {
     int ackDeadlineSeconds2 = 921632575;
     boolean retainAckedMessages = false;
     boolean enableMessageOrdering = true;
+    String filter = "filter-1274492040";
     Subscription expectedResponse =
         Subscription.newBuilder()
             .setName(name2.toString())
@@ -141,6 +142,7 @@ public class SubscriptionAdminClientTest {
             .setAckDeadlineSeconds(ackDeadlineSeconds2)
             .setRetainAckedMessages(retainAckedMessages)
             .setEnableMessageOrdering(enableMessageOrdering)
+            .setFilter(filter)
             .build();
     mockSubscriber.addResponse(expectedResponse);
 
@@ -194,6 +196,7 @@ public class SubscriptionAdminClientTest {
     int ackDeadlineSeconds = 2135351438;
     boolean retainAckedMessages = false;
     boolean enableMessageOrdering = true;
+    String filter = "filter-1274492040";
     Subscription expectedResponse =
         Subscription.newBuilder()
             .setName(name.toString())
@@ -201,6 +204,7 @@ public class SubscriptionAdminClientTest {
             .setAckDeadlineSeconds(ackDeadlineSeconds)
             .setRetainAckedMessages(retainAckedMessages)
             .setEnableMessageOrdering(enableMessageOrdering)
+            .setFilter(filter)
             .build();
     mockSubscriber.addResponse(expectedResponse);
 
@@ -247,6 +251,7 @@ public class SubscriptionAdminClientTest {
     int ackDeadlineSeconds2 = 921632575;
     boolean retainAckedMessages = false;
     boolean enableMessageOrdering = true;
+    String filter = "filter-1274492040";
     Subscription expectedResponse =
         Subscription.newBuilder()
             .setName(name.toString())
@@ -254,6 +259,7 @@ public class SubscriptionAdminClientTest {
             .setAckDeadlineSeconds(ackDeadlineSeconds2)
             .setRetainAckedMessages(retainAckedMessages)
             .setEnableMessageOrdering(enableMessageOrdering)
+            .setFilter(filter)
             .build();
     mockSubscriber.addResponse(expectedResponse);
 

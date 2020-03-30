@@ -40,6 +40,7 @@ public final class Subscription extends com.google.protobuf.GeneratedMessageV3
   private Subscription() {
     name_ = "";
     topic_ = "";
+    filter_ = "";
   }
 
   @java.lang.Override
@@ -158,6 +159,13 @@ public final class Subscription extends com.google.protobuf.GeneratedMessageV3
                 expirationPolicy_ = subBuilder.buildPartial();
               }
 
+              break;
+            }
+          case 98:
+            {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              filter_ = s;
               break;
             }
           case 106:
@@ -693,6 +701,65 @@ public final class Subscription extends com.google.protobuf.GeneratedMessageV3
     return getExpirationPolicy();
   }
 
+  public static final int FILTER_FIELD_NUMBER = 12;
+  private volatile java.lang.Object filter_;
+  /**
+   *
+   *
+   * <pre>
+   * An expression written in the Cloud Pub/Sub filter language. If non-empty,
+   * then only `PubsubMessage`s whose `attributes` field matches the filter are
+   * delivered on this subscription. If empty, then no messages are filtered
+   * out.
+   * &lt;b&gt;EXPERIMENTAL:&lt;/b&gt; This feature is part of a closed alpha release. This
+   * API might be changed in backward-incompatible ways and is not recommended
+   * for production use. It is not subject to any SLA or deprecation policy.
+   * </pre>
+   *
+   * <code>string filter = 12;</code>
+   *
+   * @return The filter.
+   */
+  public java.lang.String getFilter() {
+    java.lang.Object ref = filter_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      filter_ = s;
+      return s;
+    }
+  }
+  /**
+   *
+   *
+   * <pre>
+   * An expression written in the Cloud Pub/Sub filter language. If non-empty,
+   * then only `PubsubMessage`s whose `attributes` field matches the filter are
+   * delivered on this subscription. If empty, then no messages are filtered
+   * out.
+   * &lt;b&gt;EXPERIMENTAL:&lt;/b&gt; This feature is part of a closed alpha release. This
+   * API might be changed in backward-incompatible ways and is not recommended
+   * for production use. It is not subject to any SLA or deprecation policy.
+   * </pre>
+   *
+   * <code>string filter = 12;</code>
+   *
+   * @return The bytes for filter.
+   */
+  public com.google.protobuf.ByteString getFilterBytes() {
+    java.lang.Object ref = filter_;
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b =
+          com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
+      filter_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
+  }
+
   public static final int DEAD_LETTER_POLICY_FIELD_NUMBER = 13;
   private com.google.pubsub.v1.DeadLetterPolicy deadLetterPolicy_;
   /**
@@ -874,6 +941,9 @@ public final class Subscription extends com.google.protobuf.GeneratedMessageV3
     if (expirationPolicy_ != null) {
       output.writeMessage(11, getExpirationPolicy());
     }
+    if (!getFilterBytes().isEmpty()) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 12, filter_);
+    }
     if (deadLetterPolicy_ != null) {
       output.writeMessage(13, getDeadLetterPolicy());
     }
@@ -925,6 +995,9 @@ public final class Subscription extends com.google.protobuf.GeneratedMessageV3
     if (expirationPolicy_ != null) {
       size += com.google.protobuf.CodedOutputStream.computeMessageSize(11, getExpirationPolicy());
     }
+    if (!getFilterBytes().isEmpty()) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(12, filter_);
+    }
     if (deadLetterPolicy_ != null) {
       size += com.google.protobuf.CodedOutputStream.computeMessageSize(13, getDeadLetterPolicy());
     }
@@ -964,6 +1037,7 @@ public final class Subscription extends com.google.protobuf.GeneratedMessageV3
     if (hasExpirationPolicy()) {
       if (!getExpirationPolicy().equals(other.getExpirationPolicy())) return false;
     }
+    if (!getFilter().equals(other.getFilter())) return false;
     if (hasDeadLetterPolicy() != other.hasDeadLetterPolicy()) return false;
     if (hasDeadLetterPolicy()) {
       if (!getDeadLetterPolicy().equals(other.getDeadLetterPolicy())) return false;
@@ -1009,6 +1083,8 @@ public final class Subscription extends com.google.protobuf.GeneratedMessageV3
       hash = (37 * hash) + EXPIRATION_POLICY_FIELD_NUMBER;
       hash = (53 * hash) + getExpirationPolicy().hashCode();
     }
+    hash = (37 * hash) + FILTER_FIELD_NUMBER;
+    hash = (53 * hash) + getFilter().hashCode();
     if (hasDeadLetterPolicy()) {
       hash = (37 * hash) + DEAD_LETTER_POLICY_FIELD_NUMBER;
       hash = (53 * hash) + getDeadLetterPolicy().hashCode();
@@ -1210,6 +1286,8 @@ public final class Subscription extends com.google.protobuf.GeneratedMessageV3
         expirationPolicy_ = null;
         expirationPolicyBuilder_ = null;
       }
+      filter_ = "";
+
       if (deadLetterPolicyBuilder_ == null) {
         deadLetterPolicy_ = null;
       } else {
@@ -1271,6 +1349,7 @@ public final class Subscription extends com.google.protobuf.GeneratedMessageV3
       } else {
         result.expirationPolicy_ = expirationPolicyBuilder_.build();
       }
+      result.filter_ = filter_;
       if (deadLetterPolicyBuilder_ == null) {
         result.deadLetterPolicy_ = deadLetterPolicy_;
       } else {
@@ -1356,6 +1435,10 @@ public final class Subscription extends com.google.protobuf.GeneratedMessageV3
       }
       if (other.hasExpirationPolicy()) {
         mergeExpirationPolicy(other.getExpirationPolicy());
+      }
+      if (!other.getFilter().isEmpty()) {
+        filter_ = other.filter_;
+        onChanged();
       }
       if (other.hasDeadLetterPolicy()) {
         mergeDeadLetterPolicy(other.getDeadLetterPolicy());
@@ -2710,6 +2793,142 @@ public final class Subscription extends com.google.protobuf.GeneratedMessageV3
         expirationPolicy_ = null;
       }
       return expirationPolicyBuilder_;
+    }
+
+    private java.lang.Object filter_ = "";
+    /**
+     *
+     *
+     * <pre>
+     * An expression written in the Cloud Pub/Sub filter language. If non-empty,
+     * then only `PubsubMessage`s whose `attributes` field matches the filter are
+     * delivered on this subscription. If empty, then no messages are filtered
+     * out.
+     * &lt;b&gt;EXPERIMENTAL:&lt;/b&gt; This feature is part of a closed alpha release. This
+     * API might be changed in backward-incompatible ways and is not recommended
+     * for production use. It is not subject to any SLA or deprecation policy.
+     * </pre>
+     *
+     * <code>string filter = 12;</code>
+     *
+     * @return The filter.
+     */
+    public java.lang.String getFilter() {
+      java.lang.Object ref = filter_;
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        filter_ = s;
+        return s;
+      } else {
+        return (java.lang.String) ref;
+      }
+    }
+    /**
+     *
+     *
+     * <pre>
+     * An expression written in the Cloud Pub/Sub filter language. If non-empty,
+     * then only `PubsubMessage`s whose `attributes` field matches the filter are
+     * delivered on this subscription. If empty, then no messages are filtered
+     * out.
+     * &lt;b&gt;EXPERIMENTAL:&lt;/b&gt; This feature is part of a closed alpha release. This
+     * API might be changed in backward-incompatible ways and is not recommended
+     * for production use. It is not subject to any SLA or deprecation policy.
+     * </pre>
+     *
+     * <code>string filter = 12;</code>
+     *
+     * @return The bytes for filter.
+     */
+    public com.google.protobuf.ByteString getFilterBytes() {
+      java.lang.Object ref = filter_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b =
+            com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
+        filter_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    /**
+     *
+     *
+     * <pre>
+     * An expression written in the Cloud Pub/Sub filter language. If non-empty,
+     * then only `PubsubMessage`s whose `attributes` field matches the filter are
+     * delivered on this subscription. If empty, then no messages are filtered
+     * out.
+     * &lt;b&gt;EXPERIMENTAL:&lt;/b&gt; This feature is part of a closed alpha release. This
+     * API might be changed in backward-incompatible ways and is not recommended
+     * for production use. It is not subject to any SLA or deprecation policy.
+     * </pre>
+     *
+     * <code>string filter = 12;</code>
+     *
+     * @param value The filter to set.
+     * @return This builder for chaining.
+     */
+    public Builder setFilter(java.lang.String value) {
+      if (value == null) {
+        throw new NullPointerException();
+      }
+
+      filter_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     *
+     *
+     * <pre>
+     * An expression written in the Cloud Pub/Sub filter language. If non-empty,
+     * then only `PubsubMessage`s whose `attributes` field matches the filter are
+     * delivered on this subscription. If empty, then no messages are filtered
+     * out.
+     * &lt;b&gt;EXPERIMENTAL:&lt;/b&gt; This feature is part of a closed alpha release. This
+     * API might be changed in backward-incompatible ways and is not recommended
+     * for production use. It is not subject to any SLA or deprecation policy.
+     * </pre>
+     *
+     * <code>string filter = 12;</code>
+     *
+     * @return This builder for chaining.
+     */
+    public Builder clearFilter() {
+
+      filter_ = getDefaultInstance().getFilter();
+      onChanged();
+      return this;
+    }
+    /**
+     *
+     *
+     * <pre>
+     * An expression written in the Cloud Pub/Sub filter language. If non-empty,
+     * then only `PubsubMessage`s whose `attributes` field matches the filter are
+     * delivered on this subscription. If empty, then no messages are filtered
+     * out.
+     * &lt;b&gt;EXPERIMENTAL:&lt;/b&gt; This feature is part of a closed alpha release. This
+     * API might be changed in backward-incompatible ways and is not recommended
+     * for production use. It is not subject to any SLA or deprecation policy.
+     * </pre>
+     *
+     * <code>string filter = 12;</code>
+     *
+     * @param value The bytes for filter to set.
+     * @return This builder for chaining.
+     */
+    public Builder setFilterBytes(com.google.protobuf.ByteString value) {
+      if (value == null) {
+        throw new NullPointerException();
+      }
+      checkByteStringIsUtf8(value);
+
+      filter_ = value;
+      onChanged();
+      return this;
     }
 
     private com.google.pubsub.v1.DeadLetterPolicy deadLetterPolicy_;

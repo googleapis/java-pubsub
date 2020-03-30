@@ -362,6 +362,43 @@ public interface SubscriptionOrBuilder
    *
    *
    * <pre>
+   * An expression written in the Cloud Pub/Sub filter language. If non-empty,
+   * then only `PubsubMessage`s whose `attributes` field matches the filter are
+   * delivered on this subscription. If empty, then no messages are filtered
+   * out.
+   * &lt;b&gt;EXPERIMENTAL:&lt;/b&gt; This feature is part of a closed alpha release. This
+   * API might be changed in backward-incompatible ways and is not recommended
+   * for production use. It is not subject to any SLA or deprecation policy.
+   * </pre>
+   *
+   * <code>string filter = 12;</code>
+   *
+   * @return The filter.
+   */
+  java.lang.String getFilter();
+  /**
+   *
+   *
+   * <pre>
+   * An expression written in the Cloud Pub/Sub filter language. If non-empty,
+   * then only `PubsubMessage`s whose `attributes` field matches the filter are
+   * delivered on this subscription. If empty, then no messages are filtered
+   * out.
+   * &lt;b&gt;EXPERIMENTAL:&lt;/b&gt; This feature is part of a closed alpha release. This
+   * API might be changed in backward-incompatible ways and is not recommended
+   * for production use. It is not subject to any SLA or deprecation policy.
+   * </pre>
+   *
+   * <code>string filter = 12;</code>
+   *
+   * @return The bytes for filter.
+   */
+  com.google.protobuf.ByteString getFilterBytes();
+
+  /**
+   *
+   *
+   * <pre>
    * A policy that specifies the conditions for dead lettering messages in
    * this subscription. If dead_letter_policy is not set, dead lettering
    * is disabled.

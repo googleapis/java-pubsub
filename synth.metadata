@@ -1,5 +1,5 @@
 {
-  "updateTime": "2020-03-17T22:25:36.366904Z",
+  "updateTime": "2020-03-30T18:32:12.364907Z",
   "sources": [
     {
       "generator": {
@@ -10,17 +10,9 @@
     },
     {
       "git": {
-        "name": "googleapis",
-        "remote": "https://github.com/googleapis/googleapis.git",
-        "sha": "5058c1c96d0ece7f5301a154cf5a07b2ad03a571",
-        "internalRef": "301443847"
-      }
-    },
-    {
-      "template": {
-        "name": "java_library",
-        "origin": "synthtool.gcp",
-        "version": "2020.2.4"
+        "name": "synthtool",
+        "remote": "https://github.com/googleapis/synthtool.git",
+        "sha": "e36822bfa0acb355502dab391b8ef9c4f30208d8"
       }
     }
   ],

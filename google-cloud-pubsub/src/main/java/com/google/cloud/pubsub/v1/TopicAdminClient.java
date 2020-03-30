@@ -230,6 +230,7 @@ public class TopicAdminClient implements BackgroundResource {
     return createTopic(request);
   }
 
+  /** @deprecated. Use {@link #createTopic(TopicName)} instead. */
   public final Topic createTopic(ProjectTopicName name) {
     Topic request = Topic.newBuilder().setName(name == null ? null : name.toString()).build();
     return createTopic(request);
@@ -497,6 +498,7 @@ public class TopicAdminClient implements BackgroundResource {
     return getTopic(request);
   }
 
+  /** @deprecated. Use {@link #getTopic(TopicName)} instead. */
   public final Topic getTopic(ProjectTopicName topic) {
     GetTopicRequest request =
         GetTopicRequest.newBuilder().setTopic(topic == null ? null : topic.toString()).build();
@@ -731,6 +733,7 @@ public class TopicAdminClient implements BackgroundResource {
     return listTopicSubscriptions(request);
   }
 
+  /** @deprecated. Use {@link #listTopicSubscriptions(TopicName)} instead. */
   public final ListTopicSubscriptionsPagedResponse listTopicSubscriptions(ProjectTopicName topic) {
     ListTopicSubscriptionsRequest request =
         ListTopicSubscriptionsRequest.newBuilder()
@@ -873,6 +876,7 @@ public class TopicAdminClient implements BackgroundResource {
     deleteTopic(request);
   }
 
+  /** @deprecated. Use {@link #deleteTopic(TopicName)} instead. */
   public final void deleteTopic(ProjectTopicName topic) {
     DeleteTopicRequest request =
         DeleteTopicRequest.newBuilder().setTopic(topic == null ? null : topic.toString()).build();
@@ -957,6 +961,7 @@ public class TopicAdminClient implements BackgroundResource {
     return setIamPolicyCallable().call(request);
   }
 
+  /** @deprecated. Use {@link #setIamPolicy(SetIamPolicyRequest)} instead. */
   public final Policy setIamPolicy(String resource, Policy policy) {
     SetIamPolicyRequest request =
         SetIamPolicyRequest.newBuilder().setResource(resource).setPolicy(policy).build();
@@ -1013,6 +1018,7 @@ public class TopicAdminClient implements BackgroundResource {
     return getIamPolicyCallable().call(request);
   }
 
+  /** @deprecated. Use {@link #getIamPolicy(GetIamPolicyRequest)} instead. */
   public final Policy getIamPolicy(String resource) {
     GetIamPolicyRequest request = GetIamPolicyRequest.newBuilder().setResource(resource).build();
     return getIamPolicy(request);
@@ -1071,6 +1077,7 @@ public class TopicAdminClient implements BackgroundResource {
     return testIamPermissionsCallable().call(request);
   }
 
+  /** @deprecated. Use {@link #testIamPermissions(TestIamPermissionsRequest)} instead. */
   public final TestIamPermissionsResponse testIamPermissions(
       String resource, List<String> permissions) {
     TestIamPermissionsRequest request =

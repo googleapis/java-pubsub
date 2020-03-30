@@ -25,6 +25,9 @@ versions = ['v1']
 config_pattern = '/google/pubsub/artman_pubsub.yaml'
 
 GET_IAM_POLICY = """
+  /**
+   * @deprecated. Use {@link #getIamPolicy(GetIamPolicyRequest)} instead.
+   */
   public final Policy getIamPolicy(String resource) {
     GetIamPolicyRequest request = GetIamPolicyRequest.newBuilder().setResource(resource).build();   
     return getIamPolicy(request);
@@ -33,6 +36,9 @@ GET_IAM_POLICY = """
 GET_IAM_POLICY_PREVIOUS = r'(\s+public final Policy getIamPolicy\(GetIamPolicyRequest request\) {\n\s+return .*\n\s+})'
 
 SET_IAM_POLICY = """
+  /**
+   * @deprecated. Use {@link #setIamPolicy(SetIamPolicyRequest)} instead.
+   */
   public final Policy setIamPolicy(String resource, Policy policy) {    
     SetIamPolicyRequest request =   
         SetIamPolicyRequest.newBuilder().setResource(resource).setPolicy(policy).build();   
@@ -42,6 +48,9 @@ SET_IAM_POLICY = """
 SET_IAM_POLICY_PREVIOUS = r'(\s+public final Policy setIamPolicy\(SetIamPolicyRequest request\) {\n\s+return .*\n\s+})'
 
 TEST_IAM_PERMISSIONS = """
+  /**
+   * @deprecated. Use {@link #testIamPermissions(TestIamPermissionsRequest)} instead.
+   */
   public final TestIamPermissionsResponse testIamPermissions(   
       String resource, List<String> permissions) {  
     TestIamPermissionsRequest request = 
@@ -55,6 +64,9 @@ TEST_IAM_PERMISSIONS = """
 TEST_IAM_PERMISSIONS_PREVIOUS = r'(\s+public final TestIamPermissionsResponse testIamPermissions\(TestIamPermissionsRequest request\) {\n\s+return .*\n\s+})'
 
 CREATE_TOPIC = """
+  /**
+   * @deprecated. Use {@link #createTopic(TopicName)} instead.
+   */
   public final Topic createTopic(ProjectTopicName name) {
     Topic request = Topic.newBuilder().setName(name == null ? null : name.toString()).build();
     return createTopic(request);
@@ -64,6 +76,9 @@ CREATE_TOPIC = """
 CREATE_TOPIC_PREVIOUS = r'(\s+public final Topic createTopic\(String name\) {\n\s+.*\n\s+return.*\n\s+})'
 
 DELETE_TOPIC = """
+  /**
+   * @deprecated. Use {@link #deleteTopic(TopicName)} instead.
+   */
   public final void deleteTopic(ProjectTopicName topic) {
     DeleteTopicRequest request =
         DeleteTopicRequest.newBuilder().setTopic(topic == null ? null : topic.toString()).build();
@@ -74,6 +89,9 @@ DELETE_TOPIC = """
 GET_TOPIC_PREVIOUS = r'(\s+public final Topic getTopic\(String topic\) {\n\s+.*\n\s+return.*\n\s+})'
 
 GET_TOPIC = """
+  /**
+   * @deprecated. Use {@link #getTopic(TopicName)} instead.
+   */
   public final Topic getTopic(ProjectTopicName topic) {
     GetTopicRequest request =
         GetTopicRequest.newBuilder().setTopic(topic == null ? null : topic.toString()).build();
@@ -84,6 +102,9 @@ GET_TOPIC = """
 DELETE_TOPIC_PREVIOUS = r'(\s+public final void deleteTopic\(String topic\) {\n\s+.*\n\s+deleteTopic.*\n\s+})'
 
 LIST_TOPIC_SUBSCRIPTIONS = """
+  /**
+   * @deprecated. Use {@link #listTopicSubscriptions(TopicName)} instead.
+   */
   public final ListTopicSubscriptionsPagedResponse listTopicSubscriptions(ProjectTopicName topic) {
     ListTopicSubscriptionsRequest request =
         ListTopicSubscriptionsRequest.newBuilder()
@@ -98,6 +119,9 @@ LIST_TOPIC_SUBSCRIPTIONS_PREVIOUS = r'(\s+public final ListTopicSubscriptionsPag
 CREATE_SUBSCRIPTION_PREVIOUS = r'(\s+public final Subscription createSubscription\(Subscription request\) {\n\s+return.*\n\s+})'
 
 CREATE_SUBSCRIPTION = """
+  /**
+   * @deprecated. Use {@link #createSubscription(ProjectSubscriptionName, TopicName, PushConfig, int)} instead.
+   */
   public final Subscription createSubscription(
       ProjectSubscriptionName name,
       ProjectTopicName topic,

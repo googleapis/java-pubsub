@@ -361,6 +361,10 @@ public class SubscriptionAdminClient implements BackgroundResource {
     return createSubscriptionCallable().call(request);
   }
 
+  /**
+   * @deprecated. Use {@link #createSubscription(ProjectSubscriptionName, TopicName, PushConfig,
+   *     int)} instead.
+   */
   public final Subscription createSubscription(
       ProjectSubscriptionName name,
       ProjectTopicName topic,
@@ -1957,6 +1961,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
     return setIamPolicyCallable().call(request);
   }
 
+  /** @deprecated. Use {@link #setIamPolicy(SetIamPolicyRequest)} instead. */
   public final Policy setIamPolicy(String resource, Policy policy) {
     SetIamPolicyRequest request =
         SetIamPolicyRequest.newBuilder().setResource(resource).setPolicy(policy).build();
@@ -2013,6 +2018,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
     return getIamPolicyCallable().call(request);
   }
 
+  /** @deprecated. Use {@link #getIamPolicy(GetIamPolicyRequest)} instead. */
   public final Policy getIamPolicy(String resource) {
     GetIamPolicyRequest request = GetIamPolicyRequest.newBuilder().setResource(resource).build();
     return getIamPolicy(request);
@@ -2071,6 +2077,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
     return testIamPermissionsCallable().call(request);
   }
 
+  /** @deprecated. Use {@link #testIamPermissions(TestIamPermissionsRequest)} instead. */
   public final TestIamPermissionsResponse testIamPermissions(
       String resource, List<String> permissions) {
     TestIamPermissionsRequest request =
