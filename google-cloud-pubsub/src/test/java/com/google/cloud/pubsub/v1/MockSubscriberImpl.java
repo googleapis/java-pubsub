@@ -22,6 +22,7 @@ import com.google.pubsub.v1.AcknowledgeRequest;
 import com.google.pubsub.v1.CreateSnapshotRequest;
 import com.google.pubsub.v1.DeleteSnapshotRequest;
 import com.google.pubsub.v1.DeleteSubscriptionRequest;
+import com.google.pubsub.v1.GetSnapshotRequest;
 import com.google.pubsub.v1.GetSubscriptionRequest;
 import com.google.pubsub.v1.ListSnapshotsRequest;
 import com.google.pubsub.v1.ListSnapshotsResponse;
@@ -234,6 +235,20 @@ public class MockSubscriberImpl extends SubscriberImplBase {
     if (response instanceof Empty) {
       requests.add(request);
       responseObserver.onNext((Empty) response);
+      responseObserver.onCompleted();
+    } else if (response instanceof Exception) {
+      responseObserver.onError((Exception) response);
+    } else {
+      responseObserver.onError(new IllegalArgumentException("Unrecognized response type"));
+    }
+  }
+
+  @Override
+  public void getSnapshot(GetSnapshotRequest request, StreamObserver<Snapshot> responseObserver) {
+    Object response = responses.remove();
+    if (response instanceof Snapshot) {
+      requests.add(request);
+      responseObserver.onNext((Snapshot) response);
       responseObserver.onCompleted();
     } else if (response instanceof Exception) {
       responseObserver.onError((Exception) response);
