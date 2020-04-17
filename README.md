@@ -10,8 +10,29 @@ Java idiomatic client for [Cloud Pub/Sub][product-docs].
 
 ## Quickstart
 
+If you are using Maven with [BOM][libraries-bom], add this to your pom.xml file
+```xml
+<dependencyManagement>
+  <dependencies>
+    <dependency>
+      <groupId>com.google.cloud</groupId>
+      <artifactId>libraries-bom</artifactId>
+      <version>5.1.0</version>
+      <type>pom</type>
+      <scope>import</scope>
+    </dependency>
+  </dependencies>
+</dependencyManagement>
 
-If you are using Maven, add this to your pom.xml file:
+<dependencies>
+  <dependency>
+    <groupId>com.google.cloud</groupId>
+    <artifactId>google-cloud-pubsub</artifactId>
+  </dependency>
+
+```
+
+If you are using Maven without BOM, add this to your dependencies:
 
 ```xml
 <dependency>
@@ -19,6 +40,7 @@ If you are using Maven, add this to your pom.xml file:
   <artifactId>google-cloud-pubsub</artifactId>
   <version>1.105.0</version>
 </dependency>
+
 ```
 
 [//]: # ({x-version-update-start:google-cloud-pubsub:released})
