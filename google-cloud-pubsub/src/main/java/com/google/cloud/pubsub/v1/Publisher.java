@@ -305,7 +305,7 @@ public class Publisher implements PublisherInterface {
    *
    * @param key The key for which to resume publishing.
    */
-  @BetaApi("Ordering is not yet fully supported and requires special project enablements.")
+  @BetaApi
   public void resumePublish(String key) {
     Preconditions.checkState(!shutdown.get(), "Cannot publish on a shut-down publisher.");
     sequentialExecutor.resumePublish(key);
@@ -765,7 +765,7 @@ public class Publisher implements PublisherInterface {
     }
 
     /** Sets the message ordering option. */
-    @BetaApi("Ordering is not yet fully supported and requires special project enablements.")
+    @BetaApi
     public Builder setEnableMessageOrdering(boolean enableMessageOrdering) {
       this.enableMessageOrdering = enableMessageOrdering;
       return this;
