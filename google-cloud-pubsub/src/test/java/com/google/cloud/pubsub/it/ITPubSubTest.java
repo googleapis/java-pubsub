@@ -94,7 +94,6 @@ public class ITPubSubTest {
     ProjectTopicName topicName =
         ProjectTopicName.of(projectId, formatForTest("testing-topic-policy"));
     topicAdminClient.createTopic(topicName);
-
     Policy policy = topicAdminClient.getIamPolicy(topicName.toString());
     Binding binding =
         Binding.newBuilder().setRole("roles/viewer").addMembers("allAuthenticatedUsers").build();
@@ -127,7 +126,7 @@ public class ITPubSubTest {
       subscriptionAdminClient.createSubscription(
           subscriptionName,
           topicName,
-          PushConfig.newBuilder().setPushEndpoint("random_point").build(),
+          PushConfig.newBuilder().setPushEndpoint("https://random_point").build(),
           10);
       subscriptionAdminClient.deleteSubscription(subscriptionName);
       Assert.fail("No exception raised");
