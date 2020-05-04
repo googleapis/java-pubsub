@@ -201,11 +201,12 @@ public class MockSubscriberImpl extends SubscriberImplBase {
   @Override
   public StreamObserver<StreamingPullRequest> streamingPull(
       final StreamObserver<StreamingPullResponse> responseObserver) {
-    final Object response = responses.remove();
     StreamObserver<StreamingPullRequest> requestObserver =
         new StreamObserver<StreamingPullRequest>() {
           @Override
           public void onNext(StreamingPullRequest value) {
+            requests.add(value);
+            final Object response = responses.remove();
             if (response instanceof StreamingPullResponse) {
               responseObserver.onNext((StreamingPullResponse) response);
             } else if (response instanceof Exception) {
