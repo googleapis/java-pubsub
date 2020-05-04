@@ -3,8 +3,8 @@
     {
       "git": {
         "name": ".",
-        "remote": "git@github.com:googleapis/java-pubsub.git",
-        "sha": "b4e0b77255ebb04eead8bf3e5c7be0fe76ac4c89"
+        "remote": "https://github.com/googleapis/java-pubsub.git",
+        "sha": "9606ce341c7cc9ff283a4419bf107a5dac1fe3d2"
       }
     },
     {
