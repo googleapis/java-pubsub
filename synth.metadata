@@ -3,23 +3,23 @@
     {
       "git": {
         "name": ".",
-        "remote": "git@github.com:googleapis/java-pubsub.git",
-        "sha": "b4e0b77255ebb04eead8bf3e5c7be0fe76ac4c89"
+        "remote": "https://github.com/googleapis/java-pubsub.git",
+        "sha": "497b33184fad22ef2920d7a89a42b59887777793"
       }
     },
     {
       "git": {
         "name": "googleapis",
         "remote": "https://github.com/googleapis/googleapis.git",
-        "sha": "b5e9b0b09cc15c263f07da92fa64db31b2e4dd07",
-        "internalRef": "307068250"
+        "sha": "e0f9d9e1f9de890db765be46f45ca8490723e3eb",
+        "internalRef": "309824146"
       }
     },
     {
       "git": {
         "name": "synthtool",
         "remote": "https://github.com/googleapis/synthtool.git",
-        "sha": "f8a9933e5e98202b04ef427f28d1d79221190fa4"
+        "sha": "04cb397eb7590ea1e6c10a39fca3d8fe0fb3d256"
       }
     }
   ],
