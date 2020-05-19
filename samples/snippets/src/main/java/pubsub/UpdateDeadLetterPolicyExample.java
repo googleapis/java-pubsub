@@ -31,14 +31,13 @@ public class UpdateDeadLetterPolicyExample {
   public static void main(String... args) throws Exception {
     // TODO(developer): Replace these variables before running the sample.
     String projectId = "Your Project ID";
+    // This is an existing subscription with a dead letter policy.
     String subscriptionId = "Your Subscription ID";
+    // This is an existing topic that the subscription with dead letter policy is attached to.
     String topicId = "Your Topic ID";
+    // This is an existing dead letter topic that the subscription with dead letter policy forwards
+    // dead letter messages to.
     String deadLetterTopicId = "Your Dead Letter Topic ID";
-
-    projectId = "tz-playground-bigdata";
-    subscriptionId = "une";
-    topicId = "jan";
-    deadLetterTopicId = "jan-dlq";
 
     UpdateDeadLetterPolicyExample.updateDeadLetterPolicyExample(
         projectId, subscriptionId, topicId, deadLetterTopicId);
@@ -58,11 +57,16 @@ public class UpdateDeadLetterPolicyExample {
       TopicName topicName = TopicName.of(projectId, topicId);
       TopicName deadLetterTopicName = TopicName.of(projectId, deadLetterTopicId);
 
-       DeadLetterPolicy deadLetterPolicy = DeadLetterPolicy.newBuilder()
-          .setDeadLetterTopic(deadLetterTopicName.toString())
-          .setMaxDeliveryAttempts(20)
-          .build();
+      // Construct the dead letter policy you expect to have after the update.
+      DeadLetterPolicy deadLetterPolicy =
+          DeadLetterPolicy.newBuilder()
+              .setDeadLetterTopic(deadLetterTopicName.toString())
+              .setMaxDeliveryAttempts(20)
+              .build();
 
+      // Construct the subscription with the dead letter policy you expect to have
+      // after the update. Here, values in the required fields (name, topic) help
+      // identify the subscription.
       Subscription subscription =
           Subscription.newBuilder()
               .setName(subscriptionName.toString())
@@ -70,6 +74,7 @@ public class UpdateDeadLetterPolicyExample {
               .setDeadLetterPolicy(deadLetterPolicy)
               .build();
 
+      // Construct a field mask to indicate which field to update in the subscription.
       FieldMask updateMask =
           FieldMask.newBuilder().addPaths("dead_letter_policy.max_delivery_attempts").build();
 
@@ -82,6 +87,9 @@ public class UpdateDeadLetterPolicyExample {
       Subscription response = subscriptionAdminClient.updateSubscription(request);
 
       System.out.println("After: " + response.getAllFields());
+      System.out.println(
+          "Max delivery attempts is now "
+              + response.getDeadLetterPolicy().getMaxDeliveryAttempts());
     }
   }
 }

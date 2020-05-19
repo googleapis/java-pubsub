@@ -16,8 +16,17 @@
 
 package pubsub;
 
+import static com.google.common.truth.Truth.assertThat;
 import static junit.framework.TestCase.assertNotNull;
 
+import com.google.cloud.pubsub.v1.Publisher;
+import com.google.cloud.pubsub.v1.SubscriptionAdminClient;
+import com.google.cloud.pubsub.v1.TopicAdminClient;
+import com.google.protobuf.ByteString;
+import com.google.pubsub.v1.ProjectSubscriptionName;
+import com.google.pubsub.v1.ProjectTopicName;
+import com.google.pubsub.v1.PubsubMessage;
+import com.google.pubsub.v1.Topic;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.UUID;
@@ -33,10 +42,16 @@ public class DeadLetterQueueIT {
   private ByteArrayOutputStream bout;
   private PrintStream out;
 
-  private static final String GOOGLE_CLOUD_PROJECT = System.getenv("GOOGLE_CLOUD_PROJECT");
-  private static final String SUFFIX = UUID.randomUUID().toString();
-  private static final String TOPIC_NAME = "topic-" + SUFFIX;
-  private static final String SUBSCRIPTION_NAME = "subscription-" + SUFFIX;
+  private static final String projectId = System.getenv("GOOGLE_CLOUD_PROJECT");
+  private static final String _suffix = UUID.randomUUID().toString();
+  private static final String topicId = "topic-" + _suffix;
+  private static final String subscriptionId = "subscription-" + _suffix;
+  private static final String deadLetterTopicId = "topic-dlq-" + _suffix;
+  private static final ProjectTopicName topicName = ProjectTopicName.of(projectId, topicId);
+  private static final ProjectTopicName deadLetterTopicName =
+      ProjectTopicName.of(projectId, deadLetterTopicId);
+  private static final ProjectSubscriptionName subscriptionName =
+      ProjectSubscriptionName.of(projectId, subscriptionId);
 
   private static void requireEnvVar(String varName) {
     assertNotNull(
@@ -44,11 +59,20 @@ public class DeadLetterQueueIT {
         System.getenv(varName));
   }
 
+  // Helper function to publish a message.
+  private static void publishSomeMessages() throws Exception {
+    ProjectTopicName topicName = ProjectTopicName.of(projectId, topicId);
+    Publisher publisher = Publisher.newBuilder(topicName).build();
+    ByteString data = ByteString.copyFromUtf8("Hello");
+    PubsubMessage pubsubMessage = PubsubMessage.newBuilder().setData(data).build();
+    publisher.publish(pubsubMessage).get();
+  }
+
   @Rule public Timeout globalTimeout = Timeout.seconds(300); // 5 minute timeout
 
   @BeforeClass
   public static void checkRequirements() {
-    requireEnvVar("GOOGLE_CLOUD_PROJECT_NUMBER");
+    requireEnvVar("GOOGLE_CLOUD_PROJECT");
   }
 
   @Before
@@ -56,13 +80,65 @@ public class DeadLetterQueueIT {
     bout = new ByteArrayOutputStream();
     out = new PrintStream(bout);
     System.setOut(out);
+
+    // Create a topic to attach a subscription with dead letter policy, and a
+    // dead letter topic for that subscription to forward dead letter messages to.
+    try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
+      Topic topic = Topic.newBuilder().setName(topicName.toString()).build();
+      Topic deadLetterTopic = Topic.newBuilder().setName(deadLetterTopicName.toString()).build();
+      topicAdminClient.createTopic(topic);
+      topicAdminClient.createTopic(deadLetterTopic);
+    }
   }
 
   @After
   public void tearDown() throws Exception {
+    // Delete the subscription with dead letter policy.
+    try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
+      subscriptionAdminClient.deleteSubscription(subscriptionName);
+    }
+
+    // Delete the topic that the subscription with dead letter policy is attached
+    // to, and the dead letter topic that the subscription forwards dead letter
+    // messages to.
+    try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
+      topicAdminClient.deleteTopic(topicName.toString());
+      topicAdminClient.deleteTopic(deadLetterTopicName.toString());
+    }
+
     System.setOut(null);
   }
 
   @Test
-  public void testQuickstart() throws Exception {}
+  public void testQuickstart() throws Exception {
+    // Create a subscription with dead letter policy
+    CreateSubscriptionWithDeadLetterPolicyExample.createSubscriptionWithDeadLetterPolicyExample(
+        projectId, subscriptionId, topicId, deadLetterTopicId);
+    assertThat(bout.toString()).contains("Created subscription: " + subscriptionName.toString());
+    assertThat(bout.toString())
+        .contains("It will forward dead letter messages to: " + deadLetterTopicName.toString());
+    assertThat(bout.toString()).contains("After 10 delivery attempts.");
+
+    publishSomeMessages();
+
+    bout.reset();
+    // Receive messages with delivery attempts.
+    ReceiveMessagesWithDeliveryAttemptsExample.receiveMessagesWithDeliveryAttemptsExample(
+        projectId, subscriptionId);
+    assertThat(bout.toString()).contains("Listening for messages on");
+    assertThat(bout.toString()).contains("Data: Hello");
+    assertThat(bout.toString()).contains("Delivery Attempt: 1");
+
+    bout.reset();
+    // Update dead letter policy.
+    UpdateDeadLetterPolicyExample.updateDeadLetterPolicyExample(
+        projectId, subscriptionId, topicId, deadLetterTopicId);
+    assertThat(bout.toString()).contains("Max delivery attempts is now 20");
+
+    bout.reset();
+    // Remove dead letter policy.
+    RemoveDeadLetterPolicyExample.removeDeadLetterPolicyExample(projectId, subscriptionId, topicId);
+    assertThat(bout.toString())
+        .contains("google.pubsub.v1.Subscription.dead_letter_policy=max_delivery_attempts: 5");
+  }
 }

@@ -22,23 +22,21 @@ import com.google.cloud.pubsub.v1.SubscriptionAdminClient;
 import com.google.pubsub.v1.DeadLetterPolicy;
 import com.google.pubsub.v1.ProjectSubscriptionName;
 import com.google.pubsub.v1.ProjectTopicName;
-import com.google.pubsub.v1.PushConfig;
 import com.google.pubsub.v1.Subscription;
-import java.io.IOException;
 
 public class CreateSubscriptionWithDeadLetterPolicyExample {
 
   public static void main(String... args) throws Exception {
     // TODO(developer): Replace these variables before running the sample.
     String projectId = "Your Project ID";
-    String topicId = "Your Topic ID";
+    // This is the subscription you want to create with a dead letter policy.
     String subscriptionId = "Your Subscription ID";
+    // This is an existing topic that you want to attach the subscription with dead letter policy
+    // to.
+    String topicId = "Your Topic ID";
+    // This is an existing topic that the subscription with dead letter policy forwards dead letter
+    // messages to.
     String deadLetterTopicId = "Your Dead Letter Topic ID";
-
-    projectId = "tz-playground-bigdata";
-    topicId = "jan";
-    subscriptionId = "uno";
-    deadLetterTopicId = "jan-dlq";
 
     CreateSubscriptionWithDeadLetterPolicyExample.createSubscriptionWithDeadLetterPolicyExample(
         projectId, subscriptionId, topicId, deadLetterTopicId);
@@ -46,7 +44,7 @@ public class CreateSubscriptionWithDeadLetterPolicyExample {
 
   public static void createSubscriptionWithDeadLetterPolicyExample(
       String projectId, String subscriptionId, String topicId, String deadLetterTopicId)
-      throws IOException {
+      throws Exception {
     try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
 
       ProjectTopicName topicName = ProjectTopicName.of(projectId, topicId);
@@ -57,6 +55,8 @@ public class CreateSubscriptionWithDeadLetterPolicyExample {
       DeadLetterPolicy deadLetterPolicy =
           DeadLetterPolicy.newBuilder()
               .setDeadLetterTopic(deadLetterTopicName.toString())
+              // The maximum number of times that the service attempts to deliver a
+              // message before forwarding it to the dead letter topic. Must be [5-100].
               .setMaxDeliveryAttempts(10)
               .build();
 
@@ -64,19 +64,22 @@ public class CreateSubscriptionWithDeadLetterPolicyExample {
           Subscription.newBuilder()
               .setName(subscriptionName.toString())
               .setTopic(topicName.toString())
-              .setPushConfig(PushConfig.getDefaultInstance())
               .setDeadLetterPolicy(deadLetterPolicy)
-              .setAckDeadlineSeconds(10)
               .build();
 
       Subscription subscription = subscriptionAdminClient.createSubscription(request);
 
       System.out.println("Created subscription: " + subscription.getName());
-      System.out.println("Of dead letter policy: " + subscription.getDeadLetterPolicy());
       System.out.println(
-          "It will forward dead letter messages to: " + deadLetterTopicName.toString());
+          "It will forward dead letter messages to: "
+              + subscription.getDeadLetterPolicy().getDeadLetterTopic());
+      System.out.println(
+          "After "
+              + subscription.getDeadLetterPolicy().getMaxDeliveryAttempts()
+              + " delivery attempts.");
+      // Remember to attach a subscription to the dead letter topic because
+      // messages published to a topic with no subscriptions are lost.
     }
   }
 }
-
 // [END pubsub_dead_letter_create_subscription]
