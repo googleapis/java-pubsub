@@ -16,67 +16,73 @@
 
 package pubsub;
 
-// [START pubsub_dead_letter_create_subscription]
+// [START pubsub_dead_letter_update_subscription]
 
 import com.google.cloud.pubsub.v1.SubscriptionAdminClient;
+import com.google.protobuf.FieldMask;
 import com.google.pubsub.v1.DeadLetterPolicy;
 import com.google.pubsub.v1.ProjectSubscriptionName;
-import com.google.pubsub.v1.ProjectTopicName;
-import com.google.pubsub.v1.PushConfig;
 import com.google.pubsub.v1.Subscription;
+import com.google.pubsub.v1.TopicName;
+import com.google.pubsub.v1.UpdateSubscriptionRequest;
 import java.io.IOException;
 
-public class CreateSubscriptionWithDeadLetterPolicyExample {
-
+public class UpdateDeadLetterPolicyExample {
   public static void main(String... args) throws Exception {
     // TODO(developer): Replace these variables before running the sample.
     String projectId = "Your Project ID";
-    String topicId = "Your Topic ID";
     String subscriptionId = "Your Subscription ID";
+    String topicId = "Your Topic ID";
     String deadLetterTopicId = "Your Dead Letter Topic ID";
 
     projectId = "tz-playground-bigdata";
+    subscriptionId = "une";
     topicId = "jan";
-    subscriptionId = "uno";
     deadLetterTopicId = "jan-dlq";
 
-    CreateSubscriptionWithDeadLetterPolicyExample.createSubscriptionWithDeadLetterPolicyExample(
+    UpdateDeadLetterPolicyExample.updateDeadLetterPolicyExample(
         projectId, subscriptionId, topicId, deadLetterTopicId);
   }
 
-  public static void createSubscriptionWithDeadLetterPolicyExample(
+  public static void updateDeadLetterPolicyExample(
       String projectId, String subscriptionId, String topicId, String deadLetterTopicId)
       throws IOException {
     try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
 
-      ProjectTopicName topicName = ProjectTopicName.of(projectId, topicId);
       ProjectSubscriptionName subscriptionName =
           ProjectSubscriptionName.of(projectId, subscriptionId);
-      ProjectTopicName deadLetterTopicName = ProjectTopicName.of(projectId, deadLetterTopicId);
 
-      DeadLetterPolicy deadLetterPolicy =
-          DeadLetterPolicy.newBuilder()
-              .setDeadLetterTopic(deadLetterTopicName.toString())
-              .setMaxDeliveryAttempts(10)
-              .build();
+      System.out.println(
+          "Before: " + subscriptionAdminClient.getSubscription(subscriptionName).getAllFields());
 
-      Subscription request =
+      TopicName topicName = TopicName.of(projectId, topicId);
+      TopicName deadLetterTopicName = TopicName.of(projectId, deadLetterTopicId);
+
+       DeadLetterPolicy deadLetterPolicy = DeadLetterPolicy.newBuilder()
+          .setDeadLetterTopic(deadLetterTopicName.toString())
+          .setMaxDeliveryAttempts(20)
+          .build();
+
+      Subscription subscription =
           Subscription.newBuilder()
               .setName(subscriptionName.toString())
               .setTopic(topicName.toString())
-              .setPushConfig(PushConfig.getDefaultInstance())
               .setDeadLetterPolicy(deadLetterPolicy)
-              .setAckDeadlineSeconds(10)
               .build();
 
-      Subscription subscription = subscriptionAdminClient.createSubscription(request);
+      FieldMask updateMask =
+          FieldMask.newBuilder().addPaths("dead_letter_policy.max_delivery_attempts").build();
 
-      System.out.println("Created subscription: " + subscription.getName());
-      System.out.println("Of dead letter policy: " + subscription.getDeadLetterPolicy());
-      System.out.println(
-          "It will forward dead letter messages to: " + deadLetterTopicName.toString());
+      UpdateSubscriptionRequest request =
+          UpdateSubscriptionRequest.newBuilder()
+              .setSubscription(subscription)
+              .setUpdateMask(updateMask)
+              .build();
+
+      Subscription response = subscriptionAdminClient.updateSubscription(request);
+
+      System.out.println("After: " + response.getAllFields());
     }
   }
 }
-
-// [END pubsub_dead_letter_create_subscription]
+// [END pubsub_dead_letter_update_subscription]

@@ -33,8 +33,7 @@ public class DeadLetterQueueIT {
   private ByteArrayOutputStream bout;
   private PrintStream out;
 
-  private static final String GOOGLE_CLOUD_PROJECT =
-      System.getenv("GOOGLE_CLOUD_PROJECT");
+  private static final String GOOGLE_CLOUD_PROJECT = System.getenv("GOOGLE_CLOUD_PROJECT");
   private static final String SUFFIX = UUID.randomUUID().toString();
   private static final String TOPIC_NAME = "topic-" + SUFFIX;
   private static final String SUBSCRIPTION_NAME = "subscription-" + SUFFIX;
@@ -65,6 +64,5 @@ public class DeadLetterQueueIT {
   }
 
   @Test
-  public void testQuickstart() throws Exception {
-  }
+  public void testQuickstart() throws Exception {}
 }
