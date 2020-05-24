@@ -104,19 +104,6 @@ public class TopicName implements ResourceName {
     return DELETED_TOPIC_FIXED_VALUE;
   }
 
-  public static TopicName parse(String formattedString) {
-    if (formattedString.isEmpty()) {
-      return null;
-    }
-    if (PROJECT_TOPIC_PATH_TEMPLATE.matches(formattedString)) {
-      Map<String, String> matchMap = PROJECT_TOPIC_PATH_TEMPLATE.match(formattedString);
-      return ofProjectTopicName(matchMap.get("project"), matchMap.get("topic"));
-    } else if (DELETED_TOPIC_FIXED_VALUE.equals(formattedString)) {
-      return DELETED_TOPIC_INSTANCE;
-    }
-    throw new ValidationException("JobName.parse: formattedString not in valid format");
-  }
-
   public static boolean isParsableFrom(String formattedString) {
     return PROJECT_TOPIC_PATH_TEMPLATE.matches(formattedString)
         || DELETED_TOPIC_FIXED_VALUE.equals(formattedString);
