@@ -17,7 +17,7 @@ If you are using Maven with [BOM][libraries-bom], add this to your pom.xml file
     <dependency>
       <groupId>com.google.cloud</groupId>
       <artifactId>libraries-bom</artifactId>
-      <version>5.1.0</version>
+      <version>5.4.0</version>
       <type>pom</type>
       <scope>import</scope>
     </dependency>
@@ -38,7 +38,7 @@ If you are using Maven without BOM, add this to your dependencies:
 <dependency>
   <groupId>com.google.cloud</groupId>
   <artifactId>google-cloud-pubsub</artifactId>
-  <version>1.105.0</version>
+  <version>1.105.1</version>
 </dependency>
 
 ```
@@ -47,11 +47,11 @@ If you are using Maven without BOM, add this to your dependencies:
 
 If you are using Gradle, add this to your dependencies
 ```Groovy
-compile 'com.google.cloud:google-cloud-pubsub:1.106.0'
+compile 'com.google.cloud:google-cloud-pubsub:1.105.1'
 ```
 If you are using SBT, add this to your dependencies
 ```Scala
-libraryDependencies += "com.google.cloud" % "google-cloud-pubsub" % "1.106.0"
+libraryDependencies += "com.google.cloud" % "google-cloud-pubsub" % "1.105.1"
 ```
 [//]: # ({x-version-update-end})
 
@@ -218,6 +218,19 @@ In [CreateTopicAndPublishMessages.java](https://github.com/googleapis/google-clo
 
 
 
+## Samples
+
+Samples are in the [`samples/`](https://github.com/googleapis/java-pubsub/tree/master/samples) directory. The samples' `README.md`
+has instructions for running the samples.
+
+| Sample                      | Source Code                       | Try it |
+| --------------------------- | --------------------------------- | ------ |
+| Create Subscription With Dead Letter Policy Example | [source code](https://github.com/googleapis/java-pubsub/blob/master/samples/snippets/src/main/java/pubsub/CreateSubscriptionWithDeadLetterPolicyExample.java) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/java-pubsub&page=editor&open_in_editor=samples/snippets/src/main/java/pubsub/CreateSubscriptionWithDeadLetterPolicyExample.java) |
+| Receive Messages With Delivery Attempts Example | [source code](https://github.com/googleapis/java-pubsub/blob/master/samples/snippets/src/main/java/pubsub/ReceiveMessagesWithDeliveryAttemptsExample.java) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/java-pubsub&page=editor&open_in_editor=samples/snippets/src/main/java/pubsub/ReceiveMessagesWithDeliveryAttemptsExample.java) |
+| Remove Dead Letter Policy Example | [source code](https://github.com/googleapis/java-pubsub/blob/master/samples/snippets/src/main/java/pubsub/RemoveDeadLetterPolicyExample.java) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/java-pubsub&page=editor&open_in_editor=samples/snippets/src/main/java/pubsub/RemoveDeadLetterPolicyExample.java) |
+| Update Dead Letter Policy Example | [source code](https://github.com/googleapis/java-pubsub/blob/master/samples/snippets/src/main/java/pubsub/UpdateDeadLetterPolicyExample.java) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/java-pubsub&page=editor&open_in_editor=samples/snippets/src/main/java/pubsub/UpdateDeadLetterPolicyExample.java) |
+
+
 
 ## Troubleshooting
 
@@ -252,8 +265,7 @@ Apache 2.0 - See [LICENSE][license] for more information.
 
 Java Version | Status
 ------------ | ------
-Java 7 | [![Kokoro CI][kokoro-badge-image-1]][kokoro-badge-link-1]
-Java 8 | [![Kokoro CI][kokoro-badge-image-2]][kokoro-badge-link-2]
+Java 7 | [![Kokoro CI][kokoro-badge-image-1]][kokoro-badge-link-1]Java 8 | [![Kokoro CI][kokoro-badge-image-2]][kokoro-badge-link-2]
 Java 8 OSX | [![Kokoro CI][kokoro-badge-image-3]][kokoro-badge-link-3]
 Java 8 Windows | [![Kokoro CI][kokoro-badge-image-4]][kokoro-badge-link-4]
 Java 11 | [![Kokoro CI][kokoro-badge-image-5]][kokoro-badge-link-5]
