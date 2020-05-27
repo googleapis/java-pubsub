@@ -68,7 +68,7 @@ class MessageDispatcher {
 
   private final Duration ackExpirationPadding;
   private final Duration maxAckExtensionPeriod;
-  private final Duration maxDurationPerAckExtension;
+  private final int maxSecondsPerAckExtension;
   private final MessageReceiver receiver;
   private final AckProcessor ackProcessor;
 
@@ -201,7 +201,7 @@ class MessageDispatcher {
     this.systemExecutor = systemExecutor;
     this.ackExpirationPadding = ackExpirationPadding;
     this.maxAckExtensionPeriod = maxAckExtensionPeriod;
-    this.maxDurationPerAckExtension = maxDurationPerAckExtension;
+    this.maxSecondsPerAckExtension = Math.toIntExact(maxDurationPerAckExtension.getSeconds());
     this.receiver = receiver;
     this.ackProcessor = ackProcessor;
     this.flowController = flowController;
@@ -410,7 +410,6 @@ class MessageDispatcher {
   int computeDeadlineSeconds() {
     int sec = ackLatencyDistribution.getPercentile(PERCENTILE_FOR_ACK_DEADLINE_UPDATES);
 
-    int maxSecondsPerAckExtension = Math.toIntExact(maxDurationPerAckExtension.getSeconds());
     if ((maxSecondsPerAckExtension > 0) && (sec > maxSecondsPerAckExtension)) {
       sec = maxSecondsPerAckExtension;
     }
