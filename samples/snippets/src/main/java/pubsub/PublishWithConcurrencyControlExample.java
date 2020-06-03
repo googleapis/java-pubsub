@@ -49,7 +49,7 @@ public class PublishWithConcurrencyControlExample {
 
     try {
       // Provides an executor service for processing messages. The default
-      // `executorProvider` used by the subscriber has a default thread count of
+      // `executorProvider` used by the publisher has a default thread count of
       // 5 * the number of processors available to the Java virtual machine.
       ExecutorProvider executorProvider =
           InstantiatingExecutorProvider.newBuilder().setExecutorThreadCount(4).build();
