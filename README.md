@@ -17,7 +17,7 @@ If you are using Maven with [BOM][libraries-bom], add this to your pom.xml file
     <dependency>
       <groupId>com.google.cloud</groupId>
       <artifactId>libraries-bom</artifactId>
-      <version>5.1.0</version>
+      <version>5.4.0</version>
       <type>pom</type>
       <scope>import</scope>
     </dependency>
@@ -38,7 +38,7 @@ If you are using Maven without BOM, add this to your dependencies:
 <dependency>
   <groupId>com.google.cloud</groupId>
   <artifactId>google-cloud-pubsub</artifactId>
-  <version>1.105.0</version>
+  <version>1.106.0</version>
 </dependency>
 
 ```
@@ -47,11 +47,11 @@ If you are using Maven without BOM, add this to your dependencies:
 
 If you are using Gradle, add this to your dependencies
 ```Groovy
-compile 'com.google.cloud:google-cloud-pubsub:1.105.1'
+compile 'com.google.cloud:google-cloud-pubsub:1.106.0'
 ```
 If you are using SBT, add this to your dependencies
 ```Scala
-libraryDependencies += "com.google.cloud" % "google-cloud-pubsub" % "1.105.1"
+libraryDependencies += "com.google.cloud" % "google-cloud-pubsub" % "1.106.0"
 ```
 [//]: # ({x-version-update-end})
 
@@ -216,6 +216,19 @@ try {
 In [CreateTopicAndPublishMessages.java](https://github.com/googleapis/google-cloud-java/tree/master/google-cloud-examples/src/main/java/com/google/cloud/examples/pubsub/snippets/CreateTopicAndPublishMessages.java) and [CreateSubscriptionAndConsumeMessages.java](https://github.com/googleapis/google-cloud-java/tree/master/google-cloud-examples/src/main/java/com/google/cloud/examples/pubsub/snippets/CreateSubscriptionAndConsumeMessages.java) we put together all the code shown above into two programs. The programs assume that you are running on Compute Engine, App Engine Flexible or from your own desktop.
 
 
+
+
+## Samples
+
+Samples are in the [`samples/`](https://github.com/googleapis/java-pubsub/tree/master/samples) directory. The samples' `README.md`
+has instructions for running the samples.
+
+| Sample                      | Source Code                       | Try it |
+| --------------------------- | --------------------------------- | ------ |
+| Create Subscription With Dead Letter Policy Example | [source code](https://github.com/googleapis/java-pubsub/blob/master/samples/snippets/src/main/java/pubsub/CreateSubscriptionWithDeadLetterPolicyExample.java) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/java-pubsub&page=editor&open_in_editor=samples/snippets/src/main/java/pubsub/CreateSubscriptionWithDeadLetterPolicyExample.java) |
+| Receive Messages With Delivery Attempts Example | [source code](https://github.com/googleapis/java-pubsub/blob/master/samples/snippets/src/main/java/pubsub/ReceiveMessagesWithDeliveryAttemptsExample.java) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/java-pubsub&page=editor&open_in_editor=samples/snippets/src/main/java/pubsub/ReceiveMessagesWithDeliveryAttemptsExample.java) |
+| Remove Dead Letter Policy Example | [source code](https://github.com/googleapis/java-pubsub/blob/master/samples/snippets/src/main/java/pubsub/RemoveDeadLetterPolicyExample.java) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/java-pubsub&page=editor&open_in_editor=samples/snippets/src/main/java/pubsub/RemoveDeadLetterPolicyExample.java) |
+| Update Dead Letter Policy Example | [source code](https://github.com/googleapis/java-pubsub/blob/master/samples/snippets/src/main/java/pubsub/UpdateDeadLetterPolicyExample.java) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/java-pubsub&page=editor&open_in_editor=samples/snippets/src/main/java/pubsub/UpdateDeadLetterPolicyExample.java) |
 
 
 
