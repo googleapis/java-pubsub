@@ -199,6 +199,11 @@ public final class Subscription extends com.google.protobuf.GeneratedMessageV3
 
               break;
             }
+          case 120:
+            {
+              detached_ = input.readBool();
+              break;
+            }
           default:
             {
               if (!parseUnknownField(input, unknownFields, extensionRegistry, tag)) {
@@ -906,6 +911,28 @@ public final class Subscription extends com.google.protobuf.GeneratedMessageV3
     return getRetryPolicy();
   }
 
+  public static final int DETACHED_FIELD_NUMBER = 15;
+  private boolean detached_;
+  /**
+   *
+   *
+   * <pre>
+   * Indicates whether the subscription is detached from its topic. Detached
+   * subscriptions don't receive messages from their topic and don't retain any
+   * backlog. `Pull` and `StreamingPull` requests will return
+   * FAILED_PRECONDITION. If the subscription is a push subscription, pushes to
+   * the endpoint will not be made.
+   * </pre>
+   *
+   * <code>bool detached = 15;</code>
+   *
+   * @return The detached.
+   */
+  @java.lang.Override
+  public boolean getDetached() {
+    return detached_;
+  }
+
   private byte memoizedIsInitialized = -1;
 
   @java.lang.Override
@@ -954,6 +981,9 @@ public final class Subscription extends com.google.protobuf.GeneratedMessageV3
     }
     if (retryPolicy_ != null) {
       output.writeMessage(14, getRetryPolicy());
+    }
+    if (detached_ != false) {
+      output.writeBool(15, detached_);
     }
     unknownFields.writeTo(output);
   }
@@ -1009,6 +1039,9 @@ public final class Subscription extends com.google.protobuf.GeneratedMessageV3
     if (retryPolicy_ != null) {
       size += com.google.protobuf.CodedOutputStream.computeMessageSize(14, getRetryPolicy());
     }
+    if (detached_ != false) {
+      size += com.google.protobuf.CodedOutputStream.computeBoolSize(15, detached_);
+    }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
     return size;
@@ -1051,6 +1084,7 @@ public final class Subscription extends com.google.protobuf.GeneratedMessageV3
     if (hasRetryPolicy()) {
       if (!getRetryPolicy().equals(other.getRetryPolicy())) return false;
     }
+    if (getDetached() != other.getDetached()) return false;
     if (!unknownFields.equals(other.unknownFields)) return false;
     return true;
   }
@@ -1098,6 +1132,8 @@ public final class Subscription extends com.google.protobuf.GeneratedMessageV3
       hash = (37 * hash) + RETRY_POLICY_FIELD_NUMBER;
       hash = (53 * hash) + getRetryPolicy().hashCode();
     }
+    hash = (37 * hash) + DETACHED_FIELD_NUMBER;
+    hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(getDetached());
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -1305,6 +1341,8 @@ public final class Subscription extends com.google.protobuf.GeneratedMessageV3
         retryPolicy_ = null;
         retryPolicyBuilder_ = null;
       }
+      detached_ = false;
+
       return this;
     }
 
@@ -1365,6 +1403,7 @@ public final class Subscription extends com.google.protobuf.GeneratedMessageV3
       } else {
         result.retryPolicy_ = retryPolicyBuilder_.build();
       }
+      result.detached_ = detached_;
       onBuilt();
       return result;
     }
@@ -1450,6 +1489,9 @@ public final class Subscription extends com.google.protobuf.GeneratedMessageV3
       }
       if (other.hasRetryPolicy()) {
         mergeRetryPolicy(other.getRetryPolicy());
+      }
+      if (other.getDetached() != false) {
+        setDetached(other.getDetached());
       }
       this.mergeUnknownFields(other.unknownFields);
       onChanged();
@@ -3397,6 +3439,70 @@ public final class Subscription extends com.google.protobuf.GeneratedMessageV3
         retryPolicy_ = null;
       }
       return retryPolicyBuilder_;
+    }
+
+    private boolean detached_;
+    /**
+     *
+     *
+     * <pre>
+     * Indicates whether the subscription is detached from its topic. Detached
+     * subscriptions don't receive messages from their topic and don't retain any
+     * backlog. `Pull` and `StreamingPull` requests will return
+     * FAILED_PRECONDITION. If the subscription is a push subscription, pushes to
+     * the endpoint will not be made.
+     * </pre>
+     *
+     * <code>bool detached = 15;</code>
+     *
+     * @return The detached.
+     */
+    @java.lang.Override
+    public boolean getDetached() {
+      return detached_;
+    }
+    /**
+     *
+     *
+     * <pre>
+     * Indicates whether the subscription is detached from its topic. Detached
+     * subscriptions don't receive messages from their topic and don't retain any
+     * backlog. `Pull` and `StreamingPull` requests will return
+     * FAILED_PRECONDITION. If the subscription is a push subscription, pushes to
+     * the endpoint will not be made.
+     * </pre>
+     *
+     * <code>bool detached = 15;</code>
+     *
+     * @param value The detached to set.
+     * @return This builder for chaining.
+     */
+    public Builder setDetached(boolean value) {
+
+      detached_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     *
+     *
+     * <pre>
+     * Indicates whether the subscription is detached from its topic. Detached
+     * subscriptions don't receive messages from their topic and don't retain any
+     * backlog. `Pull` and `StreamingPull` requests will return
+     * FAILED_PRECONDITION. If the subscription is a push subscription, pushes to
+     * the endpoint will not be made.
+     * </pre>
+     *
+     * <code>bool detached = 15;</code>
+     *
+     * @return This builder for chaining.
+     */
+    public Builder clearDetached() {
+
+      detached_ = false;
+      onChanged();
+      return this;
     }
 
     @java.lang.Override

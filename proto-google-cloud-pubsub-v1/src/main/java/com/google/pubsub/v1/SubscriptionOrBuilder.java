@@ -491,4 +491,21 @@ public interface SubscriptionOrBuilder
    * <code>.google.pubsub.v1.RetryPolicy retry_policy = 14;</code>
    */
   com.google.pubsub.v1.RetryPolicyOrBuilder getRetryPolicyOrBuilder();
+
+  /**
+   *
+   *
+   * <pre>
+   * Indicates whether the subscription is detached from its topic. Detached
+   * subscriptions don't receive messages from their topic and don't retain any
+   * backlog. `Pull` and `StreamingPull` requests will return
+   * FAILED_PRECONDITION. If the subscription is a push subscription, pushes to
+   * the endpoint will not be made.
+   * </pre>
+   *
+   * <code>bool detached = 15;</code>
+   *
+   * @return The detached.
+   */
+  boolean getDetached();
 }
