@@ -262,6 +262,7 @@ public final class Subscription extends com.google.protobuf.GeneratedMessageV3
    *
    * @return The name.
    */
+  @java.lang.Override
   public java.lang.String getName() {
     java.lang.Object ref = name_;
     if (ref instanceof java.lang.String) {
@@ -289,6 +290,7 @@ public final class Subscription extends com.google.protobuf.GeneratedMessageV3
    *
    * @return The bytes for name.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString getNameBytes() {
     java.lang.Object ref = name_;
     if (ref instanceof java.lang.String) {
@@ -318,6 +320,7 @@ public final class Subscription extends com.google.protobuf.GeneratedMessageV3
    *
    * @return The topic.
    */
+  @java.lang.Override
   public java.lang.String getTopic() {
     java.lang.Object ref = topic_;
     if (ref instanceof java.lang.String) {
@@ -344,6 +347,7 @@ public final class Subscription extends com.google.protobuf.GeneratedMessageV3
    *
    * @return The bytes for topic.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString getTopicBytes() {
     java.lang.Object ref = topic_;
     if (ref instanceof java.lang.String) {
@@ -371,6 +375,7 @@ public final class Subscription extends com.google.protobuf.GeneratedMessageV3
    *
    * @return Whether the pushConfig field is set.
    */
+  @java.lang.Override
   public boolean hasPushConfig() {
     return pushConfig_ != null;
   }
@@ -387,6 +392,7 @@ public final class Subscription extends com.google.protobuf.GeneratedMessageV3
    *
    * @return The pushConfig.
    */
+  @java.lang.Override
   public com.google.pubsub.v1.PushConfig getPushConfig() {
     return pushConfig_ == null ? com.google.pubsub.v1.PushConfig.getDefaultInstance() : pushConfig_;
   }
@@ -401,6 +407,7 @@ public final class Subscription extends com.google.protobuf.GeneratedMessageV3
    *
    * <code>.google.pubsub.v1.PushConfig push_config = 4;</code>
    */
+  @java.lang.Override
   public com.google.pubsub.v1.PushConfigOrBuilder getPushConfigOrBuilder() {
     return getPushConfig();
   }
@@ -434,6 +441,7 @@ public final class Subscription extends com.google.protobuf.GeneratedMessageV3
    *
    * @return The ackDeadlineSeconds.
    */
+  @java.lang.Override
   public int getAckDeadlineSeconds() {
     return ackDeadlineSeconds_;
   }
@@ -457,6 +465,7 @@ public final class Subscription extends com.google.protobuf.GeneratedMessageV3
    *
    * @return The retainAckedMessages.
    */
+  @java.lang.Override
   public boolean getRetainAckedMessages() {
     return retainAckedMessages_;
   }
@@ -479,6 +488,7 @@ public final class Subscription extends com.google.protobuf.GeneratedMessageV3
    *
    * @return Whether the messageRetentionDuration field is set.
    */
+  @java.lang.Override
   public boolean hasMessageRetentionDuration() {
     return messageRetentionDuration_ != null;
   }
@@ -498,6 +508,7 @@ public final class Subscription extends com.google.protobuf.GeneratedMessageV3
    *
    * @return The messageRetentionDuration.
    */
+  @java.lang.Override
   public com.google.protobuf.Duration getMessageRetentionDuration() {
     return messageRetentionDuration_ == null
         ? com.google.protobuf.Duration.getDefaultInstance()
@@ -517,6 +528,7 @@ public final class Subscription extends com.google.protobuf.GeneratedMessageV3
    *
    * <code>.google.protobuf.Duration message_retention_duration = 8;</code>
    */
+  @java.lang.Override
   public com.google.protobuf.DurationOrBuilder getMessageRetentionDurationOrBuilder() {
     return getMessageRetentionDuration();
   }
@@ -556,6 +568,7 @@ public final class Subscription extends com.google.protobuf.GeneratedMessageV3
    *
    * <code>map&lt;string, string&gt; labels = 9;</code>
    */
+  @java.lang.Override
   public boolean containsLabels(java.lang.String key) {
     if (key == null) {
       throw new java.lang.NullPointerException();
@@ -563,6 +576,7 @@ public final class Subscription extends com.google.protobuf.GeneratedMessageV3
     return internalGetLabels().getMap().containsKey(key);
   }
   /** Use {@link #getLabelsMap()} instead. */
+  @java.lang.Override
   @java.lang.Deprecated
   public java.util.Map<java.lang.String, java.lang.String> getLabels() {
     return getLabelsMap();
@@ -577,6 +591,7 @@ public final class Subscription extends com.google.protobuf.GeneratedMessageV3
    *
    * <code>map&lt;string, string&gt; labels = 9;</code>
    */
+  @java.lang.Override
   public java.util.Map<java.lang.String, java.lang.String> getLabelsMap() {
     return internalGetLabels().getMap();
   }
@@ -590,6 +605,7 @@ public final class Subscription extends com.google.protobuf.GeneratedMessageV3
    *
    * <code>map&lt;string, string&gt; labels = 9;</code>
    */
+  @java.lang.Override
   public java.lang.String getLabelsOrDefault(java.lang.String key, java.lang.String defaultValue) {
     if (key == null) {
       throw new java.lang.NullPointerException();
@@ -607,6 +623,7 @@ public final class Subscription extends com.google.protobuf.GeneratedMessageV3
    *
    * <code>map&lt;string, string&gt; labels = 9;</code>
    */
+  @java.lang.Override
   public java.lang.String getLabelsOrThrow(java.lang.String key) {
     if (key == null) {
       throw new java.lang.NullPointerException();
@@ -637,6 +654,7 @@ public final class Subscription extends com.google.protobuf.GeneratedMessageV3
    *
    * @return The enableMessageOrdering.
    */
+  @java.lang.Override
   public boolean getEnableMessageOrdering() {
     return enableMessageOrdering_;
   }
@@ -659,6 +677,7 @@ public final class Subscription extends com.google.protobuf.GeneratedMessageV3
    *
    * @return Whether the expirationPolicy field is set.
    */
+  @java.lang.Override
   public boolean hasExpirationPolicy() {
     return expirationPolicy_ != null;
   }
@@ -678,6 +697,7 @@ public final class Subscription extends com.google.protobuf.GeneratedMessageV3
    *
    * @return The expirationPolicy.
    */
+  @java.lang.Override
   public com.google.pubsub.v1.ExpirationPolicy getExpirationPolicy() {
     return expirationPolicy_ == null
         ? com.google.pubsub.v1.ExpirationPolicy.getDefaultInstance()
@@ -697,6 +717,7 @@ public final class Subscription extends com.google.protobuf.GeneratedMessageV3
    *
    * <code>.google.pubsub.v1.ExpirationPolicy expiration_policy = 11;</code>
    */
+  @java.lang.Override
   public com.google.pubsub.v1.ExpirationPolicyOrBuilder getExpirationPolicyOrBuilder() {
     return getExpirationPolicy();
   }
@@ -720,6 +741,7 @@ public final class Subscription extends com.google.protobuf.GeneratedMessageV3
    *
    * @return The filter.
    */
+  @java.lang.Override
   public java.lang.String getFilter() {
     java.lang.Object ref = filter_;
     if (ref instanceof java.lang.String) {
@@ -748,6 +770,7 @@ public final class Subscription extends com.google.protobuf.GeneratedMessageV3
    *
    * @return The bytes for filter.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString getFilterBytes() {
     java.lang.Object ref = filter_;
     if (ref instanceof java.lang.String) {
@@ -779,6 +802,7 @@ public final class Subscription extends com.google.protobuf.GeneratedMessageV3
    *
    * @return Whether the deadLetterPolicy field is set.
    */
+  @java.lang.Override
   public boolean hasDeadLetterPolicy() {
     return deadLetterPolicy_ != null;
   }
@@ -799,6 +823,7 @@ public final class Subscription extends com.google.protobuf.GeneratedMessageV3
    *
    * @return The deadLetterPolicy.
    */
+  @java.lang.Override
   public com.google.pubsub.v1.DeadLetterPolicy getDeadLetterPolicy() {
     return deadLetterPolicy_ == null
         ? com.google.pubsub.v1.DeadLetterPolicy.getDefaultInstance()
@@ -819,6 +844,7 @@ public final class Subscription extends com.google.protobuf.GeneratedMessageV3
    *
    * <code>.google.pubsub.v1.DeadLetterPolicy dead_letter_policy = 13;</code>
    */
+  @java.lang.Override
   public com.google.pubsub.v1.DeadLetterPolicyOrBuilder getDeadLetterPolicyOrBuilder() {
     return getDeadLetterPolicy();
   }
@@ -844,6 +870,7 @@ public final class Subscription extends com.google.protobuf.GeneratedMessageV3
    *
    * @return Whether the retryPolicy field is set.
    */
+  @java.lang.Override
   public boolean hasRetryPolicy() {
     return retryPolicy_ != null;
   }
@@ -866,6 +893,7 @@ public final class Subscription extends com.google.protobuf.GeneratedMessageV3
    *
    * @return The retryPolicy.
    */
+  @java.lang.Override
   public com.google.pubsub.v1.RetryPolicy getRetryPolicy() {
     return retryPolicy_ == null
         ? com.google.pubsub.v1.RetryPolicy.getDefaultInstance()
@@ -888,6 +916,7 @@ public final class Subscription extends com.google.protobuf.GeneratedMessageV3
    *
    * <code>.google.pubsub.v1.RetryPolicy retry_policy = 14;</code>
    */
+  @java.lang.Override
   public com.google.pubsub.v1.RetryPolicyOrBuilder getRetryPolicyOrBuilder() {
     return getRetryPolicy();
   }
@@ -1956,6 +1985,7 @@ public final class Subscription extends com.google.protobuf.GeneratedMessageV3
      *
      * @return The ackDeadlineSeconds.
      */
+    @java.lang.Override
     public int getAckDeadlineSeconds() {
       return ackDeadlineSeconds_;
     }
@@ -2045,6 +2075,7 @@ public final class Subscription extends com.google.protobuf.GeneratedMessageV3
      *
      * @return The retainAckedMessages.
      */
+    @java.lang.Override
     public boolean getRetainAckedMessages() {
       return retainAckedMessages_;
     }
@@ -2362,6 +2393,7 @@ public final class Subscription extends com.google.protobuf.GeneratedMessageV3
      *
      * <code>map&lt;string, string&gt; labels = 9;</code>
      */
+    @java.lang.Override
     public boolean containsLabels(java.lang.String key) {
       if (key == null) {
         throw new java.lang.NullPointerException();
@@ -2369,6 +2401,7 @@ public final class Subscription extends com.google.protobuf.GeneratedMessageV3
       return internalGetLabels().getMap().containsKey(key);
     }
     /** Use {@link #getLabelsMap()} instead. */
+    @java.lang.Override
     @java.lang.Deprecated
     public java.util.Map<java.lang.String, java.lang.String> getLabels() {
       return getLabelsMap();
@@ -2383,6 +2416,7 @@ public final class Subscription extends com.google.protobuf.GeneratedMessageV3
      *
      * <code>map&lt;string, string&gt; labels = 9;</code>
      */
+    @java.lang.Override
     public java.util.Map<java.lang.String, java.lang.String> getLabelsMap() {
       return internalGetLabels().getMap();
     }
@@ -2396,6 +2430,7 @@ public final class Subscription extends com.google.protobuf.GeneratedMessageV3
      *
      * <code>map&lt;string, string&gt; labels = 9;</code>
      */
+    @java.lang.Override
     public java.lang.String getLabelsOrDefault(
         java.lang.String key, java.lang.String defaultValue) {
       if (key == null) {
@@ -2414,6 +2449,7 @@ public final class Subscription extends com.google.protobuf.GeneratedMessageV3
      *
      * <code>map&lt;string, string&gt; labels = 9;</code>
      */
+    @java.lang.Override
     public java.lang.String getLabelsOrThrow(java.lang.String key) {
       if (key == null) {
         throw new java.lang.NullPointerException();
@@ -2504,6 +2540,7 @@ public final class Subscription extends com.google.protobuf.GeneratedMessageV3
      *
      * @return The enableMessageOrdering.
      */
+    @java.lang.Override
     public boolean getEnableMessageOrdering() {
       return enableMessageOrdering_;
     }
