@@ -55,7 +55,6 @@ public class SubscribeWithConcurrencyControlExample {
         };
 
     Subscriber subscriber = null;
-
     try {
       // Provides an executor service for processing messages. The default `executorProvider` used
       // by the subscriber has a default thread count of 5.

@@ -144,8 +144,7 @@ public class SubscriberIT {
     publishSomeMessages(5);
     bout.reset();
     // Test subscribe with error listener.
-    SubscribeWithErrorListenerExample.subscribeWithErrorListenerExample(
-        projectId, subscriptionId, executorProvider);
+    SubscribeWithErrorListenerExample.subscribeWithErrorListenerExample(projectId, subscriptionId);
     assertThat(bout.toString()).contains("Data: Hello 0");
 
     publishSomeMessages(200);
@@ -170,6 +169,14 @@ public class SubscriberIT {
     bout.reset();
     // Test subscribe synchronously.
     SubscribeSyncExample.subscribeSyncExample(projectId, subscriptionId, 10);
+    for (int i = 0; i < 10; i++) {
+      assertThat(bout.toString()).contains("Hello " + i);
+    }
+
+    publishSomeMessages(10);
+    bout.reset();
+    // Test subscribe synchronously with lease management.
+    SubscribeSyncWithLeaseExample.subscribeSyncWithLeaseExample(projectId, subscriptionId, 10);
     for (int i = 0; i < 10; i++) {
       assertThat(bout.toString()).contains("Hello " + i);
     }

@@ -16,12 +16,13 @@
 
 package pubsub;
 
-// [START pubsub_subscriber_sync_pull]
+// [START pubsub_subscriber_sync_pull_with_lease]
 
 import com.google.cloud.pubsub.v1.stub.GrpcSubscriberStub;
 import com.google.cloud.pubsub.v1.stub.SubscriberStub;
 import com.google.cloud.pubsub.v1.stub.SubscriberStubSettings;
 import com.google.pubsub.v1.AcknowledgeRequest;
+import com.google.pubsub.v1.ModifyAckDeadlineRequest;
 import com.google.pubsub.v1.ProjectSubscriptionName;
 import com.google.pubsub.v1.PullRequest;
 import com.google.pubsub.v1.PullResponse;
@@ -30,28 +31,34 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SubscribeSyncExample {
+public class SubscribeSyncWithLeaseExample {
   public static void main(String... args) throws Exception {
     // TODO(developer): Replace these variables before running the sample.
     String projectId = "your-project-id";
     String subscriptionId = "your-subscription-id";
     Integer numOfMessages = 10;
 
-    subscribeSyncExample(projectId, subscriptionId, numOfMessages);
+    projectId = "tz-playground-bigdata";
+    subscriptionId = "uno";
+
+    subscribeSyncWithLeaseExample(projectId, subscriptionId, numOfMessages);
   }
 
-  public static void subscribeSyncExample(
-      String projectId, String subscriptionId, Integer numOfMessages) throws IOException {
+  public static void subscribeSyncWithLeaseExample(
+      String projectId, String subscriptionId, Integer numOfMessages)
+      throws IOException, InterruptedException {
     SubscriberStubSettings subscriberStubSettings =
         SubscriberStubSettings.newBuilder()
             .setTransportChannelProvider(
                 SubscriberStubSettings.defaultGrpcTransportProviderBuilder()
-                    .setMaxInboundMessageSize(20 * 1024 * 1024) // 20MB (maximum message size).
+                    .setMaxInboundMessageSize(20 << 20) // 20 MB
                     .build())
             .build();
 
     try (SubscriberStub subscriber = GrpcSubscriberStub.create(subscriberStubSettings)) {
+
       String subscriptionName = ProjectSubscriptionName.format(projectId, subscriptionId);
+
       PullRequest pullRequest =
           PullRequest.newBuilder()
               .setMaxMessages(numOfMessages)
@@ -60,12 +67,25 @@ public class SubscribeSyncExample {
 
       // Use pullCallable().futureCall to asynchronously perform this operation.
       PullResponse pullResponse = subscriber.pullCallable().call(pullRequest);
+
       List<String> ackIds = new ArrayList<>();
+
       for (ReceivedMessage message : pullResponse.getReceivedMessagesList()) {
-        // Handle received message
-        // ...
         ackIds.add(message.getAckId());
+
+        // Modify the ack deadline of each received message from the default 10 seconds to 30.
+        // This prevents the server from redelivering the message after the default 10 seconds
+        // have passed.
+        ModifyAckDeadlineRequest modifyAckDeadlineRequest =
+            ModifyAckDeadlineRequest.newBuilder()
+                .setSubscription(subscriptionName)
+                .addAckIds(message.getAckId())
+                .setAckDeadlineSeconds(30)
+                .build();
+
+        subscriber.modifyAckDeadlineCallable().call(modifyAckDeadlineRequest);
       }
+
       // Acknowledge received messages.
       AcknowledgeRequest acknowledgeRequest =
           AcknowledgeRequest.newBuilder()
@@ -79,4 +99,4 @@ public class SubscribeSyncExample {
     }
   }
 }
-// [END pubsub_subscriber_sync_pull]
+// [END pubsub_subscriber_sync_pull_with_lease]

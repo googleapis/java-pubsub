@@ -35,15 +35,10 @@ public class SubscribeWithErrorListenerExample {
     String projectId = "your-project-id";
     String subscriptionId = "your-subscription-id";
 
-    // Provides an executor service for processing messages.
-    ExecutorProvider executorProvider =
-        InstantiatingExecutorProvider.newBuilder().setExecutorThreadCount(4).build();
-
-    subscribeWithErrorListenerExample(projectId, subscriptionId, executorProvider);
+    subscribeWithErrorListenerExample(projectId, subscriptionId);
   }
 
-  public static void subscribeWithErrorListenerExample(
-      String projectId, String subscriptionId, ExecutorProvider executorProvider) {
+  public static void subscribeWithErrorListenerExample(String projectId, String subscriptionId) {
     ProjectSubscriptionName subscriptionName =
         ProjectSubscriptionName.of(projectId, subscriptionId);
 
@@ -60,8 +55,11 @@ public class SubscribeWithErrorListenerExample {
         };
 
     Subscriber subscriber = null;
-
     try {
+      // Provides an executor service for processing messages.
+      ExecutorProvider executorProvider =
+          InstantiatingExecutorProvider.newBuilder().setExecutorThreadCount(4).build();
+
       subscriber =
           Subscriber.newBuilder(subscriptionName, receiver)
               .setExecutorProvider(executorProvider)
@@ -74,7 +72,7 @@ public class SubscribeWithErrorListenerExample {
             public void failed(Subscriber.State from, Throwable failure) {
               System.out.println(failure.getStackTrace());
               if (!executorProvider.getExecutor().isShutdown()) {
-                subscribeWithErrorListenerExample(projectId, subscriptionId, executorProvider);
+                subscribeWithErrorListenerExample(projectId, subscriptionId);
               }
             }
           },
