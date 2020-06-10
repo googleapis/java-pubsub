@@ -41,18 +41,15 @@ public class SubscribeWithCustomAttributesExample {
 
     // Instantiate an asynchronous message receiver.
     MessageReceiver receiver =
-        new MessageReceiver() {
-          @Override
-          public void receiveMessage(PubsubMessage message, AckReplyConsumer consumer) {
-            // Handle incoming message, then ack the received message.
-            System.out.println("Id: " + message.getMessageId());
-            System.out.println("Data: " + message.getData().toStringUtf8());
-            // Print message attributes.
-            message
-                .getAttributesMap()
-                .forEach((key, value) -> System.out.println(key + " = " + value));
-            consumer.ack();
-          }
+        (PubsubMessage message, AckReplyConsumer consumer) -> {
+          // Handle incoming message, then ack the received message.
+          System.out.println("Id: " + message.getMessageId());
+          System.out.println("Data: " + message.getData().toStringUtf8());
+          // Print message attributes.
+          message
+              .getAttributesMap()
+              .forEach((key, value) -> System.out.println(key + " = " + value));
+          consumer.ack();
         };
 
     Subscriber subscriber = null;

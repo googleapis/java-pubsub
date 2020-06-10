@@ -42,14 +42,11 @@ public class SubscribeAsyncExample {
 
     // Instantiate an asynchronous message receiver.
     MessageReceiver receiver =
-        new MessageReceiver() {
-          @Override
-          public void receiveMessage(PubsubMessage message, AckReplyConsumer consumer) {
-            // Handle incoming message, then ack the received message.
-            System.out.println("Id: " + message.getMessageId());
-            System.out.println("Data: " + message.getData().toStringUtf8());
-            consumer.ack();
-          }
+        (PubsubMessage message, AckReplyConsumer consumer) -> {
+          // Handle incoming message, then ack the received message.
+          System.out.println("Id: " + message.getMessageId());
+          System.out.println("Data: " + message.getData().toStringUtf8());
+          consumer.ack();
         };
 
     Subscriber subscriber = null;
