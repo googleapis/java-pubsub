@@ -101,14 +101,14 @@ public class AdminIT {
     CreatePullSubscriptionExample.createPullSubscriptionExample(
         projectId, pullSubscriptionId, topicId);
     assertThat(bout.toString())
-        .contains("Create pull subscription: " + pullSubscriptionName.toString());
+        .contains("Created pull subscription: " + pullSubscriptionName.toString());
 
     bout.reset();
     // Test create push subscription.
     CreatePushSubscriptionExample.createPushSubscriptionExample(
         projectId, pushSubscriptionId, topicId, pushEndpoint);
     assertThat(bout.toString())
-        .contains("Create push subscription: " + pushSubscriptionName.toString());
+        .contains("Created push subscription: " + pushSubscriptionName.toString());
 
     bout.reset();
     // Test list topics in project.

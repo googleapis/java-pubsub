@@ -49,7 +49,7 @@ public class CreatePushSubscriptionExample {
       // Messages not successfully acknowledged within 10 seconds will get resent by the server.
       Subscription subscription =
           subscriptionAdminClient.createSubscription(subscriptionName, topicName, pushConfig, 10);
-      System.out.println("Create push subscription: " + subscription.getName());
+      System.out.println("Created push subscription: " + subscription.getName());
     }
   }
 }

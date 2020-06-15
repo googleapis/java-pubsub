@@ -46,7 +46,7 @@ public class CreatePullSubscriptionExample {
       Subscription subscription =
           subscriptionAdminClient.createSubscription(
               subscriptionName, topicName, PushConfig.getDefaultInstance(), 10);
-      System.out.println("Create pull subscription: " + subscription.getName());
+      System.out.println("Created pull subscription: " + subscription.getName());
     }
   }
 }
