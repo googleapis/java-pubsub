@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Google LLC
+ * Copyright 2016 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import com.google.pubsub.v1.ProjectSubscriptionName;
 import com.google.pubsub.v1.PushConfig;
 import com.google.pubsub.v1.Subscription;
 import com.google.pubsub.v1.TopicName;
+import java.io.IOException;
 
 public class CreatePullSubscriptionExample {
   public static void main(String... args) throws Exception {
@@ -35,7 +36,7 @@ public class CreatePullSubscriptionExample {
   }
 
   public static void createPullSubscriptionExample(
-      String projectId, String subscriptionId, String topicId) throws Exception {
+      String projectId, String subscriptionId, String topicId) throws IOException {
     try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
       TopicName topicName = TopicName.of(projectId, topicId);
       ProjectSubscriptionName subscriptionName =

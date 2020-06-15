@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Google LLC
+ * Copyright 2016 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 
 package pubsub;
+
+// [START pubsub_set_topic_policy]
 
 import com.google.cloud.pubsub.v1.TopicAdminClient;
 import com.google.iam.v1.Binding;
@@ -57,3 +59,4 @@ public class SetTopicPolicyExample {
     }
   }
 }
+// [END pubsub_set_topic_policy]
