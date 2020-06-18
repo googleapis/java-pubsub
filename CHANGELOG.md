@@ -1,5 +1,13 @@
 # Changelog
 
+### [1.107.1](https://www.github.com/googleapis/java-pubsub/compare/v1.107.0...v1.107.1) (2020-06-18)
+
+
+### Dependencies
+
+* update autovalue.version to v1.7.3 ([#244](https://www.github.com/googleapis/java-pubsub/issues/244)) ([6af6682](https://www.github.com/googleapis/java-pubsub/commit/6af6682a5c52af1b929634fe210ef342c5625fda))
+* update dependency com.google.cloud:google-cloud-shared-dependencies to v0.8.1 ([#247](https://www.github.com/googleapis/java-pubsub/issues/247)) ([fbceaed](https://www.github.com/googleapis/java-pubsub/commit/fbceaed9701811e3c818fe5696f04936ec447b96))
+
 ## [1.107.0](https://www.github.com/googleapis/java-pubsub/compare/v1.106.0...v1.107.0) (2020-06-09)
 
 
