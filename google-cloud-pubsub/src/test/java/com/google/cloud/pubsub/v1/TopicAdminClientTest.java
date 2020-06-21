@@ -15,6 +15,7 @@
  */
 package com.google.cloud.pubsub.v1;
 
+import static com.google.cloud.pubsub.v1.TopicAdminClient.ListTopicSnapshotsPagedResponse;
 import static com.google.cloud.pubsub.v1.TopicAdminClient.ListTopicSubscriptionsPagedResponse;
 import static com.google.cloud.pubsub.v1.TopicAdminClient.ListTopicsPagedResponse;
 
@@ -37,7 +38,11 @@ import com.google.protobuf.ByteString;
 import com.google.protobuf.Empty;
 import com.google.protobuf.FieldMask;
 import com.google.pubsub.v1.DeleteTopicRequest;
+import com.google.pubsub.v1.DetachSubscriptionRequest;
+import com.google.pubsub.v1.DetachSubscriptionResponse;
 import com.google.pubsub.v1.GetTopicRequest;
+import com.google.pubsub.v1.ListTopicSnapshotsRequest;
+import com.google.pubsub.v1.ListTopicSnapshotsResponse;
 import com.google.pubsub.v1.ListTopicSubscriptionsRequest;
 import com.google.pubsub.v1.ListTopicSubscriptionsResponse;
 import com.google.pubsub.v1.ListTopicsRequest;
@@ -392,6 +397,54 @@ public class TopicAdminClientTest {
 
   @Test
   @SuppressWarnings("all")
+  public void listTopicSnapshotsTest() {
+    String nextPageToken = "";
+    String snapshotsElement = "snapshotsElement1339034092";
+    List<String> snapshots = Arrays.asList(snapshotsElement);
+    ListTopicSnapshotsResponse expectedResponse =
+        ListTopicSnapshotsResponse.newBuilder()
+            .setNextPageToken(nextPageToken)
+            .addAllSnapshots(snapshots)
+            .build();
+    mockPublisher.addResponse(expectedResponse);
+
+    TopicName topic = TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]");
+
+    ListTopicSnapshotsPagedResponse pagedListResponse = client.listTopicSnapshots(topic);
+
+    List<String> resources = Lists.newArrayList(pagedListResponse.iterateAll());
+    Assert.assertEquals(1, resources.size());
+    Assert.assertEquals(expectedResponse.getSnapshotsList().get(0), resources.get(0));
+
+    List<AbstractMessage> actualRequests = mockPublisher.getRequests();
+    Assert.assertEquals(1, actualRequests.size());
+    ListTopicSnapshotsRequest actualRequest = (ListTopicSnapshotsRequest) actualRequests.get(0);
+
+    Assert.assertEquals(topic, TopicName.parse(actualRequest.getTopic()));
+    Assert.assertTrue(
+        channelProvider.isHeaderSent(
+            ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
+            GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
+  }
+
+  @Test
+  @SuppressWarnings("all")
+  public void listTopicSnapshotsExceptionTest() throws Exception {
+    StatusRuntimeException exception = new StatusRuntimeException(Status.INVALID_ARGUMENT);
+    mockPublisher.addException(exception);
+
+    try {
+      TopicName topic = TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]");
+
+      client.listTopicSnapshots(topic);
+      Assert.fail("No exception raised");
+    } catch (InvalidArgumentException e) {
+      // Expected exception
+    }
+  }
+
+  @Test
+  @SuppressWarnings("all")
   public void deleteTopicTest() {
     Empty expectedResponse = Empty.newBuilder().build();
     mockPublisher.addResponse(expectedResponse);
@@ -566,6 +619,51 @@ public class TopicAdminClientTest {
               .build();
 
       client.testIamPermissions(request);
+      Assert.fail("No exception raised");
+    } catch (InvalidArgumentException e) {
+      // Expected exception
+    }
+  }
+
+  @Test
+  @SuppressWarnings("all")
+  public void detachSubscriptionTest() {
+    DetachSubscriptionResponse expectedResponse = DetachSubscriptionResponse.newBuilder().build();
+    mockPublisher.addResponse(expectedResponse);
+
+    ProjectSubscriptionName subscription =
+        ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
+    DetachSubscriptionRequest request =
+        DetachSubscriptionRequest.newBuilder().setSubscription(subscription.toString()).build();
+
+    DetachSubscriptionResponse actualResponse = client.detachSubscription(request);
+    Assert.assertEquals(expectedResponse, actualResponse);
+
+    List<AbstractMessage> actualRequests = mockPublisher.getRequests();
+    Assert.assertEquals(1, actualRequests.size());
+    DetachSubscriptionRequest actualRequest = (DetachSubscriptionRequest) actualRequests.get(0);
+
+    Assert.assertEquals(
+        subscription, ProjectSubscriptionName.parse(actualRequest.getSubscription()));
+    Assert.assertTrue(
+        channelProvider.isHeaderSent(
+            ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
+            GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
+  }
+
+  @Test
+  @SuppressWarnings("all")
+  public void detachSubscriptionExceptionTest() throws Exception {
+    StatusRuntimeException exception = new StatusRuntimeException(Status.INVALID_ARGUMENT);
+    mockPublisher.addException(exception);
+
+    try {
+      ProjectSubscriptionName subscription =
+          ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
+      DetachSubscriptionRequest request =
+          DetachSubscriptionRequest.newBuilder().setSubscription(subscription.toString()).build();
+
+      client.detachSubscription(request);
       Assert.fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception

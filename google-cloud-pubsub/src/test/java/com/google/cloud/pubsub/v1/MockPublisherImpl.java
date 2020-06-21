@@ -19,7 +19,11 @@ import com.google.api.core.BetaApi;
 import com.google.protobuf.AbstractMessage;
 import com.google.protobuf.Empty;
 import com.google.pubsub.v1.DeleteTopicRequest;
+import com.google.pubsub.v1.DetachSubscriptionRequest;
+import com.google.pubsub.v1.DetachSubscriptionResponse;
 import com.google.pubsub.v1.GetTopicRequest;
+import com.google.pubsub.v1.ListTopicSnapshotsRequest;
+import com.google.pubsub.v1.ListTopicSnapshotsResponse;
 import com.google.pubsub.v1.ListTopicSubscriptionsRequest;
 import com.google.pubsub.v1.ListTopicSubscriptionsResponse;
 import com.google.pubsub.v1.ListTopicsRequest;
@@ -155,11 +159,43 @@ public class MockPublisherImpl extends PublisherImplBase {
   }
 
   @Override
+  public void listTopicSnapshots(
+      ListTopicSnapshotsRequest request,
+      StreamObserver<ListTopicSnapshotsResponse> responseObserver) {
+    Object response = responses.remove();
+    if (response instanceof ListTopicSnapshotsResponse) {
+      requests.add(request);
+      responseObserver.onNext((ListTopicSnapshotsResponse) response);
+      responseObserver.onCompleted();
+    } else if (response instanceof Exception) {
+      responseObserver.onError((Exception) response);
+    } else {
+      responseObserver.onError(new IllegalArgumentException("Unrecognized response type"));
+    }
+  }
+
+  @Override
   public void deleteTopic(DeleteTopicRequest request, StreamObserver<Empty> responseObserver) {
     Object response = responses.remove();
     if (response instanceof Empty) {
       requests.add(request);
       responseObserver.onNext((Empty) response);
+      responseObserver.onCompleted();
+    } else if (response instanceof Exception) {
+      responseObserver.onError((Exception) response);
+    } else {
+      responseObserver.onError(new IllegalArgumentException("Unrecognized response type"));
+    }
+  }
+
+  @Override
+  public void detachSubscription(
+      DetachSubscriptionRequest request,
+      StreamObserver<DetachSubscriptionResponse> responseObserver) {
+    Object response = responses.remove();
+    if (response instanceof DetachSubscriptionResponse) {
+      requests.add(request);
+      responseObserver.onNext((DetachSubscriptionResponse) response);
       responseObserver.onCompleted();
     } else if (response instanceof Exception) {
       responseObserver.onError((Exception) response);

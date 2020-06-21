@@ -15,6 +15,7 @@
  */
 package com.google.cloud.pubsub.v1.stub;
 
+import static com.google.cloud.pubsub.v1.TopicAdminClient.ListTopicSnapshotsPagedResponse;
 import static com.google.cloud.pubsub.v1.TopicAdminClient.ListTopicSubscriptionsPagedResponse;
 import static com.google.cloud.pubsub.v1.TopicAdminClient.ListTopicsPagedResponse;
 
@@ -34,7 +35,11 @@ import com.google.iam.v1.TestIamPermissionsRequest;
 import com.google.iam.v1.TestIamPermissionsResponse;
 import com.google.protobuf.Empty;
 import com.google.pubsub.v1.DeleteTopicRequest;
+import com.google.pubsub.v1.DetachSubscriptionRequest;
+import com.google.pubsub.v1.DetachSubscriptionResponse;
 import com.google.pubsub.v1.GetTopicRequest;
+import com.google.pubsub.v1.ListTopicSnapshotsRequest;
+import com.google.pubsub.v1.ListTopicSnapshotsResponse;
 import com.google.pubsub.v1.ListTopicSubscriptionsRequest;
 import com.google.pubsub.v1.ListTopicSubscriptionsResponse;
 import com.google.pubsub.v1.ListTopicsRequest;
@@ -108,6 +113,16 @@ public class GrpcPublisherStub extends PublisherStub {
               .setResponseMarshaller(
                   ProtoUtils.marshaller(ListTopicSubscriptionsResponse.getDefaultInstance()))
               .build();
+  private static final MethodDescriptor<ListTopicSnapshotsRequest, ListTopicSnapshotsResponse>
+      listTopicSnapshotsMethodDescriptor =
+          MethodDescriptor.<ListTopicSnapshotsRequest, ListTopicSnapshotsResponse>newBuilder()
+              .setType(MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName("google.pubsub.v1.Publisher/ListTopicSnapshots")
+              .setRequestMarshaller(
+                  ProtoUtils.marshaller(ListTopicSnapshotsRequest.getDefaultInstance()))
+              .setResponseMarshaller(
+                  ProtoUtils.marshaller(ListTopicSnapshotsResponse.getDefaultInstance()))
+              .build();
   private static final MethodDescriptor<DeleteTopicRequest, Empty> deleteTopicMethodDescriptor =
       MethodDescriptor.<DeleteTopicRequest, Empty>newBuilder()
           .setType(MethodDescriptor.MethodType.UNARY)
@@ -139,6 +154,16 @@ public class GrpcPublisherStub extends PublisherStub {
               .setResponseMarshaller(
                   ProtoUtils.marshaller(TestIamPermissionsResponse.getDefaultInstance()))
               .build();
+  private static final MethodDescriptor<DetachSubscriptionRequest, DetachSubscriptionResponse>
+      detachSubscriptionMethodDescriptor =
+          MethodDescriptor.<DetachSubscriptionRequest, DetachSubscriptionResponse>newBuilder()
+              .setType(MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName("google.pubsub.v1.Publisher/DetachSubscription")
+              .setRequestMarshaller(
+                  ProtoUtils.marshaller(DetachSubscriptionRequest.getDefaultInstance()))
+              .setResponseMarshaller(
+                  ProtoUtils.marshaller(DetachSubscriptionResponse.getDefaultInstance()))
+              .build();
 
   private final BackgroundResource backgroundResources;
 
@@ -152,11 +177,17 @@ public class GrpcPublisherStub extends PublisherStub {
       listTopicSubscriptionsCallable;
   private final UnaryCallable<ListTopicSubscriptionsRequest, ListTopicSubscriptionsPagedResponse>
       listTopicSubscriptionsPagedCallable;
+  private final UnaryCallable<ListTopicSnapshotsRequest, ListTopicSnapshotsResponse>
+      listTopicSnapshotsCallable;
+  private final UnaryCallable<ListTopicSnapshotsRequest, ListTopicSnapshotsPagedResponse>
+      listTopicSnapshotsPagedCallable;
   private final UnaryCallable<DeleteTopicRequest, Empty> deleteTopicCallable;
   private final UnaryCallable<SetIamPolicyRequest, Policy> setIamPolicyCallable;
   private final UnaryCallable<GetIamPolicyRequest, Policy> getIamPolicyCallable;
   private final UnaryCallable<TestIamPermissionsRequest, TestIamPermissionsResponse>
       testIamPermissionsCallable;
+  private final UnaryCallable<DetachSubscriptionRequest, DetachSubscriptionResponse>
+      detachSubscriptionCallable;
 
   private final GrpcStubCallableFactory callableFactory;
 
@@ -276,6 +307,20 @@ public class GrpcPublisherStub extends PublisherStub {
                       }
                     })
                 .build();
+    GrpcCallSettings<ListTopicSnapshotsRequest, ListTopicSnapshotsResponse>
+        listTopicSnapshotsTransportSettings =
+            GrpcCallSettings.<ListTopicSnapshotsRequest, ListTopicSnapshotsResponse>newBuilder()
+                .setMethodDescriptor(listTopicSnapshotsMethodDescriptor)
+                .setParamsExtractor(
+                    new RequestParamsExtractor<ListTopicSnapshotsRequest>() {
+                      @Override
+                      public Map<String, String> extract(ListTopicSnapshotsRequest request) {
+                        ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
+                        params.put("topic", String.valueOf(request.getTopic()));
+                        return params.build();
+                      }
+                    })
+                .build();
     GrpcCallSettings<DeleteTopicRequest, Empty> deleteTopicTransportSettings =
         GrpcCallSettings.<DeleteTopicRequest, Empty>newBuilder()
             .setMethodDescriptor(deleteTopicMethodDescriptor)
@@ -329,6 +374,20 @@ public class GrpcPublisherStub extends PublisherStub {
                       }
                     })
                 .build();
+    GrpcCallSettings<DetachSubscriptionRequest, DetachSubscriptionResponse>
+        detachSubscriptionTransportSettings =
+            GrpcCallSettings.<DetachSubscriptionRequest, DetachSubscriptionResponse>newBuilder()
+                .setMethodDescriptor(detachSubscriptionMethodDescriptor)
+                .setParamsExtractor(
+                    new RequestParamsExtractor<DetachSubscriptionRequest>() {
+                      @Override
+                      public Map<String, String> extract(DetachSubscriptionRequest request) {
+                        ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
+                        params.put("subscription", String.valueOf(request.getSubscription()));
+                        return params.build();
+                      }
+                    })
+                .build();
 
     this.createTopicCallable =
         callableFactory.createUnaryCallable(
@@ -358,6 +417,16 @@ public class GrpcPublisherStub extends PublisherStub {
             listTopicSubscriptionsTransportSettings,
             settings.listTopicSubscriptionsSettings(),
             clientContext);
+    this.listTopicSnapshotsCallable =
+        callableFactory.createUnaryCallable(
+            listTopicSnapshotsTransportSettings,
+            settings.listTopicSnapshotsSettings(),
+            clientContext);
+    this.listTopicSnapshotsPagedCallable =
+        callableFactory.createPagedCallable(
+            listTopicSnapshotsTransportSettings,
+            settings.listTopicSnapshotsSettings(),
+            clientContext);
     this.deleteTopicCallable =
         callableFactory.createUnaryCallable(
             deleteTopicTransportSettings, settings.deleteTopicSettings(), clientContext);
@@ -371,6 +440,11 @@ public class GrpcPublisherStub extends PublisherStub {
         callableFactory.createUnaryCallable(
             testIamPermissionsTransportSettings,
             settings.testIamPermissionsSettings(),
+            clientContext);
+    this.detachSubscriptionCallable =
+        callableFactory.createUnaryCallable(
+            detachSubscriptionTransportSettings,
+            settings.detachSubscriptionSettings(),
             clientContext);
 
     backgroundResources = new BackgroundResourceAggregation(clientContext.getBackgroundResources());
@@ -410,6 +484,16 @@ public class GrpcPublisherStub extends PublisherStub {
     return listTopicSubscriptionsCallable;
   }
 
+  public UnaryCallable<ListTopicSnapshotsRequest, ListTopicSnapshotsPagedResponse>
+      listTopicSnapshotsPagedCallable() {
+    return listTopicSnapshotsPagedCallable;
+  }
+
+  public UnaryCallable<ListTopicSnapshotsRequest, ListTopicSnapshotsResponse>
+      listTopicSnapshotsCallable() {
+    return listTopicSnapshotsCallable;
+  }
+
   public UnaryCallable<DeleteTopicRequest, Empty> deleteTopicCallable() {
     return deleteTopicCallable;
   }
@@ -425,6 +509,11 @@ public class GrpcPublisherStub extends PublisherStub {
   public UnaryCallable<TestIamPermissionsRequest, TestIamPermissionsResponse>
       testIamPermissionsCallable() {
     return testIamPermissionsCallable;
+  }
+
+  public UnaryCallable<DetachSubscriptionRequest, DetachSubscriptionResponse>
+      detachSubscriptionCallable() {
+    return detachSubscriptionCallable;
   }
 
   @Override

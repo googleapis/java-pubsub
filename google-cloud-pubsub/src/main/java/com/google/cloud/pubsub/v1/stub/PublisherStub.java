@@ -15,6 +15,7 @@
  */
 package com.google.cloud.pubsub.v1.stub;
 
+import static com.google.cloud.pubsub.v1.TopicAdminClient.ListTopicSnapshotsPagedResponse;
 import static com.google.cloud.pubsub.v1.TopicAdminClient.ListTopicSubscriptionsPagedResponse;
 import static com.google.cloud.pubsub.v1.TopicAdminClient.ListTopicsPagedResponse;
 
@@ -28,7 +29,11 @@ import com.google.iam.v1.TestIamPermissionsRequest;
 import com.google.iam.v1.TestIamPermissionsResponse;
 import com.google.protobuf.Empty;
 import com.google.pubsub.v1.DeleteTopicRequest;
+import com.google.pubsub.v1.DetachSubscriptionRequest;
+import com.google.pubsub.v1.DetachSubscriptionResponse;
 import com.google.pubsub.v1.GetTopicRequest;
+import com.google.pubsub.v1.ListTopicSnapshotsRequest;
+import com.google.pubsub.v1.ListTopicSnapshotsResponse;
 import com.google.pubsub.v1.ListTopicSubscriptionsRequest;
 import com.google.pubsub.v1.ListTopicSubscriptionsResponse;
 import com.google.pubsub.v1.ListTopicsRequest;
@@ -84,6 +89,16 @@ public abstract class PublisherStub implements BackgroundResource {
     throw new UnsupportedOperationException("Not implemented: listTopicSubscriptionsCallable()");
   }
 
+  public UnaryCallable<ListTopicSnapshotsRequest, ListTopicSnapshotsPagedResponse>
+      listTopicSnapshotsPagedCallable() {
+    throw new UnsupportedOperationException("Not implemented: listTopicSnapshotsPagedCallable()");
+  }
+
+  public UnaryCallable<ListTopicSnapshotsRequest, ListTopicSnapshotsResponse>
+      listTopicSnapshotsCallable() {
+    throw new UnsupportedOperationException("Not implemented: listTopicSnapshotsCallable()");
+  }
+
   public UnaryCallable<DeleteTopicRequest, Empty> deleteTopicCallable() {
     throw new UnsupportedOperationException("Not implemented: deleteTopicCallable()");
   }
@@ -99,6 +114,11 @@ public abstract class PublisherStub implements BackgroundResource {
   public UnaryCallable<TestIamPermissionsRequest, TestIamPermissionsResponse>
       testIamPermissionsCallable() {
     throw new UnsupportedOperationException("Not implemented: testIamPermissionsCallable()");
+  }
+
+  public UnaryCallable<DetachSubscriptionRequest, DetachSubscriptionResponse>
+      detachSubscriptionCallable() {
+    throw new UnsupportedOperationException("Not implemented: detachSubscriptionCallable()");
   }
 
   @Override

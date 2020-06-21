@@ -133,7 +133,7 @@ public final class ListTopicSubscriptionsResponse extends com.google.protobuf.Ge
    *
    *
    * <pre>
-   * The names of the subscriptions that match the request.
+   * The names of subscriptions attached to the topic specified in the request.
    * </pre>
    *
    * <code>repeated string subscriptions = 1 [(.google.api.resource_reference) = { ... }</code>
@@ -147,7 +147,7 @@ public final class ListTopicSubscriptionsResponse extends com.google.protobuf.Ge
    *
    *
    * <pre>
-   * The names of the subscriptions that match the request.
+   * The names of subscriptions attached to the topic specified in the request.
    * </pre>
    *
    * <code>repeated string subscriptions = 1 [(.google.api.resource_reference) = { ... }</code>
@@ -161,7 +161,7 @@ public final class ListTopicSubscriptionsResponse extends com.google.protobuf.Ge
    *
    *
    * <pre>
-   * The names of the subscriptions that match the request.
+   * The names of subscriptions attached to the topic specified in the request.
    * </pre>
    *
    * <code>repeated string subscriptions = 1 [(.google.api.resource_reference) = { ... }</code>
@@ -176,7 +176,7 @@ public final class ListTopicSubscriptionsResponse extends com.google.protobuf.Ge
    *
    *
    * <pre>
-   * The names of the subscriptions that match the request.
+   * The names of subscriptions attached to the topic specified in the request.
    * </pre>
    *
    * <code>repeated string subscriptions = 1 [(.google.api.resource_reference) = { ... }</code>
@@ -203,6 +203,7 @@ public final class ListTopicSubscriptionsResponse extends com.google.protobuf.Ge
    *
    * @return The nextPageToken.
    */
+  @java.lang.Override
   public java.lang.String getNextPageToken() {
     java.lang.Object ref = nextPageToken_;
     if (ref instanceof java.lang.String) {
@@ -227,6 +228,7 @@ public final class ListTopicSubscriptionsResponse extends com.google.protobuf.Ge
    *
    * @return The bytes for nextPageToken.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString getNextPageTokenBytes() {
     java.lang.Object ref = nextPageToken_;
     if (ref instanceof java.lang.String) {
@@ -606,7 +608,7 @@ public final class ListTopicSubscriptionsResponse extends com.google.protobuf.Ge
      *
      *
      * <pre>
-     * The names of the subscriptions that match the request.
+     * The names of subscriptions attached to the topic specified in the request.
      * </pre>
      *
      * <code>repeated string subscriptions = 1 [(.google.api.resource_reference) = { ... }</code>
@@ -620,7 +622,7 @@ public final class ListTopicSubscriptionsResponse extends com.google.protobuf.Ge
      *
      *
      * <pre>
-     * The names of the subscriptions that match the request.
+     * The names of subscriptions attached to the topic specified in the request.
      * </pre>
      *
      * <code>repeated string subscriptions = 1 [(.google.api.resource_reference) = { ... }</code>
@@ -634,7 +636,7 @@ public final class ListTopicSubscriptionsResponse extends com.google.protobuf.Ge
      *
      *
      * <pre>
-     * The names of the subscriptions that match the request.
+     * The names of subscriptions attached to the topic specified in the request.
      * </pre>
      *
      * <code>repeated string subscriptions = 1 [(.google.api.resource_reference) = { ... }</code>
@@ -649,7 +651,7 @@ public final class ListTopicSubscriptionsResponse extends com.google.protobuf.Ge
      *
      *
      * <pre>
-     * The names of the subscriptions that match the request.
+     * The names of subscriptions attached to the topic specified in the request.
      * </pre>
      *
      * <code>repeated string subscriptions = 1 [(.google.api.resource_reference) = { ... }</code>
@@ -664,7 +666,7 @@ public final class ListTopicSubscriptionsResponse extends com.google.protobuf.Ge
      *
      *
      * <pre>
-     * The names of the subscriptions that match the request.
+     * The names of subscriptions attached to the topic specified in the request.
      * </pre>
      *
      * <code>repeated string subscriptions = 1 [(.google.api.resource_reference) = { ... }</code>
@@ -686,7 +688,7 @@ public final class ListTopicSubscriptionsResponse extends com.google.protobuf.Ge
      *
      *
      * <pre>
-     * The names of the subscriptions that match the request.
+     * The names of subscriptions attached to the topic specified in the request.
      * </pre>
      *
      * <code>repeated string subscriptions = 1 [(.google.api.resource_reference) = { ... }</code>
@@ -707,7 +709,7 @@ public final class ListTopicSubscriptionsResponse extends com.google.protobuf.Ge
      *
      *
      * <pre>
-     * The names of the subscriptions that match the request.
+     * The names of subscriptions attached to the topic specified in the request.
      * </pre>
      *
      * <code>repeated string subscriptions = 1 [(.google.api.resource_reference) = { ... }</code>
@@ -725,7 +727,7 @@ public final class ListTopicSubscriptionsResponse extends com.google.protobuf.Ge
      *
      *
      * <pre>
-     * The names of the subscriptions that match the request.
+     * The names of subscriptions attached to the topic specified in the request.
      * </pre>
      *
      * <code>repeated string subscriptions = 1 [(.google.api.resource_reference) = { ... }</code>
@@ -742,7 +744,7 @@ public final class ListTopicSubscriptionsResponse extends com.google.protobuf.Ge
      *
      *
      * <pre>
-     * The names of the subscriptions that match the request.
+     * The names of subscriptions attached to the topic specified in the request.
      * </pre>
      *
      * <code>repeated string subscriptions = 1 [(.google.api.resource_reference) = { ... }</code>
