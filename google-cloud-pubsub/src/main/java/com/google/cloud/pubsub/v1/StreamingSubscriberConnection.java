@@ -24,6 +24,7 @@ import com.google.api.core.ApiFuture;
 import com.google.api.core.ApiFutureCallback;
 import com.google.api.core.ApiFutures;
 import com.google.api.core.SettableApiFuture;
+import com.google.api.gax.batching.FlowControlSettings;
 import com.google.api.gax.batching.FlowController;
 import com.google.api.gax.core.Distribution;
 import com.google.api.gax.grpc.GrpcCallContext;
@@ -71,6 +72,8 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
   private final ScheduledExecutorService systemExecutor;
   private final MessageDispatcher messageDispatcher;
 
+  private final FlowControlSettings flowControlSettings;
+
   private final AtomicLong channelReconnectBackoffMillis =
       new AtomicLong(INITIAL_CHANNEL_RECONNECT_BACKOFF.toMillis());
   private final Waiter ackOperationsWaiter = new Waiter();
@@ -90,9 +93,11 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
       MessageReceiver receiver,
       Duration ackExpirationPadding,
       Duration maxAckExtensionPeriod,
+      Duration maxDurationPerAckExtension,
       Distribution ackLatencyDistribution,
       SubscriberStub stub,
       int channelAffinity,
+      FlowControlSettings flowControlSettings,
       FlowController flowController,
       ScheduledExecutorService executor,
       ScheduledExecutorService systemExecutor,
@@ -107,11 +112,13 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
             this,
             ackExpirationPadding,
             maxAckExtensionPeriod,
+            maxDurationPerAckExtension,
             ackLatencyDistribution,
             flowController,
             executor,
             systemExecutor,
             clock);
+    this.flowControlSettings = flowControlSettings;
   }
 
   @Override
@@ -209,6 +216,8 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
             .setSubscription(subscription)
             .setStreamAckDeadlineSeconds(60)
             .setClientId(clientId)
+            .setMaxOutstandingMessages(flowControlSettings.getMaxOutstandingElementCount())
+            .setMaxOutstandingBytes(flowControlSettings.getMaxOutstandingRequestBytes())
             .build());
 
     /**

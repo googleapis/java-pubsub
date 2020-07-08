@@ -139,6 +139,16 @@ public final class StreamingPullRequest extends com.google.protobuf.GeneratedMes
               clientId_ = s;
               break;
             }
+          case 56:
+            {
+              maxOutstandingMessages_ = input.readInt64();
+              break;
+            }
+          case 64:
+            {
+              maxOutstandingBytes_ = input.readInt64();
+              break;
+            }
           default:
             {
               if (!parseUnknownField(input, unknownFields, extensionRegistry, tag)) {
@@ -200,6 +210,7 @@ public final class StreamingPullRequest extends com.google.protobuf.GeneratedMes
    *
    * @return The subscription.
    */
+  @java.lang.Override
   public java.lang.String getSubscription() {
     java.lang.Object ref = subscription_;
     if (ref instanceof java.lang.String) {
@@ -227,6 +238,7 @@ public final class StreamingPullRequest extends com.google.protobuf.GeneratedMes
    *
    * @return The bytes for subscription.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString getSubscriptionBytes() {
     java.lang.Object ref = subscription_;
     if (ref instanceof java.lang.String) {
@@ -339,6 +351,7 @@ public final class StreamingPullRequest extends com.google.protobuf.GeneratedMes
    *
    * @return A list containing the modifyDeadlineSeconds.
    */
+  @java.lang.Override
   public java.util.List<java.lang.Integer> getModifyDeadlineSecondsList() {
     return modifyDeadlineSeconds_;
   }
@@ -487,6 +500,7 @@ public final class StreamingPullRequest extends com.google.protobuf.GeneratedMes
    *
    * @return The streamAckDeadlineSeconds.
    */
+  @java.lang.Override
   public int getStreamAckDeadlineSeconds() {
     return streamAckDeadlineSeconds_;
   }
@@ -509,6 +523,7 @@ public final class StreamingPullRequest extends com.google.protobuf.GeneratedMes
    *
    * @return The clientId.
    */
+  @java.lang.Override
   public java.lang.String getClientId() {
     java.lang.Object ref = clientId_;
     if (ref instanceof java.lang.String) {
@@ -536,6 +551,7 @@ public final class StreamingPullRequest extends com.google.protobuf.GeneratedMes
    *
    * @return The bytes for clientId.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString getClientIdBytes() {
     java.lang.Object ref = clientId_;
     if (ref instanceof java.lang.String) {
@@ -546,6 +562,58 @@ public final class StreamingPullRequest extends com.google.protobuf.GeneratedMes
     } else {
       return (com.google.protobuf.ByteString) ref;
     }
+  }
+
+  public static final int MAX_OUTSTANDING_MESSAGES_FIELD_NUMBER = 7;
+  private long maxOutstandingMessages_;
+  /**
+   *
+   *
+   * <pre>
+   * Flow control settings for the maximum number of outstanding messages. When
+   * there are `max_outstanding_messages` or more currently sent to the
+   * streaming pull client that have not yet been acked or nacked, the server
+   * stops sending more messages. The sending of messages resumes once the
+   * number of outstanding messages is less than this value. If the value is
+   * &lt;= 0, there is no limit to the number of outstanding messages. This
+   * property can only be set on the initial StreamingPullRequest. If it is set
+   * on a subsequent request, the stream will be aborted with status
+   * `INVALID_ARGUMENT`.
+   * </pre>
+   *
+   * <code>int64 max_outstanding_messages = 7;</code>
+   *
+   * @return The maxOutstandingMessages.
+   */
+  @java.lang.Override
+  public long getMaxOutstandingMessages() {
+    return maxOutstandingMessages_;
+  }
+
+  public static final int MAX_OUTSTANDING_BYTES_FIELD_NUMBER = 8;
+  private long maxOutstandingBytes_;
+  /**
+   *
+   *
+   * <pre>
+   * Flow control settings for the maximum number of outstanding bytes. When
+   * there are `max_outstanding_bytes` or more worth of messages currently sent
+   * to the streaming pull client that have not yet been acked or nacked, the
+   * server will stop sending more messages. The sending of messages resumes
+   * once the number of outstanding bytes is less than this value. If the value
+   * is &lt;= 0, there is no limit to the number of outstanding bytes. This
+   * property can only be set on the initial StreamingPullRequest. If it is set
+   * on a subsequent request, the stream will be aborted with status
+   * `INVALID_ARGUMENT`.
+   * </pre>
+   *
+   * <code>int64 max_outstanding_bytes = 8;</code>
+   *
+   * @return The maxOutstandingBytes.
+   */
+  @java.lang.Override
+  public long getMaxOutstandingBytes() {
+    return maxOutstandingBytes_;
   }
 
   private byte memoizedIsInitialized = -1;
@@ -585,6 +653,12 @@ public final class StreamingPullRequest extends com.google.protobuf.GeneratedMes
     }
     if (!getClientIdBytes().isEmpty()) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 6, clientId_);
+    }
+    if (maxOutstandingMessages_ != 0L) {
+      output.writeInt64(7, maxOutstandingMessages_);
+    }
+    if (maxOutstandingBytes_ != 0L) {
+      output.writeInt64(8, maxOutstandingBytes_);
     }
     unknownFields.writeTo(output);
   }
@@ -634,6 +708,12 @@ public final class StreamingPullRequest extends com.google.protobuf.GeneratedMes
     if (!getClientIdBytes().isEmpty()) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(6, clientId_);
     }
+    if (maxOutstandingMessages_ != 0L) {
+      size += com.google.protobuf.CodedOutputStream.computeInt64Size(7, maxOutstandingMessages_);
+    }
+    if (maxOutstandingBytes_ != 0L) {
+      size += com.google.protobuf.CodedOutputStream.computeInt64Size(8, maxOutstandingBytes_);
+    }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
     return size;
@@ -656,6 +736,8 @@ public final class StreamingPullRequest extends com.google.protobuf.GeneratedMes
     if (!getModifyDeadlineAckIdsList().equals(other.getModifyDeadlineAckIdsList())) return false;
     if (getStreamAckDeadlineSeconds() != other.getStreamAckDeadlineSeconds()) return false;
     if (!getClientId().equals(other.getClientId())) return false;
+    if (getMaxOutstandingMessages() != other.getMaxOutstandingMessages()) return false;
+    if (getMaxOutstandingBytes() != other.getMaxOutstandingBytes()) return false;
     if (!unknownFields.equals(other.unknownFields)) return false;
     return true;
   }
@@ -685,6 +767,10 @@ public final class StreamingPullRequest extends com.google.protobuf.GeneratedMes
     hash = (53 * hash) + getStreamAckDeadlineSeconds();
     hash = (37 * hash) + CLIENT_ID_FIELD_NUMBER;
     hash = (53 * hash) + getClientId().hashCode();
+    hash = (37 * hash) + MAX_OUTSTANDING_MESSAGES_FIELD_NUMBER;
+    hash = (53 * hash) + com.google.protobuf.Internal.hashLong(getMaxOutstandingMessages());
+    hash = (37 * hash) + MAX_OUTSTANDING_BYTES_FIELD_NUMBER;
+    hash = (53 * hash) + com.google.protobuf.Internal.hashLong(getMaxOutstandingBytes());
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -844,6 +930,10 @@ public final class StreamingPullRequest extends com.google.protobuf.GeneratedMes
 
       clientId_ = "";
 
+      maxOutstandingMessages_ = 0L;
+
+      maxOutstandingBytes_ = 0L;
+
       return this;
     }
 
@@ -890,6 +980,8 @@ public final class StreamingPullRequest extends com.google.protobuf.GeneratedMes
       result.modifyDeadlineAckIds_ = modifyDeadlineAckIds_;
       result.streamAckDeadlineSeconds_ = streamAckDeadlineSeconds_;
       result.clientId_ = clientId_;
+      result.maxOutstandingMessages_ = maxOutstandingMessages_;
+      result.maxOutstandingBytes_ = maxOutstandingBytes_;
       onBuilt();
       return result;
     }
@@ -979,6 +1071,12 @@ public final class StreamingPullRequest extends com.google.protobuf.GeneratedMes
       if (!other.getClientId().isEmpty()) {
         clientId_ = other.clientId_;
         onChanged();
+      }
+      if (other.getMaxOutstandingMessages() != 0L) {
+        setMaxOutstandingMessages(other.getMaxOutstandingMessages());
+      }
+      if (other.getMaxOutstandingBytes() != 0L) {
+        setMaxOutstandingBytes(other.getMaxOutstandingBytes());
       }
       this.mergeUnknownFields(other.unknownFields);
       onChanged();
@@ -1762,6 +1860,7 @@ public final class StreamingPullRequest extends com.google.protobuf.GeneratedMes
      *
      * @return The streamAckDeadlineSeconds.
      */
+    @java.lang.Override
     public int getStreamAckDeadlineSeconds() {
       return streamAckDeadlineSeconds_;
     }
@@ -1934,6 +2033,158 @@ public final class StreamingPullRequest extends com.google.protobuf.GeneratedMes
       checkByteStringIsUtf8(value);
 
       clientId_ = value;
+      onChanged();
+      return this;
+    }
+
+    private long maxOutstandingMessages_;
+    /**
+     *
+     *
+     * <pre>
+     * Flow control settings for the maximum number of outstanding messages. When
+     * there are `max_outstanding_messages` or more currently sent to the
+     * streaming pull client that have not yet been acked or nacked, the server
+     * stops sending more messages. The sending of messages resumes once the
+     * number of outstanding messages is less than this value. If the value is
+     * &lt;= 0, there is no limit to the number of outstanding messages. This
+     * property can only be set on the initial StreamingPullRequest. If it is set
+     * on a subsequent request, the stream will be aborted with status
+     * `INVALID_ARGUMENT`.
+     * </pre>
+     *
+     * <code>int64 max_outstanding_messages = 7;</code>
+     *
+     * @return The maxOutstandingMessages.
+     */
+    @java.lang.Override
+    public long getMaxOutstandingMessages() {
+      return maxOutstandingMessages_;
+    }
+    /**
+     *
+     *
+     * <pre>
+     * Flow control settings for the maximum number of outstanding messages. When
+     * there are `max_outstanding_messages` or more currently sent to the
+     * streaming pull client that have not yet been acked or nacked, the server
+     * stops sending more messages. The sending of messages resumes once the
+     * number of outstanding messages is less than this value. If the value is
+     * &lt;= 0, there is no limit to the number of outstanding messages. This
+     * property can only be set on the initial StreamingPullRequest. If it is set
+     * on a subsequent request, the stream will be aborted with status
+     * `INVALID_ARGUMENT`.
+     * </pre>
+     *
+     * <code>int64 max_outstanding_messages = 7;</code>
+     *
+     * @param value The maxOutstandingMessages to set.
+     * @return This builder for chaining.
+     */
+    public Builder setMaxOutstandingMessages(long value) {
+
+      maxOutstandingMessages_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     *
+     *
+     * <pre>
+     * Flow control settings for the maximum number of outstanding messages. When
+     * there are `max_outstanding_messages` or more currently sent to the
+     * streaming pull client that have not yet been acked or nacked, the server
+     * stops sending more messages. The sending of messages resumes once the
+     * number of outstanding messages is less than this value. If the value is
+     * &lt;= 0, there is no limit to the number of outstanding messages. This
+     * property can only be set on the initial StreamingPullRequest. If it is set
+     * on a subsequent request, the stream will be aborted with status
+     * `INVALID_ARGUMENT`.
+     * </pre>
+     *
+     * <code>int64 max_outstanding_messages = 7;</code>
+     *
+     * @return This builder for chaining.
+     */
+    public Builder clearMaxOutstandingMessages() {
+
+      maxOutstandingMessages_ = 0L;
+      onChanged();
+      return this;
+    }
+
+    private long maxOutstandingBytes_;
+    /**
+     *
+     *
+     * <pre>
+     * Flow control settings for the maximum number of outstanding bytes. When
+     * there are `max_outstanding_bytes` or more worth of messages currently sent
+     * to the streaming pull client that have not yet been acked or nacked, the
+     * server will stop sending more messages. The sending of messages resumes
+     * once the number of outstanding bytes is less than this value. If the value
+     * is &lt;= 0, there is no limit to the number of outstanding bytes. This
+     * property can only be set on the initial StreamingPullRequest. If it is set
+     * on a subsequent request, the stream will be aborted with status
+     * `INVALID_ARGUMENT`.
+     * </pre>
+     *
+     * <code>int64 max_outstanding_bytes = 8;</code>
+     *
+     * @return The maxOutstandingBytes.
+     */
+    @java.lang.Override
+    public long getMaxOutstandingBytes() {
+      return maxOutstandingBytes_;
+    }
+    /**
+     *
+     *
+     * <pre>
+     * Flow control settings for the maximum number of outstanding bytes. When
+     * there are `max_outstanding_bytes` or more worth of messages currently sent
+     * to the streaming pull client that have not yet been acked or nacked, the
+     * server will stop sending more messages. The sending of messages resumes
+     * once the number of outstanding bytes is less than this value. If the value
+     * is &lt;= 0, there is no limit to the number of outstanding bytes. This
+     * property can only be set on the initial StreamingPullRequest. If it is set
+     * on a subsequent request, the stream will be aborted with status
+     * `INVALID_ARGUMENT`.
+     * </pre>
+     *
+     * <code>int64 max_outstanding_bytes = 8;</code>
+     *
+     * @param value The maxOutstandingBytes to set.
+     * @return This builder for chaining.
+     */
+    public Builder setMaxOutstandingBytes(long value) {
+
+      maxOutstandingBytes_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     *
+     *
+     * <pre>
+     * Flow control settings for the maximum number of outstanding bytes. When
+     * there are `max_outstanding_bytes` or more worth of messages currently sent
+     * to the streaming pull client that have not yet been acked or nacked, the
+     * server will stop sending more messages. The sending of messages resumes
+     * once the number of outstanding bytes is less than this value. If the value
+     * is &lt;= 0, there is no limit to the number of outstanding bytes. This
+     * property can only be set on the initial StreamingPullRequest. If it is set
+     * on a subsequent request, the stream will be aborted with status
+     * `INVALID_ARGUMENT`.
+     * </pre>
+     *
+     * <code>int64 max_outstanding_bytes = 8;</code>
+     *
+     * @return This builder for chaining.
+     */
+    public Builder clearMaxOutstandingBytes() {
+
+      maxOutstandingBytes_ = 0L;
       onChanged();
       return this;
     }

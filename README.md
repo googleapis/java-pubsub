@@ -17,7 +17,7 @@ If you are using Maven with [BOM][libraries-bom], add this to your pom.xml file
     <dependency>
       <groupId>com.google.cloud</groupId>
       <artifactId>libraries-bom</artifactId>
-      <version>5.4.0</version>
+      <version>8.0.0</version>
       <type>pom</type>
       <scope>import</scope>
     </dependency>
@@ -38,7 +38,7 @@ If you are using Maven without BOM, add this to your dependencies:
 <dependency>
   <groupId>com.google.cloud</groupId>
   <artifactId>google-cloud-pubsub</artifactId>
-  <version>1.105.1</version>
+  <version>1.107.0</version>
 </dependency>
 
 ```
@@ -47,11 +47,11 @@ If you are using Maven without BOM, add this to your dependencies:
 
 If you are using Gradle, add this to your dependencies
 ```Groovy
-compile 'com.google.cloud:google-cloud-pubsub:1.105.1'
+compile 'com.google.cloud:google-cloud-pubsub:1.107.0'
 ```
 If you are using SBT, add this to your dependencies
 ```Scala
-libraryDependencies += "com.google.cloud" % "google-cloud-pubsub" % "1.105.1"
+libraryDependencies += "com.google.cloud" % "google-cloud-pubsub" % "1.107.0"
 ```
 [//]: # ({x-version-update-end})
 
@@ -225,10 +225,38 @@ has instructions for running the samples.
 
 | Sample                      | Source Code                       | Try it |
 | --------------------------- | --------------------------------- | ------ |
+| Create Pull Subscription Example | [source code](https://github.com/googleapis/java-pubsub/blob/master/samples/snippets/src/main/java/pubsub/CreatePullSubscriptionExample.java) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/java-pubsub&page=editor&open_in_editor=samples/snippets/src/main/java/pubsub/CreatePullSubscriptionExample.java) |
+| Create Push Subscription Example | [source code](https://github.com/googleapis/java-pubsub/blob/master/samples/snippets/src/main/java/pubsub/CreatePushSubscriptionExample.java) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/java-pubsub&page=editor&open_in_editor=samples/snippets/src/main/java/pubsub/CreatePushSubscriptionExample.java) |
 | Create Subscription With Dead Letter Policy Example | [source code](https://github.com/googleapis/java-pubsub/blob/master/samples/snippets/src/main/java/pubsub/CreateSubscriptionWithDeadLetterPolicyExample.java) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/java-pubsub&page=editor&open_in_editor=samples/snippets/src/main/java/pubsub/CreateSubscriptionWithDeadLetterPolicyExample.java) |
+| Create Topic Example | [source code](https://github.com/googleapis/java-pubsub/blob/master/samples/snippets/src/main/java/pubsub/CreateTopicExample.java) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/java-pubsub&page=editor&open_in_editor=samples/snippets/src/main/java/pubsub/CreateTopicExample.java) |
+| Delete Subscription Example | [source code](https://github.com/googleapis/java-pubsub/blob/master/samples/snippets/src/main/java/pubsub/DeleteSubscriptionExample.java) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/java-pubsub&page=editor&open_in_editor=samples/snippets/src/main/java/pubsub/DeleteSubscriptionExample.java) |
+| Delete Topic Example | [source code](https://github.com/googleapis/java-pubsub/blob/master/samples/snippets/src/main/java/pubsub/DeleteTopicExample.java) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/java-pubsub&page=editor&open_in_editor=samples/snippets/src/main/java/pubsub/DeleteTopicExample.java) |
+| Get Subscription Policy Example | [source code](https://github.com/googleapis/java-pubsub/blob/master/samples/snippets/src/main/java/pubsub/GetSubscriptionPolicyExample.java) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/java-pubsub&page=editor&open_in_editor=samples/snippets/src/main/java/pubsub/GetSubscriptionPolicyExample.java) |
+| Get Topic Policy Example | [source code](https://github.com/googleapis/java-pubsub/blob/master/samples/snippets/src/main/java/pubsub/GetTopicPolicyExample.java) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/java-pubsub&page=editor&open_in_editor=samples/snippets/src/main/java/pubsub/GetTopicPolicyExample.java) |
+| List Subscriptions In Project Example | [source code](https://github.com/googleapis/java-pubsub/blob/master/samples/snippets/src/main/java/pubsub/ListSubscriptionsInProjectExample.java) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/java-pubsub&page=editor&open_in_editor=samples/snippets/src/main/java/pubsub/ListSubscriptionsInProjectExample.java) |
+| List Subscriptions In Topic Example | [source code](https://github.com/googleapis/java-pubsub/blob/master/samples/snippets/src/main/java/pubsub/ListSubscriptionsInTopicExample.java) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/java-pubsub&page=editor&open_in_editor=samples/snippets/src/main/java/pubsub/ListSubscriptionsInTopicExample.java) |
+| List Topics Example | [source code](https://github.com/googleapis/java-pubsub/blob/master/samples/snippets/src/main/java/pubsub/ListTopicsExample.java) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/java-pubsub&page=editor&open_in_editor=samples/snippets/src/main/java/pubsub/ListTopicsExample.java) |
+| Publish With Batch Settings Example | [source code](https://github.com/googleapis/java-pubsub/blob/master/samples/snippets/src/main/java/pubsub/PublishWithBatchSettingsExample.java) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/java-pubsub&page=editor&open_in_editor=samples/snippets/src/main/java/pubsub/PublishWithBatchSettingsExample.java) |
+| Publish With Concurrency Control Example | [source code](https://github.com/googleapis/java-pubsub/blob/master/samples/snippets/src/main/java/pubsub/PublishWithConcurrencyControlExample.java) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/java-pubsub&page=editor&open_in_editor=samples/snippets/src/main/java/pubsub/PublishWithConcurrencyControlExample.java) |
+| Publish With Custom Attributes Example | [source code](https://github.com/googleapis/java-pubsub/blob/master/samples/snippets/src/main/java/pubsub/PublishWithCustomAttributesExample.java) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/java-pubsub&page=editor&open_in_editor=samples/snippets/src/main/java/pubsub/PublishWithCustomAttributesExample.java) |
+| Publish With Error Handler Example | [source code](https://github.com/googleapis/java-pubsub/blob/master/samples/snippets/src/main/java/pubsub/PublishWithErrorHandlerExample.java) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/java-pubsub&page=editor&open_in_editor=samples/snippets/src/main/java/pubsub/PublishWithErrorHandlerExample.java) |
+| Publish With Retry Settings Example | [source code](https://github.com/googleapis/java-pubsub/blob/master/samples/snippets/src/main/java/pubsub/PublishWithRetrySettingsExample.java) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/java-pubsub&page=editor&open_in_editor=samples/snippets/src/main/java/pubsub/PublishWithRetrySettingsExample.java) |
+| Publisher Example | [source code](https://github.com/googleapis/java-pubsub/blob/master/samples/snippets/src/main/java/pubsub/PublisherExample.java) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/java-pubsub&page=editor&open_in_editor=samples/snippets/src/main/java/pubsub/PublisherExample.java) |
 | Receive Messages With Delivery Attempts Example | [source code](https://github.com/googleapis/java-pubsub/blob/master/samples/snippets/src/main/java/pubsub/ReceiveMessagesWithDeliveryAttemptsExample.java) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/java-pubsub&page=editor&open_in_editor=samples/snippets/src/main/java/pubsub/ReceiveMessagesWithDeliveryAttemptsExample.java) |
 | Remove Dead Letter Policy Example | [source code](https://github.com/googleapis/java-pubsub/blob/master/samples/snippets/src/main/java/pubsub/RemoveDeadLetterPolicyExample.java) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/java-pubsub&page=editor&open_in_editor=samples/snippets/src/main/java/pubsub/RemoveDeadLetterPolicyExample.java) |
+| Set Subscription Policy Example | [source code](https://github.com/googleapis/java-pubsub/blob/master/samples/snippets/src/main/java/pubsub/SetSubscriptionPolicyExample.java) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/java-pubsub&page=editor&open_in_editor=samples/snippets/src/main/java/pubsub/SetSubscriptionPolicyExample.java) |
+| Set Topic Policy Example | [source code](https://github.com/googleapis/java-pubsub/blob/master/samples/snippets/src/main/java/pubsub/SetTopicPolicyExample.java) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/java-pubsub&page=editor&open_in_editor=samples/snippets/src/main/java/pubsub/SetTopicPolicyExample.java) |
+| Subscribe Async Example | [source code](https://github.com/googleapis/java-pubsub/blob/master/samples/snippets/src/main/java/pubsub/SubscribeAsyncExample.java) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/java-pubsub&page=editor&open_in_editor=samples/snippets/src/main/java/pubsub/SubscribeAsyncExample.java) |
+| Subscribe Sync Example | [source code](https://github.com/googleapis/java-pubsub/blob/master/samples/snippets/src/main/java/pubsub/SubscribeSyncExample.java) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/java-pubsub&page=editor&open_in_editor=samples/snippets/src/main/java/pubsub/SubscribeSyncExample.java) |
+| Subscribe Sync With Lease Example | [source code](https://github.com/googleapis/java-pubsub/blob/master/samples/snippets/src/main/java/pubsub/SubscribeSyncWithLeaseExample.java) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/java-pubsub&page=editor&open_in_editor=samples/snippets/src/main/java/pubsub/SubscribeSyncWithLeaseExample.java) |
+| Subscribe With Concurrency Control Example | [source code](https://github.com/googleapis/java-pubsub/blob/master/samples/snippets/src/main/java/pubsub/SubscribeWithConcurrencyControlExample.java) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/java-pubsub&page=editor&open_in_editor=samples/snippets/src/main/java/pubsub/SubscribeWithConcurrencyControlExample.java) |
+| Subscribe With Custom Attributes Example | [source code](https://github.com/googleapis/java-pubsub/blob/master/samples/snippets/src/main/java/pubsub/SubscribeWithCustomAttributesExample.java) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/java-pubsub&page=editor&open_in_editor=samples/snippets/src/main/java/pubsub/SubscribeWithCustomAttributesExample.java) |
+| Subscribe With Error Listener Example | [source code](https://github.com/googleapis/java-pubsub/blob/master/samples/snippets/src/main/java/pubsub/SubscribeWithErrorListenerExample.java) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/java-pubsub&page=editor&open_in_editor=samples/snippets/src/main/java/pubsub/SubscribeWithErrorListenerExample.java) |
+| Subscribe With Flow Control Settings Example | [source code](https://github.com/googleapis/java-pubsub/blob/master/samples/snippets/src/main/java/pubsub/SubscribeWithFlowControlSettingsExample.java) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/java-pubsub&page=editor&open_in_editor=samples/snippets/src/main/java/pubsub/SubscribeWithFlowControlSettingsExample.java) |
+| Test Subscription Permissions Example | [source code](https://github.com/googleapis/java-pubsub/blob/master/samples/snippets/src/main/java/pubsub/TestSubscriptionPermissionsExample.java) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/java-pubsub&page=editor&open_in_editor=samples/snippets/src/main/java/pubsub/TestSubscriptionPermissionsExample.java) |
+| Test Topic Permissions Example | [source code](https://github.com/googleapis/java-pubsub/blob/master/samples/snippets/src/main/java/pubsub/TestTopicPermissionsExample.java) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/java-pubsub&page=editor&open_in_editor=samples/snippets/src/main/java/pubsub/TestTopicPermissionsExample.java) |
 | Update Dead Letter Policy Example | [source code](https://github.com/googleapis/java-pubsub/blob/master/samples/snippets/src/main/java/pubsub/UpdateDeadLetterPolicyExample.java) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/java-pubsub&page=editor&open_in_editor=samples/snippets/src/main/java/pubsub/UpdateDeadLetterPolicyExample.java) |
+| Update Push Configuration Example | [source code](https://github.com/googleapis/java-pubsub/blob/master/samples/snippets/src/main/java/pubsub/UpdatePushConfigurationExample.java) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/java-pubsub&page=editor&open_in_editor=samples/snippets/src/main/java/pubsub/UpdatePushConfigurationExample.java) |
 
 
 
@@ -265,7 +293,8 @@ Apache 2.0 - See [LICENSE][license] for more information.
 
 Java Version | Status
 ------------ | ------
-Java 7 | [![Kokoro CI][kokoro-badge-image-1]][kokoro-badge-link-1]Java 8 | [![Kokoro CI][kokoro-badge-image-2]][kokoro-badge-link-2]
+Java 7 | [![Kokoro CI][kokoro-badge-image-1]][kokoro-badge-link-1]
+Java 8 | [![Kokoro CI][kokoro-badge-image-2]][kokoro-badge-link-2]
 Java 8 OSX | [![Kokoro CI][kokoro-badge-image-3]][kokoro-badge-link-3]
 Java 8 Windows | [![Kokoro CI][kokoro-badge-image-4]][kokoro-badge-link-4]
 Java 11 | [![Kokoro CI][kokoro-badge-image-5]][kokoro-badge-link-5]
