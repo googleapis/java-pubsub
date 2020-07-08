@@ -144,8 +144,10 @@
           <artifactId>maven-dependency-plugin</artifactId>
           <version>3.1.2</version>
           <configuration>
-            <ignoredUnusedDeclaredDependencies>io.opencensus:opencensus-impl</ignoredUnusedDeclaredDependencies>
-            <ignoredUnusedDeclaredDependencies>javax.annotation:javax.annotation-api</ignoredUnusedDeclaredDependencies>
+            <ignoredUnusedDeclaredDependencies>
+              <ignoredUnusedDeclaredDependency>io.opencensus:opencensus-impl</ignoredUnusedDeclaredDependency>
+              <ignoredUnusedDeclaredDependencies>javax.annotation:javax.annotation-api</ignoredUnusedDeclaredDependencies>
+            </ignoredUnusedDeclaredDependencies>
           </configuration>
         </plugin>
       </plugins>
