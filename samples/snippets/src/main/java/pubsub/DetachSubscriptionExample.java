@@ -49,9 +49,9 @@ public class DetachSubscriptionExample {
     try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
       Subscription subscription = subscriptionAdminClient.getSubscription(subscriptionName);
       if (subscription.getDetached()) {
-        System.out.print("Subscription is detached.");
+        System.out.println("Subscription is detached.");
       } else {
-        System.out.print("Subscription is NOT detached.");
+        System.out.println("Subscription is NOT detached.");
       }
     }
   }
