@@ -166,6 +166,11 @@ public class AdminIT {
     assertThat(bout.toString()).contains("permissions: \"pubsub.subscriptions.update\"");
 
     bout.reset();
+    // Test subscription detachment.
+    DetachSubscriptionExample.detachSubscriptionExample(projectId, pullSubscriptionId);
+    assertThat(bout.toString()).contains("Subscription is detached.");
+
+    bout.reset();
     // Test delete subscription. Run twice to delete both pull and push subscriptions.
     DeleteSubscriptionExample.deleteSubscriptionExample(projectId, pullSubscriptionId);
     DeleteSubscriptionExample.deleteSubscriptionExample(projectId, pushSubscriptionId);
