@@ -43,7 +43,7 @@
     <dependency>
       <groupId>com.google.cloud</groupId>
       <artifactId>google-cloud-pubsub</artifactId>
-      <version>1.107.1-SNAPSHOT</version>
+      <version>1.108.1-SNAPSHOT</version>
     </dependency>
     <!-- {x-version-update-end} -->
 
@@ -67,7 +67,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
-        <version>3.1.0</version>
+        <version>3.2.0</version>
         <executions>
           <execution>
             <id>add-snippets-source</id>
