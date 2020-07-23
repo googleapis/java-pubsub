@@ -241,8 +241,6 @@ public class SubscriberTest {
         .setParallelPullCount(1)
         .setMaxDurationPerAckExtension(Duration.ofSeconds(5))
         .setFlowControlSettings(
-            FlowControlSettings.newBuilder()
-                .setMaxOutstandingElementCount(1000L)
-                .build());
+            FlowControlSettings.newBuilder().setMaxOutstandingElementCount(1000L).build());
   }
 }
