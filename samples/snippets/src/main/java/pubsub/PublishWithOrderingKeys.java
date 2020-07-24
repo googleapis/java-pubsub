@@ -45,7 +45,11 @@ public class PublishWithOrderingKeys {
       throws IOException, InterruptedException {
     TopicName topicName = TopicName.of(projectId, topicId);
     // Create a publisher and set message ordering to true.
-    Publisher publisher = Publisher.newBuilder(topicName).setEnableMessageOrdering(true).build();
+    Publisher publisher =
+        Publisher.newBuilder(topicName)
+            .setEndpoint("us-east1-pubsub.googleapis.com:443")
+            .setEnableMessageOrdering(true)
+            .build();
 
     try {
       Map<String, String> messages = new HashMap<String, String>();
