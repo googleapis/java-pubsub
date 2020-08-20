@@ -237,7 +237,7 @@ public class PublisherImplTest {
     assertEquals("2", publishFuture2.get());
 
     fakeExecutor.advanceTime(Duration.ofSeconds(100));
-    publisher.awaitTermination(1, TimeUnit.SECONDS);
+    publisher.awaitTermination(1, TimeUnit.MINUTES);
   }
 
   @Test
@@ -1134,6 +1134,6 @@ public class PublisherImplTest {
   private void shutdownTestPublisher(Publisher publisher) throws InterruptedException {
     publisher.shutdown();
     fakeExecutor.advanceTime(Duration.ofSeconds(10));
-    assertTrue(publisher.awaitTermination(1, TimeUnit.SECONDS));
+    assertTrue(publisher.awaitTermination(1, TimeUnit.MINUTES));
   }
 }
