@@ -85,11 +85,7 @@ public class ResumePublishWithOrderingKeys {
               @Override
               public void onSuccess(String messageId) {
                 // Once published, returns server-assigned message ids (unique within the topic).
-<<<<<<< HEAD
-                System.out.println(messageId);
-=======
                 System.out.println(pubsubMessage.getData() + " : " + messageId);
->>>>>>> upstream/master
               }
             },
             MoreExecutors.directExecutor());
