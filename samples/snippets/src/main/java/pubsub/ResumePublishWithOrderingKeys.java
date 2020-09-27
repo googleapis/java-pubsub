@@ -45,7 +45,11 @@ public class ResumePublishWithOrderingKeys {
       throws IOException, InterruptedException {
     TopicName topicName = TopicName.of(projectId, topicId);
     // Create a publisher and set message ordering to true.
-    Publisher publisher = Publisher.newBuilder(topicName).setEnableMessageOrdering(true).build();
+    Publisher publisher =
+        Publisher.newBuilder(topicName)
+            .setEnableMessageOrdering(true)
+            .setEndpoint("us-east1-pubsub.googleapis.com:443")
+            .build();
 
     try {
       Map<String, String> messages = new HashMap<String, String>();
@@ -81,7 +85,11 @@ public class ResumePublishWithOrderingKeys {
               @Override
               public void onSuccess(String messageId) {
                 // Once published, returns server-assigned message ids (unique within the topic).
+<<<<<<< HEAD
                 System.out.println(messageId);
+=======
+                System.out.println(pubsubMessage.getData() + " : " + messageId);
+>>>>>>> upstream/master
               }
             },
             MoreExecutors.directExecutor());

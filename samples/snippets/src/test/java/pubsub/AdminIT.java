@@ -82,14 +82,16 @@ public class AdminIT {
         subscriptionAdminClient.deleteSubscription(pullSubscriptionName);
         subscriptionAdminClient.deleteSubscription(pushSubscriptionName);
         subscriptionAdminClient.deleteSubscription(orderedSubscriptionName);
-      } catch (NotFoundException e) {
+      } catch (NotFoundException ignored) {
+        // ignore this as resources may not have been created
       }
     }
 
     // Delete the topic if it has not been cleaned.
     try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
       topicAdminClient.deleteTopic(topicName.toString());
-    } catch (NotFoundException e) {
+    } catch (NotFoundException ignored) {
+      // ignore this as resources may not have been created
     }
     System.setOut(null);
   }
@@ -168,6 +170,11 @@ public class AdminIT {
     // Test subscription permissions.
     assertThat(bout.toString()).contains("permissions: \"pubsub.subscriptions.consume\"");
     assertThat(bout.toString()).contains("permissions: \"pubsub.subscriptions.update\"");
+
+    bout.reset();
+    // Test subscription detachment.
+    DetachSubscriptionExample.detachSubscriptionExample(projectId, pullSubscriptionId);
+    assertThat(bout.toString()).contains("Subscription is detached.");
 
     bout.reset();
     // Test create a subscription with ordering
