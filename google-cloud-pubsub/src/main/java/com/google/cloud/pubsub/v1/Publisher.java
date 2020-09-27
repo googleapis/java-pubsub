@@ -256,11 +256,6 @@ public class Publisher implements PublisherInterface {
     List<OutstandingBatch> batchesToSend;
     messagesBatchLock.lock();
     try {
-      if (sequentialExecutor.keyHasError(orderingKey)) {
-        outstandingPublish.publishResult.setException(
-            SequentialExecutorService.CallbackExecutor.CANCELLATION_EXCEPTION);
-        return outstandingPublish.publishResult;
-      }
       MessagesBatch messagesBatch = messagesBatches.get(orderingKey);
       if (messagesBatch == null) {
         messagesBatch = new MessagesBatch(batchingSettings, orderingKey);
@@ -467,21 +462,6 @@ public class Publisher implements PublisherInterface {
           @Override
           public void onFailure(Throwable t) {
             try {
-              if (outstandingBatch.orderingKey != null && !outstandingBatch.orderingKey.isEmpty()) {
-                messagesBatchLock.lock();
-                try {
-                  MessagesBatch messagesBatch = messagesBatches.get(outstandingBatch.orderingKey);
-                  if (messagesBatch != null) {
-                    for (OutstandingPublish outstanding : messagesBatch.messages) {
-                      outstanding.publishResult.setException(
-                          SequentialExecutorService.CallbackExecutor.CANCELLATION_EXCEPTION);
-                    }
-                    messagesBatches.remove(outstandingBatch.orderingKey);
-                  }
-                } finally {
-                  messagesBatchLock.unlock();
-                }
-              }
               outstandingBatch.onFailure(t);
             } finally {
               messagesWaiter.incrementPendingCount(-outstandingBatch.size());

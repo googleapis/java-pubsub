@@ -243,10 +243,6 @@ final class SequentialExecutorService {
       return future;
     }
 
-    boolean keyHasError(String key) {
-      return keysWithErrors.contains(key);
-    }
-
     void resumePublish(String key) {
       keysWithErrors.remove(key);
     }
