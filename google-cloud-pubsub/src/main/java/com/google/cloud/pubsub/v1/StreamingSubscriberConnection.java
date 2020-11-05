@@ -223,10 +223,10 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
                 this.useLegacyFlowControl
                     ? 0
                     : valueOrZero(flowControlSettings.getMaxOutstandingElementCount()))
+            .setMaxOutstandingBytes(
                 this.useLegacyFlowControl
                     ? 0
                     : valueOrZero(flowControlSettings.getMaxOutstandingRequestBytes()))
-                this.useLegacyFlowControl ? 0 : valueOrZero(flowControlSettings.getMaxOutstandingRequestBytes()))
             .build());
 
     /**
