@@ -509,9 +509,9 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
     }
 
     /**
-    * Disables enforcing flow control settings at the Cloud PubSub server
-    * and uses the less accurate method of only enforcing flow control at the client side.
-    */
+     * Disables enforcing flow control settings at the Cloud PubSub server and uses the less
+     * accurate method of only enforcing flow control at the client side.
+     */
     public Builder setUseLegacyFlowControl(boolean value) {
       this.useLegacyFlowControl = value;
       return this;
