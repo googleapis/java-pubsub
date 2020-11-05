@@ -220,8 +220,12 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
             .setStreamAckDeadlineSeconds(60)
             .setClientId(clientId)
             .setMaxOutstandingMessages(
-                this.useLegacyFlowControl ? 0 : valueOrZero(flowControlSettings.getMaxOutstandingElementCount()))
-            .setMaxOutstandingBytes(
+                this.useLegacyFlowControl
+                    ? 0
+                    : valueOrZero(flowControlSettings.getMaxOutstandingElementCount()))
+                this.useLegacyFlowControl
+                    ? 0
+                    : valueOrZero(flowControlSettings.getMaxOutstandingRequestBytes()))
                 this.useLegacyFlowControl ? 0 : valueOrZero(flowControlSettings.getMaxOutstandingRequestBytes()))
             .build());
 
