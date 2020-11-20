@@ -66,6 +66,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
   private static final Duration MAX_CHANNEL_RECONNECT_BACKOFF = Duration.ofSeconds(10);
   private static final int MAX_PER_REQUEST_CHANGES = 1000;
 
+  private final Duration streamAckDeadline;
   private final SubscriberStub stub;
   private final int channelAffinity;
   private final String subscription;
@@ -95,6 +96,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
       Duration ackExpirationPadding,
       Duration maxAckExtensionPeriod,
       Duration maxDurationPerAckExtension,
+      Duration streamAckDeadline,
       Distribution ackLatencyDistribution,
       SubscriberStub stub,
       int channelAffinity,
@@ -106,6 +108,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
       ApiClock clock) {
     this.subscription = subscription;
     this.systemExecutor = systemExecutor;
+    this.streamAckDeadline = streamAckDeadline;
     this.stub = stub;
     this.channelAffinity = channelAffinity;
     this.messageDispatcher =
@@ -217,7 +220,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     initClientStream.send(
         StreamingPullRequest.newBuilder()
             .setSubscription(subscription)
-            .setStreamAckDeadlineSeconds(60)
+            .setStreamAckDeadlineSeconds((int) streamAckDeadline.getSeconds())
             .setClientId(clientId)
             .setMaxOutstandingMessages(
                 this.useLegacyFlowControl
