@@ -410,7 +410,6 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
   /** Builder of {@link Subscriber Subscribers}. */
   public static final class Builder {
     private static final Duration DEFAULT_MAX_ACK_EXTENSION_PERIOD = Duration.ofMinutes(60);
-    private static final Duration DEFAULT_STREAM_ACK_DEADLINE = Duration.ofSeconds(60);
 
     private static final ExecutorProvider DEFAULT_EXECUTOR_PROVIDER =
         InstantiatingExecutorProvider.newBuilder()
