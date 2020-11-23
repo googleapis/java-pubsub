@@ -16,6 +16,7 @@
 
 package com.google.cloud.pubsub.v1;
 
+import static com.google.cloud.pubsub.v1.Subscriber.DEFAULT_MAX_DURATION_PER_ACK_EXTENSION;
 import static com.google.common.util.concurrent.MoreExecutors.directExecutor;
 
 import com.google.api.core.AbstractApiService;
@@ -62,6 +63,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
   private static final Logger logger =
       Logger.getLogger(StreamingSubscriberConnection.class.getName());
 
+  private static final Duration DEFAULT_STREAM_ACK_DEADLINE = Duration.ofSeconds(60);
   private static final Duration MAX_STREAM_ACK_DEADLINE = Duration.ofSeconds(600);
   private static final Duration MIN_STREAM_ACK_DEADLINE = Duration.ofSeconds(10);
   private static final Duration INITIAL_CHANNEL_RECONNECT_BACKOFF = Duration.ofMillis(100);
@@ -109,7 +111,9 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
       ApiClock clock) {
     this.subscription = subscription;
     this.systemExecutor = systemExecutor;
-    if (maxDurationPerAckExtension.compareTo(MIN_STREAM_ACK_DEADLINE) < 0) {
+    if (maxDurationPerAckExtension.compareTo(DEFAULT_MAX_DURATION_PER_ACK_EXTENSION) == 0) {
+      this.streamAckDeadline = DEFAULT_STREAM_ACK_DEADLINE;
+    } else if (maxDurationPerAckExtension.compareTo(MIN_STREAM_ACK_DEADLINE) < 0) {
       this.streamAckDeadline = MIN_STREAM_ACK_DEADLINE;
     } else if (maxDurationPerAckExtension.compareTo(MAX_STREAM_ACK_DEADLINE) > 0) {
       this.streamAckDeadline = MAX_STREAM_ACK_DEADLINE;
