@@ -192,12 +192,6 @@ class FakeSubscriberServiceImpl extends SubscriberImplBase {
       closeStream(stream);
       stream.responseObserver.onCompleted();
     }
-
-    public StreamingPullRequest getLastSeenRequest() {
-      synchronized (stream) {
-        return lastSeenRequest;
-      }
-    }
   }
 
   @Override
