@@ -45,6 +45,7 @@ import com.google.pubsub.v1.ModifyAckDeadlineRequest;
 import com.google.pubsub.v1.StreamingPullRequest;
 import com.google.pubsub.v1.StreamingPullResponse;
 import io.grpc.Status;
+import java.time.Duration;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ScheduledExecutorService;
@@ -62,6 +63,8 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
   private static final Logger logger =
       Logger.getLogger(StreamingSubscriberConnection.class.getName());
 
+  private static final Duration MAX_STREAM_ACK_DEADLINE = Duration.ofSeconds(600);
+  private static final Duration MIN_STREAM_ACK_DEADLINE = Duration.ofSeconds(10);
   private static final Duration INITIAL_CHANNEL_RECONNECT_BACKOFF = Duration.ofMillis(100);
   private static final Duration MAX_CHANNEL_RECONNECT_BACKOFF = Duration.ofSeconds(10);
   private static final int MAX_PER_REQUEST_CHANGES = 1000;
@@ -96,7 +99,6 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
       Duration ackExpirationPadding,
       Duration maxAckExtensionPeriod,
       Duration maxDurationPerAckExtension,
-      Duration streamAckDeadline,
       Distribution ackLatencyDistribution,
       SubscriberStub stub,
       int channelAffinity,
@@ -108,7 +110,13 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
       ApiClock clock) {
     this.subscription = subscription;
     this.systemExecutor = systemExecutor;
-    this.streamAckDeadline = streamAckDeadline;
+    if (maxDurationPerAckExtension.compareTo(MIN_STREAM_ACK_DEADLINE) < 0) {
+      this.streamAckDeadline = MIN_STREAM_ACK_DEADLINE;
+    } else if (maxDurationPerAckExtension.compareTo(MAX_STREAM_ACK_DEADLINE) > 0) {
+      this.streamAckDeadline = MAX_STREAM_ACK_DEADLINE;
+    } else {
+      this.streamAckDeadline = maxDurationPerAckExtension;
+    }
     this.stub = stub;
     this.channelAffinity = channelAffinity;
     this.messageDispatcher =

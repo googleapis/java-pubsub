@@ -240,7 +240,6 @@ public class SubscriberTest {
         .setClock(fakeExecutor.getClock())
         .setParallelPullCount(1)
         .setMaxDurationPerAckExtension(Duration.ofSeconds(5))
-        .setStreamAckDeadline(Duration.ofSeconds(60))
         .setFlowControlSettings(
             FlowControlSettings.newBuilder().setMaxOutstandingElementCount(1000L).build());
   }

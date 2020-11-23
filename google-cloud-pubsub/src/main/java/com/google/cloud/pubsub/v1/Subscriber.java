@@ -106,7 +106,6 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
   private final boolean useLegacyFlowControl;
   private final Duration maxAckExtensionPeriod;
   private final Duration maxDurationPerAckExtension;
-  private final Duration streamAckDeadline;
   // The ExecutorProvider used to generate executors for processing messages.
   private final ExecutorProvider executorProvider;
   // An instantiation of the SystemExecutorProvider used for processing acks
@@ -133,7 +132,6 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
 
     maxAckExtensionPeriod = builder.maxAckExtensionPeriod;
     maxDurationPerAckExtension = builder.maxDurationPerAckExtension;
-    streamAckDeadline = builder.streamAckDeadline;
     clock = builder.clock.isPresent() ? builder.clock.get() : CurrentMillisClock.getDefaultClock();
 
     flowController =
@@ -336,7 +334,6 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
                 ACK_EXPIRATION_PADDING,
                 maxAckExtensionPeriod,
                 maxDurationPerAckExtension,
-                streamAckDeadline,
                 ackLatencyDistribution,
                 subStub,
                 i,
@@ -426,7 +423,6 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
 
     private Duration maxAckExtensionPeriod = DEFAULT_MAX_ACK_EXTENSION_PERIOD;
     private Duration maxDurationPerAckExtension = Duration.ofMillis(0);
-    private Duration streamAckDeadline = DEFAULT_STREAM_ACK_DEADLINE;
 
     private boolean useLegacyFlowControl = false;
     private FlowControlSettings flowControlSettings =
@@ -550,20 +546,6 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
     public Builder setMaxDurationPerAckExtension(Duration maxDurationPerAckExtension) {
       Preconditions.checkArgument(maxDurationPerAckExtension.toMillis() >= 0);
       this.maxDurationPerAckExtension = maxDurationPerAckExtension;
-      return this;
-    }
-
-    /**
-     * Set the ammount of time pubsub will wait before redelivering a message in the scenario in
-     * which pubsub can't verify the message was successfully delivered.
-     *
-     * <p>The minimum deadline that can be specified is 10 seconds. The maximum deadline that can be
-     * specified is 600 seconds (10 minutes). It defaults to 60 seconds.
-     */
-    public Builder setStreamAckDeadline(Duration streamAckDeadline) {
-      Preconditions.checkArgument(streamAckDeadline.getSeconds() >= 10);
-      Preconditions.checkArgument(streamAckDeadline.getSeconds() <= 600);
-      this.streamAckDeadline = streamAckDeadline;
       return this;
     }
 
