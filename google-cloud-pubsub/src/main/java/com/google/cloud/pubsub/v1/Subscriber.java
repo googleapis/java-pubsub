@@ -91,6 +91,7 @@ import org.threeten.bp.Duration;
  * details.
  */
 public class Subscriber extends AbstractApiService implements SubscriberInterface {
+  @InternalApi static final Duration DEFAULT_MAX_DURATION_PER_ACK_EXTENSION = Duration.ofMillis(0);
   private static final int THREADS_PER_CHANNEL = 5;
   private static final int MAX_INBOUND_MESSAGE_SIZE =
       20 * 1024 * 1024; // 20MB API maximum message size.
@@ -103,6 +104,7 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
 
   private final String subscriptionName;
   private final FlowControlSettings flowControlSettings;
+  private final boolean useLegacyFlowControl;
   private final Duration maxAckExtensionPeriod;
   private final Duration maxDurationPerAckExtension;
   // The ExecutorProvider used to generate executors for processing messages.
@@ -126,6 +128,7 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
   private Subscriber(Builder builder) {
     receiver = builder.receiver;
     flowControlSettings = builder.flowControlSettings;
+    useLegacyFlowControl = builder.useLegacyFlowControl;
     subscriptionName = builder.subscriptionName;
 
     maxAckExtensionPeriod = builder.maxAckExtensionPeriod;
@@ -336,6 +339,7 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
                 subStub,
                 i,
                 flowControlSettings,
+                useLegacyFlowControl,
                 flowController,
                 executor,
                 alarmsExecutor,
@@ -418,8 +422,9 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
     private MessageReceiver receiver;
 
     private Duration maxAckExtensionPeriod = DEFAULT_MAX_ACK_EXTENSION_PERIOD;
-    private Duration maxDurationPerAckExtension = Duration.ofMillis(0);
+    private Duration maxDurationPerAckExtension = DEFAULT_MAX_DURATION_PER_ACK_EXTENSION;
 
+    private boolean useLegacyFlowControl = false;
     private FlowControlSettings flowControlSettings =
         FlowControlSettings.newBuilder()
             .setMaxOutstandingElementCount(1000L)
@@ -505,6 +510,15 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
     }
 
     /**
+     * Disables enforcing flow control settings at the Cloud PubSub server and uses the less
+     * accurate method of only enforcing flow control at the client side.
+     */
+    public Builder setUseLegacyFlowControl(boolean value) {
+      this.useLegacyFlowControl = value;
+      return this;
+    }
+
+    /**
      * Set the maximum period a message ack deadline will be extended. Defaults to one hour.
      *
      * <p>It is recommended to set this value to a reasonable upper bound of the subscriber time to
@@ -559,7 +573,10 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
       return this;
     }
 
-    /** Sets the number of pullers used to pull messages from the subscription. Defaults to one. */
+    /**
+     * Sets the number of StreamingPull streams to pull messages from the subscription. Defaults to
+     * one.
+     */
     public Builder setParallelPullCount(int parallelPullCount) {
       this.parallelPullCount = parallelPullCount;
       return this;
