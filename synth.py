@@ -299,7 +299,6 @@ GET_TOPIC = """
    * @throws com.google.api.gax.rpc.ApiException if the remote call fails
    * @deprecated Use {@link #getTopic(TopicName)} instead.
    */
-  @Deprecated
   public final Topic getTopic(ProjectTopicName topic) {
     GetTopicRequest request =
         GetTopicRequest.newBuilder().setTopic(topic == null ? null : topic.toString()).build();
