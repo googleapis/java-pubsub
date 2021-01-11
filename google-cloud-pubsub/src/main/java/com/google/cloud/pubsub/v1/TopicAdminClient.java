@@ -182,8 +182,8 @@ public class TopicAdminClient implements BackgroundResource {
 
   // AUTO-GENERATED DOCUMENTATION AND METHOD
   /**
-   * Creates the given topic with the given name. See the [resource name rules](
-   * https://cloud.google.com/pubsub/docs/admin#resource_names).
+   * Creates the given topic with the given name. See the [resource name rules]
+   * (https://cloud.google.com/pubsub/docs/admin#resource_names).
    *
    * <p>Sample code:
    *
@@ -208,8 +208,8 @@ public class TopicAdminClient implements BackgroundResource {
 
   // AUTO-GENERATED DOCUMENTATION AND METHOD
   /**
-   * Creates the given topic with the given name. See the [resource name rules](
-   * https://cloud.google.com/pubsub/docs/admin#resource_names).
+   * Creates the given topic with the given name. See the [resource name rules]
+   * (https://cloud.google.com/pubsub/docs/admin#resource_names).
    *
    * <p>Sample code:
    *
@@ -262,8 +262,8 @@ public class TopicAdminClient implements BackgroundResource {
 
   // AUTO-GENERATED DOCUMENTATION AND METHOD
   /**
-   * Creates the given topic with the given name. See the [resource name rules](
-   * https://cloud.google.com/pubsub/docs/admin#resource_names).
+   * Creates the given topic with the given name. See the [resource name rules]
+   * (https://cloud.google.com/pubsub/docs/admin#resource_names).
    *
    * <p>Sample code:
    *
@@ -286,8 +286,8 @@ public class TopicAdminClient implements BackgroundResource {
 
   // AUTO-GENERATED DOCUMENTATION AND METHOD
   /**
-   * Creates the given topic with the given name. See the [resource name rules](
-   * https://cloud.google.com/pubsub/docs/admin#resource_names).
+   * Creates the given topic with the given name. See the [resource name rules]
+   * (https://cloud.google.com/pubsub/docs/admin#resource_names).
    *
    * <p>Sample code:
    *
