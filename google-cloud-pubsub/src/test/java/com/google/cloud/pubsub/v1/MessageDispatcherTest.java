@@ -75,12 +75,7 @@ public class MessageDispatcherTest {
     }
   }
 
-  @Before
-  public void setUp() {
-    consumers = new LinkedBlockingQueue<>();
-    sentAcks = new ArrayList<>();
-    sentModAcks = new ArrayList<>();
-
+  private void setupMessageDispatcher(Duration maxAckExtensionPeriod) {
     MessageReceiver receiver =
         new MessageReceiver() {
           @Override
@@ -128,7 +123,7 @@ public class MessageDispatcherTest {
             receiver,
             processor,
             Duration.ofSeconds(5),
-            Duration.ofMinutes(60),
+            maxAckExtensionPeriod,
             Duration.ofSeconds(MAX_SECONDS_PER_ACK_EXTENSION),
             new Distribution(Subscriber.MAX_ACK_DEADLINE_SECONDS + 1),
             flowController,
@@ -136,6 +131,15 @@ public class MessageDispatcherTest {
             systemExecutor,
             clock);
     dispatcher.setMessageDeadlineSeconds(Subscriber.MIN_ACK_DEADLINE_SECONDS);
+  }
+
+  @Before
+  public void setUp() {
+    consumers = new LinkedBlockingQueue<>();
+    sentAcks = new ArrayList<>();
+    sentModAcks = new ArrayList<>();
+
+    setupMessageDispatcher(Duration.ofMinutes(60));
 
     messageContainsDeliveryAttempt = true;
   }
@@ -162,6 +166,14 @@ public class MessageDispatcherTest {
         .contains(
             ModAckItem.of(
                 messageNoDeliveryAttempt.getAckId(), Subscriber.MIN_ACK_DEADLINE_SECONDS));
+  }
+
+  @Test
+  public void testNoReceiptSentDisabledAckExtentions() throws Exception {
+    setupMessageDispatcher(Duration.ZERO);
+    dispatcher.processReceivedMessages(Collections.singletonList(TEST_MESSAGE));
+    dispatcher.processOutstandingAckOperations();
+    assertThat(sentModAcks).isEmpty();
   }
 
   @Test
