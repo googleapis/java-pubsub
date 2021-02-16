@@ -469,14 +469,12 @@ class MessageDispatcher {
       modifyAckDeadlinesToSend.add(nacksToSend);
     }
 
-    if (maxAckExtensionPeriod.getSeconds() > 0) {
-      PendingModifyAckDeadline receiptsToSend =
-          new PendingModifyAckDeadline(getMessageDeadlineSeconds());
-      pendingReceipts.drainTo(receiptsToSend.ackIds);
-      logger.log(Level.FINER, "Sending {0} receipts", receiptsToSend.ackIds.size());
-      if (!receiptsToSend.ackIds.isEmpty()) {
-        modifyAckDeadlinesToSend.add(receiptsToSend);
-      }
+    PendingModifyAckDeadline receiptsToSend =
+        new PendingModifyAckDeadline(getMessageDeadlineSeconds());
+    pendingReceipts.drainTo(receiptsToSend.ackIds);
+    logger.log(Level.FINER, "Sending {0} receipts", receiptsToSend.ackIds.size());
+    if (!receiptsToSend.ackIds.isEmpty()) {
+      modifyAckDeadlinesToSend.add(receiptsToSend);
     }
 
     ackProcessor.sendAckOperations(acksToSend, modifyAckDeadlinesToSend);
