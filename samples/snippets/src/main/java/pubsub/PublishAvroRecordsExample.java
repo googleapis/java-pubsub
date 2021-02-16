@@ -46,14 +46,13 @@ public class PublishAvroRecordsExample {
   public static void main(String... args) throws Exception {
     // TODO(developer): Replace these variables before running the sample.
     String projectId = "your-project-id";
-    // Use an existing topic with schema.
+    // Use a topic created with your schema.
     String topicId = "your-topic-id";
-    // Use an existing schema.
+    // Use a schema that matches your Avro schema file.
     String schemaId = "your-schema-id";
-    // Use an Avro file that complies to the existing schema.
-    String avroFile = "path/to/an/avro/file";
+    String avscFile = "path/to/an/avro/schema/file/formatted/in/json";
 
-    publishAvroRecordsExample(projectId, topicId, schemaId, avroFile);
+    publishAvroRecordsExample(projectId, topicId, schemaId, avscFile);
   }
 
   public static void publishAvroRecordsExample(
@@ -66,69 +65,53 @@ public class PublishAvroRecordsExample {
     TopicName topicName = TopicName.of(projectId, topicId);
     SchemaName schemaName = SchemaName.of(projectId, schemaId);
 
-    // Get project schema.
+    // Get the schema.
     try (SchemaServiceClient schemaServiceClient = SchemaServiceClient.create()) {
       schema = schemaServiceClient.getSchema(schemaName);
     }
 
-    // Get topic encoding type.
+    // Get the topic encoding type.
     try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
       encoding = topicAdminClient.getTopic(topicName).getSchemaSettings().getEncoding();
     }
 
+    // Create an instance of a generated class.
+    State state = State.newBuilder()
+        .setName("Alaska")
+        .setPostAbbr("AK")
+        .build();
+
     Publisher publisher = null;
+
     try {
       publisher = Publisher.newBuilder(topicName).build();
 
-      // Prepare to read/deserialize Avro records.
-      DatumReader<GenericRecord> datumReader = new GenericDatumReader<>();
-      DataFileReader<GenericRecord> dataFileReader =
-          new DataFileReader<>(new File(avroFile), datumReader);
-      GenericRecord record = null;
-
-      // Prepare to serialize/write Avro records to output stream.
+      // Prepare to serialize some data to the output stream.
       ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-      DatumWriter<GenericRecord> datumWriter =
-          new GenericDatumWriter<GenericRecord>(new Parser().parse(schema.getDefinition()));
 
       Encoder encoder = null;
 
+      // Encode the object in either BINARY or JSON and write it to the output stream.
       switch (encoding) {
         case BINARY:
           encoder = EncoderFactory.get().directBinaryEncoder(byteStream, /*reuse=*/ null);
-          System.out.println(
-              "Prepared to publish BINARY-encoded messages to " + topicName.toString());
-
-          while (dataFileReader.hasNext()) {
-            record = dataFileReader.next(record);
-
-            // Encode the Avro record accordingly.
-            datumWriter.write(record, encoder);
-            byteStream.flush();
-            ByteString data = ByteString.copyFrom(byteStream.toByteArray());
-
-            PubsubMessage message = PubsubMessage.newBuilder().setData(data).build();
-            ApiFuture<String> future = publisher.publish(message);
-            System.out.println("Published message ID: " + future.get());
-          }
+          state.customEncode(encoder);
+          byteStream.flush();
           break;
 
         case JSON:
-          System.out.println("Prepared to publish JSON-encoded messages to "
-              + topicName.toString());
-
-          while (dataFileReader.hasNext()) {
-            record = dataFileReader.next(record);
-
-            ByteString data = ByteString.copyFromUtf8(record.toString());
-            PubsubMessage message = PubsubMessage.newBuilder().setData(data).build();
-
-            ApiFuture<String> future = publisher.publish(message);
-            System.out.println("Published message ID: " + future.get());
-          }
+          encoder = EncoderFactory.get().jsonEncoder(
+              new Parser().parse(schema.getDefinition()), byteStream);
+          state.customEncode(encoder);
+          encoder.flush();
           break;
       }
 
+      // Publish the encoded data as a Pub/Sub message.
+      ByteString data = ByteString.copyFrom(byteStream.toByteArray());
+      PubsubMessage message = PubsubMessage.newBuilder().setData(data).build();
+      ApiFuture<String> future = publisher.publish(message);
+      System.out.println("Published message ID: " + future.get());
 
     } finally {
       if (publisher != null) {

@@ -1,7 +1,7 @@
 {
   "type":"record",
-  "name":"us_states",
-  "namespace":"com.example.avro.usa",
+  "name":"State",
+  "namespace":"pubsub",
   "doc":"A list of states in the United States of America.",
   "fields":[
     {
