@@ -42,10 +42,8 @@ public class SchemaIT {
   private static final String projectId = System.getenv("GOOGLE_CLOUD_PROJECT");
   private static final String _suffix = UUID.randomUUID().toString();
   private static final String topicId = "schema-topic-" + _suffix;
-  private static final String subscriptionId = "schema-subscription-" + _suffix;
   private static final String schemaId = "schema-" + _suffix;
   private static final String avscFile = "src/main/resources/us-states.avsc";
-  private static final String avroFile = "src/main/resources/us-states.avro";
 
   private static final TopicName topicName = TopicName.of(projectId, topicId);
   private static final SchemaName schemaName = SchemaName.of(projectId, schemaId);
@@ -64,7 +62,7 @@ public class SchemaIT {
   }
 
   @Before
-  public void setUp() throws Exception {
+  public void setUp() {
     bout = new ByteArrayOutputStream();
     out = new PrintStream(bout);
     System.setOut(out);
@@ -100,9 +98,6 @@ public class SchemaIT {
     GetSchemaExample.getSchemaExample(projectId, schemaId);
     assertThat(bout.toString()).contains("Got a schema:");
     assertThat(bout.toString()).contains(schemaName.toString());
-
-    bout.reset();
-    // Test validating a schema.
 
     bout.reset();
     // Test listing schemas.
