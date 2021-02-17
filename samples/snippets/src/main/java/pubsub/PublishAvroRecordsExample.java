@@ -66,7 +66,7 @@ public class PublishAvroRecordsExample {
       encoding = topicAdminClient.getTopic(topicName).getSchemaSettings().getEncoding();
     }
 
-    // Create an instance of a generated class.
+    // Create an object of an avro-tools-generated class.
     State state = State.newBuilder().setName("Alaska").setPostAbbr("AK").build();
 
     Publisher publisher = null;
@@ -74,29 +74,28 @@ public class PublishAvroRecordsExample {
     try {
       publisher = Publisher.newBuilder(topicName).build();
 
-      // Prepare to serialize some data to the output stream.
+      // Prepare to serialize the object to the output stream.
       ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
 
       Encoder encoder = null;
 
-      // Encode the object in either BINARY or JSON and write it to the output stream.
       switch (encoding) {
         case BINARY:
           encoder = EncoderFactory.get().directBinaryEncoder(byteStream, /*reuse=*/ null);
-          state.customEncode(encoder);
-          byteStream.flush();
           break;
 
         case JSON:
           encoder =
               EncoderFactory.get()
                   .jsonEncoder(new Parser().parse(schema.getDefinition()), byteStream);
-          state.customEncode(encoder);
-          encoder.flush();
           break;
       }
 
-      // Publish the encoded data as a Pub/Sub message.
+      // Encode the object and write it to the output stream.
+      state.customEncode(encoder);
+      encoder.flush();
+
+      // Publish the encoded object as a Pub/Sub message.
       ByteString data = ByteString.copyFrom(byteStream.toByteArray());
       PubsubMessage message = PubsubMessage.newBuilder().setData(data).build();
       ApiFuture<String> future = publisher.publish(message);
