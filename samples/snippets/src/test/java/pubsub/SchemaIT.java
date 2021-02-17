@@ -92,7 +92,22 @@ public class SchemaIT {
   public void testSchema() throws Exception {
     // Test creating Avro schema.
     CreateAvroSchemaExample.createAvroSchemaExample(projectId, schemaId, avscFile);
-    assertThat(bout.toString()).contains("Created schema:");
+    assertThat(bout.toString()).contains("Created a schema:");
+    assertThat(bout.toString()).contains(schemaName.toString());
+
+    bout.reset();
+    // Test getting a schema.
+    GetSchemaExample.getSchemaExample(projectId, schemaId);
+    assertThat(bout.toString()).contains("Got a schema:");
+    assertThat(bout.toString()).contains(schemaName.toString());
+
+    bout.reset();
+    // Test validating a schema.
+
+    bout.reset();
+    // Test listing schemas.
+    ListSchemasExample.listSchemasExample(projectId);
+    assertThat(bout.toString()).contains("Listed schemas.");
     assertThat(bout.toString()).contains(schemaName.toString());
 
     bout.reset();
@@ -103,8 +118,14 @@ public class SchemaIT {
 
     bout.reset();
     // Test publishing binary-encoded Avro records.
-    PublishAvroRecordsExample.publishAvroRecordsExample(projectId, topicId, schemaId, avroFile);
+    PublishAvroRecordsExample.publishAvroRecordsExample(projectId, topicId, schemaId);
     assertThat(bout.toString())
         .contains("Prepared to publish BINARY-encoded message to " + topicName.toString());
+
+    bout.reset();
+    // Test deleting a schema.
+    DeleteSchemaExample.deleteSchemaExample(projectId, schemaId);
+    assertThat(bout.toString()).contains("Deleted a schema:");
+    assertThat(bout.toString()).contains(schemaName.toString());
   }
 }

@@ -28,17 +28,10 @@ import com.google.pubsub.v1.Schema;
 import com.google.pubsub.v1.SchemaName;
 import com.google.pubsub.v1.TopicName;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import org.apache.avro.Schema.*;
-import org.apache.avro.file.DataFileReader;
-import org.apache.avro.generic.GenericDatumReader;
-import org.apache.avro.generic.GenericDatumWriter;
-import org.apache.avro.generic.GenericRecord;
-import org.apache.avro.io.DatumReader;
-import org.apache.avro.io.DatumWriter;
 import org.apache.avro.io.Encoder;
 import org.apache.avro.io.EncoderFactory;
 
@@ -50,13 +43,11 @@ public class PublishAvroRecordsExample {
     String topicId = "your-topic-id";
     // Use a schema that matches your Avro schema file.
     String schemaId = "your-schema-id";
-    String avscFile = "path/to/an/avro/schema/file/formatted/in/json";
 
-    publishAvroRecordsExample(projectId, topicId, schemaId, avscFile);
+    publishAvroRecordsExample(projectId, topicId, schemaId);
   }
 
-  public static void publishAvroRecordsExample(
-      String projectId, String topicId, String schemaId, String avroFile)
+  public static void publishAvroRecordsExample(String projectId, String topicId, String schemaId)
       throws IOException, ExecutionException, InterruptedException {
 
     Encoding encoding = null;
@@ -76,10 +67,7 @@ public class PublishAvroRecordsExample {
     }
 
     // Create an instance of a generated class.
-    State state = State.newBuilder()
-        .setName("Alaska")
-        .setPostAbbr("AK")
-        .build();
+    State state = State.newBuilder().setName("Alaska").setPostAbbr("AK").build();
 
     Publisher publisher = null;
 
@@ -100,8 +88,9 @@ public class PublishAvroRecordsExample {
           break;
 
         case JSON:
-          encoder = EncoderFactory.get().jsonEncoder(
-              new Parser().parse(schema.getDefinition()), byteStream);
+          encoder =
+              EncoderFactory.get()
+                  .jsonEncoder(new Parser().parse(schema.getDefinition()), byteStream);
           state.customEncode(encoder);
           encoder.flush();
           break;
