@@ -31,7 +31,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import org.apache.avro.Schema.*;
+import org.apache.avro.Schema.Parser;
 import org.apache.avro.io.Encoder;
 import org.apache.avro.io.EncoderFactory;
 
@@ -39,7 +39,7 @@ public class PublishAvroRecordsExample {
   public static void main(String... args) throws Exception {
     // TODO(developer): Replace these variables before running the sample.
     String projectId = "your-project-id";
-    // Use a topic created with your schema.
+    // Use a topic that has a schema attached.
     String topicId = "your-topic-id";
     // Use a schema that matches your Avro schema file.
     String schemaId = "your-schema-id";
@@ -79,6 +79,7 @@ public class PublishAvroRecordsExample {
 
       Encoder encoder = null;
 
+      // Prepare an appropriate encoder for publishing to the topic.
       switch (encoding) {
         case BINARY:
           encoder = EncoderFactory.get().directBinaryEncoder(byteStream, /*reuse=*/ null);
