@@ -1,7 +1,7 @@
 {
   "type":"record",
   "name":"State",
-  "namespace":"pubsub",
+  "namespace":"utilities",
   "doc":"A list of states in the United States of America.",
   "fields":[
     {

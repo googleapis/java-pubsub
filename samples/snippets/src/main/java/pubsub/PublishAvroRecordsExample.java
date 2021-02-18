@@ -34,6 +34,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.avro.Schema.Parser;
 import org.apache.avro.io.Encoder;
 import org.apache.avro.io.EncoderFactory;
+import utilities.State;
 
 public class PublishAvroRecordsExample {
   public static void main(String... args) throws Exception {

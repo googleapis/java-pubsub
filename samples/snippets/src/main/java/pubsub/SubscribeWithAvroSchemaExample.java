@@ -36,6 +36,7 @@ import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.io.Decoder;
 import org.apache.avro.io.DecoderFactory;
 import org.apache.avro.specific.SpecificData;
+import utilities.State;
 
 public class SubscribeWithAvroSchemaExample {
   public static void main(String... args) throws Exception {
@@ -96,7 +97,7 @@ public class SubscribeWithAvroSchemaExample {
         // Obtain a generic Avro record using the decoder.
         GenericRecord record = reader.read(null, decoder);
 
-        // Cast the generic Avro record to the avro-tools-generated class.
+        // Optionally, cast the generic Avro record to the avro-tools-generated class.
         State state = (State) SpecificData.get().deepCopy(State.getClassSchema(), record);
         System.out.println(state.getName() + "-" + state.getPostAbbr());
 
