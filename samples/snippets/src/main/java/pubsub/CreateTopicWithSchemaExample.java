@@ -32,7 +32,7 @@ public class CreateTopicWithSchemaExample {
     String topicId = "your-topic-id";
     // Use an existing schema.
     String schemaId = "your-schema-id";
-    // Choose either BINARY or JSON encoding.
+    // Choose either BINARY or JSON for message serialization encodings.
     Encoding encoding = Encoding.BINARY;
 
     createTopicWithSchemaExample(projectId, topicId, schemaId, encoding);
