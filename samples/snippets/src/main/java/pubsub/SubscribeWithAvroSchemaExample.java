@@ -20,86 +20,69 @@ package pubsub;
 import com.google.cloud.pubsub.v1.AckReplyConsumer;
 import com.google.cloud.pubsub.v1.MessageReceiver;
 import com.google.cloud.pubsub.v1.Subscriber;
-import com.google.cloud.pubsub.v1.TopicAdminClient;
 import com.google.protobuf.ByteString;
-import com.google.pubsub.v1.Encoding;
 import com.google.pubsub.v1.ProjectSubscriptionName;
 import com.google.pubsub.v1.PubsubMessage;
-import com.google.pubsub.v1.TopicName;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import org.apache.avro.generic.GenericDatumReader;
-import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.io.Decoder;
 import org.apache.avro.io.DecoderFactory;
-import org.apache.avro.specific.SpecificData;
+import org.apache.avro.specific.SpecificDatumReader;
 import utilities.State;
 
 public class SubscribeWithAvroSchemaExample {
   public static void main(String... args) throws Exception {
     // TODO(developer): Replace these variables before running the sample.
     String projectId = "your-project-id";
-    // Use a topic that has a schema attached.
-    String topicId = "your-topic-id";
-    // Use a subscription attached to your topic.
+    // Use an existing subscription.
     String subscriptionId = "your-subscription-id";
 
-    subscribeWithAvroSchemaExample(projectId, topicId, subscriptionId);
+    subscribeWithAvroSchemaExample(projectId, subscriptionId);
   }
 
-  public static void subscribeWithAvroSchemaExample(String projectId, String topicId, String subscriptionId)
+  public static void subscribeWithAvroSchemaExample(String projectId, String subscriptionId)
       throws IOException {
 
-    TopicName topicName = TopicName.of(projectId, topicId);
     ProjectSubscriptionName subscriptionName = ProjectSubscriptionName.of(projectId, subscriptionId);
 
-    // Get the topic encoding type.
-    Encoding encoding = null;
-    try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
-      encoding = topicAdminClient.getTopic(topicName).getSchemaSettings().getEncoding();
-    }
-    Encoding finalEncoding = encoding;
-
-    // Prepare a reader for incoming Avro records.
-    GenericDatumReader<GenericRecord> reader = new GenericDatumReader<>(
-        State.getClassSchema()
-    );
+    // Prepare a reader for the encoded Avro records.
+    SpecificDatumReader<State> reader = new SpecificDatumReader<>(State.getClassSchema());
 
     // Instantiate an asynchronous message receiver.
     MessageReceiver receiver = (PubsubMessage message, AckReplyConsumer consumer) -> {
 
       ByteString data = message.getData();
 
+      // Get the schema encoding type.
+      String googclient_schemaencoding = message.getAttributesMap().get("googclient_schemaencoding");
+
       // Send the message data to a byte[] input stream.
       InputStream inputStream = new ByteArrayInputStream(data.toByteArray());
 
       Decoder decoder = null;
 
-      // Prepare an appropriate decoder for messages in this subscription.
+      // Prepare an appropriate decoder for the message data in the input stream
+      // based on the schema encoding type.
       block: try {
-        switch (finalEncoding) {
-          case BINARY:
+        switch (googclient_schemaencoding) {
+          case "BINARY":
             decoder = DecoderFactory.get().directBinaryDecoder(inputStream, /*reuse=*/null);
             System.out.println("Receiving a binary-encoded message:");
             break;
-          case ENCODING_UNSPECIFIED:
-          case UNRECOGNIZED:
-            break block;
-          case JSON:
+          case "JSON":
             decoder = DecoderFactory.get().jsonDecoder(State.getClassSchema(), inputStream);
             System.out.println("Receiving a JSON-encoded message:");
             break;
+          default:
+            break block;
         }
 
-        // Obtain a generic Avro record using the decoder.
-        GenericRecord record = reader.read(null, decoder);
-
-        // Optionally, cast the generic Avro record to the avro-tools-generated class.
-        State state = (State) SpecificData.get().deepCopy(State.getClassSchema(), record);
-        System.out.println(state.getName() + "-" + state.getPostAbbr());
+        // Obtain an object of the generated Avro class using the decoder.
+        State state = reader.read(null, decoder);
+        System.out.println(state.getName() + " is abbreviated as " + state.getPostAbbr());
 
       } catch (IOException e) {
         System.err.println(e);
