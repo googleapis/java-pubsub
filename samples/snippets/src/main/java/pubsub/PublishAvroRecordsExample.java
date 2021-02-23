@@ -38,7 +38,7 @@ public class PublishAvroRecordsExample {
   public static void main(String... args) throws Exception {
     // TODO(developer): Replace these variables before running the sample.
     String projectId = "your-project-id";
-    // Use a topic created with this schema.
+    // Use a topic created with an Avro schema.
     String topicId = "your-topic-id";
 
     publishAvroRecordsExample(projectId, topicId);
