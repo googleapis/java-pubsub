@@ -17,6 +17,7 @@
 package pubsub;
 
 // [START pubsub_get_schema]
+
 import com.google.api.gax.rpc.NotFoundException;
 import com.google.cloud.pubsub.v1.SchemaServiceClient;
 import com.google.pubsub.v1.Schema;
@@ -24,6 +25,7 @@ import com.google.pubsub.v1.SchemaName;
 import java.io.IOException;
 
 public class GetSchemaExample {
+
   public static void main(String... args) throws Exception {
     // TODO(developer): Replace these variables before running the sample.
     String projectId = "your-project-id";
@@ -32,7 +34,8 @@ public class GetSchemaExample {
     getSchemaExample(projectId, schemaId);
   }
 
-  public static void getSchemaExample(String projectId, String schemaId) throws IOException {
+  public static void getSchemaExample(String projectId, String schemaId)
+      throws IOException {
     SchemaName schemaName = SchemaName.of(projectId, schemaId);
 
     try (SchemaServiceClient schemaServiceClient = SchemaServiceClient.create()) {

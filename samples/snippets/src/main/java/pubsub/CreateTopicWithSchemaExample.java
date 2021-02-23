@@ -17,6 +17,7 @@
 package pubsub;
 
 // [START pubsub_create_topic_with_schema]
+
 import com.google.cloud.pubsub.v1.TopicAdminClient;
 import com.google.pubsub.v1.Encoding;
 import com.google.pubsub.v1.SchemaName;
@@ -26,25 +27,28 @@ import com.google.pubsub.v1.TopicName;
 import java.io.IOException;
 
 public class CreateTopicWithSchemaExample {
+
   public static void main(String... args) throws Exception {
     // TODO(developer): Replace these variables before running the sample.
     String projectId = "your-project-id";
     String topicId = "your-topic-id";
     // Use an existing schema.
     String schemaId = "your-schema-id";
-    // Choose either BINARY or JSON for message serialization encodings.
+    // Choose either BINARY or JSON for message serialization for this topic.
     Encoding encoding = Encoding.BINARY;
 
     createTopicWithSchemaExample(projectId, topicId, schemaId, encoding);
   }
 
   public static void createTopicWithSchemaExample(
-      String projectId, String topicId, String schemaId, Encoding encoding) throws IOException {
+      String projectId, String topicId, String schemaId, Encoding encoding)
+      throws IOException {
     TopicName topicName = TopicName.of(projectId, topicId);
     SchemaName schemaName = SchemaName.of(projectId, schemaId);
 
     SchemaSettings schemaSettings =
-        SchemaSettings.newBuilder().setSchema(schemaName.toString()).setEncoding(encoding).build();
+        SchemaSettings.newBuilder().setSchema(schemaName.toString())
+            .setEncoding(encoding).build();
 
     try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
 

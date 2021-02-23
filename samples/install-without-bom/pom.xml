@@ -72,6 +72,11 @@
       <version>1.1.2</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>com.google.protobuf</groupId>
+      <artifactId>protobuf-java-util</artifactId>
+      <version>3.14.0</version>
+    </dependency>
   </dependencies>
 
   <!-- compile and run all snippet tests -->

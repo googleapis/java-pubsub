@@ -21,8 +21,10 @@ import static junit.framework.TestCase.assertNotNull;
 
 import com.google.api.gax.rpc.NotFoundException;
 import com.google.cloud.pubsub.v1.SchemaServiceClient;
+import com.google.cloud.pubsub.v1.SubscriptionAdminClient;
 import com.google.cloud.pubsub.v1.TopicAdminClient;
 import com.google.pubsub.v1.Encoding;
+import com.google.pubsub.v1.ProjectSubscriptionName;
 import com.google.pubsub.v1.SchemaName;
 import com.google.pubsub.v1.TopicName;
 import java.io.ByteArrayOutputStream;
@@ -41,12 +43,21 @@ public class SchemaIT {
 
   private static final String projectId = System.getenv("GOOGLE_CLOUD_PROJECT");
   private static final String _suffix = UUID.randomUUID().toString();
-  private static final String topicId = "schema-topic-" + _suffix;
-  private static final String schemaId = "schema-" + _suffix;
+  private static final String avroTopicId = "avro-topic-" + _suffix;
+  private static final String protoTopicId = "proto-topic-" + _suffix;
+  private static final String avroSubscriptionId = "avro-subscription-" + _suffix;
+  private static final String protoSubscriptionId = "proto-subscription-" + _suffix;
+  private static final String avroSchemaId = "avro-schema-" + _suffix;
+  private static final String protoSchemaId = "proto-schema-" + _suffix;
   private static final String avscFile = "src/main/resources/us-states.avsc";
+  private static final String protoFile = "src/main/resources/us-states.proto";
 
-  private static final TopicName topicName = TopicName.of(projectId, topicId);
-  private static final SchemaName schemaName = SchemaName.of(projectId, schemaId);
+  private static final TopicName avroTopicName = TopicName.of(projectId, avroTopicId);
+  private static final TopicName protoTopicName = TopicName.of(projectId, protoTopicId);
+  private static final ProjectSubscriptionName avroSubscriptionName = ProjectSubscriptionName.of(projectId, avroSubscriptionId);
+  private static final ProjectSubscriptionName protoSubscriptionName = ProjectSubscriptionName.of(projectId, protoSubscriptionId);
+  private static final SchemaName avroSchemaName = SchemaName.of(projectId, avroSchemaId);
+  private static final SchemaName protoSchemaName = SchemaName.of(projectId, protoSchemaId);
 
   private static void requireEnvVar(String varName) {
     assertNotNull(
@@ -70,18 +81,28 @@ public class SchemaIT {
 
   @After
   public void tearDown() throws Exception {
-    // Delete the schema if it has not been cleaned.
+    // Delete the schemas if they have not been cleaned up.
     try (SchemaServiceClient schemaServiceClient = SchemaServiceClient.create()) {
-      schemaServiceClient.deleteSchema(schemaName);
+      schemaServiceClient.deleteSchema(avroSchemaName);
+      schemaServiceClient.deleteSchema(protoSchemaName);
     } catch (NotFoundException ignored) {
-      // ignore this as resources may not have been created
+      // Ignore this as resources may have already been cleaned up.
     }
 
-    // Delete the topic if it has not been cleaned.
-    try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
-      topicAdminClient.deleteTopic(topicName.toString());
+    // Delete the subscriptions.
+    try (SubscriptionAdminClient subscriptionAdmin = SubscriptionAdminClient.create()) {
+      subscriptionAdmin.deleteSubscription(avroSubscriptionName.toString());
+      subscriptionAdmin.deleteSubscription(protoSubscriptionName.toString());
     } catch (NotFoundException ignored) {
-      // ignore this as resources may not have been created
+      // Ignore this as resources may have already been cleaned up.
+    }
+
+    // Delete the topics.
+    try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
+      topicAdminClient.deleteTopic(avroTopicName.toString());
+      topicAdminClient.deleteTopic(protoTopicName.toString());
+    } catch (NotFoundException ignored) {
+      // Ignore this as resources may have already been cleaned up.
     }
     System.setOut(null);
   }
@@ -89,38 +110,71 @@ public class SchemaIT {
   @Test
   public void testSchema() throws Exception {
     // Test creating Avro schema.
-    CreateAvroSchemaExample.createAvroSchemaExample(projectId, schemaId, avscFile);
-    assertThat(bout.toString()).contains("Created a schema:");
-    assertThat(bout.toString()).contains(schemaName.toString());
+    CreateAvroSchemaExample.createAvroSchemaExample(projectId, avroSchemaId, avscFile);
+    assertThat(bout.toString()).contains("Created a schema using an Avro schema:");
+    assertThat(bout.toString()).contains(avroSchemaName.toString());
+
+    // Test creating Proto schema.
+    CreateAvroSchemaExample.createAvroSchemaExample(projectId, protoSchemaId, protoFile);
+    assertThat(bout.toString()).contains("Created a schema using a protobuf schema::");
+    assertThat(bout.toString()).contains(protoSchemaName.toString());
 
     bout.reset();
     // Test getting a schema.
-    GetSchemaExample.getSchemaExample(projectId, schemaId);
+    GetSchemaExample.getSchemaExample(projectId, avroSchemaId);
     assertThat(bout.toString()).contains("Got a schema:");
-    assertThat(bout.toString()).contains(schemaName.toString());
+    assertThat(bout.toString()).contains(avroSchemaName.toString());
 
     bout.reset();
     // Test listing schemas.
     ListSchemasExample.listSchemasExample(projectId);
     assertThat(bout.toString()).contains("Listed schemas.");
-    assertThat(bout.toString()).contains(schemaName.toString());
+    assertThat(bout.toString()).contains(avroSchemaName.toString());
 
     bout.reset();
-    // Test creating a topic with schema.
+    // Test creating a topic with an Avro schema with BINARY encoding.
     CreateTopicWithSchemaExample.createTopicWithSchemaExample(
-        projectId, topicId, schemaId, Encoding.BINARY);
-    assertThat(bout.toString()).contains("Created topic with schema: " + topicName.toString());
+        projectId, avroTopicId, avroSchemaId, Encoding.BINARY);
+    assertThat(bout.toString()).contains("Created topic with schema: " + avroTopicName.toString());
 
     bout.reset();
-    // Test publishing binary-encoded Avro records.
-    PublishAvroRecordsExample.publishAvroRecordsExample(projectId, topicId, schemaId);
-    assertThat(bout.toString())
-        .contains("Prepared to publish BINARY-encoded message to " + topicName.toString());
+    // Test creating a topic with a proto schema with JSON encoding.
+    CreateTopicWithSchemaExample.createTopicWithSchemaExample(
+        projectId, protoTopicId, protoSchemaId, Encoding.JSON);
+    assertThat(bout.toString()).contains("Created topic with schema: " + protoTopicName.toString());
+
+    // Attach a default pull subscription to each topic.
+    CreatePullSubscriptionExample.createPullSubscriptionExample(projectId, avroSubscriptionId, avroTopicId);
+    CreatePullSubscriptionExample.createPullSubscriptionExample(projectId, protoSubscriptionId, protoTopicId);
+
+    bout.reset();
+    // Test publishing BINARY-encoded Avro records.
+    PublishAvroRecordsExample.publishAvroRecordsExample(projectId, avroTopicId);
+    assertThat(bout.toString()).contains("Preparing a BINARY encoder...");
+    assertThat(bout.toString()).contains("Published message ID:");
+
+    bout.reset();
+    // Test publishing JSON-encoded proto messages.
+    PublishAvroRecordsExample.publishAvroRecordsExample(projectId, protoTopicId);
+    assertThat(bout.toString()).contains("Publishing a JSON-formatted message:");
+    assertThat(bout.toString()).contains("Published message ID:");
+
+    bout.reset();
+    // Test receiving BINARY-encoded Avro records.
+    SubscribeWithAvroSchemaExample.subscribeWithAvroSchemaExample(projectId, avroSubscriptionId);
+    assertThat(bout.toString()).contains("Receiving a binary-encoded message:");
+    assertThat(bout.toString()).contains(" is abbreviated as ");
+
+    bout.reset();
+    // Test receiving JSON-encoded proto messages.
+    SubscribeWithProtoSchemaExample.subscribeWithProtoSchemaExample(projectId, protoSubscriptionId);
+    assertThat(bout.toString()).contains("Received a JSON-formatted message:");
+    assertThat(bout.toString()).contains("Ack'ed the message");
 
     bout.reset();
     // Test deleting a schema.
-    DeleteSchemaExample.deleteSchemaExample(projectId, schemaId);
+    DeleteSchemaExample.deleteSchemaExample(projectId, avroSchemaId);
     assertThat(bout.toString()).contains("Deleted a schema:");
-    assertThat(bout.toString()).contains(schemaName.toString());
+    assertThat(bout.toString()).contains(avroSchemaName.toString());
   }
 }

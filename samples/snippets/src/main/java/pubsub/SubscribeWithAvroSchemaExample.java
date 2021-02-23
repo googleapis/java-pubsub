@@ -17,6 +17,7 @@
 package pubsub;
 
 // [START pubsub_subscribe_avro_records]
+
 import com.google.cloud.pubsub.v1.AckReplyConsumer;
 import com.google.cloud.pubsub.v1.MessageReceiver;
 import com.google.cloud.pubsub.v1.Subscriber;
@@ -34,6 +35,7 @@ import org.apache.avro.specific.SpecificDatumReader;
 import utilities.State;
 
 public class SubscribeWithAvroSchemaExample {
+
   public static void main(String... args) throws Exception {
     // TODO(developer): Replace these variables before running the sample.
     String projectId = "your-project-id";
@@ -43,13 +45,15 @@ public class SubscribeWithAvroSchemaExample {
     subscribeWithAvroSchemaExample(projectId, subscriptionId);
   }
 
-  public static void subscribeWithAvroSchemaExample(String projectId, String subscriptionId)
-      throws IOException {
+  public static void subscribeWithAvroSchemaExample(String projectId,
+      String subscriptionId) {
 
-    ProjectSubscriptionName subscriptionName = ProjectSubscriptionName.of(projectId, subscriptionId);
+    ProjectSubscriptionName subscriptionName = ProjectSubscriptionName
+        .of(projectId, subscriptionId);
 
     // Prepare a reader for the encoded Avro records.
-    SpecificDatumReader<State> reader = new SpecificDatumReader<>(State.getClassSchema());
+    SpecificDatumReader<State> reader = new SpecificDatumReader<>(
+        State.getClassSchema());
 
     // Instantiate an asynchronous message receiver.
     MessageReceiver receiver = (PubsubMessage message, AckReplyConsumer consumer) -> {
@@ -57,7 +61,8 @@ public class SubscribeWithAvroSchemaExample {
       ByteString data = message.getData();
 
       // Get the schema encoding type.
-      String googclient_schemaencoding = message.getAttributesMap().get("googclient_schemaencoding");
+      String googclient_schemaencoding = message.getAttributesMap()
+          .get("googclient_schemaencoding");
 
       // Send the message data to a byte[] input stream.
       InputStream inputStream = new ByteArrayInputStream(data.toByteArray());
@@ -66,14 +71,17 @@ public class SubscribeWithAvroSchemaExample {
 
       // Prepare an appropriate decoder for the message data in the input stream
       // based on the schema encoding type.
-      block: try {
+      block:
+      try {
         switch (googclient_schemaencoding) {
           case "BINARY":
-            decoder = DecoderFactory.get().directBinaryDecoder(inputStream, /*reuse=*/null);
+            decoder = DecoderFactory.get()
+                .directBinaryDecoder(inputStream, /*reuse=*/null);
             System.out.println("Receiving a binary-encoded message:");
             break;
           case "JSON":
-            decoder = DecoderFactory.get().jsonDecoder(State.getClassSchema(), inputStream);
+            decoder = DecoderFactory.get()
+                .jsonDecoder(State.getClassSchema(), inputStream);
             System.out.println("Receiving a JSON-encoded message:");
             break;
           default:
@@ -82,7 +90,8 @@ public class SubscribeWithAvroSchemaExample {
 
         // Obtain an object of the generated Avro class using the decoder.
         State state = reader.read(null, decoder);
-        System.out.println(state.getName() + " is abbreviated as " + state.getPostAbbr());
+        System.out
+            .println(state.getName() + " is abbreviated as " + state.getPostAbbr());
 
       } catch (IOException e) {
         System.err.println(e);

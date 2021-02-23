@@ -70,6 +70,11 @@
       <artifactId>snappy-java</artifactId>
       <version>1.1.8.4</version>
     </dependency>
+    <dependency>
+      <groupId>com.google.protobuf</groupId>
+      <artifactId>protobuf-java-util</artifactId>
+      <version>3.14.0</version>
+    </dependency>
 
     <dependency>
       <groupId>junit</groupId>

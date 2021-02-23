@@ -17,12 +17,14 @@
 package pubsub;
 
 // [START pubsub_delete_schema]
+
 import com.google.api.gax.rpc.NotFoundException;
 import com.google.cloud.pubsub.v1.SchemaServiceClient;
 import com.google.pubsub.v1.SchemaName;
 import java.io.IOException;
 
 public class DeleteSchemaExample {
+
   public static void main(String... args) throws Exception {
     // TODO(developer): Replace these variables before running the sample.
     String projectId = "your-project-id";
@@ -31,7 +33,8 @@ public class DeleteSchemaExample {
     deleteSchemaExample(projectId, schemaId);
   }
 
-  public static void deleteSchemaExample(String projectId, String schemaId) throws IOException {
+  public static void deleteSchemaExample(String projectId, String schemaId)
+      throws IOException {
     SchemaName schemaName = SchemaName.of(projectId, schemaId);
 
     try (SchemaServiceClient schemaServiceClient = SchemaServiceClient.create()) {

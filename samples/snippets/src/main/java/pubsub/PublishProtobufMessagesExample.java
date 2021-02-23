@@ -16,24 +16,22 @@
 
 package pubsub;
 
-// [START pubsub_publish_avro_records]
+// [START pubsub_publish_proto_messages]
 
 import com.google.api.core.ApiFuture;
 import com.google.cloud.pubsub.v1.Publisher;
 import com.google.cloud.pubsub.v1.TopicAdminClient;
 import com.google.protobuf.ByteString;
+import com.google.protobuf.util.JsonFormat;
 import com.google.pubsub.v1.Encoding;
 import com.google.pubsub.v1.PubsubMessage;
 import com.google.pubsub.v1.TopicName;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import org.apache.avro.io.Encoder;
-import org.apache.avro.io.EncoderFactory;
-import utilities.State;
+import utilities.StateProto.State;
 
-public class PublishAvroRecordsExample {
+public class PublishProtobufMessagesExample {
 
   public static void main(String... args) throws Exception {
     // TODO(developer): Replace these variables before running the sample.
@@ -56,44 +54,33 @@ public class PublishAvroRecordsExample {
       encoding = topicAdminClient.getTopic(topicName).getSchemaSettings().getEncoding();
     }
 
+    Publisher publisher = null;
+
     // Create an object of an avro-tools-generated class.
     State state = State.newBuilder().setName("Alaska").setPostAbbr("AK").build();
-
-    Publisher publisher = null;
 
     try {
       publisher = Publisher.newBuilder(topicName).build();
 
-      // Prepare to serialize the object to the output stream.
-      ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+      PubsubMessage.Builder message = PubsubMessage.newBuilder();
 
-      Encoder encoder = null;
-
-      // Prepare an appropriate encoder for publishing to the topic.
+      // Prepare an appropriately formatted message based on topic encoding.
       switch (encoding) {
         case BINARY:
-          System.out.println("Preparing a BINARY encoder...");
-          encoder = EncoderFactory.get()
-              .directBinaryEncoder(byteStream, /*reuse=*/ null);
+          message.setData(state.toByteString());
+          System.out.println("Publishing a BINARY-formatted message:\n" + message);
           break;
 
         case JSON:
-          System.out.println("Preparing a JSON encoder...");
-          encoder =
-              EncoderFactory.get().jsonEncoder(State.getClassSchema(), byteStream);
+          String jsonString = JsonFormat.printer().omittingInsignificantWhitespace()
+              .print(state);
+          message.setData(ByteString.copyFromUtf8(jsonString));
+          System.out.println("Publishing a JSON-formatted message:\n" + message);
           break;
       }
 
-      // Encode the object and write it to the output stream.
-      state.customEncode(encoder);
-      encoder.flush();
-
-      // Publish the encoded object as a Pub/Sub message.
-      ByteString data = ByteString.copyFrom(byteStream.toByteArray());
-      PubsubMessage message = PubsubMessage.newBuilder().setData(data).build();
-      System.out.println("Publishing message: " + message);
-
-      ApiFuture<String> future = publisher.publish(message);
+      // Publish the message.
+      ApiFuture<String> future = publisher.publish(message.build());
       System.out.println("Published message ID: " + future.get());
 
     } finally {
@@ -104,4 +91,4 @@ public class PublishAvroRecordsExample {
     }
   }
 }
-// [END pubsub_publish_avro_records]
+// [END pubsub_publish_proto_messages]
