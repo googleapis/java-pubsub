@@ -104,7 +104,9 @@
             </goals>
             <configuration>
               <resources>
-                <directory>../snippets/src/main/resources</directory>
+                <resource>
+                  <directory>../snippets/src/main/resources</directory>
+                </resource>
               </resources>
             </configuration>
           </execution>
