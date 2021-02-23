@@ -28,7 +28,10 @@ import com.google.pubsub.v1.ProjectSubscriptionName;
 import com.google.pubsub.v1.SchemaName;
 import com.google.pubsub.v1.TopicName;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.PrintStream;
+import java.nio.file.FileSystems;
+import java.nio.file.Paths;
 import java.util.UUID;
 import org.junit.After;
 import org.junit.Before;
@@ -49,8 +52,13 @@ public class SchemaIT {
   private static final String protoSubscriptionId = "proto-subscription-" + _suffix;
   private static final String avroSchemaId = "avro-schema-" + _suffix;
   private static final String protoSchemaId = "proto-schema-" + _suffix;
-  private static final String avscFile = "src/main/resources/us-states.avsc";
-  private static final String protoFile = "src/main/resources/us-states.proto";
+
+  ClassLoader classLoader = getClass().getClassLoader();
+  File avscFile = new File(classLoader.getResource("us-states.avsc").getFile());
+  String absoluteAvscFilePath = avscFile.getAbsolutePath();
+
+  File protoFile = new File(classLoader.getResource("us-states.proto").getFile());
+  String absoluteProtoFilePath = protoFile.getAbsolutePath();
 
   private static final TopicName avroTopicName = TopicName.of(projectId, avroTopicId);
   private static final TopicName protoTopicName = TopicName.of(projectId, protoTopicId);
@@ -110,12 +118,12 @@ public class SchemaIT {
   @Test
   public void testSchema() throws Exception {
     // Test creating Avro schema.
-    CreateAvroSchemaExample.createAvroSchemaExample(projectId, avroSchemaId, avscFile);
+    CreateAvroSchemaExample.createAvroSchemaExample(projectId, avroSchemaId, absoluteAvscFilePath);
     assertThat(bout.toString()).contains("Created a schema using an Avro schema:");
     assertThat(bout.toString()).contains(avroSchemaName.toString());
 
     // Test creating Proto schema.
-    CreateProtoSchemaExample.createProtoSchemaExample(projectId, protoSchemaId, protoFile);
+    CreateProtoSchemaExample.createProtoSchemaExample(projectId, protoSchemaId, absoluteProtoFilePath);
     assertThat(bout.toString()).contains("Created a schema using a protobuf schema:");
     assertThat(bout.toString()).contains(protoSchemaName.toString());
 

@@ -122,6 +122,19 @@
               </sources>
             </configuration>
           </execution>
+          <execution>
+            <id>add-snippets-tests-resource</id>
+            <goals>
+              <goal>add-test-resource</goal>
+            </goals>
+            <configuration>
+              <resources>
+                <resource>
+                  <directory>../snippets/src/test/resources</directory>>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
     </plugins>
