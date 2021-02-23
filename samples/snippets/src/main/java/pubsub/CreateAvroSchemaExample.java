@@ -24,7 +24,8 @@ import com.google.pubsub.v1.ProjectName;
 import com.google.pubsub.v1.Schema;
 import com.google.pubsub.v1.SchemaName;
 import java.io.IOException;
-import org.apache.avro.Schema.Parser;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class CreateAvroSchemaExample {
 
@@ -45,7 +46,7 @@ public class CreateAvroSchemaExample {
     SchemaName schemaName = SchemaName.of(projectId, schemaId);
 
     // Parse an Avro schema file formatted in JSON.
-    String avscSource = new Parser().parse(avscFile).toString();
+    String avscSource = new String(Files.readAllBytes(Paths.get(avscFile)));
 
     try (SchemaServiceClient schemaServiceClient = SchemaServiceClient.create()) {
 

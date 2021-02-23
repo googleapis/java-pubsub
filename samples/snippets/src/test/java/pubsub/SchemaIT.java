@@ -115,8 +115,8 @@ public class SchemaIT {
     assertThat(bout.toString()).contains(avroSchemaName.toString());
 
     // Test creating Proto schema.
-    CreateAvroSchemaExample.createAvroSchemaExample(projectId, protoSchemaId, protoFile);
-    assertThat(bout.toString()).contains("Created a schema using a protobuf schema::");
+    CreateProtoSchemaExample.createProtoSchemaExample(projectId, protoSchemaId, protoFile);
+    assertThat(bout.toString()).contains("Created a schema using a protobuf schema:");
     assertThat(bout.toString()).contains(protoSchemaName.toString());
 
     bout.reset();
@@ -156,7 +156,7 @@ public class SchemaIT {
     bout.reset();
     // Test publishing JSON-encoded proto messages.
     PublishAvroRecordsExample.publishAvroRecordsExample(projectId, protoTopicId);
-    assertThat(bout.toString()).contains("Publishing a JSON-formatted message:");
+    assertThat(bout.toString()).contains("Preparing a JSON encoder...");
     assertThat(bout.toString()).contains("Published message ID:");
 
     bout.reset();
