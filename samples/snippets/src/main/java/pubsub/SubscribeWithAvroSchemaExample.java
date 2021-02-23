@@ -45,61 +45,56 @@ public class SubscribeWithAvroSchemaExample {
     subscribeWithAvroSchemaExample(projectId, subscriptionId);
   }
 
-  public static void subscribeWithAvroSchemaExample(String projectId,
-      String subscriptionId) {
+  public static void subscribeWithAvroSchemaExample(String projectId, String subscriptionId) {
 
-    ProjectSubscriptionName subscriptionName = ProjectSubscriptionName
-        .of(projectId, subscriptionId);
+    ProjectSubscriptionName subscriptionName =
+        ProjectSubscriptionName.of(projectId, subscriptionId);
 
     // Prepare a reader for the encoded Avro records.
-    SpecificDatumReader<State> reader = new SpecificDatumReader<>(
-        State.getClassSchema());
+    SpecificDatumReader<State> reader = new SpecificDatumReader<>(State.getClassSchema());
 
     // Instantiate an asynchronous message receiver.
-    MessageReceiver receiver = (PubsubMessage message, AckReplyConsumer consumer) -> {
+    MessageReceiver receiver =
+        (PubsubMessage message, AckReplyConsumer consumer) -> {
+          ByteString data = message.getData();
 
-      ByteString data = message.getData();
+          // Get the schema encoding type.
+          String googclient_schemaencoding =
+              message.getAttributesMap().get("googclient_schemaencoding");
 
-      // Get the schema encoding type.
-      String googclient_schemaencoding = message.getAttributesMap()
-          .get("googclient_schemaencoding");
+          // Send the message data to a byte[] input stream.
+          InputStream inputStream = new ByteArrayInputStream(data.toByteArray());
 
-      // Send the message data to a byte[] input stream.
-      InputStream inputStream = new ByteArrayInputStream(data.toByteArray());
+          Decoder decoder = null;
 
-      Decoder decoder = null;
+          // Prepare an appropriate decoder for the message data in the input stream
+          // based on the schema encoding type.
+          block:
+          try {
+            switch (googclient_schemaencoding) {
+              case "BINARY":
+                decoder = DecoderFactory.get().directBinaryDecoder(inputStream, /*reuse=*/ null);
+                System.out.println("Receiving a binary-encoded message:");
+                break;
+              case "JSON":
+                decoder = DecoderFactory.get().jsonDecoder(State.getClassSchema(), inputStream);
+                System.out.println("Receiving a JSON-encoded message:");
+                break;
+              default:
+                break block;
+            }
 
-      // Prepare an appropriate decoder for the message data in the input stream
-      // based on the schema encoding type.
-      block:
-      try {
-        switch (googclient_schemaencoding) {
-          case "BINARY":
-            decoder = DecoderFactory.get()
-                .directBinaryDecoder(inputStream, /*reuse=*/null);
-            System.out.println("Receiving a binary-encoded message:");
-            break;
-          case "JSON":
-            decoder = DecoderFactory.get()
-                .jsonDecoder(State.getClassSchema(), inputStream);
-            System.out.println("Receiving a JSON-encoded message:");
-            break;
-          default:
-            break block;
-        }
+            // Obtain an object of the generated Avro class using the decoder.
+            State state = reader.read(null, decoder);
+            System.out.println(state.getName() + " is abbreviated as " + state.getPostAbbr());
 
-        // Obtain an object of the generated Avro class using the decoder.
-        State state = reader.read(null, decoder);
-        System.out
-            .println(state.getName() + " is abbreviated as " + state.getPostAbbr());
+          } catch (IOException e) {
+            System.err.println(e);
+          }
 
-      } catch (IOException e) {
-        System.err.println(e);
-      }
-
-      // Ack the message.
-      consumer.ack();
-    };
+          // Ack the message.
+          consumer.ack();
+        };
 
     Subscriber subscriber = null;
     try {

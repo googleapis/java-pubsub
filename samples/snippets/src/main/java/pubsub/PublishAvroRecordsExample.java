@@ -73,14 +73,12 @@ public class PublishAvroRecordsExample {
       switch (encoding) {
         case BINARY:
           System.out.println("Preparing a BINARY encoder...");
-          encoder = EncoderFactory.get()
-              .directBinaryEncoder(byteStream, /*reuse=*/ null);
+          encoder = EncoderFactory.get().directBinaryEncoder(byteStream, /*reuse=*/ null);
           break;
 
         case JSON:
           System.out.println("Preparing a JSON encoder...");
-          encoder =
-              EncoderFactory.get().jsonEncoder(State.getClassSchema(), byteStream);
+          encoder = EncoderFactory.get().jsonEncoder(State.getClassSchema(), byteStream);
           break;
       }
 

@@ -38,8 +38,7 @@ public class CreateProtoSchemaExample {
     createProtoSchemaExample(projectId, schemaId, protoFile);
   }
 
-  public static void createProtoSchemaExample(String projectId, String schemaId,
-      String protoFile)
+  public static void createProtoSchemaExample(String projectId, String schemaId, String protoFile)
       throws IOException {
 
     ProjectName projectName = ProjectName.of(projectId);

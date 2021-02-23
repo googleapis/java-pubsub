@@ -41,14 +41,12 @@ public class CreateTopicWithSchemaExample {
   }
 
   public static void createTopicWithSchemaExample(
-      String projectId, String topicId, String schemaId, Encoding encoding)
-      throws IOException {
+      String projectId, String topicId, String schemaId, Encoding encoding) throws IOException {
     TopicName topicName = TopicName.of(projectId, topicId);
     SchemaName schemaName = SchemaName.of(projectId, schemaId);
 
     SchemaSettings schemaSettings =
-        SchemaSettings.newBuilder().setSchema(schemaName.toString())
-            .setEncoding(encoding).build();
+        SchemaSettings.newBuilder().setSchema(schemaName.toString()).setEncoding(encoding).build();
 
     try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
 

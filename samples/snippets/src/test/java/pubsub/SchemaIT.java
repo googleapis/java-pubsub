@@ -30,8 +30,6 @@ import com.google.pubsub.v1.TopicName;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
-import java.nio.file.FileSystems;
-import java.nio.file.Paths;
 import java.util.UUID;
 import org.junit.After;
 import org.junit.Before;
@@ -62,8 +60,10 @@ public class SchemaIT {
 
   private static final TopicName avroTopicName = TopicName.of(projectId, avroTopicId);
   private static final TopicName protoTopicName = TopicName.of(projectId, protoTopicId);
-  private static final ProjectSubscriptionName avroSubscriptionName = ProjectSubscriptionName.of(projectId, avroSubscriptionId);
-  private static final ProjectSubscriptionName protoSubscriptionName = ProjectSubscriptionName.of(projectId, protoSubscriptionId);
+  private static final ProjectSubscriptionName avroSubscriptionName =
+      ProjectSubscriptionName.of(projectId, avroSubscriptionId);
+  private static final ProjectSubscriptionName protoSubscriptionName =
+      ProjectSubscriptionName.of(projectId, protoSubscriptionId);
   private static final SchemaName avroSchemaName = SchemaName.of(projectId, avroSchemaId);
   private static final SchemaName protoSchemaName = SchemaName.of(projectId, protoSchemaId);
 
@@ -123,7 +123,8 @@ public class SchemaIT {
     assertThat(bout.toString()).contains(avroSchemaName.toString());
 
     // Test creating Proto schema.
-    CreateProtoSchemaExample.createProtoSchemaExample(projectId, protoSchemaId, absoluteProtoFilePath);
+    CreateProtoSchemaExample.createProtoSchemaExample(
+        projectId, protoSchemaId, absoluteProtoFilePath);
     assertThat(bout.toString()).contains("Created a schema using a protobuf schema:");
     assertThat(bout.toString()).contains(protoSchemaName.toString());
 
@@ -152,8 +153,10 @@ public class SchemaIT {
     assertThat(bout.toString()).contains("Created topic with schema: " + protoTopicName.toString());
 
     // Attach a default pull subscription to each topic.
-    CreatePullSubscriptionExample.createPullSubscriptionExample(projectId, avroSubscriptionId, avroTopicId);
-    CreatePullSubscriptionExample.createPullSubscriptionExample(projectId, protoSubscriptionId, protoTopicId);
+    CreatePullSubscriptionExample.createPullSubscriptionExample(
+        projectId, avroSubscriptionId, avroTopicId);
+    CreatePullSubscriptionExample.createPullSubscriptionExample(
+        projectId, protoSubscriptionId, protoTopicId);
 
     bout.reset();
     // Test publishing BINARY-encoded Avro records.

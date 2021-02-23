@@ -41,8 +41,7 @@ public class SubscribeWithProtoSchemaExample {
     subscribeWithProtoSchemaExample(projectId, subscriptionId);
   }
 
-  public static void subscribeWithProtoSchemaExample(String projectId,
-      String subscriptionId) {
+  public static void subscribeWithProtoSchemaExample(String projectId, String subscriptionId) {
 
     ProjectSubscriptionName subscriptionName =
         ProjectSubscriptionName.of(projectId, subscriptionId);
@@ -52,8 +51,8 @@ public class SubscribeWithProtoSchemaExample {
           ByteString data = message.getData();
 
           // Get the schema encoding type.
-          String googclient_schemaencoding = message.getAttributesMap()
-              .get("googclient_schemaencoding");
+          String googclient_schemaencoding =
+              message.getAttributesMap().get("googclient_schemaencoding");
 
           block:
           try {
@@ -61,15 +60,13 @@ public class SubscribeWithProtoSchemaExample {
               case "BINARY":
                 // Obtain an object of the generated proto class.
                 State state = State.parseFrom(data);
-                System.out.println(
-                    "Received a BINARY-formatted message: " + state);
+                System.out.println("Received a BINARY-formatted message: " + state);
                 break;
 
               case "JSON":
                 State.Builder stateBuilder = State.newBuilder();
                 JsonFormat.parser().merge(data.toStringUtf8(), stateBuilder);
-                System.out.println(
-                    "Received a JSON-formatted message:" + stateBuilder.build());
+                System.out.println("Received a JSON-formatted message:" + stateBuilder.build());
                 break;
 
               default:

@@ -34,8 +34,7 @@ public class GetSchemaExample {
     getSchemaExample(projectId, schemaId);
   }
 
-  public static void getSchemaExample(String projectId, String schemaId)
-      throws IOException {
+  public static void getSchemaExample(String projectId, String schemaId) throws IOException {
     SchemaName schemaName = SchemaName.of(projectId, schemaId);
 
     try (SchemaServiceClient schemaServiceClient = SchemaServiceClient.create()) {

@@ -38,8 +38,7 @@ public class CreateAvroSchemaExample {
     createAvroSchemaExample(projectId, schemaId, avscFile);
   }
 
-  public static void createAvroSchemaExample(String projectId, String schemaId,
-      String avscFile)
+  public static void createAvroSchemaExample(String projectId, String schemaId, String avscFile)
       throws IOException {
 
     ProjectName projectName = ProjectName.of(projectId);

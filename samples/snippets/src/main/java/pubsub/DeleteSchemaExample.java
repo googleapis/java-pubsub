@@ -33,8 +33,7 @@ public class DeleteSchemaExample {
     deleteSchemaExample(projectId, schemaId);
   }
 
-  public static void deleteSchemaExample(String projectId, String schemaId)
-      throws IOException {
+  public static void deleteSchemaExample(String projectId, String schemaId) throws IOException {
     SchemaName schemaName = SchemaName.of(projectId, schemaId);
 
     try (SchemaServiceClient schemaServiceClient = SchemaServiceClient.create()) {

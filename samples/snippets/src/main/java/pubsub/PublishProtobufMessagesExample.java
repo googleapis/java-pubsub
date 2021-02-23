@@ -72,8 +72,7 @@ public class PublishProtobufMessagesExample {
           break;
 
         case JSON:
-          String jsonString = JsonFormat.printer().omittingInsignificantWhitespace()
-              .print(state);
+          String jsonString = JsonFormat.printer().omittingInsignificantWhitespace().print(state);
           message.setData(ByteString.copyFromUtf8(jsonString));
           System.out.println("Publishing a JSON-formatted message:\n" + message);
           break;
