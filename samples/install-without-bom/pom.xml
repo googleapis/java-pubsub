@@ -99,6 +99,19 @@
             </configuration>
           </execution>
           <execution>
+            <id>add-snippets-resources</id>
+            <goals>
+              <goal>add-resource</goal>
+            </goals>
+            <configuration>
+              <resources>
+                <resource>
+                  <directory>../snippets/src/main/resources</directory>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+          <execution>
             <id>add-snippets-tests</id>
             <goals>
               <goal>add-test-source</goal>
