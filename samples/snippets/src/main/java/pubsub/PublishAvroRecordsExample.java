@@ -61,6 +61,7 @@ public class PublishAvroRecordsExample {
 
     Publisher publisher = null;
 
+    block:
     try {
       publisher = Publisher.newBuilder(topicName).build();
 
@@ -80,6 +81,9 @@ public class PublishAvroRecordsExample {
           System.out.println("Preparing a JSON encoder...");
           encoder = EncoderFactory.get().jsonEncoder(State.getClassSchema(), byteStream);
           break;
+
+        default:
+          break block;
       }
 
       // Encode the object and write it to the output stream.

@@ -59,6 +59,7 @@ public class PublishProtobufMessagesExample {
     // Create an object of an avro-tools-generated class.
     State state = State.newBuilder().setName("Alaska").setPostAbbr("AK").build();
 
+    block:
     try {
       publisher = Publisher.newBuilder(topicName).build();
 
@@ -76,6 +77,9 @@ public class PublishProtobufMessagesExample {
           message.setData(ByteString.copyFromUtf8(jsonString));
           System.out.println("Publishing a JSON-formatted message:\n" + message);
           break;
+
+        default:
+          break block;
       }
 
       // Publish the message.

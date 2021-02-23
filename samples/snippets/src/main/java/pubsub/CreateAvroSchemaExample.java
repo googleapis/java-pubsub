@@ -44,7 +44,7 @@ public class CreateAvroSchemaExample {
     ProjectName projectName = ProjectName.of(projectId);
     SchemaName schemaName = SchemaName.of(projectId, schemaId);
 
-    // Parse an Avro schema file formatted in JSON.
+    // Read an Avro schema file formatted in JSON as a string.
     String avscSource = new String(Files.readAllBytes(Paths.get(avscFile)));
 
     try (SchemaServiceClient schemaServiceClient = SchemaServiceClient.create()) {

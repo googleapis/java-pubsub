@@ -51,12 +51,11 @@ public class SubscribeWithProtoSchemaExample {
           ByteString data = message.getData();
 
           // Get the schema encoding type.
-          String googclient_schemaencoding =
-              message.getAttributesMap().get("googclient_schemaencoding");
+          String encoding = message.getAttributesMap().get("googclient_schemaencoding");
 
           block:
           try {
-            switch (googclient_schemaencoding) {
+            switch (encoding) {
               case "BINARY":
                 // Obtain an object of the generated proto class.
                 State state = State.parseFrom(data);

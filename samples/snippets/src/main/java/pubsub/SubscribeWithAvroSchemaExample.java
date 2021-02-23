@@ -59,8 +59,7 @@ public class SubscribeWithAvroSchemaExample {
           ByteString data = message.getData();
 
           // Get the schema encoding type.
-          String googclient_schemaencoding =
-              message.getAttributesMap().get("googclient_schemaencoding");
+          String encoding = message.getAttributesMap().get("googclient_schemaencoding");
 
           // Send the message data to a byte[] input stream.
           InputStream inputStream = new ByteArrayInputStream(data.toByteArray());
@@ -71,7 +70,7 @@ public class SubscribeWithAvroSchemaExample {
           // based on the schema encoding type.
           block:
           try {
-            switch (googclient_schemaencoding) {
+            switch (encoding) {
               case "BINARY":
                 decoder = DecoderFactory.get().directBinaryDecoder(inputStream, /*reuse=*/ null);
                 System.out.println("Receiving a binary-encoded message:");

@@ -91,8 +91,8 @@ public class SchemaIT {
   public void tearDown() throws Exception {
     // Delete the schemas if they have not been cleaned up.
     try (SchemaServiceClient schemaServiceClient = SchemaServiceClient.create()) {
-      schemaServiceClient.deleteSchema(avroSchemaName);
       schemaServiceClient.deleteSchema(protoSchemaName);
+      schemaServiceClient.deleteSchema(avroSchemaName);
     } catch (NotFoundException ignored) {
       // Ignore this as resources may have already been cleaned up.
     }
