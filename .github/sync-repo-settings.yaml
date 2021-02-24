@@ -38,7 +38,6 @@ branchProtectionRules:
     - "units (8)"
     - "units (11)"
     - "Kokoro - Test: Integration"
-    - "Kokoro - Test: Samples"
     - "cla/google"
 # List of explicit permissions to add (additive only)
 permissionRules:
