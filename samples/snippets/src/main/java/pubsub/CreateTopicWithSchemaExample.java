@@ -18,6 +18,7 @@ package pubsub;
 
 // [START pubsub_create_topic_with_schema]
 
+import com.google.api.gax.rpc.AlreadyExistsException;
 import com.google.cloud.pubsub.v1.TopicAdminClient;
 import com.google.pubsub.v1.Encoding;
 import com.google.pubsub.v1.SchemaName;
@@ -34,7 +35,7 @@ public class CreateTopicWithSchemaExample {
     String topicId = "your-topic-id";
     // Use an existing schema.
     String schemaId = "your-schema-id";
-    // Choose either BINARY or JSON for message serialization for this topic.
+    // Choose either BINARY or JSON message serialization in this topic.
     Encoding encoding = Encoding.BINARY;
 
     createTopicWithSchemaExample(projectId, topicId, schemaId, encoding);
@@ -58,6 +59,8 @@ public class CreateTopicWithSchemaExample {
                   .build());
 
       System.out.println("Created topic with schema: " + topic.getName());
+    } catch (AlreadyExistsException e) {
+      System.out.println(schemaName + "already exists.");
     }
   }
 }
