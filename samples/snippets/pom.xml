@@ -87,7 +87,5 @@
       <version>1.1.2</version>
       <scope>test</scope>
     </dependency>
-  <!-- [START pubsub_install_with_bom] -->
   </dependencies>
-  <!-- [END pubsub_install_with_bom] -->
 </project>
