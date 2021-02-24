@@ -166,7 +166,7 @@ public class SchemaIT {
 
     bout.reset();
     // Test publishing JSON-encoded proto messages.
-    PublishAvroRecordsExample.publishAvroRecordsExample(projectId, protoTopicId);
+    PublishProtobufMessagesExample.publishProtobufMessagesExample(projectId, protoTopicId);
     assertThat(bout.toString()).contains("Preparing a JSON encoder...");
     assertThat(bout.toString()).contains("Published message ID:");
 

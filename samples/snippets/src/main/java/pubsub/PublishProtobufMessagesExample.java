@@ -39,10 +39,10 @@ public class PublishProtobufMessagesExample {
     // Use a topic created with a proto schema.
     String topicId = "your-topic-id";
 
-    publishAvroRecordsExample(projectId, topicId);
+    publishProtobufMessagesExample(projectId, topicId);
   }
 
-  public static void publishAvroRecordsExample(String projectId, String topicId)
+  public static void publishProtobufMessagesExample(String projectId, String topicId)
       throws IOException, ExecutionException, InterruptedException {
 
     Encoding encoding = null;
