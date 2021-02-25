@@ -45,7 +45,7 @@
       <dependency>
         <groupId>com.google.cloud</groupId>
         <artifactId>libraries-bom</artifactId>
-        <version>16.4.0</version>
+        <version>18.0.0</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -57,7 +57,23 @@
       <groupId>com.google.cloud</groupId>
       <artifactId>google-cloud-pubsub</artifactId>
     </dependency>
-    <!-- [END pubsub_install_with_bom] -->
+    
+    <!-- [START_EXCLUDE] -->
+    <dependency>
+      <groupId>org.apache.avro</groupId>
+      <artifactId>avro</artifactId>
+      <version>1.10.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.xerial.snappy</groupId>
+      <artifactId>snappy-java</artifactId>
+      <version>1.1.8.4</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.protobuf</groupId>
+      <artifactId>protobuf-java-util</artifactId>
+      <version>3.15.2</version>
+    </dependency>
 
     <dependency>
       <groupId>junit</groupId>
@@ -71,5 +87,7 @@
       <version>1.1.2</version>
       <scope>test</scope>
     </dependency>
+    <!-- [END_EXCLUDE] -->
   </dependencies>
+  <!-- [END pubsub_install_with_bom] -->
 </project>
