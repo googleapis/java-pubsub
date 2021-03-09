@@ -73,7 +73,9 @@ public class SchemaIT {
         System.getenv(varName));
   }
 
-  @Rule public Timeout globalTimeout = Timeout.seconds(300); // 5 minute timeout
+  @Rule public Timeout globalTimeout = Timeout.seconds(600); // 10 minute timeout
+
+  @Rule public RetryRule retryRule = new RetryRule(3); // Retry 3 times.
 
   @BeforeClass
   public static void checkRequirements() {
@@ -116,6 +118,7 @@ public class SchemaIT {
   }
 
   @Test
+  @Retry
   public void testSchema() throws Exception {
     // Test creating Avro schema.
     CreateAvroSchemaExample.createAvroSchemaExample(projectId, avroSchemaId, absoluteAvscFilePath);
