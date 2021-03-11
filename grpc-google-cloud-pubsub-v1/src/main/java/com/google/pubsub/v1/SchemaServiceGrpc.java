@@ -22,7 +22,13 @@ import static io.grpc.stub.ClientCalls.futureUnaryCall;
 import static io.grpc.stub.ServerCalls.asyncUnaryCall;
 import static io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall;
 
-/** */
+/**
+ *
+ *
+ * <pre>
+ * Service for doing schema-related operations.
+ * </pre>
+ */
 @javax.annotation.Generated(
     value = "by gRPC proto compiler",
     comments = "Source: google/pubsub/v1/schema.proto")
@@ -319,7 +325,13 @@ public final class SchemaServiceGrpc {
     return SchemaServiceFutureStub.newStub(factory, channel);
   }
 
-  /** */
+  /**
+   *
+   *
+   * <pre>
+   * Service for doing schema-related operations.
+   * </pre>
+   */
   public abstract static class SchemaServiceImplBase implements io.grpc.BindableService {
 
     /**
@@ -445,7 +457,13 @@ public final class SchemaServiceGrpc {
     }
   }
 
-  /** */
+  /**
+   *
+   *
+   * <pre>
+   * Service for doing schema-related operations.
+   * </pre>
+   */
   public static final class SchemaServiceStub
       extends io.grpc.stub.AbstractAsyncStub<SchemaServiceStub> {
     private SchemaServiceStub(io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
@@ -553,7 +571,13 @@ public final class SchemaServiceGrpc {
     }
   }
 
-  /** */
+  /**
+   *
+   *
+   * <pre>
+   * Service for doing schema-related operations.
+   * </pre>
+   */
   public static final class SchemaServiceBlockingStub
       extends io.grpc.stub.AbstractBlockingStub<SchemaServiceBlockingStub> {
     private SchemaServiceBlockingStub(io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
@@ -638,7 +662,13 @@ public final class SchemaServiceGrpc {
     }
   }
 
-  /** */
+  /**
+   *
+   *
+   * <pre>
+   * Service for doing schema-related operations.
+   * </pre>
+   */
   public static final class SchemaServiceFutureStub
       extends io.grpc.stub.AbstractFutureStub<SchemaServiceFutureStub> {
     private SchemaServiceFutureStub(io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
