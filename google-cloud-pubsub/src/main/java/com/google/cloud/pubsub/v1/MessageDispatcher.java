@@ -85,7 +85,7 @@ class MessageDispatcher {
   // Start the deadline at the minimum ack deadline so messages which arrive before this is
   // updated will not have a long ack deadline.
   private final AtomicInteger messageDeadlineSeconds = new AtomicInteger(
-      Subscriber.MIN_ACK_DEADLINE_SECONDS);
+    Subscriber.MIN_ACK_DEADLINE_SECONDS);
   private final AtomicBoolean extendDeadline = new AtomicBoolean(true);
   private final Lock jobLock;
   private ScheduledFuture<?> backgroundJob;
