@@ -18,6 +18,11 @@
   </properties>
   <dependencies>
     <dependency>
+      <groupId>com.google.auth</groupId>
+      <artifactId>google-auth-library-oauth2-http</artifactId>
+      <version>0.24.2-SNAPSHOT</version>
+    </dependency>
+    <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-api</artifactId>
     </dependency>
@@ -57,10 +62,12 @@
     <dependency>
       <groupId>com.google.api</groupId>
       <artifactId>gax</artifactId>
+      <version>1.62.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.google.api</groupId>
       <artifactId>gax-grpc</artifactId>
+      <version>1.62.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.threeten</groupId>
@@ -85,10 +92,6 @@
     <dependency>
       <groupId>com.google.auto.value</groupId>
       <artifactId>auto-value-annotations</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.google.http-client</groupId>
-      <artifactId>google-http-client</artifactId>
     </dependency>
 
     <!-- Test dependencies -->
