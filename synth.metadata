@@ -4,22 +4,22 @@
       "git": {
         "name": ".",
         "remote": "https://github.com/googleapis/java-pubsub.git",
-        "sha": "3c478ec68afb8426ba5e670c563a7a925e431d85"
+        "sha": "3f23ac6cda00814f74f2c435dd8a05b70ac69d27"
       }
     },
     {
       "git": {
         "name": "googleapis",
         "remote": "https://github.com/googleapis/googleapis.git",
-        "sha": "41d8fbfec9d4bc4a8859f78185713950913b4bf3",
-        "internalRef": "348038736"
+        "sha": "f6dd7e47620566925a4b3f1ce029e74e1b2f2516",
+        "internalRef": "359781040"
       }
     },
     {
       "git": {
         "name": "synthtool",
         "remote": "https://github.com/googleapis/synthtool.git",
-        "sha": "6946fd71ae9215b0e7ae188f5057df765ee6d7d2"
+        "sha": "0b064d767537e0675fc053e53fca473c5c701fb8"
       }
     }
   ],
@@ -49,7 +49,6 @@
     ".github/workflows/approve-readme.yaml",
     ".github/workflows/auto-release.yaml",
     ".github/workflows/ci.yaml",
-    ".github/workflows/samples.yaml",
     ".kokoro/build.bat",
     ".kokoro/build.sh",
     ".kokoro/coerce_logs.sh",

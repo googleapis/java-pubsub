@@ -308,9 +308,7 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
               public void run() {
                 try {
                   // stop connection is no-op if connections haven't been started.
-                  stopAllStreamingConnections();
-                  shutdownBackgroundResources();
-                  subStub.shutdownNow();
+                  runShutdown();
                   notifyStopped();
                 } catch (Exception e) {
                   notifyFailed(e);
@@ -318,6 +316,12 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
               }
             })
         .start();
+  }
+
+  private void runShutdown() {
+    stopAllStreamingConnections();
+    shutdownBackgroundResources();
+    subStub.shutdownNow();
   }
 
   private void startStreamingConnections() {
@@ -352,8 +356,7 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
             public void failed(State from, Throwable failure) {
               // If a connection failed is because of a fatal error, we should fail the
               // whole subscriber.
-              stopAllStreamingConnections();
-              shutdownBackgroundResources();
+              runShutdown();
               try {
                 notifyFailed(failure);
               } catch (IllegalStateException e) {
@@ -411,6 +414,11 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
   /** Builder of {@link Subscriber Subscribers}. */
   public static final class Builder {
     private static final Duration DEFAULT_MAX_ACK_EXTENSION_PERIOD = Duration.ofMinutes(60);
+    static final FlowControlSettings DEFAULT_FLOW_CONTROL_SETTINGS =
+        FlowControlSettings.newBuilder()
+            .setMaxOutstandingElementCount(1000L)
+            .setMaxOutstandingRequestBytes(100L * 1024L * 1024L) // 100MB
+            .build();
 
     private static final ExecutorProvider DEFAULT_EXECUTOR_PROVIDER =
         InstantiatingExecutorProvider.newBuilder()
@@ -425,11 +433,7 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
     private Duration maxDurationPerAckExtension = DEFAULT_MAX_DURATION_PER_ACK_EXTENSION;
 
     private boolean useLegacyFlowControl = false;
-    private FlowControlSettings flowControlSettings =
-        FlowControlSettings.newBuilder()
-            .setMaxOutstandingElementCount(1000L)
-            .setMaxOutstandingRequestBytes(100L * 1024L * 1024L) // 100MB
-            .build();
+    private FlowControlSettings flowControlSettings = DEFAULT_FLOW_CONTROL_SETTINGS;
 
     private ExecutorProvider executorProvider = DEFAULT_EXECUTOR_PROVIDER;
     private ExecutorProvider systemExecutorProvider = null;
@@ -592,6 +596,11 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
     Builder setClock(ApiClock clock) {
       this.clock = Optional.of(clock);
       return this;
+    }
+
+    /** Returns the default FlowControlSettings used by the client if settings are not provided. */
+    public static FlowControlSettings getDefaultFlowControlSettings() {
+      return DEFAULT_FLOW_CONTROL_SETTINGS;
     }
 
     public Subscriber build() {
