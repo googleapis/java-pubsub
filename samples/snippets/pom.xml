@@ -29,7 +29,7 @@
   <parent>
     <groupId>com.google.cloud.samples</groupId>
     <artifactId>shared-configuration</artifactId>
-    <version>1.0.21</version>
+    <version>1.0.22</version>
   </parent>
 
   <properties>
@@ -45,7 +45,7 @@
       <dependency>
         <groupId>com.google.cloud</groupId>
         <artifactId>libraries-bom</artifactId>
-        <version>19.0.0</version>
+        <version>20.4.0</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -62,7 +62,7 @@
     <dependency>
       <groupId>org.apache.avro</groupId>
       <artifactId>avro</artifactId>
-      <version>1.10.1</version>
+      <version>1.10.2</version>
     </dependency>
     <dependency>
       <groupId>org.xerial.snappy</groupId>
@@ -72,7 +72,7 @@
     <dependency>
       <groupId>com.google.protobuf</groupId>
       <artifactId>protobuf-java-util</artifactId>
-      <version>3.15.6</version>
+      <version>3.17.0</version>
     </dependency>
 
     <dependency>
@@ -90,7 +90,7 @@
     <dependency>
       <groupId>com.google.cloud</groupId>
       <artifactId>google-cloud-core</artifactId>
-      <version>1.94.4</version>
+      <version>1.94.8</version>
       <classifier>tests</classifier>
     </dependency>
     <!-- [END_EXCLUDE] -->
