@@ -18,7 +18,6 @@ package com.google.cloud.pubsub.v1;
 
 import com.google.api.core.AbstractApiService;
 import com.google.api.core.ApiClock;
-import com.google.api.core.ApiFunction;
 import com.google.api.core.ApiService;
 import com.google.api.core.BetaApi;
 import com.google.api.core.CurrentMillisClock;
@@ -35,7 +34,6 @@ import com.google.api.gax.core.InstantiatingExecutorProvider;
 import com.google.api.gax.rpc.HeaderProvider;
 import com.google.api.gax.rpc.NoHeaderProvider;
 import com.google.api.gax.rpc.TransportChannelProvider;
-import com.google.api.gax.rpc.UnaryCallSettings;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.pubsub.v1.stub.GrpcSubscriberStub;
 import com.google.cloud.pubsub.v1.stub.SubscriberStub;
