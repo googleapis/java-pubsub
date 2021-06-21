@@ -1,5 +1,43 @@
 # Changelog
 
+### [1.113.3](https://www.github.com/googleapis/java-pubsub/compare/v1.113.2...v1.113.3) (2021-06-09)
+
+
+### Dependencies
+
+* update dependency com.google.cloud:google-cloud-core to v1.95.2 ([#707](https://www.github.com/googleapis/java-pubsub/issues/707)) ([60c7a68](https://www.github.com/googleapis/java-pubsub/commit/60c7a68fefd54525958c3b195142d8613405f5d2))
+
+### [1.113.2](https://www.github.com/googleapis/java-pubsub/compare/v1.113.1...v1.113.2) (2021-06-09)
+
+
+### Dependencies
+
+* update dependency com.google.cloud:google-cloud-core to v1.95.1 ([#701](https://www.github.com/googleapis/java-pubsub/issues/701)) ([c91e208](https://www.github.com/googleapis/java-pubsub/commit/c91e208efd04218dd5dd4f69743307375c8d6f06))
+* update dependency com.google.protobuf:protobuf-java-util to v3.17.3 ([#700](https://www.github.com/googleapis/java-pubsub/issues/700)) ([60f9b8d](https://www.github.com/googleapis/java-pubsub/commit/60f9b8d950d20a7b5a0fccad082d9014cd44d20c))
+
+### [1.113.1](https://www.github.com/googleapis/java-pubsub/compare/v1.113.0...v1.113.1) (2021-06-07)
+
+
+### Dependencies
+
+* update dependency com.google.cloud:google-cloud-core to v1.95.0 ([#691](https://www.github.com/googleapis/java-pubsub/issues/691)) ([bc75411](https://www.github.com/googleapis/java-pubsub/commit/bc754112599c744374f95237bb7e9b8b4d374531))
+* update dependency com.google.cloud:google-cloud-shared-dependencies to v1.3.0 ([#692](https://www.github.com/googleapis/java-pubsub/issues/692)) ([1ba00a2](https://www.github.com/googleapis/java-pubsub/commit/1ba00a2da7ecd8447a182ae2f9c644c7b01fe8bd))
+* update dependency com.google.protobuf:protobuf-java-util to v3.17.2 ([#690](https://www.github.com/googleapis/java-pubsub/issues/690)) ([2ac440c](https://www.github.com/googleapis/java-pubsub/commit/2ac440cbb55dd24d5783fb74b77b5dfc97aed951))
+
+## [1.113.0](https://www.github.com/googleapis/java-pubsub/compare/v1.112.5...v1.113.0) (2021-05-31)
+
+
+### Features
+
+* add `gcf-owl-bot[bot]` to `ignoreAuthors` ([#673](https://www.github.com/googleapis/java-pubsub/issues/673)) ([51dfca3](https://www.github.com/googleapis/java-pubsub/commit/51dfca3049f87e8bc1163c03eaef0556be3eefdf))
+
+
+### Dependencies
+
+* update dependency com.google.cloud:google-cloud-shared-dependencies to v1.2.0 ([#672](https://www.github.com/googleapis/java-pubsub/issues/672)) ([2cc9ec5](https://www.github.com/googleapis/java-pubsub/commit/2cc9ec5f1418f23a89129bdfc038dcf461097b88))
+* update dependency com.google.errorprone:error_prone_annotations to v2.7.1 ([#667](https://www.github.com/googleapis/java-pubsub/issues/667)) ([885be5c](https://www.github.com/googleapis/java-pubsub/commit/885be5c37992b8b1175c55b407db0f833241a0d1))
+* update dependency com.google.protobuf:protobuf-java-util to v3.17.1 ([#679](https://www.github.com/googleapis/java-pubsub/issues/679)) ([e7ef708](https://www.github.com/googleapis/java-pubsub/commit/e7ef7088999f60dc8bd5268c0315a8e1e4639ae0))
+
 ### [1.112.5](https://www.github.com/googleapis/java-pubsub/compare/v1.112.4...v1.112.5) (2021-05-14)
 
 
