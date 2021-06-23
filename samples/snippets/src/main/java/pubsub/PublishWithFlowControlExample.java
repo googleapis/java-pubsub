@@ -50,7 +50,7 @@ public class PublishWithFlowControlExample {
 
     try {
       // Configure how many messages the publisher client can hold in memory
-      // before publishing succeeds, and what to do when messages exceed the limit.
+      // and what to do when messages exceed the limit.
       FlowControlSettings flowControlSettings =
           FlowControlSettings.newBuilder()
               // Block more messages from being published when the limit is reached. The other
@@ -66,7 +66,7 @@ public class PublishWithFlowControlExample {
 
       publisher = Publisher.newBuilder(topicName).setBatchingSettings(batchingSettings).build();
 
-      // Publish 1000 messages in quick succession to trigger publisher flow control.
+      // Publish 1000 messages in quick succession may be constrained by publisher flow control.
       for (int i = 0; i < 1000; i++) {
         String message = "message " + i;
         ByteString data = ByteString.copyFromUtf8(message);
