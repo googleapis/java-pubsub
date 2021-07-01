@@ -30,7 +30,6 @@ import com.google.iam.v1.Binding;
 import com.google.iam.v1.GetIamPolicyRequest;
 import com.google.iam.v1.GetPolicyOptions;
 import com.google.iam.v1.Policy;
-import com.google.iam.v1.ProjectName;
 import com.google.iam.v1.SetIamPolicyRequest;
 import com.google.iam.v1.TestIamPermissionsRequest;
 import com.google.iam.v1.TestIamPermissionsResponse;
@@ -43,6 +42,7 @@ import com.google.pubsub.v1.Encoding;
 import com.google.pubsub.v1.GetSchemaRequest;
 import com.google.pubsub.v1.ListSchemasRequest;
 import com.google.pubsub.v1.ListSchemasResponse;
+import com.google.pubsub.v1.ProjectName;
 import com.google.pubsub.v1.Schema;
 import com.google.pubsub.v1.SchemaName;
 import com.google.pubsub.v1.ValidateMessageRequest;
@@ -65,11 +65,11 @@ import org.junit.Test;
 
 @Generated("by gapic-generator-java")
 public class SchemaServiceClientTest {
-  private static MockSchemaService mockSchemaService;
   private static MockIAMPolicy mockIAMPolicy;
+  private static MockSchemaService mockSchemaService;
   private static MockServiceHelper mockServiceHelper;
-  private SchemaServiceClient client;
   private LocalChannelProvider channelProvider;
+  private SchemaServiceClient client;
 
   @BeforeClass
   public static void startStaticServer() {
