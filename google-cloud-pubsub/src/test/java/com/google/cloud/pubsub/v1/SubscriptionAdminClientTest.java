@@ -930,6 +930,8 @@ public class SubscriptionAdminClientTest {
     StreamingPullResponse expectedResponse =
         StreamingPullResponse.newBuilder()
             .addAllReceivedMessages(new ArrayList<ReceivedMessage>())
+            .setSubscriptionProperties(
+                StreamingPullResponse.SubscriptionProperties.newBuilder().build())
             .build();
     mockSubscriber.addResponse(expectedResponse);
     StreamingPullRequest request =
