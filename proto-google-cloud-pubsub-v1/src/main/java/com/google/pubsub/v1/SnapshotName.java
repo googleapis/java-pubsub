@@ -181,8 +181,8 @@ public class SnapshotName implements ResourceName {
     }
 
     private Builder(SnapshotName snapshotName) {
-      project = snapshotName.project;
-      snapshot = snapshotName.snapshot;
+      this.project = snapshotName.project;
+      this.snapshot = snapshotName.snapshot;
     }
 
     public SnapshotName build() {
