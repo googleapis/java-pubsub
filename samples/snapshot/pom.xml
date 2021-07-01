@@ -43,7 +43,7 @@
     <dependency>
       <groupId>com.google.cloud</groupId>
       <artifactId>google-cloud-pubsub</artifactId>
-      <version>1.113.4-SNAPSHOT</version>
+      <version>1.113.5-SNAPSHOT</version>
     </dependency>
     <!-- {x-version-update-end} -->
 
@@ -79,7 +79,7 @@
     <dependency>
       <groupId>com.google.cloud</groupId>
       <artifactId>google-cloud-core</artifactId>
-      <version>1.95.2</version>
+      <version>1.95.3</version>
       <classifier>tests</classifier>
     </dependency>
   </dependencies>
