@@ -1,11 +1,11 @@
 /*
- * Copyright 2020 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     https://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,18 +23,28 @@ import com.google.common.collect.ImmutableMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import javax.annotation.Generated;
 
-/** AUTO-GENERATED DOCUMENTATION AND CLASS */
-@javax.annotation.Generated("by GAPIC protoc plugin")
-public class ProjectSnapshotName implements ResourceName {
-
-  private static final PathTemplate PATH_TEMPLATE =
+// AUTO-GENERATED DOCUMENTATION AND CLASS.
+@Generated("by gapic-generator-java")
+public class SnapshotName implements ResourceName {
+  private static final PathTemplate PROJECT_SNAPSHOT =
       PathTemplate.createWithoutUrlEncoding("projects/{project}/snapshots/{snapshot}");
-
   private volatile Map<String, String> fieldValuesMap;
-
   private final String project;
   private final String snapshot;
+
+  @Deprecated
+  protected SnapshotName() {
+    project = null;
+    snapshot = null;
+  }
+
+  private SnapshotName(Builder builder) {
+    project = Preconditions.checkNotNull(builder.getProject());
+    snapshot = Preconditions.checkNotNull(builder.getSnapshot());
+  }
 
   public String getProject() {
     return project;
@@ -52,12 +62,7 @@ public class ProjectSnapshotName implements ResourceName {
     return new Builder(this);
   }
 
-  private ProjectSnapshotName(Builder builder) {
-    project = Preconditions.checkNotNull(builder.getProject());
-    snapshot = Preconditions.checkNotNull(builder.getSnapshot());
-  }
-
-  public static ProjectSnapshotName of(String project, String snapshot) {
+  public static SnapshotName of(String project, String snapshot) {
     return newBuilder().setProject(project).setSnapshot(snapshot).build();
   }
 
@@ -65,27 +70,27 @@ public class ProjectSnapshotName implements ResourceName {
     return newBuilder().setProject(project).setSnapshot(snapshot).build().toString();
   }
 
-  public static ProjectSnapshotName parse(String formattedString) {
+  public static SnapshotName parse(String formattedString) {
     if (formattedString.isEmpty()) {
       return null;
     }
     Map<String, String> matchMap =
-        PATH_TEMPLATE.validatedMatch(
-            formattedString, "ProjectSnapshotName.parse: formattedString not in valid format");
+        PROJECT_SNAPSHOT.validatedMatch(
+            formattedString, "SnapshotName.parse: formattedString not in valid format");
     return of(matchMap.get("project"), matchMap.get("snapshot"));
   }
 
-  public static List<ProjectSnapshotName> parseList(List<String> formattedStrings) {
-    List<ProjectSnapshotName> list = new ArrayList<>(formattedStrings.size());
+  public static List<SnapshotName> parseList(List<String> formattedStrings) {
+    List<SnapshotName> list = new ArrayList<>(formattedStrings.size());
     for (String formattedString : formattedStrings) {
       list.add(parse(formattedString));
     }
     return list;
   }
 
-  public static List<String> toStringList(List<ProjectSnapshotName> values) {
-    List<String> list = new ArrayList<String>(values.size());
-    for (ProjectSnapshotName value : values) {
+  public static List<String> toStringList(List<SnapshotName> values) {
+    List<String> list = new ArrayList<>(values.size());
+    for (SnapshotName value : values) {
       if (value == null) {
         list.add("");
       } else {
@@ -96,16 +101,21 @@ public class ProjectSnapshotName implements ResourceName {
   }
 
   public static boolean isParsableFrom(String formattedString) {
-    return PATH_TEMPLATE.matches(formattedString);
+    return PROJECT_SNAPSHOT.matches(formattedString);
   }
 
+  @Override
   public Map<String, String> getFieldValuesMap() {
     if (fieldValuesMap == null) {
       synchronized (this) {
         if (fieldValuesMap == null) {
           ImmutableMap.Builder<String, String> fieldMapBuilder = ImmutableMap.builder();
-          fieldMapBuilder.put("project", project);
-          fieldMapBuilder.put("snapshot", snapshot);
+          if (project != null) {
+            fieldMapBuilder.put("project", project);
+          }
+          if (snapshot != null) {
+            fieldMapBuilder.put("snapshot", snapshot);
+          }
           fieldValuesMap = fieldMapBuilder.build();
         }
       }
@@ -119,14 +129,38 @@ public class ProjectSnapshotName implements ResourceName {
 
   @Override
   public String toString() {
-    return PATH_TEMPLATE.instantiate("project", project, "snapshot", snapshot);
+    return PROJECT_SNAPSHOT.instantiate("project", project, "snapshot", snapshot);
   }
 
-  /** Builder for ProjectSnapshotName. */
-  public static class Builder {
+  @Override
+  public boolean equals(Object o) {
+    if (o == this) {
+      return true;
+    }
+    if (o != null || getClass() == o.getClass()) {
+      SnapshotName that = ((SnapshotName) o);
+      return Objects.equals(this.project, that.project)
+          && Objects.equals(this.snapshot, that.snapshot);
+    }
+    return false;
+  }
 
+  @Override
+  public int hashCode() {
+    int h = 1;
+    h *= 1000003;
+    h ^= Objects.hashCode(project);
+    h *= 1000003;
+    h ^= Objects.hashCode(snapshot);
+    return h;
+  }
+
+  /** Builder for projects/{project}/snapshots/{snapshot}. */
+  public static class Builder {
     private String project;
     private String snapshot;
+
+    protected Builder() {}
 
     public String getProject() {
       return project;
@@ -146,37 +180,13 @@ public class ProjectSnapshotName implements ResourceName {
       return this;
     }
 
-    private Builder() {}
-
-    private Builder(ProjectSnapshotName projectSnapshotName) {
-      project = projectSnapshotName.project;
-      snapshot = projectSnapshotName.snapshot;
+    private Builder(SnapshotName snapshotName) {
+      project = snapshotName.project;
+      snapshot = snapshotName.snapshot;
     }
 
-    public ProjectSnapshotName build() {
-      return new ProjectSnapshotName(this);
+    public SnapshotName build() {
+      return new SnapshotName(this);
     }
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (o == this) {
-      return true;
-    }
-    if (o instanceof ProjectSnapshotName) {
-      ProjectSnapshotName that = (ProjectSnapshotName) o;
-      return (this.project.equals(that.project)) && (this.snapshot.equals(that.snapshot));
-    }
-    return false;
-  }
-
-  @Override
-  public int hashCode() {
-    int h = 1;
-    h *= 1000003;
-    h ^= project.hashCode();
-    h *= 1000003;
-    h ^= snapshot.hashCode();
-    return h;
   }
 }

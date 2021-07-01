@@ -1,11 +1,11 @@
 /*
- * Copyright 2020 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     https://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,18 +23,28 @@ import com.google.common.collect.ImmutableMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import javax.annotation.Generated;
 
-/** AUTO-GENERATED DOCUMENTATION AND CLASS */
-@javax.annotation.Generated("by GAPIC protoc plugin")
-public class ProjectSubscriptionName implements ResourceName {
-
-  private static final PathTemplate PATH_TEMPLATE =
+// AUTO-GENERATED DOCUMENTATION AND CLASS.
+@Generated("by gapic-generator-java")
+public class SubscriptionName implements ResourceName {
+  private static final PathTemplate PROJECT_SUBSCRIPTION =
       PathTemplate.createWithoutUrlEncoding("projects/{project}/subscriptions/{subscription}");
-
   private volatile Map<String, String> fieldValuesMap;
-
   private final String project;
   private final String subscription;
+
+  @Deprecated
+  protected SubscriptionName() {
+    project = null;
+    subscription = null;
+  }
+
+  private SubscriptionName(Builder builder) {
+    project = Preconditions.checkNotNull(builder.getProject());
+    subscription = Preconditions.checkNotNull(builder.getSubscription());
+  }
 
   public String getProject() {
     return project;
@@ -52,12 +62,7 @@ public class ProjectSubscriptionName implements ResourceName {
     return new Builder(this);
   }
 
-  private ProjectSubscriptionName(Builder builder) {
-    project = Preconditions.checkNotNull(builder.getProject());
-    subscription = Preconditions.checkNotNull(builder.getSubscription());
-  }
-
-  public static ProjectSubscriptionName of(String project, String subscription) {
+  public static SubscriptionName of(String project, String subscription) {
     return newBuilder().setProject(project).setSubscription(subscription).build();
   }
 
@@ -65,27 +70,27 @@ public class ProjectSubscriptionName implements ResourceName {
     return newBuilder().setProject(project).setSubscription(subscription).build().toString();
   }
 
-  public static ProjectSubscriptionName parse(String formattedString) {
+  public static SubscriptionName parse(String formattedString) {
     if (formattedString.isEmpty()) {
       return null;
     }
     Map<String, String> matchMap =
-        PATH_TEMPLATE.validatedMatch(
-            formattedString, "ProjectSubscriptionName.parse: formattedString not in valid format");
+        PROJECT_SUBSCRIPTION.validatedMatch(
+            formattedString, "SubscriptionName.parse: formattedString not in valid format");
     return of(matchMap.get("project"), matchMap.get("subscription"));
   }
 
-  public static List<ProjectSubscriptionName> parseList(List<String> formattedStrings) {
-    List<ProjectSubscriptionName> list = new ArrayList<>(formattedStrings.size());
+  public static List<SubscriptionName> parseList(List<String> formattedStrings) {
+    List<SubscriptionName> list = new ArrayList<>(formattedStrings.size());
     for (String formattedString : formattedStrings) {
       list.add(parse(formattedString));
     }
     return list;
   }
 
-  public static List<String> toStringList(List<ProjectSubscriptionName> values) {
-    List<String> list = new ArrayList<String>(values.size());
-    for (ProjectSubscriptionName value : values) {
+  public static List<String> toStringList(List<SubscriptionName> values) {
+    List<String> list = new ArrayList<>(values.size());
+    for (SubscriptionName value : values) {
       if (value == null) {
         list.add("");
       } else {
@@ -96,16 +101,21 @@ public class ProjectSubscriptionName implements ResourceName {
   }
 
   public static boolean isParsableFrom(String formattedString) {
-    return PATH_TEMPLATE.matches(formattedString);
+    return PROJECT_SUBSCRIPTION.matches(formattedString);
   }
 
+  @Override
   public Map<String, String> getFieldValuesMap() {
     if (fieldValuesMap == null) {
       synchronized (this) {
         if (fieldValuesMap == null) {
           ImmutableMap.Builder<String, String> fieldMapBuilder = ImmutableMap.builder();
-          fieldMapBuilder.put("project", project);
-          fieldMapBuilder.put("subscription", subscription);
+          if (project != null) {
+            fieldMapBuilder.put("project", project);
+          }
+          if (subscription != null) {
+            fieldMapBuilder.put("subscription", subscription);
+          }
           fieldValuesMap = fieldMapBuilder.build();
         }
       }
@@ -119,14 +129,38 @@ public class ProjectSubscriptionName implements ResourceName {
 
   @Override
   public String toString() {
-    return PATH_TEMPLATE.instantiate("project", project, "subscription", subscription);
+    return PROJECT_SUBSCRIPTION.instantiate("project", project, "subscription", subscription);
   }
 
-  /** Builder for ProjectSubscriptionName. */
-  public static class Builder {
+  @Override
+  public boolean equals(Object o) {
+    if (o == this) {
+      return true;
+    }
+    if (o != null || getClass() == o.getClass()) {
+      SubscriptionName that = ((SubscriptionName) o);
+      return Objects.equals(this.project, that.project)
+          && Objects.equals(this.subscription, that.subscription);
+    }
+    return false;
+  }
 
+  @Override
+  public int hashCode() {
+    int h = 1;
+    h *= 1000003;
+    h ^= Objects.hashCode(project);
+    h *= 1000003;
+    h ^= Objects.hashCode(subscription);
+    return h;
+  }
+
+  /** Builder for projects/{project}/subscriptions/{subscription}. */
+  public static class Builder {
     private String project;
     private String subscription;
+
+    protected Builder() {}
 
     public String getProject() {
       return project;
@@ -146,37 +180,13 @@ public class ProjectSubscriptionName implements ResourceName {
       return this;
     }
 
-    private Builder() {}
-
-    private Builder(ProjectSubscriptionName projectSubscriptionName) {
-      project = projectSubscriptionName.project;
-      subscription = projectSubscriptionName.subscription;
+    private Builder(SubscriptionName subscriptionName) {
+      project = subscriptionName.project;
+      subscription = subscriptionName.subscription;
     }
 
-    public ProjectSubscriptionName build() {
-      return new ProjectSubscriptionName(this);
+    public SubscriptionName build() {
+      return new SubscriptionName(this);
     }
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (o == this) {
-      return true;
-    }
-    if (o instanceof ProjectSubscriptionName) {
-      ProjectSubscriptionName that = (ProjectSubscriptionName) o;
-      return (this.project.equals(that.project)) && (this.subscription.equals(that.subscription));
-    }
-    return false;
-  }
-
-  @Override
-  public int hashCode() {
-    int h = 1;
-    h *= 1000003;
-    h ^= project.hashCode();
-    h *= 1000003;
-    h ^= subscription.hashCode();
-    return h;
   }
 }

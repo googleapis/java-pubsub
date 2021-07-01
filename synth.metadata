@@ -4,15 +4,15 @@
       "git": {
         "name": ".",
         "remote": "https://github.com/googleapis/java-pubsub.git",
-        "sha": "0ebad0a2c92f00126d9c00aec1af3c73333c3a31"
+        "sha": "f59eef81a2d5fad0631c16bad0e8c24f9bab490f"
       }
     },
     {
       "git": {
         "name": "googleapis",
         "remote": "https://github.com/googleapis/googleapis.git",
-        "sha": "0e915217fb5261c1e57bfaf0e16ee5c7feaaba89",
-        "internalRef": "361377784"
+        "sha": "1d2c8471073454fb7ab8d5fa6885025fe8a0e3c9",
+        "internalRef": "376047466"
       }
     },
     {
@@ -106,6 +106,7 @@
     "google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/SubscriptionAdminSettings.java",
     "google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/TopicAdminClient.java",
     "google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/TopicAdminSettings.java",
+    "google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/gapic_metadata.json",
     "google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/package-info.java",
     "google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/stub/GrpcPublisherCallableFactory.java",
     "google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/stub/GrpcPublisherStub.java",
@@ -130,12 +131,12 @@
     "google-cloud-pubsub/src/test/java/com/google/cloud/pubsub/v1/SchemaServiceClientTest.java",
     "google-cloud-pubsub/src/test/java/com/google/cloud/pubsub/v1/SubscriptionAdminClientTest.java",
     "google-cloud-pubsub/src/test/java/com/google/cloud/pubsub/v1/TopicAdminClientTest.java",
-    "google-cloud-pubsub/src/test/java/com/google/cloud/pubsub/v1/TopicAdminSmokeTest.java",
     "grpc-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/PublisherGrpc.java",
     "grpc-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/SchemaServiceGrpc.java",
     "grpc-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/SubscriberGrpc.java",
     "java.header",
     "license-checks.xml",
+    "proto-google-cloud-pubsub-v1/src/main/java/com/google/iam/v1/ProjectName.java",
     "proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/AcknowledgeRequest.java",
     "proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/AcknowledgeRequestOrBuilder.java",
     "proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/CreateSchemaRequest.java",
@@ -197,9 +198,6 @@
     "proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ModifyAckDeadlineRequestOrBuilder.java",
     "proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ModifyPushConfigRequest.java",
     "proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ModifyPushConfigRequestOrBuilder.java",
-    "proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ProjectName.java",
-    "proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ProjectSnapshotName.java",
-    "proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ProjectSubscriptionName.java",
     "proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/PublishRequest.java",
     "proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/PublishRequestOrBuilder.java",
     "proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/PublishResponse.java",
@@ -229,12 +227,14 @@
     "proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/SeekResponse.java",
     "proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/SeekResponseOrBuilder.java",
     "proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/Snapshot.java",
+    "proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/SnapshotName.java",
     "proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/SnapshotOrBuilder.java",
     "proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/StreamingPullRequest.java",
     "proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/StreamingPullRequestOrBuilder.java",
     "proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/StreamingPullResponse.java",
     "proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/StreamingPullResponseOrBuilder.java",
     "proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/Subscription.java",
+    "proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/SubscriptionName.java",
     "proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/SubscriptionOrBuilder.java",
     "proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/Topic.java",
     "proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/TopicName.java",
