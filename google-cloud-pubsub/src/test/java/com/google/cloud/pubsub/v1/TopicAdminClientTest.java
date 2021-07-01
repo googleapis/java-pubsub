@@ -76,10 +76,10 @@ import org.junit.Test;
 
 @Generated("by gapic-generator-java")
 public class TopicAdminClientTest {
-  private static MockServiceHelper mockServiceHelper;
   private static MockPublisher mockPublisher;
-  private TopicAdminClient client;
   private static MockIAMPolicy mockIAMPolicy;
+  private static MockServiceHelper mockServiceHelper;
+  private TopicAdminClient client;
   private LocalChannelProvider channelProvider;
 
   @BeforeClass
