@@ -180,8 +180,8 @@ public class SchemaName implements ResourceName {
     }
 
     private Builder(SchemaName schemaName) {
-      project = schemaName.project;
-      schema = schemaName.schema;
+      this.project = schemaName.project;
+      this.schema = schemaName.schema;
     }
 
     public SchemaName build() {
