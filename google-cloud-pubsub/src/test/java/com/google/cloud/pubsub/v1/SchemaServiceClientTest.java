@@ -65,10 +65,10 @@ import org.junit.Test;
 
 @Generated("by gapic-generator-java")
 public class SchemaServiceClientTest {
-  private static MockServiceHelper mockServiceHelper;
   private static MockSchemaService mockSchemaService;
-  private SchemaServiceClient client;
   private static MockIAMPolicy mockIAMPolicy;
+  private static MockServiceHelper mockServiceHelper;
+  private SchemaServiceClient client;
   private LocalChannelProvider channelProvider;
 
   @BeforeClass
