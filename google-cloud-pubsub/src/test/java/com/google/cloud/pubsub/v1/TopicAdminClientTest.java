@@ -32,7 +32,6 @@ import com.google.iam.v1.Binding;
 import com.google.iam.v1.GetIamPolicyRequest;
 import com.google.iam.v1.GetPolicyOptions;
 import com.google.iam.v1.Policy;
-import com.google.iam.v1.ProjectName;
 import com.google.iam.v1.SetIamPolicyRequest;
 import com.google.iam.v1.TestIamPermissionsRequest;
 import com.google.iam.v1.TestIamPermissionsResponse;
@@ -51,6 +50,7 @@ import com.google.pubsub.v1.ListTopicSubscriptionsResponse;
 import com.google.pubsub.v1.ListTopicsRequest;
 import com.google.pubsub.v1.ListTopicsResponse;
 import com.google.pubsub.v1.MessageStoragePolicy;
+import com.google.pubsub.v1.ProjectName;
 import com.google.pubsub.v1.PublishRequest;
 import com.google.pubsub.v1.PublishResponse;
 import com.google.pubsub.v1.PubsubMessage;
@@ -76,11 +76,11 @@ import org.junit.Test;
 
 @Generated("by gapic-generator-java")
 public class TopicAdminClientTest {
-  private static MockPublisher mockPublisher;
   private static MockIAMPolicy mockIAMPolicy;
+  private static MockPublisher mockPublisher;
   private static MockServiceHelper mockServiceHelper;
-  private TopicAdminClient client;
   private LocalChannelProvider channelProvider;
+  private TopicAdminClient client;
 
   @BeforeClass
   public static void startStaticServer() {

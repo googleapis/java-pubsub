@@ -35,7 +35,6 @@ import com.google.iam.v1.Binding;
 import com.google.iam.v1.GetIamPolicyRequest;
 import com.google.iam.v1.GetPolicyOptions;
 import com.google.iam.v1.Policy;
-import com.google.iam.v1.ProjectName;
 import com.google.iam.v1.SetIamPolicyRequest;
 import com.google.iam.v1.TestIamPermissionsRequest;
 import com.google.iam.v1.TestIamPermissionsResponse;
@@ -59,6 +58,7 @@ import com.google.pubsub.v1.ListSubscriptionsRequest;
 import com.google.pubsub.v1.ListSubscriptionsResponse;
 import com.google.pubsub.v1.ModifyAckDeadlineRequest;
 import com.google.pubsub.v1.ModifyPushConfigRequest;
+import com.google.pubsub.v1.ProjectName;
 import com.google.pubsub.v1.PullRequest;
 import com.google.pubsub.v1.PullResponse;
 import com.google.pubsub.v1.PushConfig;
@@ -93,11 +93,11 @@ import org.junit.Test;
 
 @Generated("by gapic-generator-java")
 public class SubscriptionAdminClientTest {
-  private static MockSubscriber mockSubscriber;
   private static MockIAMPolicy mockIAMPolicy;
   private static MockServiceHelper mockServiceHelper;
-  private SubscriptionAdminClient client;
+  private static MockSubscriber mockSubscriber;
   private LocalChannelProvider channelProvider;
+  private SubscriptionAdminClient client;
 
   @BeforeClass
   public static void startStaticServer() {

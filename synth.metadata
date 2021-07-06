@@ -11,8 +11,8 @@
       "git": {
         "name": "googleapis",
         "remote": "https://github.com/googleapis/googleapis.git",
-        "sha": "a5f96d06ef57e325761bad010f460d0c5dbeccda",
-        "internalRef": "377081269"
+        "sha": "9e3105549a35520f215359065c11e8dce15e18af",
+        "internalRef": "378266372"
       }
     },
     {
@@ -136,7 +136,6 @@
     "grpc-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/SubscriberGrpc.java",
     "java.header",
     "license-checks.xml",
-    "proto-google-cloud-pubsub-v1/src/main/java/com/google/iam/v1/ProjectName.java",
     "proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/AcknowledgeRequest.java",
     "proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/AcknowledgeRequestOrBuilder.java",
     "proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/CreateSchemaRequest.java",
@@ -198,6 +197,7 @@
     "proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ModifyAckDeadlineRequestOrBuilder.java",
     "proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ModifyPushConfigRequest.java",
     "proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ModifyPushConfigRequestOrBuilder.java",
+    "proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ProjectName.java",
     "proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/PublishRequest.java",
     "proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/PublishRequestOrBuilder.java",
     "proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/PublishResponse.java",
