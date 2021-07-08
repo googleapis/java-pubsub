@@ -92,7 +92,7 @@
               "methods": ["modifyPushConfig", "modifyPushConfig", "modifyPushConfig", "modifyPushConfigCallable"]
             },
             "Pull": {
-              "methods": ["pull", "pull", "pull", "pullCallable"]
+              "methods": ["pull", "pull", "pull", "pull", "pull", "pullCallable"]
             },
             "Seek": {
               "methods": ["seek", "seekCallable"]

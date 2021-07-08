@@ -516,7 +516,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *
    * <pre><code>
    * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
-   *   ProjectSubscriptionName name = ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
+   *   SubscriptionName name = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
    *   ProjectTopicName topic = ProjectTopicName.of("[PROJECT]", "[TOPIC]");
    *   PushConfig pushConfig = PushConfig.newBuilder().build();
    *   int ackDeadlineSeconds = 0;
@@ -551,12 +551,12 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *     <p>If the subscriber never acknowledges the message, the Pub/Sub system will eventually
    *     redeliver the message.
    * @throws com.google.api.gax.rpc.ApiException if the remote call fails
-   * @deprecated Use {@link #createSubscription(ProjectSubscriptionName, TopicName, PushConfig,
-   *     int)} instead.
+   * @deprecated Use {@link #createSubscription(SubscriptionName, TopicName, PushConfig, int)}
+   *     instead.
    */
   @Deprecated
   public final Subscription createSubscription(
-      ProjectSubscriptionName name,
+      SubscriptionName name,
       ProjectTopicName topic,
       PushConfig pushConfig,
       int ackDeadlineSeconds) {
@@ -1260,6 +1260,63 @@ public class SubscriptionAdminClient implements BackgroundResource {
    */
   public final UnaryCallable<AcknowledgeRequest, Empty> acknowledgeCallable() {
     return stub.acknowledgeCallable();
+  }
+
+  // AUTO-GENERATED DOCUMENTATION AND METHOD.
+  /**
+   * Pulls messages from the server. The server may return `UNAVAILABLE` if there are too many
+   * concurrent pull requests pending for the given subscription.
+   *
+   * <p>Sample code:
+   *
+   * <pre>{@code
+   * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
+   *   SubscriptionName subscription = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
+   *   int maxMessages = 496131527;
+   *   PullResponse response = subscriptionAdminClient.pull(subscription, maxMessages);
+   * }
+   * }</pre>
+   *
+   * @param subscription Required. The subscription from which messages should be pulled. Format is
+   *     `projects/{project}/subscriptions/{sub}`.
+   * @param maxMessages Required. The maximum number of messages to return for this request. Must be
+   *     a positive integer. The Pub/Sub system may return fewer than the number specified.
+   * @throws com.google.api.gax.rpc.ApiException if the remote call fails
+   */
+  public final PullResponse pull(SubscriptionName subscription, int maxMessages) {
+    PullRequest request =
+        PullRequest.newBuilder()
+            .setSubscription(subscription == null ? null : subscription.toString())
+            .setMaxMessages(maxMessages)
+            .build();
+    return pull(request);
+  }
+
+  // AUTO-GENERATED DOCUMENTATION AND METHOD.
+  /**
+   * Pulls messages from the server. The server may return `UNAVAILABLE` if there are too many
+   * concurrent pull requests pending for the given subscription.
+   *
+   * <p>Sample code:
+   *
+   * <pre>{@code
+   * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
+   *   String subscription = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString();
+   *   int maxMessages = 496131527;
+   *   PullResponse response = subscriptionAdminClient.pull(subscription, maxMessages);
+   * }
+   * }</pre>
+   *
+   * @param subscription Required. The subscription from which messages should be pulled. Format is
+   *     `projects/{project}/subscriptions/{sub}`.
+   * @param maxMessages Required. The maximum number of messages to return for this request. Must be
+   *     a positive integer. The Pub/Sub system may return fewer than the number specified.
+   * @throws com.google.api.gax.rpc.ApiException if the remote call fails
+   */
+  public final PullResponse pull(String subscription, int maxMessages) {
+    PullRequest request =
+        PullRequest.newBuilder().setSubscription(subscription).setMaxMessages(maxMessages).build();
+    return pull(request);
   }
 
   // AUTO-GENERATED DOCUMENTATION AND METHOD.

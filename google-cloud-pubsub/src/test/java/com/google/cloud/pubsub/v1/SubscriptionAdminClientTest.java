@@ -848,6 +848,84 @@ public class SubscriptionAdminClientTest {
     mockSubscriber.addResponse(expectedResponse);
 
     SubscriptionName subscription = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
+    int maxMessages = 496131527;
+
+    PullResponse actualResponse = client.pull(subscription, maxMessages);
+    Assert.assertEquals(expectedResponse, actualResponse);
+
+    List<AbstractMessage> actualRequests = mockSubscriber.getRequests();
+    Assert.assertEquals(1, actualRequests.size());
+    PullRequest actualRequest = ((PullRequest) actualRequests.get(0));
+
+    Assert.assertEquals(subscription.toString(), actualRequest.getSubscription());
+    Assert.assertEquals(maxMessages, actualRequest.getMaxMessages());
+    Assert.assertTrue(
+        channelProvider.isHeaderSent(
+            ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
+            GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
+  }
+
+  @Test
+  public void pullExceptionTest() throws Exception {
+    StatusRuntimeException exception = new StatusRuntimeException(io.grpc.Status.INVALID_ARGUMENT);
+    mockSubscriber.addException(exception);
+
+    try {
+      SubscriptionName subscription = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
+      int maxMessages = 496131527;
+      client.pull(subscription, maxMessages);
+      Assert.fail("No exception raised");
+    } catch (InvalidArgumentException e) {
+      // Expected exception.
+    }
+  }
+
+  @Test
+  public void pullTest2() throws Exception {
+    PullResponse expectedResponse =
+        PullResponse.newBuilder().addAllReceivedMessages(new ArrayList<ReceivedMessage>()).build();
+    mockSubscriber.addResponse(expectedResponse);
+
+    String subscription = "subscription341203229";
+    int maxMessages = 496131527;
+
+    PullResponse actualResponse = client.pull(subscription, maxMessages);
+    Assert.assertEquals(expectedResponse, actualResponse);
+
+    List<AbstractMessage> actualRequests = mockSubscriber.getRequests();
+    Assert.assertEquals(1, actualRequests.size());
+    PullRequest actualRequest = ((PullRequest) actualRequests.get(0));
+
+    Assert.assertEquals(subscription, actualRequest.getSubscription());
+    Assert.assertEquals(maxMessages, actualRequest.getMaxMessages());
+    Assert.assertTrue(
+        channelProvider.isHeaderSent(
+            ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
+            GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
+  }
+
+  @Test
+  public void pullExceptionTest2() throws Exception {
+    StatusRuntimeException exception = new StatusRuntimeException(io.grpc.Status.INVALID_ARGUMENT);
+    mockSubscriber.addException(exception);
+
+    try {
+      String subscription = "subscription341203229";
+      int maxMessages = 496131527;
+      client.pull(subscription, maxMessages);
+      Assert.fail("No exception raised");
+    } catch (InvalidArgumentException e) {
+      // Expected exception.
+    }
+  }
+
+  @Test
+  public void pullTest3() throws Exception {
+    PullResponse expectedResponse =
+        PullResponse.newBuilder().addAllReceivedMessages(new ArrayList<ReceivedMessage>()).build();
+    mockSubscriber.addResponse(expectedResponse);
+
+    SubscriptionName subscription = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
     boolean returnImmediately = true;
     int maxMessages = 496131527;
 
@@ -868,7 +946,7 @@ public class SubscriptionAdminClientTest {
   }
 
   @Test
-  public void pullExceptionTest() throws Exception {
+  public void pullExceptionTest3() throws Exception {
     StatusRuntimeException exception = new StatusRuntimeException(io.grpc.Status.INVALID_ARGUMENT);
     mockSubscriber.addException(exception);
 
@@ -884,7 +962,7 @@ public class SubscriptionAdminClientTest {
   }
 
   @Test
-  public void pullTest2() throws Exception {
+  public void pullTest4() throws Exception {
     PullResponse expectedResponse =
         PullResponse.newBuilder().addAllReceivedMessages(new ArrayList<ReceivedMessage>()).build();
     mockSubscriber.addResponse(expectedResponse);
@@ -910,7 +988,7 @@ public class SubscriptionAdminClientTest {
   }
 
   @Test
-  public void pullExceptionTest2() throws Exception {
+  public void pullExceptionTest4() throws Exception {
     StatusRuntimeException exception = new StatusRuntimeException(io.grpc.Status.INVALID_ARGUMENT);
     mockSubscriber.addException(exception);
 

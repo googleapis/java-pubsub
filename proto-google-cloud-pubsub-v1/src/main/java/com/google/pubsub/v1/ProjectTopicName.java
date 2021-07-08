@@ -74,17 +74,17 @@ public class ProjectTopicName extends TopicName {
     return of(matchMap.get("project"), matchMap.get("topic"));
   }
 
-  public static List<ProjectTopicName> parseList(List<String> formattedStrings) {
-    List<ProjectTopicName> list = new ArrayList<>(formattedStrings.size());
+  public static List<TopicName> parseList(List<String> formattedStrings) {
+    List<TopicName> list = new ArrayList<>(formattedStrings.size());
     for (String formattedString : formattedStrings) {
       list.add(parse(formattedString));
     }
     return list;
   }
 
-  public static List<String> toStringList(List<ProjectTopicName> values) {
+  public static List<String> toStringList(List<TopicName> values) {
     List<String> list = new ArrayList<String>(values.size());
-    for (ProjectTopicName value : values) {
+    for (TopicName value : values) {
       if (value == null) {
         list.add("");
       } else {
