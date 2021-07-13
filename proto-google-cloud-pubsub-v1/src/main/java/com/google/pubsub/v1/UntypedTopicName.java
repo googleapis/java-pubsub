@@ -48,17 +48,17 @@ public class UntypedTopicName extends TopicName {
     return new UntypedTopicName(formattedString);
   }
 
-  public static List<UntypedTopicName> parseList(List<String> formattedStrings) {
-    List<UntypedTopicName> list = new ArrayList<>(formattedStrings.size());
+  public static List<TopicName> parseList(List<String> formattedStrings) {
+    List<TopicName> list = new ArrayList<>(formattedStrings.size());
     for (String formattedString : formattedStrings) {
       list.add(parse(formattedString));
     }
     return list;
   }
 
-  public static List<String> toStringList(List<UntypedTopicName> values) {
+  public static List<String> toStringList(List<TopicName> values) {
     List<String> list = new ArrayList<String>(values.size());
-    for (UntypedTopicName value : values) {
+    for (TopicName value : values) {
       if (value == null) {
         list.add("");
       } else {

@@ -26,4 +26,13 @@
     <className>com/google/pubsub/v1/TopicName</className>
     <method>java.util.List parse(*)</method>
   </difference>
+
+  <difference>
+    <differenceType>8001</differenceType>
+    <className>com/google/pubsub/v1/ProjectSnapshot*</className>
+  </difference>
+  <difference>
+    <differenceType>8001</differenceType>
+    <className>com/google/pubsub/v1/ProjectSubscription*</className>
+  </difference>
 </differences>
