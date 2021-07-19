@@ -19,10 +19,6 @@ jobs:
     - run: .kokoro/build.sh
       env:
         JOB_TYPE: test
-    - name: coverage
-      uses: codecov/codecov-action@v1
-      with:
-        name: actions ${{matrix.java}}
   windows:
     runs-on: windows-latest
     steps:
@@ -54,7 +50,11 @@ jobs:
       with:
         java-version: 8
     - run: java -version
-    - run: .kokoro/linkage-monitor.sh
+    - name: Install artifacts to local Maven repository
+      run: .kokoro/build.sh
+      shell: bash
+    - name: Validate any conflicts with regard to com.google.cloud:libraries-bom (latest release)
+      uses: GoogleCloudPlatform/cloud-opensource-java/linkage-monitor@v1-linkagemonitor
   lint:
     runs-on: ubuntu-latest
     steps:

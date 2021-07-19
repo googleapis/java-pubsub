@@ -2,7 +2,7 @@ on:
   pull_request:
 name: samples
 jobs:
-  lint:
+  checkstyle:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -11,4 +11,4 @@ jobs:
           java-version: 8
       - name: Run checkstyle
         run: mvn -P lint --quiet --batch-mode checkstyle:check
-        working-directory: samples/snippets
+        working-directory: samples

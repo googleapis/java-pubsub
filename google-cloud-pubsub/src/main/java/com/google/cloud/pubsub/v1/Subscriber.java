@@ -18,7 +18,6 @@ package com.google.cloud.pubsub.v1;
 
 import com.google.api.core.AbstractApiService;
 import com.google.api.core.ApiClock;
-import com.google.api.core.ApiFunction;
 import com.google.api.core.ApiService;
 import com.google.api.core.BetaApi;
 import com.google.api.core.CurrentMillisClock;
@@ -35,7 +34,6 @@ import com.google.api.gax.core.InstantiatingExecutorProvider;
 import com.google.api.gax.rpc.HeaderProvider;
 import com.google.api.gax.rpc.NoHeaderProvider;
 import com.google.api.gax.rpc.TransportChannelProvider;
-import com.google.api.gax.rpc.UnaryCallSettings;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.pubsub.v1.stub.GrpcSubscriberStub;
 import com.google.cloud.pubsub.v1.stub.SubscriberStub;
@@ -91,18 +89,19 @@ import org.threeten.bp.Duration;
  * details.
  */
 public class Subscriber extends AbstractApiService implements SubscriberInterface {
+  @InternalApi static final Duration DEFAULT_MAX_DURATION_PER_ACK_EXTENSION = Duration.ofMillis(0);
   private static final int THREADS_PER_CHANNEL = 5;
   private static final int MAX_INBOUND_MESSAGE_SIZE =
       20 * 1024 * 1024; // 20MB API maximum message size.
   @InternalApi static final int MAX_ACK_DEADLINE_SECONDS = 600;
   @InternalApi static final int MIN_ACK_DEADLINE_SECONDS = 10;
-  private static final Duration UNARY_TIMEOUT = Duration.ofSeconds(60);
   private static final Duration ACK_EXPIRATION_PADDING = Duration.ofSeconds(5);
 
   private static final Logger logger = Logger.getLogger(Subscriber.class.getName());
 
   private final String subscriptionName;
   private final FlowControlSettings flowControlSettings;
+  private final boolean useLegacyFlowControl;
   private final Duration maxAckExtensionPeriod;
   private final Duration maxDurationPerAckExtension;
   // The ExecutorProvider used to generate executors for processing messages.
@@ -126,6 +125,7 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
   private Subscriber(Builder builder) {
     receiver = builder.receiver;
     flowControlSettings = builder.flowControlSettings;
+    useLegacyFlowControl = builder.useLegacyFlowControl;
     subscriptionName = builder.subscriptionName;
 
     maxAckExtensionPeriod = builder.maxAckExtensionPeriod;
@@ -164,14 +164,6 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
               .setTransportChannelProvider(channelProvider)
               .setHeaderProvider(builder.headerProvider)
               .setEndpoint(builder.endpoint)
-              .applyToAllUnaryMethods(
-                  new ApiFunction<UnaryCallSettings.Builder<?, ?>, Void>() {
-                    @Override
-                    public Void apply(UnaryCallSettings.Builder<?, ?> settingsBuilder) {
-                      settingsBuilder.setSimpleTimeoutNoRetries(UNARY_TIMEOUT);
-                      return null;
-                    }
-                  })
               .build();
       // TODO(pongad): what about internal header??
     } catch (Exception e) {
@@ -181,9 +173,9 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
     streamingSubscriberConnections = new ArrayList<StreamingSubscriberConnection>(numPullers);
 
     // We regularly look up the distribution for a good subscription deadline.
-    // So we seed the distribution with something reasonable to start with.
+    // So we seed the distribution with the minimum value to start with.
     // Distribution is percentile-based, so this value will eventually lose importance.
-    ackLatencyDistribution.record(60);
+    ackLatencyDistribution.record(MIN_ACK_DEADLINE_SECONDS);
   }
 
   /**
@@ -305,9 +297,7 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
               public void run() {
                 try {
                   // stop connection is no-op if connections haven't been started.
-                  stopAllStreamingConnections();
-                  shutdownBackgroundResources();
-                  subStub.shutdownNow();
+                  runShutdown();
                   notifyStopped();
                 } catch (Exception e) {
                   notifyFailed(e);
@@ -315,6 +305,12 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
               }
             })
         .start();
+  }
+
+  private void runShutdown() {
+    stopAllStreamingConnections();
+    shutdownBackgroundResources();
+    subStub.shutdownNow();
   }
 
   private void startStreamingConnections() {
@@ -336,6 +332,7 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
                 subStub,
                 i,
                 flowControlSettings,
+                useLegacyFlowControl,
                 flowController,
                 executor,
                 alarmsExecutor,
@@ -348,8 +345,7 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
             public void failed(State from, Throwable failure) {
               // If a connection failed is because of a fatal error, we should fail the
               // whole subscriber.
-              stopAllStreamingConnections();
-              shutdownBackgroundResources();
+              runShutdown();
               try {
                 notifyFailed(failure);
               } catch (IllegalStateException e) {
@@ -407,6 +403,11 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
   /** Builder of {@link Subscriber Subscribers}. */
   public static final class Builder {
     private static final Duration DEFAULT_MAX_ACK_EXTENSION_PERIOD = Duration.ofMinutes(60);
+    static final FlowControlSettings DEFAULT_FLOW_CONTROL_SETTINGS =
+        FlowControlSettings.newBuilder()
+            .setMaxOutstandingElementCount(1000L)
+            .setMaxOutstandingRequestBytes(100L * 1024L * 1024L) // 100MB
+            .build();
 
     private static final ExecutorProvider DEFAULT_EXECUTOR_PROVIDER =
         InstantiatingExecutorProvider.newBuilder()
@@ -418,13 +419,10 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
     private MessageReceiver receiver;
 
     private Duration maxAckExtensionPeriod = DEFAULT_MAX_ACK_EXTENSION_PERIOD;
-    private Duration maxDurationPerAckExtension = Duration.ofMillis(0);
+    private Duration maxDurationPerAckExtension = DEFAULT_MAX_DURATION_PER_ACK_EXTENSION;
 
-    private FlowControlSettings flowControlSettings =
-        FlowControlSettings.newBuilder()
-            .setMaxOutstandingElementCount(1000L)
-            .setMaxOutstandingRequestBytes(100L * 1024L * 1024L) // 100MB
-            .build();
+    private boolean useLegacyFlowControl = false;
+    private FlowControlSettings flowControlSettings = DEFAULT_FLOW_CONTROL_SETTINGS;
 
     private ExecutorProvider executorProvider = DEFAULT_EXECUTOR_PROVIDER;
     private ExecutorProvider systemExecutorProvider = null;
@@ -505,6 +503,15 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
     }
 
     /**
+     * Disables enforcing flow control settings at the Cloud PubSub server and uses the less
+     * accurate method of only enforcing flow control at the client side.
+     */
+    public Builder setUseLegacyFlowControl(boolean value) {
+      this.useLegacyFlowControl = value;
+      return this;
+    }
+
+    /**
      * Set the maximum period a message ack deadline will be extended. Defaults to one hour.
      *
      * <p>It is recommended to set this value to a reasonable upper bound of the subscriber time to
@@ -559,7 +566,10 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
       return this;
     }
 
-    /** Sets the number of pullers used to pull messages from the subscription. Defaults to one. */
+    /**
+     * Sets the number of StreamingPull streams to pull messages from the subscription. Defaults to
+     * one.
+     */
     public Builder setParallelPullCount(int parallelPullCount) {
       this.parallelPullCount = parallelPullCount;
       return this;
@@ -575,6 +585,11 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
     Builder setClock(ApiClock clock) {
       this.clock = Optional.of(clock);
       return this;
+    }
+
+    /** Returns the default FlowControlSettings used by the client if settings are not provided. */
+    public static FlowControlSettings getDefaultFlowControlSettings() {
+      return DEFAULT_FLOW_CONTROL_SETTINGS;
     }
 
     public Subscriber build() {

@@ -23,13 +23,13 @@ cd ${scriptDir}/..
 # include common functions
 source ${scriptDir}/common.sh
 
-# Print out Java version
-java -version
+# Print out Maven & Java version
+mvn -version
 echo ${JOB_TYPE}
 
 # attempt to install 3 times with exponential backoff (starting with 10 seconds)
 retry_with_backoff 3 10 \
-  mvn install -B -V \
+  mvn install -B -V -ntp \
     -DskipTests=true \
     -Dclirr.skip=true \
     -Denforcer.skip=true \
@@ -37,7 +37,7 @@ retry_with_backoff 3 10 \
     -Dgcloud.download.skip=true \
     -T 1C
 
-# if GOOGLE_APPLICATION_CREDIENTIALS is specified as a relative path prepend Kokoro root directory onto it
+# if GOOGLE_APPLICATION_CREDENTIALS is specified as a relative path, prepend Kokoro root directory onto it
 if [[ ! -z "${GOOGLE_APPLICATION_CREDENTIALS}" && "${GOOGLE_APPLICATION_CREDENTIALS}" != /* ]]; then
     export GOOGLE_APPLICATION_CREDENTIALS=$(realpath ${KOKORO_GFILE_DIR}/${GOOGLE_APPLICATION_CREDENTIALS})
 fi
@@ -60,6 +60,7 @@ javadoc)
     ;;
 integration)
     mvn -B ${INTEGRATION_TEST_ARGS} \
+      -ntp \
       -Penable-integration-tests \
       -DtrimStackTrace=false \
       -Dclirr.skip=true \
@@ -69,11 +70,59 @@ integration)
     RETURN_CODE=$?
     ;;
 samples)
-    if [[ -f samples/pom.xml ]]
+    SAMPLES_DIR=samples
+    # only run ITs in snapshot/ on presubmit PRs. run ITs in all 3 samples/ subdirectories otherwise.
+    if [[ ! -z ${KOKORO_GITHUB_PULL_REQUEST_NUMBER} ]]
     then
-        pushd samples
+      SAMPLES_DIR=samples/snapshot
+    fi
+
+    if [[ -f ${SAMPLES_DIR}/pom.xml ]]
+    then
+        for FILE in ${KOKORO_GFILE_DIR}/secret_manager/*-samples-secrets; do
+          [[ -f "$FILE" ]] || continue
+          source "$FILE"
+        done
+
+        pushd ${SAMPLES_DIR}
         mvn -B \
           -Penable-samples \
+          -ntp \
+          -DtrimStackTrace=false \
+          -Dclirr.skip=true \
+          -Denforcer.skip=true \
+          -fae \
+          verify
+        RETURN_CODE=$?
+        popd
+    else
+        echo "no sample pom.xml found - skipping sample tests"
+    fi
+    ;;
+presubmit-against-pubsublite-samples)
+    ## cd to the directory one level above the root of the repo
+    cd ${scriptDir}/../..
+    git clone https://github.com/googleapis/java-pubsublite.git
+    pushd java-pubsublite/
+
+    SAMPLES_DIR=samples
+    # Only run ITs in in snippets/ on presubmit PRs.
+    if [[ ! -z ${KOKORO_GITHUB_PULL_REQUEST_NUMBER} ]]
+    then
+      SAMPLES_DIR=samples/snippets
+    fi
+
+    if [[ -f ${SAMPLES_DIR}/pom.xml ]]
+    then
+        for FILE in ${KOKORO_GFILE_DIR}/secret_manager/*-samples-secrets; do
+          [[ -f "$FILE" ]] || continue
+          source "$FILE"
+        done
+
+        pushd ${SAMPLES_DIR}
+        mvn -B \
+          -Penable-samples \
+          -ntp \
           -DtrimStackTrace=false \
           -Dclirr.skip=true \
           -Denforcer.skip=true \
@@ -103,8 +152,8 @@ bash .kokoro/coerce_logs.sh
 
 if [[ "${ENABLE_BUILD_COP}" == "true" ]]
 then
-    chmod +x ${KOKORO_GFILE_DIR}/linux_amd64/buildcop
-    ${KOKORO_GFILE_DIR}/linux_amd64/buildcop -repo=googleapis/java-pubsub
+    chmod +x ${KOKORO_GFILE_DIR}/linux_amd64/flakybot
+    ${KOKORO_GFILE_DIR}/linux_amd64/flakybot -repo=googleapis/java-pubsub
 fi
 
 echo "exiting with ${RETURN_CODE}"

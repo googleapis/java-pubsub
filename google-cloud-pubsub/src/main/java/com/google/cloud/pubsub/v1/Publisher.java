@@ -206,6 +206,9 @@ public class Publisher implements PublisherInterface {
    * Schedules the publishing of a message. The publishing of the message may occur immediately or
    * be delayed based on the publisher batching options.
    *
+   * <p>This method blocks in the downcall if using LimitExceededBehavior.Block in the flow control
+   * settings.
+   *
    * <p>Example of publishing a message.
    *
    * <pre>{@code
@@ -815,6 +818,11 @@ public class Publisher implements PublisherInterface {
     public Builder setEndpoint(String endpoint) {
       this.endpoint = endpoint;
       return this;
+    }
+
+    /** Returns the default BatchingSettings used by the client if settings are not provided. */
+    public static BatchingSettings getDefaultBatchingSettings() {
+      return DEFAULT_BATCHING_SETTINGS;
     }
 
     public Publisher build() throws IOException {

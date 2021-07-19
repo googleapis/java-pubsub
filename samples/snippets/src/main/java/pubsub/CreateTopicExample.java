@@ -43,4 +43,3 @@ public class CreateTopicExample {
 }
 // [END pubsub_create_topic]
 // [END pubsub_quickstart_create_topic]
-

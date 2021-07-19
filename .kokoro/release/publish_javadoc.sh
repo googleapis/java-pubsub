@@ -24,11 +24,6 @@ if [[ -z "${STAGING_BUCKET}" ]]; then
   exit 1
 fi
 
-if [[ -z "${STAGING_BUCKET_V2}" ]]; then
-  echo "Need to set STAGING_BUCKET_V2 environment variable"
-  exit 1
-fi
-
 # work from the git root directory
 pushd $(dirname "$0")/../../
 
@@ -38,8 +33,8 @@ python3 -m pip install gcp-docuploader
 # compile all packages
 mvn clean install -B -q -DskipTests=true
 
-NAME=google-cloud-pubsub
-VERSION=$(grep ${NAME}: versions.txt | cut -d: -f3)
+export NAME=google-cloud-pubsub
+export VERSION=$(grep ${NAME}: versions.txt | cut -d: -f3)
 
 # build the docs
 mvn site -B -q
@@ -56,21 +51,3 @@ python3 -m docuploader create-metadata \
 python3 -m docuploader upload . \
   --credentials ${CREDENTIALS} \
   --staging-bucket ${STAGING_BUCKET}
-
-popd
-
-# V2
-mvn clean site -B -q -Ddevsite.template="${KOKORO_GFILE_DIR}/java/"
-
-pushd target/devsite
-
-# create metadata
-python3 -m docuploader create-metadata \
-  --name ${NAME} \
-  --version ${VERSION} \
-  --language java
-
-# upload docs
-python3 -m docuploader upload . \
-  --credentials ${CREDENTIALS} \
-  --staging-bucket ${STAGING_BUCKET_V2}
