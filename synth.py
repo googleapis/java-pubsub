@@ -518,71 +518,38 @@ for version in versions:
         PACKAGE + '\n\n' + IMPORT_PROJECT_TOPIC_NAME + '\n'
     )
 
-    s.replace(
-        '**/UntypedTopicName.java',
-        "public static List\<UntypedTopicName\> parseList\(List\<String\> formattedStrings\)",
+    java.remove_method(
+        'proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/UntypedTopicName.java',
         "public static List<TopicName> parseList(List<String> formattedStrings)"
     )
-    s.replace(
-        '**/UntypedTopicName.java',
-        "List\<UntypedTopicName\> list = new ArrayList\<\>\(formattedStrings.size\(\)\);",
-        "List<TopicName> list = new ArrayList<>(formattedStrings.size());"
-    )
-    s.replace(
-        '**/UntypedTopicName.java',
-        "public static List\<String\> toStringList\(List\<UntypedTopicName\> values\)",
+    
+    java.remove_method(
+        'proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/UntypedTopicName.java',
         "public static List<String> toStringList(List<TopicName> values)"
     )
-    s.replace(
-        '**/UntypedTopicName.java',
-        "for \(UntypedTopicName value : values\)",
-        "for (TopicName value : values)"
-    )
-    s.replace(
-        '**/ProjectTopicName.java',
-        "public static List\<ProjectTopicName\> parseList\(List\<String\> formattedStrings\)",
+   
+    java.remove_method(
+        'proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ProjectTopicName.java',
         "public static List<TopicName> parseList(List<String> formattedStrings)"
     )
+    
+    java.remove_method(
+        'proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ProjectTopicName.java',
+        "public static List<String> toStringList(List<TopicName> values)")
+    
     s.replace(
-        '**/ProjectTopicName.java',
-        "List\<ProjectTopicName\> list = new ArrayList\<\>\(formattedStrings.size\(\)\);",
-        "List<TopicName> list = new ArrayList<>(formattedStrings.size());"
-    )
-    s.replace(
-        '**/ProjectTopicName.java',
-        "public static List\<String\> toStringList\(List\<ProjectTopicName\> values\)",
-        "public static List<String> toStringList(List<TopicName> values)"
-    )
-    s.replace(
-        '**/ProjectTopicName.java',
-        "for \(ProjectTopicName value : values\)",
-        "for (TopicName value : values)"
-    )
-    s.replace(
+      [
         '**/SubscriptionAdminClient.java',
-        "ProjectSubscriptionName",
-        "SubscriptionName"
-    )
-    s.replace(
-        '**/SubscriberTest..java',
-        "ProjectSubscriptionName",
-        "SubscriptionName"
-    )
-    s.replace(
-        '**/ITPubSubTest.java',
-        "ProjectSubscriptionName",
-        "SubscriptionName"
-    )
-    s.replace(
         '**/SubscriberTest.java',
-        "ProjectSubscriptionName",
-        "SubscriptionName"
-    )
-    s.replace(
+        '**/ITPubSubTest.java',
+        '**/SubscriberTest.java',
         '**/Subscriber.java',
+      ],
         "ProjectSubscriptionName",
         "SubscriptionName"
     )
+
+
 
 
     java.format_code('google-cloud-pubsub/src')
