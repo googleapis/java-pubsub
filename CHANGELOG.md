@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.114.0](https://www.github.com/googleapis/java-pubsub/compare/v1.113.5...v1.114.0) (2021-08-06)
+
+
+### Features
+
+* configure initial sp version ([#761](https://www.github.com/googleapis/java-pubsub/issues/761)) ([68c0cfb](https://www.github.com/googleapis/java-pubsub/commit/68c0cfbfe3dcb11735b8db17614500f71f482796))
+
 ### [1.113.5](https://www.github.com/googleapis/java-pubsub/compare/v1.113.4...v1.113.5) (2021-07-02)
 
 
