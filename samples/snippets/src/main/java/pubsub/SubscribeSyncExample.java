@@ -55,7 +55,7 @@ public class SubscribeSyncExample {
       PullRequest pullRequest =
           PullRequest.newBuilder()
               .setMaxMessages(numOfMessages)
-              .setSubscription(subscriptionName)
+              .setSubscription(subscriptionName.toString())
               .build();
 
       // Use pullCallable().futureCall to asynchronously perform this operation.
@@ -69,7 +69,7 @@ public class SubscribeSyncExample {
       // Acknowledge received messages.
       AcknowledgeRequest acknowledgeRequest =
           AcknowledgeRequest.newBuilder()
-              .setSubscription(subscriptionName)
+              .setSubscription(subscriptionName.toString())
               .addAllAckIds(ackIds)
               .build();
 
