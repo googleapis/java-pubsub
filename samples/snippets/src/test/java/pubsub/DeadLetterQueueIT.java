@@ -24,10 +24,10 @@ import com.google.cloud.pubsub.v1.SubscriptionAdminClient;
 import com.google.cloud.pubsub.v1.TopicAdminClient;
 import com.google.cloud.testing.junit4.MultipleAttemptsRule;
 import com.google.protobuf.ByteString;
-import com.google.pubsub.v1.ProjectSubscriptionName;
-import com.google.pubsub.v1.ProjectTopicName;
 import com.google.pubsub.v1.PubsubMessage;
+import com.google.pubsub.v1.SubscriptionName;
 import com.google.pubsub.v1.Topic;
+import com.google.pubsub.v1.TopicName;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.UUID;
@@ -48,11 +48,11 @@ public class DeadLetterQueueIT {
   private static final String topicId = "topic-" + _suffix;
   private static final String subscriptionId = "subscription-" + _suffix;
   private static final String deadLetterTopicId = "topic-dlq-" + _suffix;
-  private static final ProjectTopicName topicName = ProjectTopicName.of(projectId, topicId);
-  private static final ProjectTopicName deadLetterTopicName =
-      ProjectTopicName.of(projectId, deadLetterTopicId);
-  private static final ProjectSubscriptionName subscriptionName =
-      ProjectSubscriptionName.of(projectId, subscriptionId);
+  private static final TopicName topicName = TopicName.of(projectId, topicId);
+  private static final TopicName deadLetterTopicName =
+      TopicName.of(projectId, deadLetterTopicId);
+  private static final SubscriptionName subscriptionName =
+      SubscriptionName.of(projectId, subscriptionId);
 
   private static void requireEnvVar(String varName) {
     assertNotNull(
@@ -62,7 +62,7 @@ public class DeadLetterQueueIT {
 
   // Helper function to publish a message.
   private static void publishSomeMessages() throws Exception {
-    ProjectTopicName topicName = ProjectTopicName.of(projectId, topicId);
+    TopicName topicName = TopicName.of(projectId, topicId);
     Publisher publisher = Publisher.newBuilder(topicName).build();
     ByteString data = ByteString.copyFromUtf8("Hello");
     PubsubMessage pubsubMessage = PubsubMessage.newBuilder().setData(data).build();

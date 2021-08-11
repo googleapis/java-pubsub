@@ -21,7 +21,7 @@ package pubsub;
 import com.google.cloud.pubsub.v1.SubscriptionAdminClient;
 import com.google.iam.v1.TestIamPermissionsRequest;
 import com.google.iam.v1.TestIamPermissionsResponse;
-import com.google.pubsub.v1.ProjectSubscriptionName;
+import com.google.pubsub.v1.SubscriptionName;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
@@ -38,8 +38,7 @@ public class TestSubscriptionPermissionsExample {
   public static void testSubscriptionPermissionsExample(String projectId, String subscriptionId)
       throws IOException {
     try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
-      ProjectSubscriptionName subscriptionName =
-          ProjectSubscriptionName.of(projectId, subscriptionId);
+      SubscriptionName subscriptionName = SubscriptionName.of(projectId, subscriptionId);
 
       List<String> permissions = new LinkedList<>();
       permissions.add("pubsub.subscriptions.consume");

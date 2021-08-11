@@ -24,8 +24,8 @@ import com.google.cloud.pubsub.v1.AckReplyConsumer;
 import com.google.cloud.pubsub.v1.MessageReceiver;
 import com.google.cloud.pubsub.v1.Subscriber;
 import com.google.common.util.concurrent.MoreExecutors;
-import com.google.pubsub.v1.ProjectSubscriptionName;
 import com.google.pubsub.v1.PubsubMessage;
+import com.google.pubsub.v1.SubscriptionName;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -39,8 +39,7 @@ public class SubscribeWithErrorListenerExample {
   }
 
   public static void subscribeWithErrorListenerExample(String projectId, String subscriptionId) {
-    ProjectSubscriptionName subscriptionName =
-        ProjectSubscriptionName.of(projectId, subscriptionId);
+    SubscriptionName subscriptionName = SubscriptionName.of(projectId, subscriptionId);
 
     // Instantiate an asynchronous message receiver.
     MessageReceiver receiver =

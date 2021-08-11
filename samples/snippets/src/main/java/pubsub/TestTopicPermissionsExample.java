@@ -21,7 +21,7 @@ package pubsub;
 import com.google.cloud.pubsub.v1.TopicAdminClient;
 import com.google.iam.v1.TestIamPermissionsRequest;
 import com.google.iam.v1.TestIamPermissionsResponse;
-import com.google.pubsub.v1.ProjectTopicName;
+import com.google.pubsub.v1.TopicName;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
@@ -39,7 +39,7 @@ public class TestTopicPermissionsExample {
   public static void testTopicPermissionsExample(String projectId, String topicId)
       throws IOException {
     try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
-      ProjectTopicName topicName = ProjectTopicName.of(projectId, topicId);
+      TopicName topicName = TopicName.of(projectId, topicId);
 
       List<String> permissions = new LinkedList<>();
       permissions.add("pubsub.topics.attachSubscription");

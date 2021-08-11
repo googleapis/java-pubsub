@@ -28,10 +28,9 @@ import com.google.cloud.pubsub.v1.SubscriptionAdminClient;
 import com.google.cloud.pubsub.v1.TopicAdminClient;
 import com.google.common.collect.ImmutableMap;
 import com.google.protobuf.ByteString;
-import com.google.pubsub.v1.ProjectSubscriptionName;
-import com.google.pubsub.v1.ProjectTopicName;
 import com.google.pubsub.v1.PubsubMessage;
 import com.google.pubsub.v1.Subscription;
+import com.google.pubsub.v1.SubscriptionName;
 import com.google.pubsub.v1.Topic;
 import com.google.pubsub.v1.TopicName;
 import java.io.ByteArrayOutputStream;
@@ -56,8 +55,8 @@ public class SubscriberIT {
   private static final String topicId = "subscriber-test-topic-" + _suffix;
   private static final String subscriptionId = "subscriber-test-subscription-" + _suffix;
   private static final TopicName topicName = TopicName.of(projectId, topicId);
-  private static final ProjectSubscriptionName subscriptionName =
-      ProjectSubscriptionName.of(projectId, subscriptionId);
+  private static final SubscriptionName subscriptionName =
+      SubscriptionName.of(projectId, subscriptionId);
   private static final ExecutorProvider executorProvider =
       InstantiatingExecutorProvider.newBuilder().setExecutorThreadCount(4).build();
 
@@ -69,7 +68,7 @@ public class SubscriberIT {
 
   // Helper function to publish some messages.
   private static void publishSomeMessages(Integer numOfMessages) throws Exception {
-    ProjectTopicName topicName = ProjectTopicName.of(projectId, topicId);
+    TopicName topicName = TopicName.of(projectId, topicId);
     Publisher publisher = Publisher.newBuilder(topicName).build();
     List<ApiFuture<String>> messageIdFutures = new ArrayList<>();
     for (int i = 0; i < numOfMessages; i++) {

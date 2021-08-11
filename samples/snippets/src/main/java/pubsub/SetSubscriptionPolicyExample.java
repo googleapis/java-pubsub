@@ -23,7 +23,7 @@ import com.google.iam.v1.Binding;
 import com.google.iam.v1.GetIamPolicyRequest;
 import com.google.iam.v1.Policy;
 import com.google.iam.v1.SetIamPolicyRequest;
-import com.google.pubsub.v1.ProjectSubscriptionName;
+import com.google.pubsub.v1.SubscriptionName;
 import java.io.IOException;
 
 public class SetSubscriptionPolicyExample {
@@ -38,8 +38,7 @@ public class SetSubscriptionPolicyExample {
   public static void setSubscriptionPolicyExample(String projectId, String subscriptionId)
       throws IOException {
     try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
-      ProjectSubscriptionName subscriptionName =
-          ProjectSubscriptionName.of(projectId, subscriptionId);
+      SubscriptionName subscriptionName = SubscriptionName.of(projectId, subscriptionId);
       GetIamPolicyRequest getIamPolicyRequest =
           GetIamPolicyRequest.newBuilder().setResource(subscriptionName.toString()).build();
       Policy oldPolicy = subscriptionAdminClient.getIamPolicy(getIamPolicyRequest);

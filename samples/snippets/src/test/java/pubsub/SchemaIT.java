@@ -25,8 +25,8 @@ import com.google.cloud.pubsub.v1.SubscriptionAdminClient;
 import com.google.cloud.pubsub.v1.TopicAdminClient;
 import com.google.cloud.testing.junit4.MultipleAttemptsRule;
 import com.google.pubsub.v1.Encoding;
-import com.google.pubsub.v1.ProjectSubscriptionName;
 import com.google.pubsub.v1.SchemaName;
+import com.google.pubsub.v1.SubscriptionName;
 import com.google.pubsub.v1.TopicName;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -60,10 +60,10 @@ public class SchemaIT {
 
   private static final TopicName avroTopicName = TopicName.of(projectId, avroTopicId);
   private static final TopicName protoTopicName = TopicName.of(projectId, protoTopicId);
-  private static final ProjectSubscriptionName avroSubscriptionName =
-      ProjectSubscriptionName.of(projectId, avroSubscriptionId);
-  private static final ProjectSubscriptionName protoSubscriptionName =
-      ProjectSubscriptionName.of(projectId, protoSubscriptionId);
+  private static final SubscriptionName avroSubscriptionName =
+      SubscriptionName.of(projectId, avroSubscriptionId);
+  private static final SubscriptionName protoSubscriptionName =
+      SubscriptionName.of(projectId, protoSubscriptionId);
   private static final SchemaName avroSchemaName = SchemaName.of(projectId, avroSchemaId);
   private static final SchemaName protoSchemaName = SchemaName.of(projectId, protoSchemaId);
 

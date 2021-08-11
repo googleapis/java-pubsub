@@ -22,8 +22,8 @@ import com.google.cloud.pubsub.v1.AckReplyConsumer;
 import com.google.cloud.pubsub.v1.MessageReceiver;
 import com.google.cloud.pubsub.v1.Subscriber;
 import com.google.protobuf.ByteString;
-import com.google.pubsub.v1.ProjectSubscriptionName;
 import com.google.pubsub.v1.PubsubMessage;
+import com.google.pubsub.v1.SubscriptionName;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -47,8 +47,7 @@ public class SubscribeWithAvroSchemaExample {
 
   public static void subscribeWithAvroSchemaExample(String projectId, String subscriptionId) {
 
-    ProjectSubscriptionName subscriptionName =
-        ProjectSubscriptionName.of(projectId, subscriptionId);
+    SubscriptionName subscriptionName = SubscriptionName.of(projectId, subscriptionId);
 
     // Prepare a reader for the encoded Avro records.
     SpecificDatumReader<State> reader = new SpecificDatumReader<>(State.getClassSchema());

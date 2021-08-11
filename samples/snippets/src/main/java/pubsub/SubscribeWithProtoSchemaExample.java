@@ -24,8 +24,8 @@ import com.google.cloud.pubsub.v1.Subscriber;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.util.JsonFormat;
-import com.google.pubsub.v1.ProjectSubscriptionName;
 import com.google.pubsub.v1.PubsubMessage;
+import com.google.pubsub.v1.SubscriptionName;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import utilities.StateProto.State;
@@ -43,8 +43,7 @@ public class SubscribeWithProtoSchemaExample {
 
   public static void subscribeWithProtoSchemaExample(String projectId, String subscriptionId) {
 
-    ProjectSubscriptionName subscriptionName =
-        ProjectSubscriptionName.of(projectId, subscriptionId);
+    SubscriptionName subscriptionName = SubscriptionName.of(projectId, subscriptionId);
 
     MessageReceiver receiver =
         (PubsubMessage message, AckReplyConsumer consumer) -> {

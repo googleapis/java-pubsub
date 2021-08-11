@@ -18,9 +18,9 @@ package pubsub;
 
 // [START pubsub_enable_subscription_ordering]
 import com.google.cloud.pubsub.v1.SubscriptionAdminClient;
-import com.google.pubsub.v1.ProjectSubscriptionName;
-import com.google.pubsub.v1.ProjectTopicName;
 import com.google.pubsub.v1.Subscription;
+import com.google.pubsub.v1.SubscriptionName;
+import com.google.pubsub.v1.TopicName;
 import java.io.IOException;
 
 public class CreateSubscriptionWithOrdering {
@@ -37,9 +37,8 @@ public class CreateSubscriptionWithOrdering {
       String projectId, String topicId, String subscriptionId) throws IOException {
     try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
 
-      ProjectTopicName topicName = ProjectTopicName.of(projectId, topicId);
-      ProjectSubscriptionName subscriptionName =
-          ProjectSubscriptionName.of(projectId, subscriptionId);
+      TopicName topicName = TopicName.of(projectId, topicId);
+      SubscriptionName subscriptionName = SubscriptionName.of(projectId, subscriptionId);
 
       Subscription subscription =
           subscriptionAdminClient.createSubscription(

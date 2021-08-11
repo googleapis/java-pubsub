@@ -96,12 +96,12 @@ publishers. Add the following imports at the top of your file:
 
 ```java
 import com.google.cloud.pubsub.v1.TopicAdminClient;
-import com.google.pubsub.v1.ProjectTopicName;
+import com.google.pubsub.v1.TopicName;
 ```
 Then, to create the topic, use the following code:
 
 ```java
-ProjectTopicName topic = ProjectTopicName.of("test-project", "test-topic");
+TopicName topic = TopicName.of("test-project", "test-topic");
 try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
   topicAdminClient.createTopic(topic);
 }
@@ -155,14 +155,14 @@ single, specific topic. Add the following imports at the top of your file:
 ```java
 import com.google.cloud.pubsub.v1.SubscriptionAdminClient;
 import com.google.pubsub.v1.PushConfig;
-import com.google.pubsub.v1.ProjectSubscriptionName;
-import com.google.pubsub.v1.ProjectTopicName;
+import com.google.pubsub.v1.SubscriptionName;
+import com.google.pubsub.v1.TopicName;
 ```
 Then, to create the subscription, use the following code:
 
 ```java
-ProjectTopicName topic = ProjectTopicName.of("test-project", "test-topic");
-ProjectSubscriptionName subscription = ProjectSubscriptionName.of("test-project", "test-subscription");
+TopicName topic = TopicName.of("test-project", "test-topic");
+SubscriptionName subscription = SubscriptionName.of("test-project", "test-subscription");
 
 try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
   subscriptionAdminClient.createSubscription(subscription, topic, PushConfig.getDefaultInstance(), 0);
@@ -180,13 +180,13 @@ import com.google.cloud.pubsub.v1.MessageReceiver;
 import com.google.cloud.pubsub.v1.Subscriber;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.pubsub.v1.PubsubMessage;
-import com.google.pubsub.v1.ProjectSubscriptionName;
-import com.google.pubsub.v1.ProjectTopicName;
+import com.google.pubsub.v1.SubscriptionName;
+import com.google.pubsub.v1.TopicName;
 ```
 Then, to pull messages asynchronously, use the following code:
 
 ```java
-ProjectSubscriptionName subscription = ProjectSubscriptionName.of("test-project", "test-subscription");
+SubscriptionName subscription = SubscriptionName.of("test-project", "test-subscription");
 
 MessageReceiver receiver =
   new MessageReceiver() {
