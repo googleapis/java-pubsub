@@ -1,11 +1,11 @@
 /*
- * Copyright 2020 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     https://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,19 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.google.cloud.pubsub.v1.stub;
 
 import static com.google.cloud.pubsub.v1.SubscriptionAdminClient.ListSnapshotsPagedResponse;
 import static com.google.cloud.pubsub.v1.SubscriptionAdminClient.ListSubscriptionsPagedResponse;
 
-import com.google.api.core.BetaApi;
 import com.google.api.gax.core.BackgroundResource;
 import com.google.api.gax.core.BackgroundResourceAggregation;
 import com.google.api.gax.grpc.GrpcCallSettings;
 import com.google.api.gax.grpc.GrpcStubCallableFactory;
 import com.google.api.gax.rpc.BidiStreamingCallable;
 import com.google.api.gax.rpc.ClientContext;
-import com.google.api.gax.rpc.RequestParamsExtractor;
 import com.google.api.gax.rpc.UnaryCallable;
 import com.google.common.collect.ImmutableMap;
 import com.google.iam.v1.GetIamPolicyRequest;
@@ -33,6 +32,7 @@ import com.google.iam.v1.Policy;
 import com.google.iam.v1.SetIamPolicyRequest;
 import com.google.iam.v1.TestIamPermissionsRequest;
 import com.google.iam.v1.TestIamPermissionsResponse;
+import com.google.longrunning.stub.GrpcOperationsStub;
 import com.google.protobuf.Empty;
 import com.google.pubsub.v1.AcknowledgeRequest;
 import com.google.pubsub.v1.CreateSnapshotRequest;
@@ -59,20 +59,17 @@ import com.google.pubsub.v1.UpdateSubscriptionRequest;
 import io.grpc.MethodDescriptor;
 import io.grpc.protobuf.ProtoUtils;
 import java.io.IOException;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Generated;
 
-// AUTO-GENERATED DOCUMENTATION AND CLASS
+// AUTO-GENERATED DOCUMENTATION AND CLASS.
 /**
- * gRPC stub implementation for Cloud Pub/Sub API.
+ * gRPC stub implementation for the Subscriber service API.
  *
  * <p>This class is for advanced usage and reflects the underlying API directly.
  */
-@Generated("by gapic-generator")
-@BetaApi("A restructuring of stub classes is planned, so this may break in the future")
+@Generated("by gapic-generator-java")
 public class GrpcSubscriberStub extends SubscriberStub {
-
   private static final MethodDescriptor<Subscription, Subscription>
       createSubscriptionMethodDescriptor =
           MethodDescriptor.<Subscription, Subscription>newBuilder()
@@ -81,6 +78,7 @@ public class GrpcSubscriberStub extends SubscriberStub {
               .setRequestMarshaller(ProtoUtils.marshaller(Subscription.getDefaultInstance()))
               .setResponseMarshaller(ProtoUtils.marshaller(Subscription.getDefaultInstance()))
               .build();
+
   private static final MethodDescriptor<GetSubscriptionRequest, Subscription>
       getSubscriptionMethodDescriptor =
           MethodDescriptor.<GetSubscriptionRequest, Subscription>newBuilder()
@@ -90,6 +88,7 @@ public class GrpcSubscriberStub extends SubscriberStub {
                   ProtoUtils.marshaller(GetSubscriptionRequest.getDefaultInstance()))
               .setResponseMarshaller(ProtoUtils.marshaller(Subscription.getDefaultInstance()))
               .build();
+
   private static final MethodDescriptor<UpdateSubscriptionRequest, Subscription>
       updateSubscriptionMethodDescriptor =
           MethodDescriptor.<UpdateSubscriptionRequest, Subscription>newBuilder()
@@ -99,6 +98,7 @@ public class GrpcSubscriberStub extends SubscriberStub {
                   ProtoUtils.marshaller(UpdateSubscriptionRequest.getDefaultInstance()))
               .setResponseMarshaller(ProtoUtils.marshaller(Subscription.getDefaultInstance()))
               .build();
+
   private static final MethodDescriptor<ListSubscriptionsRequest, ListSubscriptionsResponse>
       listSubscriptionsMethodDescriptor =
           MethodDescriptor.<ListSubscriptionsRequest, ListSubscriptionsResponse>newBuilder()
@@ -109,6 +109,7 @@ public class GrpcSubscriberStub extends SubscriberStub {
               .setResponseMarshaller(
                   ProtoUtils.marshaller(ListSubscriptionsResponse.getDefaultInstance()))
               .build();
+
   private static final MethodDescriptor<DeleteSubscriptionRequest, Empty>
       deleteSubscriptionMethodDescriptor =
           MethodDescriptor.<DeleteSubscriptionRequest, Empty>newBuilder()
@@ -118,13 +119,7 @@ public class GrpcSubscriberStub extends SubscriberStub {
                   ProtoUtils.marshaller(DeleteSubscriptionRequest.getDefaultInstance()))
               .setResponseMarshaller(ProtoUtils.marshaller(Empty.getDefaultInstance()))
               .build();
-  private static final MethodDescriptor<GetSnapshotRequest, Snapshot> getSnapshotMethodDescriptor =
-      MethodDescriptor.<GetSnapshotRequest, Snapshot>newBuilder()
-          .setType(MethodDescriptor.MethodType.UNARY)
-          .setFullMethodName("google.pubsub.v1.Subscriber/GetSnapshot")
-          .setRequestMarshaller(ProtoUtils.marshaller(GetSnapshotRequest.getDefaultInstance()))
-          .setResponseMarshaller(ProtoUtils.marshaller(Snapshot.getDefaultInstance()))
-          .build();
+
   private static final MethodDescriptor<ModifyAckDeadlineRequest, Empty>
       modifyAckDeadlineMethodDescriptor =
           MethodDescriptor.<ModifyAckDeadlineRequest, Empty>newBuilder()
@@ -134,6 +129,7 @@ public class GrpcSubscriberStub extends SubscriberStub {
                   ProtoUtils.marshaller(ModifyAckDeadlineRequest.getDefaultInstance()))
               .setResponseMarshaller(ProtoUtils.marshaller(Empty.getDefaultInstance()))
               .build();
+
   private static final MethodDescriptor<AcknowledgeRequest, Empty> acknowledgeMethodDescriptor =
       MethodDescriptor.<AcknowledgeRequest, Empty>newBuilder()
           .setType(MethodDescriptor.MethodType.UNARY)
@@ -141,6 +137,7 @@ public class GrpcSubscriberStub extends SubscriberStub {
           .setRequestMarshaller(ProtoUtils.marshaller(AcknowledgeRequest.getDefaultInstance()))
           .setResponseMarshaller(ProtoUtils.marshaller(Empty.getDefaultInstance()))
           .build();
+
   private static final MethodDescriptor<PullRequest, PullResponse> pullMethodDescriptor =
       MethodDescriptor.<PullRequest, PullResponse>newBuilder()
           .setType(MethodDescriptor.MethodType.UNARY)
@@ -148,6 +145,7 @@ public class GrpcSubscriberStub extends SubscriberStub {
           .setRequestMarshaller(ProtoUtils.marshaller(PullRequest.getDefaultInstance()))
           .setResponseMarshaller(ProtoUtils.marshaller(PullResponse.getDefaultInstance()))
           .build();
+
   private static final MethodDescriptor<StreamingPullRequest, StreamingPullResponse>
       streamingPullMethodDescriptor =
           MethodDescriptor.<StreamingPullRequest, StreamingPullResponse>newBuilder()
@@ -158,6 +156,7 @@ public class GrpcSubscriberStub extends SubscriberStub {
               .setResponseMarshaller(
                   ProtoUtils.marshaller(StreamingPullResponse.getDefaultInstance()))
               .build();
+
   private static final MethodDescriptor<ModifyPushConfigRequest, Empty>
       modifyPushConfigMethodDescriptor =
           MethodDescriptor.<ModifyPushConfigRequest, Empty>newBuilder()
@@ -167,6 +166,15 @@ public class GrpcSubscriberStub extends SubscriberStub {
                   ProtoUtils.marshaller(ModifyPushConfigRequest.getDefaultInstance()))
               .setResponseMarshaller(ProtoUtils.marshaller(Empty.getDefaultInstance()))
               .build();
+
+  private static final MethodDescriptor<GetSnapshotRequest, Snapshot> getSnapshotMethodDescriptor =
+      MethodDescriptor.<GetSnapshotRequest, Snapshot>newBuilder()
+          .setType(MethodDescriptor.MethodType.UNARY)
+          .setFullMethodName("google.pubsub.v1.Subscriber/GetSnapshot")
+          .setRequestMarshaller(ProtoUtils.marshaller(GetSnapshotRequest.getDefaultInstance()))
+          .setResponseMarshaller(ProtoUtils.marshaller(Snapshot.getDefaultInstance()))
+          .build();
+
   private static final MethodDescriptor<ListSnapshotsRequest, ListSnapshotsResponse>
       listSnapshotsMethodDescriptor =
           MethodDescriptor.<ListSnapshotsRequest, ListSnapshotsResponse>newBuilder()
@@ -177,6 +185,7 @@ public class GrpcSubscriberStub extends SubscriberStub {
               .setResponseMarshaller(
                   ProtoUtils.marshaller(ListSnapshotsResponse.getDefaultInstance()))
               .build();
+
   private static final MethodDescriptor<CreateSnapshotRequest, Snapshot>
       createSnapshotMethodDescriptor =
           MethodDescriptor.<CreateSnapshotRequest, Snapshot>newBuilder()
@@ -186,6 +195,7 @@ public class GrpcSubscriberStub extends SubscriberStub {
                   ProtoUtils.marshaller(CreateSnapshotRequest.getDefaultInstance()))
               .setResponseMarshaller(ProtoUtils.marshaller(Snapshot.getDefaultInstance()))
               .build();
+
   private static final MethodDescriptor<UpdateSnapshotRequest, Snapshot>
       updateSnapshotMethodDescriptor =
           MethodDescriptor.<UpdateSnapshotRequest, Snapshot>newBuilder()
@@ -195,6 +205,7 @@ public class GrpcSubscriberStub extends SubscriberStub {
                   ProtoUtils.marshaller(UpdateSnapshotRequest.getDefaultInstance()))
               .setResponseMarshaller(ProtoUtils.marshaller(Snapshot.getDefaultInstance()))
               .build();
+
   private static final MethodDescriptor<DeleteSnapshotRequest, Empty>
       deleteSnapshotMethodDescriptor =
           MethodDescriptor.<DeleteSnapshotRequest, Empty>newBuilder()
@@ -204,6 +215,7 @@ public class GrpcSubscriberStub extends SubscriberStub {
                   ProtoUtils.marshaller(DeleteSnapshotRequest.getDefaultInstance()))
               .setResponseMarshaller(ProtoUtils.marshaller(Empty.getDefaultInstance()))
               .build();
+
   private static final MethodDescriptor<SeekRequest, SeekResponse> seekMethodDescriptor =
       MethodDescriptor.<SeekRequest, SeekResponse>newBuilder()
           .setType(MethodDescriptor.MethodType.UNARY)
@@ -211,6 +223,7 @@ public class GrpcSubscriberStub extends SubscriberStub {
           .setRequestMarshaller(ProtoUtils.marshaller(SeekRequest.getDefaultInstance()))
           .setResponseMarshaller(ProtoUtils.marshaller(SeekResponse.getDefaultInstance()))
           .build();
+
   private static final MethodDescriptor<SetIamPolicyRequest, Policy> setIamPolicyMethodDescriptor =
       MethodDescriptor.<SetIamPolicyRequest, Policy>newBuilder()
           .setType(MethodDescriptor.MethodType.UNARY)
@@ -218,6 +231,7 @@ public class GrpcSubscriberStub extends SubscriberStub {
           .setRequestMarshaller(ProtoUtils.marshaller(SetIamPolicyRequest.getDefaultInstance()))
           .setResponseMarshaller(ProtoUtils.marshaller(Policy.getDefaultInstance()))
           .build();
+
   private static final MethodDescriptor<GetIamPolicyRequest, Policy> getIamPolicyMethodDescriptor =
       MethodDescriptor.<GetIamPolicyRequest, Policy>newBuilder()
           .setType(MethodDescriptor.MethodType.UNARY)
@@ -225,6 +239,7 @@ public class GrpcSubscriberStub extends SubscriberStub {
           .setRequestMarshaller(ProtoUtils.marshaller(GetIamPolicyRequest.getDefaultInstance()))
           .setResponseMarshaller(ProtoUtils.marshaller(Policy.getDefaultInstance()))
           .build();
+
   private static final MethodDescriptor<TestIamPermissionsRequest, TestIamPermissionsResponse>
       testIamPermissionsMethodDescriptor =
           MethodDescriptor.<TestIamPermissionsRequest, TestIamPermissionsResponse>newBuilder()
@@ -236,8 +251,6 @@ public class GrpcSubscriberStub extends SubscriberStub {
                   ProtoUtils.marshaller(TestIamPermissionsResponse.getDefaultInstance()))
               .build();
 
-  private final BackgroundResource backgroundResources;
-
   private final UnaryCallable<Subscription, Subscription> createSubscriptionCallable;
   private final UnaryCallable<GetSubscriptionRequest, Subscription> getSubscriptionCallable;
   private final UnaryCallable<UpdateSubscriptionRequest, Subscription> updateSubscriptionCallable;
@@ -246,13 +259,13 @@ public class GrpcSubscriberStub extends SubscriberStub {
   private final UnaryCallable<ListSubscriptionsRequest, ListSubscriptionsPagedResponse>
       listSubscriptionsPagedCallable;
   private final UnaryCallable<DeleteSubscriptionRequest, Empty> deleteSubscriptionCallable;
-  private final UnaryCallable<GetSnapshotRequest, Snapshot> getSnapshotCallable;
   private final UnaryCallable<ModifyAckDeadlineRequest, Empty> modifyAckDeadlineCallable;
   private final UnaryCallable<AcknowledgeRequest, Empty> acknowledgeCallable;
   private final UnaryCallable<PullRequest, PullResponse> pullCallable;
   private final BidiStreamingCallable<StreamingPullRequest, StreamingPullResponse>
       streamingPullCallable;
   private final UnaryCallable<ModifyPushConfigRequest, Empty> modifyPushConfigCallable;
+  private final UnaryCallable<GetSnapshotRequest, Snapshot> getSnapshotCallable;
   private final UnaryCallable<ListSnapshotsRequest, ListSnapshotsResponse> listSnapshotsCallable;
   private final UnaryCallable<ListSnapshotsRequest, ListSnapshotsPagedResponse>
       listSnapshotsPagedCallable;
@@ -265,6 +278,8 @@ public class GrpcSubscriberStub extends SubscriberStub {
   private final UnaryCallable<TestIamPermissionsRequest, TestIamPermissionsResponse>
       testIamPermissionsCallable;
 
+  private final BackgroundResource backgroundResources;
+  private final GrpcOperationsStub operationsStub;
   private final GrpcStubCallableFactory callableFactory;
 
   public static final GrpcSubscriberStub create(SubscriberStubSettings settings)
@@ -303,45 +318,37 @@ public class GrpcSubscriberStub extends SubscriberStub {
       GrpcStubCallableFactory callableFactory)
       throws IOException {
     this.callableFactory = callableFactory;
+    this.operationsStub = GrpcOperationsStub.create(clientContext, callableFactory);
 
     GrpcCallSettings<Subscription, Subscription> createSubscriptionTransportSettings =
         GrpcCallSettings.<Subscription, Subscription>newBuilder()
             .setMethodDescriptor(createSubscriptionMethodDescriptor)
             .setParamsExtractor(
-                new RequestParamsExtractor<Subscription>() {
-                  @Override
-                  public Map<String, String> extract(Subscription request) {
-                    ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
-                    params.put("name", String.valueOf(request.getName()));
-                    return params.build();
-                  }
+                request -> {
+                  ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
+                  params.put("name", String.valueOf(request.getName()));
+                  return params.build();
                 })
             .build();
     GrpcCallSettings<GetSubscriptionRequest, Subscription> getSubscriptionTransportSettings =
         GrpcCallSettings.<GetSubscriptionRequest, Subscription>newBuilder()
             .setMethodDescriptor(getSubscriptionMethodDescriptor)
             .setParamsExtractor(
-                new RequestParamsExtractor<GetSubscriptionRequest>() {
-                  @Override
-                  public Map<String, String> extract(GetSubscriptionRequest request) {
-                    ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
-                    params.put("subscription", String.valueOf(request.getSubscription()));
-                    return params.build();
-                  }
+                request -> {
+                  ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
+                  params.put("subscription", String.valueOf(request.getSubscription()));
+                  return params.build();
                 })
             .build();
     GrpcCallSettings<UpdateSubscriptionRequest, Subscription> updateSubscriptionTransportSettings =
         GrpcCallSettings.<UpdateSubscriptionRequest, Subscription>newBuilder()
             .setMethodDescriptor(updateSubscriptionMethodDescriptor)
             .setParamsExtractor(
-                new RequestParamsExtractor<UpdateSubscriptionRequest>() {
-                  @Override
-                  public Map<String, String> extract(UpdateSubscriptionRequest request) {
-                    ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
-                    params.put(
-                        "subscription.name", String.valueOf(request.getSubscription().getName()));
-                    return params.build();
-                  }
+                request -> {
+                  ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
+                  params.put(
+                      "subscription.name", String.valueOf(request.getSubscription().getName()));
+                  return params.build();
                 })
             .build();
     GrpcCallSettings<ListSubscriptionsRequest, ListSubscriptionsResponse>
@@ -349,78 +356,50 @@ public class GrpcSubscriberStub extends SubscriberStub {
             GrpcCallSettings.<ListSubscriptionsRequest, ListSubscriptionsResponse>newBuilder()
                 .setMethodDescriptor(listSubscriptionsMethodDescriptor)
                 .setParamsExtractor(
-                    new RequestParamsExtractor<ListSubscriptionsRequest>() {
-                      @Override
-                      public Map<String, String> extract(ListSubscriptionsRequest request) {
-                        ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
-                        params.put("project", String.valueOf(request.getProject()));
-                        return params.build();
-                      }
+                    request -> {
+                      ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
+                      params.put("project", String.valueOf(request.getProject()));
+                      return params.build();
                     })
                 .build();
     GrpcCallSettings<DeleteSubscriptionRequest, Empty> deleteSubscriptionTransportSettings =
         GrpcCallSettings.<DeleteSubscriptionRequest, Empty>newBuilder()
             .setMethodDescriptor(deleteSubscriptionMethodDescriptor)
             .setParamsExtractor(
-                new RequestParamsExtractor<DeleteSubscriptionRequest>() {
-                  @Override
-                  public Map<String, String> extract(DeleteSubscriptionRequest request) {
-                    ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
-                    params.put("subscription", String.valueOf(request.getSubscription()));
-                    return params.build();
-                  }
-                })
-            .build();
-    GrpcCallSettings<GetSnapshotRequest, Snapshot> getSnapshotTransportSettings =
-        GrpcCallSettings.<GetSnapshotRequest, Snapshot>newBuilder()
-            .setMethodDescriptor(getSnapshotMethodDescriptor)
-            .setParamsExtractor(
-                new RequestParamsExtractor<GetSnapshotRequest>() {
-                  @Override
-                  public Map<String, String> extract(GetSnapshotRequest request) {
-                    ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
-                    params.put("snapshot", String.valueOf(request.getSnapshot()));
-                    return params.build();
-                  }
+                request -> {
+                  ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
+                  params.put("subscription", String.valueOf(request.getSubscription()));
+                  return params.build();
                 })
             .build();
     GrpcCallSettings<ModifyAckDeadlineRequest, Empty> modifyAckDeadlineTransportSettings =
         GrpcCallSettings.<ModifyAckDeadlineRequest, Empty>newBuilder()
             .setMethodDescriptor(modifyAckDeadlineMethodDescriptor)
             .setParamsExtractor(
-                new RequestParamsExtractor<ModifyAckDeadlineRequest>() {
-                  @Override
-                  public Map<String, String> extract(ModifyAckDeadlineRequest request) {
-                    ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
-                    params.put("subscription", String.valueOf(request.getSubscription()));
-                    return params.build();
-                  }
+                request -> {
+                  ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
+                  params.put("subscription", String.valueOf(request.getSubscription()));
+                  return params.build();
                 })
             .build();
     GrpcCallSettings<AcknowledgeRequest, Empty> acknowledgeTransportSettings =
         GrpcCallSettings.<AcknowledgeRequest, Empty>newBuilder()
             .setMethodDescriptor(acknowledgeMethodDescriptor)
             .setParamsExtractor(
-                new RequestParamsExtractor<AcknowledgeRequest>() {
-                  @Override
-                  public Map<String, String> extract(AcknowledgeRequest request) {
-                    ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
-                    params.put("subscription", String.valueOf(request.getSubscription()));
-                    return params.build();
-                  }
+                request -> {
+                  ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
+                  params.put("subscription", String.valueOf(request.getSubscription()));
+                  return params.build();
                 })
             .build();
     GrpcCallSettings<PullRequest, PullResponse> pullTransportSettings =
         GrpcCallSettings.<PullRequest, PullResponse>newBuilder()
             .setMethodDescriptor(pullMethodDescriptor)
             .setParamsExtractor(
-                new RequestParamsExtractor<PullRequest>() {
-                  @Override
-                  public Map<String, String> extract(PullRequest request) {
-                    ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
-                    params.put("subscription", String.valueOf(request.getSubscription()));
-                    return params.build();
-                  }
+                request -> {
+                  ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
+                  params.put("subscription", String.valueOf(request.getSubscription()));
+                  return params.build();
                 })
             .build();
     GrpcCallSettings<StreamingPullRequest, StreamingPullResponse> streamingPullTransportSettings =
@@ -431,104 +410,90 @@ public class GrpcSubscriberStub extends SubscriberStub {
         GrpcCallSettings.<ModifyPushConfigRequest, Empty>newBuilder()
             .setMethodDescriptor(modifyPushConfigMethodDescriptor)
             .setParamsExtractor(
-                new RequestParamsExtractor<ModifyPushConfigRequest>() {
-                  @Override
-                  public Map<String, String> extract(ModifyPushConfigRequest request) {
-                    ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
-                    params.put("subscription", String.valueOf(request.getSubscription()));
-                    return params.build();
-                  }
+                request -> {
+                  ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
+                  params.put("subscription", String.valueOf(request.getSubscription()));
+                  return params.build();
+                })
+            .build();
+    GrpcCallSettings<GetSnapshotRequest, Snapshot> getSnapshotTransportSettings =
+        GrpcCallSettings.<GetSnapshotRequest, Snapshot>newBuilder()
+            .setMethodDescriptor(getSnapshotMethodDescriptor)
+            .setParamsExtractor(
+                request -> {
+                  ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
+                  params.put("snapshot", String.valueOf(request.getSnapshot()));
+                  return params.build();
                 })
             .build();
     GrpcCallSettings<ListSnapshotsRequest, ListSnapshotsResponse> listSnapshotsTransportSettings =
         GrpcCallSettings.<ListSnapshotsRequest, ListSnapshotsResponse>newBuilder()
             .setMethodDescriptor(listSnapshotsMethodDescriptor)
             .setParamsExtractor(
-                new RequestParamsExtractor<ListSnapshotsRequest>() {
-                  @Override
-                  public Map<String, String> extract(ListSnapshotsRequest request) {
-                    ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
-                    params.put("project", String.valueOf(request.getProject()));
-                    return params.build();
-                  }
+                request -> {
+                  ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
+                  params.put("project", String.valueOf(request.getProject()));
+                  return params.build();
                 })
             .build();
     GrpcCallSettings<CreateSnapshotRequest, Snapshot> createSnapshotTransportSettings =
         GrpcCallSettings.<CreateSnapshotRequest, Snapshot>newBuilder()
             .setMethodDescriptor(createSnapshotMethodDescriptor)
             .setParamsExtractor(
-                new RequestParamsExtractor<CreateSnapshotRequest>() {
-                  @Override
-                  public Map<String, String> extract(CreateSnapshotRequest request) {
-                    ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
-                    params.put("name", String.valueOf(request.getName()));
-                    return params.build();
-                  }
+                request -> {
+                  ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
+                  params.put("name", String.valueOf(request.getName()));
+                  return params.build();
                 })
             .build();
     GrpcCallSettings<UpdateSnapshotRequest, Snapshot> updateSnapshotTransportSettings =
         GrpcCallSettings.<UpdateSnapshotRequest, Snapshot>newBuilder()
             .setMethodDescriptor(updateSnapshotMethodDescriptor)
             .setParamsExtractor(
-                new RequestParamsExtractor<UpdateSnapshotRequest>() {
-                  @Override
-                  public Map<String, String> extract(UpdateSnapshotRequest request) {
-                    ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
-                    params.put("snapshot.name", String.valueOf(request.getSnapshot().getName()));
-                    return params.build();
-                  }
+                request -> {
+                  ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
+                  params.put("snapshot.name", String.valueOf(request.getSnapshot().getName()));
+                  return params.build();
                 })
             .build();
     GrpcCallSettings<DeleteSnapshotRequest, Empty> deleteSnapshotTransportSettings =
         GrpcCallSettings.<DeleteSnapshotRequest, Empty>newBuilder()
             .setMethodDescriptor(deleteSnapshotMethodDescriptor)
             .setParamsExtractor(
-                new RequestParamsExtractor<DeleteSnapshotRequest>() {
-                  @Override
-                  public Map<String, String> extract(DeleteSnapshotRequest request) {
-                    ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
-                    params.put("snapshot", String.valueOf(request.getSnapshot()));
-                    return params.build();
-                  }
+                request -> {
+                  ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
+                  params.put("snapshot", String.valueOf(request.getSnapshot()));
+                  return params.build();
                 })
             .build();
     GrpcCallSettings<SeekRequest, SeekResponse> seekTransportSettings =
         GrpcCallSettings.<SeekRequest, SeekResponse>newBuilder()
             .setMethodDescriptor(seekMethodDescriptor)
             .setParamsExtractor(
-                new RequestParamsExtractor<SeekRequest>() {
-                  @Override
-                  public Map<String, String> extract(SeekRequest request) {
-                    ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
-                    params.put("subscription", String.valueOf(request.getSubscription()));
-                    return params.build();
-                  }
+                request -> {
+                  ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
+                  params.put("subscription", String.valueOf(request.getSubscription()));
+                  return params.build();
                 })
             .build();
     GrpcCallSettings<SetIamPolicyRequest, Policy> setIamPolicyTransportSettings =
         GrpcCallSettings.<SetIamPolicyRequest, Policy>newBuilder()
             .setMethodDescriptor(setIamPolicyMethodDescriptor)
             .setParamsExtractor(
-                new RequestParamsExtractor<SetIamPolicyRequest>() {
-                  @Override
-                  public Map<String, String> extract(SetIamPolicyRequest request) {
-                    ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
-                    params.put("resource", String.valueOf(request.getResource()));
-                    return params.build();
-                  }
+                request -> {
+                  ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
+                  params.put("resource", String.valueOf(request.getResource()));
+                  return params.build();
                 })
             .build();
     GrpcCallSettings<GetIamPolicyRequest, Policy> getIamPolicyTransportSettings =
         GrpcCallSettings.<GetIamPolicyRequest, Policy>newBuilder()
             .setMethodDescriptor(getIamPolicyMethodDescriptor)
             .setParamsExtractor(
-                new RequestParamsExtractor<GetIamPolicyRequest>() {
-                  @Override
-                  public Map<String, String> extract(GetIamPolicyRequest request) {
-                    ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
-                    params.put("resource", String.valueOf(request.getResource()));
-                    return params.build();
-                  }
+                request -> {
+                  ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
+                  params.put("resource", String.valueOf(request.getResource()));
+                  return params.build();
                 })
             .build();
     GrpcCallSettings<TestIamPermissionsRequest, TestIamPermissionsResponse>
@@ -536,13 +501,10 @@ public class GrpcSubscriberStub extends SubscriberStub {
             GrpcCallSettings.<TestIamPermissionsRequest, TestIamPermissionsResponse>newBuilder()
                 .setMethodDescriptor(testIamPermissionsMethodDescriptor)
                 .setParamsExtractor(
-                    new RequestParamsExtractor<TestIamPermissionsRequest>() {
-                      @Override
-                      public Map<String, String> extract(TestIamPermissionsRequest request) {
-                        ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
-                        params.put("resource", String.valueOf(request.getResource()));
-                        return params.build();
-                      }
+                    request -> {
+                      ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
+                      params.put("resource", String.valueOf(request.getResource()));
+                      return params.build();
                     })
                 .build();
 
@@ -574,9 +536,6 @@ public class GrpcSubscriberStub extends SubscriberStub {
             deleteSubscriptionTransportSettings,
             settings.deleteSubscriptionSettings(),
             clientContext);
-    this.getSnapshotCallable =
-        callableFactory.createUnaryCallable(
-            getSnapshotTransportSettings, settings.getSnapshotSettings(), clientContext);
     this.modifyAckDeadlineCallable =
         callableFactory.createUnaryCallable(
             modifyAckDeadlineTransportSettings,
@@ -594,6 +553,9 @@ public class GrpcSubscriberStub extends SubscriberStub {
     this.modifyPushConfigCallable =
         callableFactory.createUnaryCallable(
             modifyPushConfigTransportSettings, settings.modifyPushConfigSettings(), clientContext);
+    this.getSnapshotCallable =
+        callableFactory.createUnaryCallable(
+            getSnapshotTransportSettings, settings.getSnapshotSettings(), clientContext);
     this.listSnapshotsCallable =
         callableFactory.createUnaryCallable(
             listSnapshotsTransportSettings, settings.listSnapshotsSettings(), clientContext);
@@ -624,93 +586,119 @@ public class GrpcSubscriberStub extends SubscriberStub {
             settings.testIamPermissionsSettings(),
             clientContext);
 
-    backgroundResources = new BackgroundResourceAggregation(clientContext.getBackgroundResources());
+    this.backgroundResources =
+        new BackgroundResourceAggregation(clientContext.getBackgroundResources());
   }
 
+  public GrpcOperationsStub getOperationsStub() {
+    return operationsStub;
+  }
+
+  @Override
   public UnaryCallable<Subscription, Subscription> createSubscriptionCallable() {
     return createSubscriptionCallable;
   }
 
+  @Override
   public UnaryCallable<GetSubscriptionRequest, Subscription> getSubscriptionCallable() {
     return getSubscriptionCallable;
   }
 
+  @Override
   public UnaryCallable<UpdateSubscriptionRequest, Subscription> updateSubscriptionCallable() {
     return updateSubscriptionCallable;
   }
 
-  public UnaryCallable<ListSubscriptionsRequest, ListSubscriptionsPagedResponse>
-      listSubscriptionsPagedCallable() {
-    return listSubscriptionsPagedCallable;
-  }
-
+  @Override
   public UnaryCallable<ListSubscriptionsRequest, ListSubscriptionsResponse>
       listSubscriptionsCallable() {
     return listSubscriptionsCallable;
   }
 
+  @Override
+  public UnaryCallable<ListSubscriptionsRequest, ListSubscriptionsPagedResponse>
+      listSubscriptionsPagedCallable() {
+    return listSubscriptionsPagedCallable;
+  }
+
+  @Override
   public UnaryCallable<DeleteSubscriptionRequest, Empty> deleteSubscriptionCallable() {
     return deleteSubscriptionCallable;
   }
 
-  public UnaryCallable<GetSnapshotRequest, Snapshot> getSnapshotCallable() {
-    return getSnapshotCallable;
-  }
-
+  @Override
   public UnaryCallable<ModifyAckDeadlineRequest, Empty> modifyAckDeadlineCallable() {
     return modifyAckDeadlineCallable;
   }
 
+  @Override
   public UnaryCallable<AcknowledgeRequest, Empty> acknowledgeCallable() {
     return acknowledgeCallable;
   }
 
+  @Override
   public UnaryCallable<PullRequest, PullResponse> pullCallable() {
     return pullCallable;
   }
 
+  @Override
   public BidiStreamingCallable<StreamingPullRequest, StreamingPullResponse>
       streamingPullCallable() {
     return streamingPullCallable;
   }
 
+  @Override
   public UnaryCallable<ModifyPushConfigRequest, Empty> modifyPushConfigCallable() {
     return modifyPushConfigCallable;
   }
 
+  @Override
+  public UnaryCallable<GetSnapshotRequest, Snapshot> getSnapshotCallable() {
+    return getSnapshotCallable;
+  }
+
+  @Override
+  public UnaryCallable<ListSnapshotsRequest, ListSnapshotsResponse> listSnapshotsCallable() {
+    return listSnapshotsCallable;
+  }
+
+  @Override
   public UnaryCallable<ListSnapshotsRequest, ListSnapshotsPagedResponse>
       listSnapshotsPagedCallable() {
     return listSnapshotsPagedCallable;
   }
 
-  public UnaryCallable<ListSnapshotsRequest, ListSnapshotsResponse> listSnapshotsCallable() {
-    return listSnapshotsCallable;
-  }
-
+  @Override
   public UnaryCallable<CreateSnapshotRequest, Snapshot> createSnapshotCallable() {
     return createSnapshotCallable;
   }
 
+  @Override
   public UnaryCallable<UpdateSnapshotRequest, Snapshot> updateSnapshotCallable() {
     return updateSnapshotCallable;
   }
 
+  @Override
   public UnaryCallable<DeleteSnapshotRequest, Empty> deleteSnapshotCallable() {
     return deleteSnapshotCallable;
   }
 
+  @Override
   public UnaryCallable<SeekRequest, SeekResponse> seekCallable() {
     return seekCallable;
   }
 
+  @Override
   public UnaryCallable<SetIamPolicyRequest, Policy> setIamPolicyCallable() {
     return setIamPolicyCallable;
   }
 
+  @Override
   public UnaryCallable<GetIamPolicyRequest, Policy> getIamPolicyCallable() {
     return getIamPolicyCallable;
   }
 
+  @Override
   public UnaryCallable<TestIamPermissionsRequest, TestIamPermissionsResponse>
       testIamPermissionsCallable() {
     return testIamPermissionsCallable;
@@ -718,7 +706,13 @@ public class GrpcSubscriberStub extends SubscriberStub {
 
   @Override
   public final void close() {
-    shutdown();
+    try {
+      backgroundResources.close();
+    } catch (RuntimeException e) {
+      throw e;
+    } catch (Exception e) {
+      throw new IllegalStateException("Failed to close resource", e);
+    }
   }
 
   @Override

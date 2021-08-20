@@ -1,11 +1,11 @@
 /*
- * Copyright 2020 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     https://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,19 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.google.cloud.pubsub.v1.stub;
 
 import static com.google.cloud.pubsub.v1.TopicAdminClient.ListTopicSnapshotsPagedResponse;
 import static com.google.cloud.pubsub.v1.TopicAdminClient.ListTopicSubscriptionsPagedResponse;
 import static com.google.cloud.pubsub.v1.TopicAdminClient.ListTopicsPagedResponse;
 
-import com.google.api.core.BetaApi;
 import com.google.api.gax.core.BackgroundResource;
 import com.google.api.gax.core.BackgroundResourceAggregation;
 import com.google.api.gax.grpc.GrpcCallSettings;
 import com.google.api.gax.grpc.GrpcStubCallableFactory;
 import com.google.api.gax.rpc.ClientContext;
-import com.google.api.gax.rpc.RequestParamsExtractor;
 import com.google.api.gax.rpc.UnaryCallable;
 import com.google.common.collect.ImmutableMap;
 import com.google.iam.v1.GetIamPolicyRequest;
@@ -33,6 +32,7 @@ import com.google.iam.v1.Policy;
 import com.google.iam.v1.SetIamPolicyRequest;
 import com.google.iam.v1.TestIamPermissionsRequest;
 import com.google.iam.v1.TestIamPermissionsResponse;
+import com.google.longrunning.stub.GrpcOperationsStub;
 import com.google.protobuf.Empty;
 import com.google.pubsub.v1.DeleteTopicRequest;
 import com.google.pubsub.v1.DetachSubscriptionRequest;
@@ -51,20 +51,17 @@ import com.google.pubsub.v1.UpdateTopicRequest;
 import io.grpc.MethodDescriptor;
 import io.grpc.protobuf.ProtoUtils;
 import java.io.IOException;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Generated;
 
-// AUTO-GENERATED DOCUMENTATION AND CLASS
+// AUTO-GENERATED DOCUMENTATION AND CLASS.
 /**
- * gRPC stub implementation for Cloud Pub/Sub API.
+ * gRPC stub implementation for the Publisher service API.
  *
  * <p>This class is for advanced usage and reflects the underlying API directly.
  */
-@Generated("by gapic-generator")
-@BetaApi("A restructuring of stub classes is planned, so this may break in the future")
+@Generated("by gapic-generator-java")
 public class GrpcPublisherStub extends PublisherStub {
-
   private static final MethodDescriptor<Topic, Topic> createTopicMethodDescriptor =
       MethodDescriptor.<Topic, Topic>newBuilder()
           .setType(MethodDescriptor.MethodType.UNARY)
@@ -72,6 +69,7 @@ public class GrpcPublisherStub extends PublisherStub {
           .setRequestMarshaller(ProtoUtils.marshaller(Topic.getDefaultInstance()))
           .setResponseMarshaller(ProtoUtils.marshaller(Topic.getDefaultInstance()))
           .build();
+
   private static final MethodDescriptor<UpdateTopicRequest, Topic> updateTopicMethodDescriptor =
       MethodDescriptor.<UpdateTopicRequest, Topic>newBuilder()
           .setType(MethodDescriptor.MethodType.UNARY)
@@ -79,6 +77,7 @@ public class GrpcPublisherStub extends PublisherStub {
           .setRequestMarshaller(ProtoUtils.marshaller(UpdateTopicRequest.getDefaultInstance()))
           .setResponseMarshaller(ProtoUtils.marshaller(Topic.getDefaultInstance()))
           .build();
+
   private static final MethodDescriptor<PublishRequest, PublishResponse> publishMethodDescriptor =
       MethodDescriptor.<PublishRequest, PublishResponse>newBuilder()
           .setType(MethodDescriptor.MethodType.UNARY)
@@ -86,6 +85,7 @@ public class GrpcPublisherStub extends PublisherStub {
           .setRequestMarshaller(ProtoUtils.marshaller(PublishRequest.getDefaultInstance()))
           .setResponseMarshaller(ProtoUtils.marshaller(PublishResponse.getDefaultInstance()))
           .build();
+
   private static final MethodDescriptor<GetTopicRequest, Topic> getTopicMethodDescriptor =
       MethodDescriptor.<GetTopicRequest, Topic>newBuilder()
           .setType(MethodDescriptor.MethodType.UNARY)
@@ -93,6 +93,7 @@ public class GrpcPublisherStub extends PublisherStub {
           .setRequestMarshaller(ProtoUtils.marshaller(GetTopicRequest.getDefaultInstance()))
           .setResponseMarshaller(ProtoUtils.marshaller(Topic.getDefaultInstance()))
           .build();
+
   private static final MethodDescriptor<ListTopicsRequest, ListTopicsResponse>
       listTopicsMethodDescriptor =
           MethodDescriptor.<ListTopicsRequest, ListTopicsResponse>newBuilder()
@@ -101,6 +102,7 @@ public class GrpcPublisherStub extends PublisherStub {
               .setRequestMarshaller(ProtoUtils.marshaller(ListTopicsRequest.getDefaultInstance()))
               .setResponseMarshaller(ProtoUtils.marshaller(ListTopicsResponse.getDefaultInstance()))
               .build();
+
   private static final MethodDescriptor<
           ListTopicSubscriptionsRequest, ListTopicSubscriptionsResponse>
       listTopicSubscriptionsMethodDescriptor =
@@ -113,6 +115,7 @@ public class GrpcPublisherStub extends PublisherStub {
               .setResponseMarshaller(
                   ProtoUtils.marshaller(ListTopicSubscriptionsResponse.getDefaultInstance()))
               .build();
+
   private static final MethodDescriptor<ListTopicSnapshotsRequest, ListTopicSnapshotsResponse>
       listTopicSnapshotsMethodDescriptor =
           MethodDescriptor.<ListTopicSnapshotsRequest, ListTopicSnapshotsResponse>newBuilder()
@@ -123,6 +126,7 @@ public class GrpcPublisherStub extends PublisherStub {
               .setResponseMarshaller(
                   ProtoUtils.marshaller(ListTopicSnapshotsResponse.getDefaultInstance()))
               .build();
+
   private static final MethodDescriptor<DeleteTopicRequest, Empty> deleteTopicMethodDescriptor =
       MethodDescriptor.<DeleteTopicRequest, Empty>newBuilder()
           .setType(MethodDescriptor.MethodType.UNARY)
@@ -130,30 +134,7 @@ public class GrpcPublisherStub extends PublisherStub {
           .setRequestMarshaller(ProtoUtils.marshaller(DeleteTopicRequest.getDefaultInstance()))
           .setResponseMarshaller(ProtoUtils.marshaller(Empty.getDefaultInstance()))
           .build();
-  private static final MethodDescriptor<SetIamPolicyRequest, Policy> setIamPolicyMethodDescriptor =
-      MethodDescriptor.<SetIamPolicyRequest, Policy>newBuilder()
-          .setType(MethodDescriptor.MethodType.UNARY)
-          .setFullMethodName("google.iam.v1.IAMPolicy/SetIamPolicy")
-          .setRequestMarshaller(ProtoUtils.marshaller(SetIamPolicyRequest.getDefaultInstance()))
-          .setResponseMarshaller(ProtoUtils.marshaller(Policy.getDefaultInstance()))
-          .build();
-  private static final MethodDescriptor<GetIamPolicyRequest, Policy> getIamPolicyMethodDescriptor =
-      MethodDescriptor.<GetIamPolicyRequest, Policy>newBuilder()
-          .setType(MethodDescriptor.MethodType.UNARY)
-          .setFullMethodName("google.iam.v1.IAMPolicy/GetIamPolicy")
-          .setRequestMarshaller(ProtoUtils.marshaller(GetIamPolicyRequest.getDefaultInstance()))
-          .setResponseMarshaller(ProtoUtils.marshaller(Policy.getDefaultInstance()))
-          .build();
-  private static final MethodDescriptor<TestIamPermissionsRequest, TestIamPermissionsResponse>
-      testIamPermissionsMethodDescriptor =
-          MethodDescriptor.<TestIamPermissionsRequest, TestIamPermissionsResponse>newBuilder()
-              .setType(MethodDescriptor.MethodType.UNARY)
-              .setFullMethodName("google.iam.v1.IAMPolicy/TestIamPermissions")
-              .setRequestMarshaller(
-                  ProtoUtils.marshaller(TestIamPermissionsRequest.getDefaultInstance()))
-              .setResponseMarshaller(
-                  ProtoUtils.marshaller(TestIamPermissionsResponse.getDefaultInstance()))
-              .build();
+
   private static final MethodDescriptor<DetachSubscriptionRequest, DetachSubscriptionResponse>
       detachSubscriptionMethodDescriptor =
           MethodDescriptor.<DetachSubscriptionRequest, DetachSubscriptionResponse>newBuilder()
@@ -165,7 +146,32 @@ public class GrpcPublisherStub extends PublisherStub {
                   ProtoUtils.marshaller(DetachSubscriptionResponse.getDefaultInstance()))
               .build();
 
-  private final BackgroundResource backgroundResources;
+  private static final MethodDescriptor<SetIamPolicyRequest, Policy> setIamPolicyMethodDescriptor =
+      MethodDescriptor.<SetIamPolicyRequest, Policy>newBuilder()
+          .setType(MethodDescriptor.MethodType.UNARY)
+          .setFullMethodName("google.iam.v1.IAMPolicy/SetIamPolicy")
+          .setRequestMarshaller(ProtoUtils.marshaller(SetIamPolicyRequest.getDefaultInstance()))
+          .setResponseMarshaller(ProtoUtils.marshaller(Policy.getDefaultInstance()))
+          .build();
+
+  private static final MethodDescriptor<GetIamPolicyRequest, Policy> getIamPolicyMethodDescriptor =
+      MethodDescriptor.<GetIamPolicyRequest, Policy>newBuilder()
+          .setType(MethodDescriptor.MethodType.UNARY)
+          .setFullMethodName("google.iam.v1.IAMPolicy/GetIamPolicy")
+          .setRequestMarshaller(ProtoUtils.marshaller(GetIamPolicyRequest.getDefaultInstance()))
+          .setResponseMarshaller(ProtoUtils.marshaller(Policy.getDefaultInstance()))
+          .build();
+
+  private static final MethodDescriptor<TestIamPermissionsRequest, TestIamPermissionsResponse>
+      testIamPermissionsMethodDescriptor =
+          MethodDescriptor.<TestIamPermissionsRequest, TestIamPermissionsResponse>newBuilder()
+              .setType(MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName("google.iam.v1.IAMPolicy/TestIamPermissions")
+              .setRequestMarshaller(
+                  ProtoUtils.marshaller(TestIamPermissionsRequest.getDefaultInstance()))
+              .setResponseMarshaller(
+                  ProtoUtils.marshaller(TestIamPermissionsResponse.getDefaultInstance()))
+              .build();
 
   private final UnaryCallable<Topic, Topic> createTopicCallable;
   private final UnaryCallable<UpdateTopicRequest, Topic> updateTopicCallable;
@@ -182,13 +188,15 @@ public class GrpcPublisherStub extends PublisherStub {
   private final UnaryCallable<ListTopicSnapshotsRequest, ListTopicSnapshotsPagedResponse>
       listTopicSnapshotsPagedCallable;
   private final UnaryCallable<DeleteTopicRequest, Empty> deleteTopicCallable;
+  private final UnaryCallable<DetachSubscriptionRequest, DetachSubscriptionResponse>
+      detachSubscriptionCallable;
   private final UnaryCallable<SetIamPolicyRequest, Policy> setIamPolicyCallable;
   private final UnaryCallable<GetIamPolicyRequest, Policy> getIamPolicyCallable;
   private final UnaryCallable<TestIamPermissionsRequest, TestIamPermissionsResponse>
       testIamPermissionsCallable;
-  private final UnaryCallable<DetachSubscriptionRequest, DetachSubscriptionResponse>
-      detachSubscriptionCallable;
 
+  private final BackgroundResource backgroundResources;
+  private final GrpcOperationsStub operationsStub;
   private final GrpcStubCallableFactory callableFactory;
 
   public static final GrpcPublisherStub create(PublisherStubSettings settings) throws IOException {
@@ -226,70 +234,56 @@ public class GrpcPublisherStub extends PublisherStub {
       GrpcStubCallableFactory callableFactory)
       throws IOException {
     this.callableFactory = callableFactory;
+    this.operationsStub = GrpcOperationsStub.create(clientContext, callableFactory);
 
     GrpcCallSettings<Topic, Topic> createTopicTransportSettings =
         GrpcCallSettings.<Topic, Topic>newBuilder()
             .setMethodDescriptor(createTopicMethodDescriptor)
             .setParamsExtractor(
-                new RequestParamsExtractor<Topic>() {
-                  @Override
-                  public Map<String, String> extract(Topic request) {
-                    ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
-                    params.put("name", String.valueOf(request.getName()));
-                    return params.build();
-                  }
+                request -> {
+                  ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
+                  params.put("name", String.valueOf(request.getName()));
+                  return params.build();
                 })
             .build();
     GrpcCallSettings<UpdateTopicRequest, Topic> updateTopicTransportSettings =
         GrpcCallSettings.<UpdateTopicRequest, Topic>newBuilder()
             .setMethodDescriptor(updateTopicMethodDescriptor)
             .setParamsExtractor(
-                new RequestParamsExtractor<UpdateTopicRequest>() {
-                  @Override
-                  public Map<String, String> extract(UpdateTopicRequest request) {
-                    ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
-                    params.put("topic.name", String.valueOf(request.getTopic().getName()));
-                    return params.build();
-                  }
+                request -> {
+                  ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
+                  params.put("topic.name", String.valueOf(request.getTopic().getName()));
+                  return params.build();
                 })
             .build();
     GrpcCallSettings<PublishRequest, PublishResponse> publishTransportSettings =
         GrpcCallSettings.<PublishRequest, PublishResponse>newBuilder()
             .setMethodDescriptor(publishMethodDescriptor)
             .setParamsExtractor(
-                new RequestParamsExtractor<PublishRequest>() {
-                  @Override
-                  public Map<String, String> extract(PublishRequest request) {
-                    ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
-                    params.put("topic", String.valueOf(request.getTopic()));
-                    return params.build();
-                  }
+                request -> {
+                  ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
+                  params.put("topic", String.valueOf(request.getTopic()));
+                  return params.build();
                 })
             .build();
     GrpcCallSettings<GetTopicRequest, Topic> getTopicTransportSettings =
         GrpcCallSettings.<GetTopicRequest, Topic>newBuilder()
             .setMethodDescriptor(getTopicMethodDescriptor)
             .setParamsExtractor(
-                new RequestParamsExtractor<GetTopicRequest>() {
-                  @Override
-                  public Map<String, String> extract(GetTopicRequest request) {
-                    ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
-                    params.put("topic", String.valueOf(request.getTopic()));
-                    return params.build();
-                  }
+                request -> {
+                  ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
+                  params.put("topic", String.valueOf(request.getTopic()));
+                  return params.build();
                 })
             .build();
     GrpcCallSettings<ListTopicsRequest, ListTopicsResponse> listTopicsTransportSettings =
         GrpcCallSettings.<ListTopicsRequest, ListTopicsResponse>newBuilder()
             .setMethodDescriptor(listTopicsMethodDescriptor)
             .setParamsExtractor(
-                new RequestParamsExtractor<ListTopicsRequest>() {
-                  @Override
-                  public Map<String, String> extract(ListTopicsRequest request) {
-                    ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
-                    params.put("project", String.valueOf(request.getProject()));
-                    return params.build();
-                  }
+                request -> {
+                  ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
+                  params.put("project", String.valueOf(request.getProject()));
+                  return params.build();
                 })
             .build();
     GrpcCallSettings<ListTopicSubscriptionsRequest, ListTopicSubscriptionsResponse>
@@ -298,13 +292,10 @@ public class GrpcPublisherStub extends PublisherStub {
                 .<ListTopicSubscriptionsRequest, ListTopicSubscriptionsResponse>newBuilder()
                 .setMethodDescriptor(listTopicSubscriptionsMethodDescriptor)
                 .setParamsExtractor(
-                    new RequestParamsExtractor<ListTopicSubscriptionsRequest>() {
-                      @Override
-                      public Map<String, String> extract(ListTopicSubscriptionsRequest request) {
-                        ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
-                        params.put("topic", String.valueOf(request.getTopic()));
-                        return params.build();
-                      }
+                    request -> {
+                      ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
+                      params.put("topic", String.valueOf(request.getTopic()));
+                      return params.build();
                     })
                 .build();
     GrpcCallSettings<ListTopicSnapshotsRequest, ListTopicSnapshotsResponse>
@@ -312,52 +303,51 @@ public class GrpcPublisherStub extends PublisherStub {
             GrpcCallSettings.<ListTopicSnapshotsRequest, ListTopicSnapshotsResponse>newBuilder()
                 .setMethodDescriptor(listTopicSnapshotsMethodDescriptor)
                 .setParamsExtractor(
-                    new RequestParamsExtractor<ListTopicSnapshotsRequest>() {
-                      @Override
-                      public Map<String, String> extract(ListTopicSnapshotsRequest request) {
-                        ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
-                        params.put("topic", String.valueOf(request.getTopic()));
-                        return params.build();
-                      }
+                    request -> {
+                      ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
+                      params.put("topic", String.valueOf(request.getTopic()));
+                      return params.build();
                     })
                 .build();
     GrpcCallSettings<DeleteTopicRequest, Empty> deleteTopicTransportSettings =
         GrpcCallSettings.<DeleteTopicRequest, Empty>newBuilder()
             .setMethodDescriptor(deleteTopicMethodDescriptor)
             .setParamsExtractor(
-                new RequestParamsExtractor<DeleteTopicRequest>() {
-                  @Override
-                  public Map<String, String> extract(DeleteTopicRequest request) {
-                    ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
-                    params.put("topic", String.valueOf(request.getTopic()));
-                    return params.build();
-                  }
+                request -> {
+                  ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
+                  params.put("topic", String.valueOf(request.getTopic()));
+                  return params.build();
                 })
             .build();
+    GrpcCallSettings<DetachSubscriptionRequest, DetachSubscriptionResponse>
+        detachSubscriptionTransportSettings =
+            GrpcCallSettings.<DetachSubscriptionRequest, DetachSubscriptionResponse>newBuilder()
+                .setMethodDescriptor(detachSubscriptionMethodDescriptor)
+                .setParamsExtractor(
+                    request -> {
+                      ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
+                      params.put("subscription", String.valueOf(request.getSubscription()));
+                      return params.build();
+                    })
+                .build();
     GrpcCallSettings<SetIamPolicyRequest, Policy> setIamPolicyTransportSettings =
         GrpcCallSettings.<SetIamPolicyRequest, Policy>newBuilder()
             .setMethodDescriptor(setIamPolicyMethodDescriptor)
             .setParamsExtractor(
-                new RequestParamsExtractor<SetIamPolicyRequest>() {
-                  @Override
-                  public Map<String, String> extract(SetIamPolicyRequest request) {
-                    ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
-                    params.put("resource", String.valueOf(request.getResource()));
-                    return params.build();
-                  }
+                request -> {
+                  ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
+                  params.put("resource", String.valueOf(request.getResource()));
+                  return params.build();
                 })
             .build();
     GrpcCallSettings<GetIamPolicyRequest, Policy> getIamPolicyTransportSettings =
         GrpcCallSettings.<GetIamPolicyRequest, Policy>newBuilder()
             .setMethodDescriptor(getIamPolicyMethodDescriptor)
             .setParamsExtractor(
-                new RequestParamsExtractor<GetIamPolicyRequest>() {
-                  @Override
-                  public Map<String, String> extract(GetIamPolicyRequest request) {
-                    ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
-                    params.put("resource", String.valueOf(request.getResource()));
-                    return params.build();
-                  }
+                request -> {
+                  ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
+                  params.put("resource", String.valueOf(request.getResource()));
+                  return params.build();
                 })
             .build();
     GrpcCallSettings<TestIamPermissionsRequest, TestIamPermissionsResponse>
@@ -365,27 +355,10 @@ public class GrpcPublisherStub extends PublisherStub {
             GrpcCallSettings.<TestIamPermissionsRequest, TestIamPermissionsResponse>newBuilder()
                 .setMethodDescriptor(testIamPermissionsMethodDescriptor)
                 .setParamsExtractor(
-                    new RequestParamsExtractor<TestIamPermissionsRequest>() {
-                      @Override
-                      public Map<String, String> extract(TestIamPermissionsRequest request) {
-                        ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
-                        params.put("resource", String.valueOf(request.getResource()));
-                        return params.build();
-                      }
-                    })
-                .build();
-    GrpcCallSettings<DetachSubscriptionRequest, DetachSubscriptionResponse>
-        detachSubscriptionTransportSettings =
-            GrpcCallSettings.<DetachSubscriptionRequest, DetachSubscriptionResponse>newBuilder()
-                .setMethodDescriptor(detachSubscriptionMethodDescriptor)
-                .setParamsExtractor(
-                    new RequestParamsExtractor<DetachSubscriptionRequest>() {
-                      @Override
-                      public Map<String, String> extract(DetachSubscriptionRequest request) {
-                        ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
-                        params.put("subscription", String.valueOf(request.getSubscription()));
-                        return params.build();
-                      }
+                    request -> {
+                      ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
+                      params.put("resource", String.valueOf(request.getResource()));
+                      return params.build();
                     })
                 .build();
 
@@ -396,7 +369,7 @@ public class GrpcPublisherStub extends PublisherStub {
         callableFactory.createUnaryCallable(
             updateTopicTransportSettings, settings.updateTopicSettings(), clientContext);
     this.publishCallable =
-        callableFactory.createBatchingCallable(
+        callableFactory.createUnaryCallable(
             publishTransportSettings, settings.publishSettings(), clientContext);
     this.getTopicCallable =
         callableFactory.createUnaryCallable(
@@ -430,6 +403,11 @@ public class GrpcPublisherStub extends PublisherStub {
     this.deleteTopicCallable =
         callableFactory.createUnaryCallable(
             deleteTopicTransportSettings, settings.deleteTopicSettings(), clientContext);
+    this.detachSubscriptionCallable =
+        callableFactory.createUnaryCallable(
+            detachSubscriptionTransportSettings,
+            settings.detachSubscriptionSettings(),
+            clientContext);
     this.setIamPolicyCallable =
         callableFactory.createUnaryCallable(
             setIamPolicyTransportSettings, settings.setIamPolicySettings(), clientContext);
@@ -441,84 +419,105 @@ public class GrpcPublisherStub extends PublisherStub {
             testIamPermissionsTransportSettings,
             settings.testIamPermissionsSettings(),
             clientContext);
-    this.detachSubscriptionCallable =
-        callableFactory.createUnaryCallable(
-            detachSubscriptionTransportSettings,
-            settings.detachSubscriptionSettings(),
-            clientContext);
 
-    backgroundResources = new BackgroundResourceAggregation(clientContext.getBackgroundResources());
+    this.backgroundResources =
+        new BackgroundResourceAggregation(clientContext.getBackgroundResources());
   }
 
+  public GrpcOperationsStub getOperationsStub() {
+    return operationsStub;
+  }
+
+  @Override
   public UnaryCallable<Topic, Topic> createTopicCallable() {
     return createTopicCallable;
   }
 
+  @Override
   public UnaryCallable<UpdateTopicRequest, Topic> updateTopicCallable() {
     return updateTopicCallable;
   }
 
+  @Override
   public UnaryCallable<PublishRequest, PublishResponse> publishCallable() {
     return publishCallable;
   }
 
+  @Override
   public UnaryCallable<GetTopicRequest, Topic> getTopicCallable() {
     return getTopicCallable;
   }
 
-  public UnaryCallable<ListTopicsRequest, ListTopicsPagedResponse> listTopicsPagedCallable() {
-    return listTopicsPagedCallable;
-  }
-
+  @Override
   public UnaryCallable<ListTopicsRequest, ListTopicsResponse> listTopicsCallable() {
     return listTopicsCallable;
   }
 
-  public UnaryCallable<ListTopicSubscriptionsRequest, ListTopicSubscriptionsPagedResponse>
-      listTopicSubscriptionsPagedCallable() {
-    return listTopicSubscriptionsPagedCallable;
+  @Override
+  public UnaryCallable<ListTopicsRequest, ListTopicsPagedResponse> listTopicsPagedCallable() {
+    return listTopicsPagedCallable;
   }
 
+  @Override
   public UnaryCallable<ListTopicSubscriptionsRequest, ListTopicSubscriptionsResponse>
       listTopicSubscriptionsCallable() {
     return listTopicSubscriptionsCallable;
   }
 
-  public UnaryCallable<ListTopicSnapshotsRequest, ListTopicSnapshotsPagedResponse>
-      listTopicSnapshotsPagedCallable() {
-    return listTopicSnapshotsPagedCallable;
+  @Override
+  public UnaryCallable<ListTopicSubscriptionsRequest, ListTopicSubscriptionsPagedResponse>
+      listTopicSubscriptionsPagedCallable() {
+    return listTopicSubscriptionsPagedCallable;
   }
 
+  @Override
   public UnaryCallable<ListTopicSnapshotsRequest, ListTopicSnapshotsResponse>
       listTopicSnapshotsCallable() {
     return listTopicSnapshotsCallable;
   }
 
+  @Override
+  public UnaryCallable<ListTopicSnapshotsRequest, ListTopicSnapshotsPagedResponse>
+      listTopicSnapshotsPagedCallable() {
+    return listTopicSnapshotsPagedCallable;
+  }
+
+  @Override
   public UnaryCallable<DeleteTopicRequest, Empty> deleteTopicCallable() {
     return deleteTopicCallable;
   }
 
-  public UnaryCallable<SetIamPolicyRequest, Policy> setIamPolicyCallable() {
-    return setIamPolicyCallable;
-  }
-
-  public UnaryCallable<GetIamPolicyRequest, Policy> getIamPolicyCallable() {
-    return getIamPolicyCallable;
-  }
-
-  public UnaryCallable<TestIamPermissionsRequest, TestIamPermissionsResponse>
-      testIamPermissionsCallable() {
-    return testIamPermissionsCallable;
-  }
-
+  @Override
   public UnaryCallable<DetachSubscriptionRequest, DetachSubscriptionResponse>
       detachSubscriptionCallable() {
     return detachSubscriptionCallable;
   }
 
   @Override
+  public UnaryCallable<SetIamPolicyRequest, Policy> setIamPolicyCallable() {
+    return setIamPolicyCallable;
+  }
+
+  @Override
+  public UnaryCallable<GetIamPolicyRequest, Policy> getIamPolicyCallable() {
+    return getIamPolicyCallable;
+  }
+
+  @Override
+  public UnaryCallable<TestIamPermissionsRequest, TestIamPermissionsResponse>
+      testIamPermissionsCallable() {
+    return testIamPermissionsCallable;
+  }
+
+  @Override
   public final void close() {
-    shutdown();
+    try {
+      backgroundResources.close();
+    } catch (RuntimeException e) {
+      throw e;
+    } catch (Exception e) {
+      throw new IllegalStateException("Failed to close resource", e);
+    }
   }
 
   @Override
