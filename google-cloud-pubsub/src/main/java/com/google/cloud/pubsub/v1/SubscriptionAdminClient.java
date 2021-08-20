@@ -286,30 +286,6 @@ public class SubscriptionAdminClient implements BackgroundResource {
    * }
    * }</pre>
    *
-   * // AUTO-GENERATED DOCUMENTATION AND METHOD. /** Creates a subscription to a given topic. See
-   * the [resource name rules] (https://cloud.google.com/pubsub/docs/admin#resource_names). If the
-   * subscription already exists, returns `ALREADY_EXISTS`. If the corresponding topic doesn't
-   * exist, returns `NOT_FOUND`.
-   *
-   * <p>If the name is not provided in the request, the server will assign a random name for this
-   * subscription on the same project as the topic, conforming to the [resource name format]
-   * (https://cloud.google.com/pubsub/docs/admin#resource_names). The generated name is populated in
-   * the returned Subscription object. Note that for REST API requests, you must specify a name in
-   * the request.
-   *
-   * <p>Sample code:
-   *
-   * <pre>{@code
-   * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
-   *   ProjectSubscriptionName name = ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
-   *   String topic = TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]").toString();
-   *   PushConfig pushConfig = PushConfig.newBuilder().build();
-   *   int ackDeadlineSeconds = 2135351438;
-   *   Subscription response =
-   *       subscriptionAdminClient.createSubscription(name, topic, pushConfig, ackDeadlineSeconds);
-   * }
-   * }</pre>
-   *
    * @param name Required. The name of the subscription. It must have the format
    *     `"projects/{project}/subscriptions/{subscription}"`. `{subscription}` must start with a
    *     letter, and contain only letters (`[A-Za-z]`), numbers (`[0-9]`), dashes (`-`), underscores
