@@ -277,7 +277,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *
    * <pre>{@code
    * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
-   *   SubscriptionName name = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
+   *   ProjectSubscriptionName name = ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
    *   String topic = TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]").toString();
    *   PushConfig pushConfig = PushConfig.newBuilder().build();
    *   int ackDeadlineSeconds = 2135351438;
