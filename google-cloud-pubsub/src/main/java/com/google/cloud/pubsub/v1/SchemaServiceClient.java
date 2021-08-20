@@ -211,7 +211,7 @@ public class SchemaServiceClient implements BackgroundResource {
    *
    * <pre>{@code
    * try (SchemaServiceClient schemaServiceClient = SchemaServiceClient.create()) {
-   *   ProjectName parent = ProjectName.of("[PROJECT]");
+   *   String parent = ProjectName.of("[PROJECT]").toString();
    *   Schema schema = Schema.newBuilder().build();
    *   String schemaId = "schemaId-697673060";
    *   Schema response = schemaServiceClient.createSchema(parent, schema, schemaId);
