@@ -25,6 +25,7 @@ import com.google.api.gax.grpc.GrpcCallSettings;
 import com.google.api.gax.grpc.GrpcStubCallableFactory;
 import com.google.api.gax.rpc.BidiStreamingCallable;
 import com.google.api.gax.rpc.ClientContext;
+import com.google.api.gax.rpc.RequestParamsExtractor;
 import com.google.api.gax.rpc.UnaryCallable;
 import com.google.common.collect.ImmutableMap;
 import com.google.iam.v1.GetIamPolicyRequest;
@@ -59,6 +60,7 @@ import com.google.pubsub.v1.UpdateSubscriptionRequest;
 import io.grpc.MethodDescriptor;
 import io.grpc.protobuf.ProtoUtils;
 import java.io.IOException;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Generated;
 
@@ -324,31 +326,40 @@ public class GrpcSubscriberStub extends SubscriberStub {
         GrpcCallSettings.<Subscription, Subscription>newBuilder()
             .setMethodDescriptor(createSubscriptionMethodDescriptor)
             .setParamsExtractor(
-                request -> {
-                  ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
-                  params.put("name", String.valueOf(request.getName()));
-                  return params.build();
+                new RequestParamsExtractor<Subscription>() {
+                  @Override
+                  public Map<String, String> extract(Subscription request) {
+                    ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
+                    params.put("name", String.valueOf(request.getName()));
+                    return params.build();
+                  }
                 })
             .build();
     GrpcCallSettings<GetSubscriptionRequest, Subscription> getSubscriptionTransportSettings =
         GrpcCallSettings.<GetSubscriptionRequest, Subscription>newBuilder()
             .setMethodDescriptor(getSubscriptionMethodDescriptor)
             .setParamsExtractor(
-                request -> {
-                  ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
-                  params.put("subscription", String.valueOf(request.getSubscription()));
-                  return params.build();
+                new RequestParamsExtractor<GetSubscriptionRequest>() {
+                  @Override
+                  public Map<String, String> extract(GetSubscriptionRequest request) {
+                    ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
+                    params.put("subscription", String.valueOf(request.getSubscription()));
+                    return params.build();
+                  }
                 })
             .build();
     GrpcCallSettings<UpdateSubscriptionRequest, Subscription> updateSubscriptionTransportSettings =
         GrpcCallSettings.<UpdateSubscriptionRequest, Subscription>newBuilder()
             .setMethodDescriptor(updateSubscriptionMethodDescriptor)
             .setParamsExtractor(
-                request -> {
-                  ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
-                  params.put(
-                      "subscription.name", String.valueOf(request.getSubscription().getName()));
-                  return params.build();
+                new RequestParamsExtractor<UpdateSubscriptionRequest>() {
+                  @Override
+                  public Map<String, String> extract(UpdateSubscriptionRequest request) {
+                    ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
+                    params.put(
+                        "subscription.name", String.valueOf(request.getSubscription().getName()));
+                    return params.build();
+                  }
                 })
             .build();
     GrpcCallSettings<ListSubscriptionsRequest, ListSubscriptionsResponse>
@@ -356,50 +367,65 @@ public class GrpcSubscriberStub extends SubscriberStub {
             GrpcCallSettings.<ListSubscriptionsRequest, ListSubscriptionsResponse>newBuilder()
                 .setMethodDescriptor(listSubscriptionsMethodDescriptor)
                 .setParamsExtractor(
-                    request -> {
-                      ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
-                      params.put("project", String.valueOf(request.getProject()));
-                      return params.build();
+                    new RequestParamsExtractor<ListSubscriptionsRequest>() {
+                      @Override
+                      public Map<String, String> extract(ListSubscriptionsRequest request) {
+                        ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
+                        params.put("project", String.valueOf(request.getProject()));
+                        return params.build();
+                      }
                     })
                 .build();
     GrpcCallSettings<DeleteSubscriptionRequest, Empty> deleteSubscriptionTransportSettings =
         GrpcCallSettings.<DeleteSubscriptionRequest, Empty>newBuilder()
             .setMethodDescriptor(deleteSubscriptionMethodDescriptor)
             .setParamsExtractor(
-                request -> {
-                  ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
-                  params.put("subscription", String.valueOf(request.getSubscription()));
-                  return params.build();
+                new RequestParamsExtractor<DeleteSubscriptionRequest>() {
+                  @Override
+                  public Map<String, String> extract(DeleteSubscriptionRequest request) {
+                    ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
+                    params.put("subscription", String.valueOf(request.getSubscription()));
+                    return params.build();
+                  }
                 })
             .build();
     GrpcCallSettings<ModifyAckDeadlineRequest, Empty> modifyAckDeadlineTransportSettings =
         GrpcCallSettings.<ModifyAckDeadlineRequest, Empty>newBuilder()
             .setMethodDescriptor(modifyAckDeadlineMethodDescriptor)
             .setParamsExtractor(
-                request -> {
-                  ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
-                  params.put("subscription", String.valueOf(request.getSubscription()));
-                  return params.build();
+                new RequestParamsExtractor<ModifyAckDeadlineRequest>() {
+                  @Override
+                  public Map<String, String> extract(ModifyAckDeadlineRequest request) {
+                    ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
+                    params.put("subscription", String.valueOf(request.getSubscription()));
+                    return params.build();
+                  }
                 })
             .build();
     GrpcCallSettings<AcknowledgeRequest, Empty> acknowledgeTransportSettings =
         GrpcCallSettings.<AcknowledgeRequest, Empty>newBuilder()
             .setMethodDescriptor(acknowledgeMethodDescriptor)
             .setParamsExtractor(
-                request -> {
-                  ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
-                  params.put("subscription", String.valueOf(request.getSubscription()));
-                  return params.build();
+                new RequestParamsExtractor<AcknowledgeRequest>() {
+                  @Override
+                  public Map<String, String> extract(AcknowledgeRequest request) {
+                    ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
+                    params.put("subscription", String.valueOf(request.getSubscription()));
+                    return params.build();
+                  }
                 })
             .build();
     GrpcCallSettings<PullRequest, PullResponse> pullTransportSettings =
         GrpcCallSettings.<PullRequest, PullResponse>newBuilder()
             .setMethodDescriptor(pullMethodDescriptor)
             .setParamsExtractor(
-                request -> {
-                  ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
-                  params.put("subscription", String.valueOf(request.getSubscription()));
-                  return params.build();
+                new RequestParamsExtractor<PullRequest>() {
+                  @Override
+                  public Map<String, String> extract(PullRequest request) {
+                    ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
+                    params.put("subscription", String.valueOf(request.getSubscription()));
+                    return params.build();
+                  }
                 })
             .build();
     GrpcCallSettings<StreamingPullRequest, StreamingPullResponse> streamingPullTransportSettings =
@@ -410,90 +436,117 @@ public class GrpcSubscriberStub extends SubscriberStub {
         GrpcCallSettings.<ModifyPushConfigRequest, Empty>newBuilder()
             .setMethodDescriptor(modifyPushConfigMethodDescriptor)
             .setParamsExtractor(
-                request -> {
-                  ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
-                  params.put("subscription", String.valueOf(request.getSubscription()));
-                  return params.build();
+                new RequestParamsExtractor<ModifyPushConfigRequest>() {
+                  @Override
+                  public Map<String, String> extract(ModifyPushConfigRequest request) {
+                    ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
+                    params.put("subscription", String.valueOf(request.getSubscription()));
+                    return params.build();
+                  }
                 })
             .build();
     GrpcCallSettings<GetSnapshotRequest, Snapshot> getSnapshotTransportSettings =
         GrpcCallSettings.<GetSnapshotRequest, Snapshot>newBuilder()
             .setMethodDescriptor(getSnapshotMethodDescriptor)
             .setParamsExtractor(
-                request -> {
-                  ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
-                  params.put("snapshot", String.valueOf(request.getSnapshot()));
-                  return params.build();
+                new RequestParamsExtractor<GetSnapshotRequest>() {
+                  @Override
+                  public Map<String, String> extract(GetSnapshotRequest request) {
+                    ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
+                    params.put("snapshot", String.valueOf(request.getSnapshot()));
+                    return params.build();
+                  }
                 })
             .build();
     GrpcCallSettings<ListSnapshotsRequest, ListSnapshotsResponse> listSnapshotsTransportSettings =
         GrpcCallSettings.<ListSnapshotsRequest, ListSnapshotsResponse>newBuilder()
             .setMethodDescriptor(listSnapshotsMethodDescriptor)
             .setParamsExtractor(
-                request -> {
-                  ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
-                  params.put("project", String.valueOf(request.getProject()));
-                  return params.build();
+                new RequestParamsExtractor<ListSnapshotsRequest>() {
+                  @Override
+                  public Map<String, String> extract(ListSnapshotsRequest request) {
+                    ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
+                    params.put("project", String.valueOf(request.getProject()));
+                    return params.build();
+                  }
                 })
             .build();
     GrpcCallSettings<CreateSnapshotRequest, Snapshot> createSnapshotTransportSettings =
         GrpcCallSettings.<CreateSnapshotRequest, Snapshot>newBuilder()
             .setMethodDescriptor(createSnapshotMethodDescriptor)
             .setParamsExtractor(
-                request -> {
-                  ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
-                  params.put("name", String.valueOf(request.getName()));
-                  return params.build();
+                new RequestParamsExtractor<CreateSnapshotRequest>() {
+                  @Override
+                  public Map<String, String> extract(CreateSnapshotRequest request) {
+                    ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
+                    params.put("name", String.valueOf(request.getName()));
+                    return params.build();
+                  }
                 })
             .build();
     GrpcCallSettings<UpdateSnapshotRequest, Snapshot> updateSnapshotTransportSettings =
         GrpcCallSettings.<UpdateSnapshotRequest, Snapshot>newBuilder()
             .setMethodDescriptor(updateSnapshotMethodDescriptor)
             .setParamsExtractor(
-                request -> {
-                  ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
-                  params.put("snapshot.name", String.valueOf(request.getSnapshot().getName()));
-                  return params.build();
+                new RequestParamsExtractor<UpdateSnapshotRequest>() {
+                  @Override
+                  public Map<String, String> extract(UpdateSnapshotRequest request) {
+                    ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
+                    params.put("snapshot.name", String.valueOf(request.getSnapshot().getName()));
+                    return params.build();
+                  }
                 })
             .build();
     GrpcCallSettings<DeleteSnapshotRequest, Empty> deleteSnapshotTransportSettings =
         GrpcCallSettings.<DeleteSnapshotRequest, Empty>newBuilder()
             .setMethodDescriptor(deleteSnapshotMethodDescriptor)
             .setParamsExtractor(
-                request -> {
-                  ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
-                  params.put("snapshot", String.valueOf(request.getSnapshot()));
-                  return params.build();
+                new RequestParamsExtractor<DeleteSnapshotRequest>() {
+                  @Override
+                  public Map<String, String> extract(DeleteSnapshotRequest request) {
+                    ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
+                    params.put("snapshot", String.valueOf(request.getSnapshot()));
+                    return params.build();
+                  }
                 })
             .build();
     GrpcCallSettings<SeekRequest, SeekResponse> seekTransportSettings =
         GrpcCallSettings.<SeekRequest, SeekResponse>newBuilder()
             .setMethodDescriptor(seekMethodDescriptor)
             .setParamsExtractor(
-                request -> {
-                  ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
-                  params.put("subscription", String.valueOf(request.getSubscription()));
-                  return params.build();
+                new RequestParamsExtractor<SeekRequest>() {
+                  @Override
+                  public Map<String, String> extract(SeekRequest request) {
+                    ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
+                    params.put("subscription", String.valueOf(request.getSubscription()));
+                    return params.build();
+                  }
                 })
             .build();
     GrpcCallSettings<SetIamPolicyRequest, Policy> setIamPolicyTransportSettings =
         GrpcCallSettings.<SetIamPolicyRequest, Policy>newBuilder()
             .setMethodDescriptor(setIamPolicyMethodDescriptor)
             .setParamsExtractor(
-                request -> {
-                  ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
-                  params.put("resource", String.valueOf(request.getResource()));
-                  return params.build();
+                new RequestParamsExtractor<SetIamPolicyRequest>() {
+                  @Override
+                  public Map<String, String> extract(SetIamPolicyRequest request) {
+                    ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
+                    params.put("resource", String.valueOf(request.getResource()));
+                    return params.build();
+                  }
                 })
             .build();
     GrpcCallSettings<GetIamPolicyRequest, Policy> getIamPolicyTransportSettings =
         GrpcCallSettings.<GetIamPolicyRequest, Policy>newBuilder()
             .setMethodDescriptor(getIamPolicyMethodDescriptor)
             .setParamsExtractor(
-                request -> {
-                  ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
-                  params.put("resource", String.valueOf(request.getResource()));
-                  return params.build();
+                new RequestParamsExtractor<GetIamPolicyRequest>() {
+                  @Override
+                  public Map<String, String> extract(GetIamPolicyRequest request) {
+                    ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
+                    params.put("resource", String.valueOf(request.getResource()));
+                    return params.build();
+                  }
                 })
             .build();
     GrpcCallSettings<TestIamPermissionsRequest, TestIamPermissionsResponse>
@@ -501,10 +554,13 @@ public class GrpcSubscriberStub extends SubscriberStub {
             GrpcCallSettings.<TestIamPermissionsRequest, TestIamPermissionsResponse>newBuilder()
                 .setMethodDescriptor(testIamPermissionsMethodDescriptor)
                 .setParamsExtractor(
-                    request -> {
-                      ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
-                      params.put("resource", String.valueOf(request.getResource()));
-                      return params.build();
+                    new RequestParamsExtractor<TestIamPermissionsRequest>() {
+                      @Override
+                      public Map<String, String> extract(TestIamPermissionsRequest request) {
+                        ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
+                        params.put("resource", String.valueOf(request.getResource()));
+                        return params.build();
+                      }
                     })
                 .build();
 

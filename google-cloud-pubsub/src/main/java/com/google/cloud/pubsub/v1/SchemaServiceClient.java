@@ -16,6 +16,7 @@
 
 package com.google.cloud.pubsub.v1;
 
+import com.google.api.core.ApiFunction;
 import com.google.api.core.ApiFuture;
 import com.google.api.core.ApiFutures;
 import com.google.api.core.BetaApi;
@@ -966,7 +967,14 @@ public class SchemaServiceClient implements BackgroundResource {
       ApiFuture<ListSchemasPage> futurePage =
           ListSchemasPage.createEmptyPage().createPageAsync(context, futureResponse);
       return ApiFutures.transform(
-          futurePage, input -> new ListSchemasPagedResponse(input), MoreExecutors.directExecutor());
+          futurePage,
+          new ApiFunction<ListSchemasPage, ListSchemasPagedResponse>() {
+            @Override
+            public ListSchemasPagedResponse apply(ListSchemasPage input) {
+              return new ListSchemasPagedResponse(input);
+            }
+          },
+          MoreExecutors.directExecutor());
     }
 
     private ListSchemasPagedResponse(ListSchemasPage page) {

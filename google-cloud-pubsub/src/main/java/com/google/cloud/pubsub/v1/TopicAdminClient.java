@@ -16,6 +16,7 @@
 
 package com.google.cloud.pubsub.v1;
 
+import com.google.api.core.ApiFunction;
 import com.google.api.core.ApiFuture;
 import com.google.api.core.ApiFutures;
 import com.google.api.core.BetaApi;
@@ -1519,7 +1520,14 @@ public class TopicAdminClient implements BackgroundResource {
       ApiFuture<ListTopicsPage> futurePage =
           ListTopicsPage.createEmptyPage().createPageAsync(context, futureResponse);
       return ApiFutures.transform(
-          futurePage, input -> new ListTopicsPagedResponse(input), MoreExecutors.directExecutor());
+          futurePage,
+          new ApiFunction<ListTopicsPage, ListTopicsPagedResponse>() {
+            @Override
+            public ListTopicsPagedResponse apply(ListTopicsPage input) {
+              return new ListTopicsPagedResponse(input);
+            }
+          },
+          MoreExecutors.directExecutor());
     }
 
     private ListTopicsPagedResponse(ListTopicsPage page) {
@@ -1593,7 +1601,12 @@ public class TopicAdminClient implements BackgroundResource {
           ListTopicSubscriptionsPage.createEmptyPage().createPageAsync(context, futureResponse);
       return ApiFutures.transform(
           futurePage,
-          input -> new ListTopicSubscriptionsPagedResponse(input),
+          new ApiFunction<ListTopicSubscriptionsPage, ListTopicSubscriptionsPagedResponse>() {
+            @Override
+            public ListTopicSubscriptionsPagedResponse apply(ListTopicSubscriptionsPage input) {
+              return new ListTopicSubscriptionsPagedResponse(input);
+            }
+          },
           MoreExecutors.directExecutor());
     }
 
@@ -1717,7 +1730,12 @@ public class TopicAdminClient implements BackgroundResource {
           ListTopicSnapshotsPage.createEmptyPage().createPageAsync(context, futureResponse);
       return ApiFutures.transform(
           futurePage,
-          input -> new ListTopicSnapshotsPagedResponse(input),
+          new ApiFunction<ListTopicSnapshotsPage, ListTopicSnapshotsPagedResponse>() {
+            @Override
+            public ListTopicSnapshotsPagedResponse apply(ListTopicSnapshotsPage input) {
+              return new ListTopicSnapshotsPagedResponse(input);
+            }
+          },
           MoreExecutors.directExecutor());
     }
 
