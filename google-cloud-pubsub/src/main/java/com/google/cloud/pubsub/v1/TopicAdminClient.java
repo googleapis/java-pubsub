@@ -835,7 +835,7 @@ public class TopicAdminClient implements BackgroundResource {
    *           .setPageSize(883849137)
    *           .setPageToken("pageToken873572522")
    *           .build();
-   *   ApiFuture<String> future =
+   *   ApiFuture<ListTopicSubscriptionsPagedResponse> future =
    *       topicAdminClient.listTopicSubscriptionsPagedCallable().futureCall(request);
    *   // Do something.
    *   for (String element : future.get().iterateAll()) {
@@ -866,7 +866,7 @@ public class TopicAdminClient implements BackgroundResource {
    *   while (true) {
    *     ListTopicSubscriptionsResponse response =
    *         topicAdminClient.listTopicSubscriptionsCallable().call(request);
-   *     for (String element : response.getResponsesList()) {
+   *     for (String element : response.getSubscriptionsList()) {
    *       // doThingsWith(element);
    *     }
    *     String nextPageToken = response.getNextPageToken();
@@ -990,7 +990,7 @@ public class TopicAdminClient implements BackgroundResource {
    *           .setPageSize(883849137)
    *           .setPageToken("pageToken873572522")
    *           .build();
-   *   ApiFuture<String> future =
+   *   ApiFuture<ListTopicSnapshotsPagedResponse> future =
    *       topicAdminClient.listTopicSnapshotsPagedCallable().futureCall(request);
    *   // Do something.
    *   for (String element : future.get().iterateAll()) {

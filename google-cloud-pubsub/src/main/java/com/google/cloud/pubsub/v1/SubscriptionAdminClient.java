@@ -1661,7 +1661,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *
    * <pre>{@code
    * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
-   *   String snapshot = ProjectSubscriptionName.of("[PROJECT]", "[SNAPSHOT]").toString();
+   *   String snapshot = ProjectSnapshotName.of("[PROJECT]", "[SNAPSHOT]").toString();
    *   Snapshot response = subscriptionAdminClient.getSnapshot(snapshot);
    * }
    * }</pre>
@@ -1688,7 +1688,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
    *   GetSnapshotRequest request =
    *       GetSnapshotRequest.newBuilder()
-   *           .setSnapshot(ProjectSubscriptionName.of("[PROJECT]", "[SNAPSHOT]").toString())
+   *           .setSnapshot(ProjectSnapshotName.of("[PROJECT]", "[SNAPSHOT]").toString())
    *           .build();
    *   Snapshot response = subscriptionAdminClient.getSnapshot(request);
    * }
@@ -1714,7 +1714,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
    *   GetSnapshotRequest request =
    *       GetSnapshotRequest.newBuilder()
-   *           .setSnapshot(ProjectSubscriptionName.of("[PROJECT]", "[SNAPSHOT]").toString())
+   *           .setSnapshot(ProjectSnapshotName.of("[PROJECT]", "[SNAPSHOT]").toString())
    *           .build();
    *   ApiFuture<Snapshot> future =
    *       subscriptionAdminClient.getSnapshotCallable().futureCall(request);
