@@ -1,5 +1,7 @@
 # Changelog
 
+### [1.113.10](https://www.github.com/googleapis/java-pubsub/compare/1.113.9...v1.113.10) (2021-08-22)
+
 ### [1.113.9](https://www.github.com/googleapis/java-pubsub/compare/v1.113.8...v1.113.9) (2021-08-11)
 
 
