@@ -10,14 +10,12 @@ branchProtectionRules:
     requiredStatusCheckContexts:
       - dependencies (8)
       - dependencies (11)
-      - linkage-monitor
       - lint
       - clirr
-      - units (7)
       - units (8)
       - units (11)
       - 'Kokoro - Test: Integration'
-      - 'Kokoro - Against Pub/Sub Lite samples'
+      - Kokoro - Against Pub/Sub Lite samples
       - cla/google
   - pattern: 1.111.0-sp
     isAdminEnforced: true
@@ -27,14 +25,27 @@ branchProtectionRules:
     requiredStatusCheckContexts:
       - dependencies (8)
       - dependencies (11)
-      - linkage-monitor
       - lint
       - clirr
-      - units (7)
       - units (8)
       - units (11)
       - 'Kokoro - Test: Integration'
-      - 'Kokoro - Against Pub/Sub Lite samples'
+      - Kokoro - Against Pub/Sub Lite samples
+      - cla/google
+  - pattern: java7
+    isAdminEnforced: true
+    requiredApprovingReviewCount: 1
+    requiresCodeOwnerReviews: true
+    requiresStrictStatusChecks: false
+    requiredStatusCheckContexts:
+      - dependencies (8)
+      - dependencies (11)
+      - lint
+      - clirr
+      - units (8)
+      - units (11)
+      - 'Kokoro - Test: Integration'
+      - Kokoro - Against Pub/Sub Lite samples
       - cla/google
 permissionRules:
   - team: yoshi-admins

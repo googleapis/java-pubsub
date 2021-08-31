@@ -1,5 +1,66 @@
 # Changelog
 
+### [1.114.2](https://www.github.com/googleapis/java-pubsub/compare/v1.114.1...v1.114.2) (2021-08-24)
+
+
+### Dependencies
+
+* update dependency com.google.cloud:google-cloud-core to v2.1.1 ([#813](https://www.github.com/googleapis/java-pubsub/issues/813)) ([e7b0c3c](https://www.github.com/googleapis/java-pubsub/commit/e7b0c3c002e816027c945cac4487394cefd26892))
+
+### [1.114.1](https://www.github.com/googleapis/java-pubsub/compare/v1.114.0...v1.114.1) (2021-08-23)
+
+
+### Dependencies
+
+* update dependency com.google.cloud:google-cloud-core to v2.1.0 ([#806](https://www.github.com/googleapis/java-pubsub/issues/806)) ([744eacd](https://www.github.com/googleapis/java-pubsub/commit/744eacd007c9de224790b75eb5c060acaf6245ec))
+* update dependency com.google.cloud:google-cloud-shared-dependencies to v2.1.0 ([#807](https://www.github.com/googleapis/java-pubsub/issues/807)) ([e88ff93](https://www.github.com/googleapis/java-pubsub/commit/e88ff93b0fc476f27221d9e5e4c81811a26815ac))
+
+## [1.114.0](https://www.github.com/googleapis/java-pubsub/compare/v1.113.9...v1.114.0) (2021-08-23)
+
+
+### Features
+
+* add topic retention support ([#803](https://www.github.com/googleapis/java-pubsub/issues/803)) ([898faf8](https://www.github.com/googleapis/java-pubsub/commit/898faf810276901c4ea878278ec55b80664098f7))
+
+
+### Dependencies
+
+* update dependency com.google.errorprone:error_prone_annotations to v2.9.0 ([#797](https://www.github.com/googleapis/java-pubsub/issues/797)) ([70bb91d](https://www.github.com/googleapis/java-pubsub/commit/70bb91d7a5cbb6da82837d7bd42a08b4b4fe648e))
+
+### [1.113.9](https://www.github.com/googleapis/java-pubsub/compare/v1.113.8...v1.113.9) (2021-08-11)
+
+
+### Dependencies
+
+* update dependency com.google.api.grpc:grpc-google-cloud-pubsub-v1 to v1.96.0 ([#786](https://www.github.com/googleapis/java-pubsub/issues/786)) ([57c3c2b](https://www.github.com/googleapis/java-pubsub/commit/57c3c2bfd467fd02a03ec581d9254fe3c9c68f8b))
+* update dependency com.google.api.grpc:proto-google-cloud-pubsub-v1 to v1.96.0 ([#787](https://www.github.com/googleapis/java-pubsub/issues/787)) ([7940378](https://www.github.com/googleapis/java-pubsub/commit/7940378db1394e3c5631ec854fa57b35cfb12094))
+* update dependency com.google.cloud:google-cloud-core to v2.0.5 ([#783](https://www.github.com/googleapis/java-pubsub/issues/783)) ([de3d475](https://www.github.com/googleapis/java-pubsub/commit/de3d47544bfe370330dd6b569927cf77204201bf))
+* update dependency com.google.cloud:google-cloud-shared-dependencies to v2.0.1 ([#788](https://www.github.com/googleapis/java-pubsub/issues/788)) ([5d39f85](https://www.github.com/googleapis/java-pubsub/commit/5d39f850040a2c60c5c87a7669f924121e0b8b0a))
+
+### [1.113.8](https://www.github.com/googleapis/java-pubsub/compare/v1.113.7...v1.113.8) (2021-08-11)
+
+
+### Dependencies
+
+* update dependency com.google.cloud:google-cloud-core to v2.0.4 ([#772](https://www.github.com/googleapis/java-pubsub/issues/772)) ([37cb279](https://www.github.com/googleapis/java-pubsub/commit/37cb2797cfce84e53b56b37de19c9b467eca91c4))
+
+### [1.113.7](https://www.github.com/googleapis/java-pubsub/compare/v1.113.6...v1.113.7) (2021-08-11)
+
+
+### Dependencies
+
+* update dependency com.google.cloud:google-cloud-core to v2.0.3 ([#768](https://www.github.com/googleapis/java-pubsub/issues/768)) ([2ba610b](https://www.github.com/googleapis/java-pubsub/commit/2ba610bb1134b43c641608364248c794eec5a295))
+
+### [1.113.6](https://www.github.com/googleapis/java-pubsub/compare/v1.113.5...v1.113.6) (2021-08-06)
+
+
+### Dependencies
+
+* update dependency com.google.cloud:google-cloud-core to v2 ([#759](https://www.github.com/googleapis/java-pubsub/issues/759)) ([9afc2a3](https://www.github.com/googleapis/java-pubsub/commit/9afc2a3d0b94cf71feda5fed23841bdb7814f422))
+* update dependency com.google.cloud:google-cloud-shared-dependencies to v2 ([#762](https://www.github.com/googleapis/java-pubsub/issues/762)) ([ee939c2](https://www.github.com/googleapis/java-pubsub/commit/ee939c2166ec3dfea0e6132f6198e3a7693659a1))
+* update dependency com.google.errorprone:error_prone_annotations to v2.8.0 ([#745](https://www.github.com/googleapis/java-pubsub/issues/745)) ([554d602](https://www.github.com/googleapis/java-pubsub/commit/554d60273b53ab4a06b13fa0c39b13e3c3e815e1))
+* update dependency com.google.errorprone:error_prone_annotations to v2.8.1 ([#758](https://www.github.com/googleapis/java-pubsub/issues/758)) ([09650e4](https://www.github.com/googleapis/java-pubsub/commit/09650e4d1201be0c738b8853d9271084c808c2be))
+
 ### [1.113.5](https://www.github.com/googleapis/java-pubsub/compare/v1.113.4...v1.113.5) (2021-07-02)
 
 
