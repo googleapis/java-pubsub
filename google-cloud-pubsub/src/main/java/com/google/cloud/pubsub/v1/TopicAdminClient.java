@@ -16,7 +16,6 @@
 
 package com.google.cloud.pubsub.v1;
 
-import com.google.api.core.ApiFunction;
 import com.google.api.core.ApiFuture;
 import com.google.api.core.ApiFutures;
 import com.google.api.core.BetaApi;
@@ -28,8 +27,6 @@ import com.google.api.gax.rpc.PageContext;
 import com.google.api.gax.rpc.UnaryCallable;
 import com.google.cloud.pubsub.v1.stub.PublisherStub;
 import com.google.cloud.pubsub.v1.stub.PublisherStubSettings;
-import com.google.common.base.Function;
-import com.google.common.collect.Iterables;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.iam.v1.GetIamPolicyRequest;
 import com.google.iam.v1.Policy;
@@ -48,7 +45,6 @@ import com.google.pubsub.v1.ListTopicSubscriptionsResponse;
 import com.google.pubsub.v1.ListTopicsRequest;
 import com.google.pubsub.v1.ListTopicsResponse;
 import com.google.pubsub.v1.ProjectName;
-import com.google.pubsub.v1.ProjectSubscriptionName;
 import com.google.pubsub.v1.ProjectTopicName;
 import com.google.pubsub.v1.PublishRequest;
 import com.google.pubsub.v1.PublishResponse;
@@ -667,7 +663,7 @@ public class TopicAdminClient implements BackgroundResource {
    *           .setPageSize(883849137)
    *           .setPageToken("pageToken873572522")
    *           .build();
-   *   ApiFuture<ListTopicsPagedResponse> future = topicAdminClient.listTopicsPagedCallable().futureCall(request);
+   *   ApiFuture<Topic> future = topicAdminClient.listTopicsPagedCallable().futureCall(request);
    *   // Do something.
    *   for (Topic element : future.get().iterateAll()) {
    *     // doThingsWith(element);
@@ -695,7 +691,7 @@ public class TopicAdminClient implements BackgroundResource {
    *           .build();
    *   while (true) {
    *     ListTopicsResponse response = topicAdminClient.listTopicsCallable().call(request);
-   *     for (Topic element : response.getTopicsList()) {
+   *     for (Topic element : response.getResponsesList()) {
    *       // doThingsWith(element);
    *     }
    *     String nextPageToken = response.getNextPageToken();
@@ -835,7 +831,7 @@ public class TopicAdminClient implements BackgroundResource {
    *           .setPageSize(883849137)
    *           .setPageToken("pageToken873572522")
    *           .build();
-   *   ApiFuture<ListTopicSubscriptionsPagedResponse> future =
+   *   ApiFuture<String> future =
    *       topicAdminClient.listTopicSubscriptionsPagedCallable().futureCall(request);
    *   // Do something.
    *   for (String element : future.get().iterateAll()) {
@@ -866,7 +862,7 @@ public class TopicAdminClient implements BackgroundResource {
    *   while (true) {
    *     ListTopicSubscriptionsResponse response =
    *         topicAdminClient.listTopicSubscriptionsCallable().call(request);
-   *     for (String element : response.getSubscriptionsList()) {
+   *     for (String element : response.getResponsesList()) {
    *       // doThingsWith(element);
    *     }
    *     String nextPageToken = response.getNextPageToken();
@@ -990,7 +986,7 @@ public class TopicAdminClient implements BackgroundResource {
    *           .setPageSize(883849137)
    *           .setPageToken("pageToken873572522")
    *           .build();
-   *   ApiFuture<ListTopicSnapshotsPagedResponse> future =
+   *   ApiFuture<String> future =
    *       topicAdminClient.listTopicSnapshotsPagedCallable().futureCall(request);
    *   // Do something.
    *   for (String element : future.get().iterateAll()) {
@@ -1024,7 +1020,7 @@ public class TopicAdminClient implements BackgroundResource {
    *   while (true) {
    *     ListTopicSnapshotsResponse response =
    *         topicAdminClient.listTopicSnapshotsCallable().call(request);
-   *     for (String element : response.getSnapshotsList()) {
+   *     for (String element : response.getResponsesList()) {
    *       // doThingsWith(element);
    *     }
    *     String nextPageToken = response.getNextPageToken();
@@ -1184,7 +1180,7 @@ public class TopicAdminClient implements BackgroundResource {
    * try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
    *   DetachSubscriptionRequest request =
    *       DetachSubscriptionRequest.newBuilder()
-   *           .setSubscription(ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
+   *           .setSubscription(SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
    *           .build();
    *   DetachSubscriptionResponse response = topicAdminClient.detachSubscription(request);
    * }
@@ -1209,7 +1205,7 @@ public class TopicAdminClient implements BackgroundResource {
    * try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
    *   DetachSubscriptionRequest request =
    *       DetachSubscriptionRequest.newBuilder()
-   *           .setSubscription(ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
+   *           .setSubscription(SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
    *           .build();
    *   ApiFuture<DetachSubscriptionResponse> future =
    *       topicAdminClient.detachSubscriptionCallable().futureCall(request);
@@ -1282,9 +1278,9 @@ public class TopicAdminClient implements BackgroundResource {
 
   // AUTO-GENERATED DOCUMENTATION AND METHOD.
   /**
-   * Sets the access control policy on the specified resource. Replaces any existing policy.
+   * Sets the access control policy on the specified resource. Replacesany existing policy.
    *
-   * <p>Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
+   * <p>Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`errors.
    *
    * <p>Sample code:
    *
@@ -1357,7 +1353,7 @@ public class TopicAdminClient implements BackgroundResource {
 
   // AUTO-GENERATED DOCUMENTATION AND METHOD.
   /**
-   * Gets the access control policy for a resource. Returns an empty policy if the resource exists
+   * Gets the access control policy for a resource. Returns an empty policyif the resource exists
    * and does not have a policy set.
    *
    * <p>Sample code:
@@ -1381,11 +1377,11 @@ public class TopicAdminClient implements BackgroundResource {
 
   // AUTO-GENERATED DOCUMENTATION AND METHOD.
   /**
-   * Returns permissions that a caller has on the specified resource. If the resource does not
-   * exist, this will return an empty set of permissions, not a `NOT_FOUND` error.
+   * Returns permissions that a caller has on the specified resource. If theresource does not exist,
+   * this will return an empty set ofpermissions, not a `NOT_FOUND` error.
    *
-   * <p>Note: This operation is designed to be used for building permission-aware UIs and
-   * command-line tools, not for authorization checking. This operation may "fail open" without
+   * <p>Note: This operation is designed to be used for buildingpermission-aware UIs and
+   * command-line tools, not for authorizationchecking. This operation may "fail open" without
    * warning.
    *
    * <p>Sample code:
@@ -1448,11 +1444,11 @@ public class TopicAdminClient implements BackgroundResource {
 
   // AUTO-GENERATED DOCUMENTATION AND METHOD.
   /**
-   * Returns permissions that a caller has on the specified resource. If the resource does not
-   * exist, this will return an empty set of permissions, not a `NOT_FOUND` error.
+   * Returns permissions that a caller has on the specified resource. If theresource does not exist,
+   * this will return an empty set ofpermissions, not a `NOT_FOUND` error.
    *
-   * <p>Note: This operation is designed to be used for building permission-aware UIs and
-   * command-line tools, not for authorization checking. This operation may "fail open" without
+   * <p>Note: This operation is designed to be used for buildingpermission-aware UIs and
+   * command-line tools, not for authorizationchecking. This operation may "fail open" without
    * warning.
    *
    * <p>Sample code:
@@ -1520,14 +1516,7 @@ public class TopicAdminClient implements BackgroundResource {
       ApiFuture<ListTopicsPage> futurePage =
           ListTopicsPage.createEmptyPage().createPageAsync(context, futureResponse);
       return ApiFutures.transform(
-          futurePage,
-          new ApiFunction<ListTopicsPage, ListTopicsPagedResponse>() {
-            @Override
-            public ListTopicsPagedResponse apply(ListTopicsPage input) {
-              return new ListTopicsPagedResponse(input);
-            }
-          },
-          MoreExecutors.directExecutor());
+          futurePage, input -> new ListTopicsPagedResponse(input), MoreExecutors.directExecutor());
     }
 
     private ListTopicsPagedResponse(ListTopicsPage page) {
@@ -1601,28 +1590,12 @@ public class TopicAdminClient implements BackgroundResource {
           ListTopicSubscriptionsPage.createEmptyPage().createPageAsync(context, futureResponse);
       return ApiFutures.transform(
           futurePage,
-          new ApiFunction<ListTopicSubscriptionsPage, ListTopicSubscriptionsPagedResponse>() {
-            @Override
-            public ListTopicSubscriptionsPagedResponse apply(ListTopicSubscriptionsPage input) {
-              return new ListTopicSubscriptionsPagedResponse(input);
-            }
-          },
+          input -> new ListTopicSubscriptionsPagedResponse(input),
           MoreExecutors.directExecutor());
     }
 
     private ListTopicSubscriptionsPagedResponse(ListTopicSubscriptionsPage page) {
       super(page, ListTopicSubscriptionsFixedSizeCollection.createEmptyCollection());
-    }
-
-    public Iterable<ProjectSubscriptionName> iterateAllAsProjectSubscriptionName() {
-      return Iterables.transform(
-          iterateAll(),
-          new Function<String, ProjectSubscriptionName>() {
-            @Override
-            public ProjectSubscriptionName apply(String arg0) {
-              return ProjectSubscriptionName.parse(arg0);
-            }
-          });
     }
   }
 
@@ -1656,28 +1629,6 @@ public class TopicAdminClient implements BackgroundResource {
         ApiFuture<ListTopicSubscriptionsResponse> futureResponse) {
       return super.createPageAsync(context, futureResponse);
     }
-
-    public Iterable<ProjectSubscriptionName> iterateAllAsProjectSubscriptionName() {
-      return Iterables.transform(
-          iterateAll(),
-          new Function<String, ProjectSubscriptionName>() {
-            @Override
-            public ProjectSubscriptionName apply(String arg0) {
-              return ProjectSubscriptionName.parse(arg0);
-            }
-          });
-    }
-
-    public Iterable<ProjectSubscriptionName> getValuesAsProjectSubscriptionName() {
-      return Iterables.transform(
-          getValues(),
-          new Function<String, ProjectSubscriptionName>() {
-            @Override
-            public ProjectSubscriptionName apply(String arg0) {
-              return ProjectSubscriptionName.parse(arg0);
-            }
-          });
-    }
   }
 
   public static class ListTopicSubscriptionsFixedSizeCollection
@@ -1702,17 +1653,6 @@ public class TopicAdminClient implements BackgroundResource {
         List<ListTopicSubscriptionsPage> pages, int collectionSize) {
       return new ListTopicSubscriptionsFixedSizeCollection(pages, collectionSize);
     }
-
-    public Iterable<ProjectSubscriptionName> getValuesAsProjectSubscriptionName() {
-      return Iterables.transform(
-          getValues(),
-          new Function<String, ProjectSubscriptionName>() {
-            @Override
-            public ProjectSubscriptionName apply(String arg0) {
-              return ProjectSubscriptionName.parse(arg0);
-            }
-          });
-    }
   }
 
   public static class ListTopicSnapshotsPagedResponse
@@ -1730,12 +1670,7 @@ public class TopicAdminClient implements BackgroundResource {
           ListTopicSnapshotsPage.createEmptyPage().createPageAsync(context, futureResponse);
       return ApiFutures.transform(
           futurePage,
-          new ApiFunction<ListTopicSnapshotsPage, ListTopicSnapshotsPagedResponse>() {
-            @Override
-            public ListTopicSnapshotsPagedResponse apply(ListTopicSnapshotsPage input) {
-              return new ListTopicSnapshotsPagedResponse(input);
-            }
-          },
+          input -> new ListTopicSnapshotsPagedResponse(input),
           MoreExecutors.directExecutor());
     }
 
