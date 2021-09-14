@@ -16,7 +16,6 @@
 
 package com.google.cloud.pubsub.v1;
 
-import com.google.api.core.ApiFunction;
 import com.google.api.core.ApiFuture;
 import com.google.api.core.ApiFutures;
 import com.google.api.core.BetaApi;
@@ -211,7 +210,7 @@ public class SchemaServiceClient implements BackgroundResource {
    *
    * <pre>{@code
    * try (SchemaServiceClient schemaServiceClient = SchemaServiceClient.create()) {
-   *   String parent = ProjectName.of("[PROJECT]").toString();
+   *   String parent = SchemaName.of("[PROJECT]", "[SCHEMA]").toString();
    *   Schema schema = Schema.newBuilder().build();
    *   String schemaId = "schemaId-697673060";
    *   Schema response = schemaServiceClient.createSchema(parent, schema, schemaId);
@@ -249,7 +248,7 @@ public class SchemaServiceClient implements BackgroundResource {
    * try (SchemaServiceClient schemaServiceClient = SchemaServiceClient.create()) {
    *   CreateSchemaRequest request =
    *       CreateSchemaRequest.newBuilder()
-   *           .setParent(ProjectName.of("[PROJECT]").toString())
+   *           .setParent(SchemaName.of("[PROJECT]", "[SCHEMA]").toString())
    *           .setSchema(Schema.newBuilder().build())
    *           .setSchemaId("schemaId-697673060")
    *           .build();
@@ -274,7 +273,7 @@ public class SchemaServiceClient implements BackgroundResource {
    * try (SchemaServiceClient schemaServiceClient = SchemaServiceClient.create()) {
    *   CreateSchemaRequest request =
    *       CreateSchemaRequest.newBuilder()
-   *           .setParent(ProjectName.of("[PROJECT]").toString())
+   *           .setParent(SchemaName.of("[PROJECT]", "[SCHEMA]").toString())
    *           .setSchema(Schema.newBuilder().build())
    *           .setSchemaId("schemaId-697673060")
    *           .build();
@@ -474,7 +473,7 @@ public class SchemaServiceClient implements BackgroundResource {
    *           .setPageSize(883849137)
    *           .setPageToken("pageToken873572522")
    *           .build();
-   *   ApiFuture<ListSchemasPagedResponse> future = schemaServiceClient.listSchemasPagedCallable().futureCall(request);
+   *   ApiFuture<Schema> future = schemaServiceClient.listSchemasPagedCallable().futureCall(request);
    *   // Do something.
    *   for (Schema element : future.get().iterateAll()) {
    *     // doThingsWith(element);
@@ -504,7 +503,7 @@ public class SchemaServiceClient implements BackgroundResource {
    *           .build();
    *   while (true) {
    *     ListSchemasResponse response = schemaServiceClient.listSchemasCallable().call(request);
-   *     for (Schema element : response.getSchemasList()) {
+   *     for (Schema element : response.getResponsesList()) {
    *       // doThingsWith(element);
    *     }
    *     String nextPageToken = response.getNextPageToken();
@@ -967,14 +966,7 @@ public class SchemaServiceClient implements BackgroundResource {
       ApiFuture<ListSchemasPage> futurePage =
           ListSchemasPage.createEmptyPage().createPageAsync(context, futureResponse);
       return ApiFutures.transform(
-          futurePage,
-          new ApiFunction<ListSchemasPage, ListSchemasPagedResponse>() {
-            @Override
-            public ListSchemasPagedResponse apply(ListSchemasPage input) {
-              return new ListSchemasPagedResponse(input);
-            }
-          },
-          MoreExecutors.directExecutor());
+          futurePage, input -> new ListSchemasPagedResponse(input), MoreExecutors.directExecutor());
     }
 
     private ListSchemasPagedResponse(ListSchemasPage page) {
