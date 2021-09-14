@@ -518,45 +518,9 @@ for version in versions:
         PACKAGE + '\n\n' + IMPORT_PROJECT_TOPIC_NAME + '\n'
     )
 
-    java.remove_method(
-        'proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/UntypedTopicName.java',
-        "public static List<TopicName> parseList(List<String> formattedStrings)"
-    )
-    
-    java.remove_method(
-        'proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/UntypedTopicName.java',
-        "public static List<String> toStringList(List<TopicName> values)"
-    )
-   
-    java.remove_method(
-        'proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ProjectTopicName.java',
-        "public static List<TopicName> parseList(List<String> formattedStrings)"
-    )
-    
-    java.remove_method(
-        'proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ProjectTopicName.java',
-        "public static List<String> toStringList(List<TopicName> values)")
-    
-    s.replace(
-      [
-        '**/SubscriptionAdminClient.java',
-        '**/SubscriberTest.java',
-        '**/ITPubSubTest.java',
-        '**/SubscriberTest.java',
-        '**/Subscriber.java',
-      ],
-        "ProjectSubscriptionName",
-        "SubscriptionName"
-    )
-
-
-
-
     java.format_code('google-cloud-pubsub/src')
     java.format_code(f'grpc-google-cloud-{service}-{version}/src')
     java.format_code(f'proto-google-cloud-{service}-{version}/src')
-
-
 
 java.common_templates(excludes=[
   ".github/workflows/samples.yaml",
