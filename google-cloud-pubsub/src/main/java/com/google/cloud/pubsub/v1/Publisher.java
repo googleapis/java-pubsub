@@ -27,6 +27,7 @@ import com.google.api.core.SettableApiFuture;
 import com.google.api.gax.batching.BatchingSettings;
 import com.google.api.gax.batching.FlowControlSettings;
 import com.google.api.gax.batching.FlowController;
+import com.google.api.gax.batching.FlowController.LimitExceededBehavior;
 import com.google.api.gax.core.BackgroundResource;
 import com.google.api.gax.core.BackgroundResourceAggregation;
 import com.google.api.gax.core.CredentialsProvider;
@@ -779,6 +780,11 @@ public class Publisher implements PublisherInterface {
       Preconditions.checkArgument(batchingSettings.getRequestByteThreshold() > 0);
       Preconditions.checkNotNull(batchingSettings.getDelayThreshold());
       Preconditions.checkArgument(batchingSettings.getDelayThreshold().toMillis() > 0);
+      FlowControlSettings flowControlSettings = batchingSettings.getFlowControlSettings();
+      if (flowControlSettings.getLimitExceededBehavior() != LimitExceededBehavior.Ignore) {
+        Preconditions.checkArgument(flowControlSettings.getMaxOutstandingElementCount() > 0);
+        Preconditions.checkArgument(flowControlSettings.getMaxOutstandingRequestBytes() > 0);
+      }
       this.batchingSettings = batchingSettings;
       return this;
     }
@@ -859,6 +865,9 @@ public class Publisher implements PublisherInterface {
     }
 
     void acquire(long messageSize) throws FlowController.FlowControlException {
+      Preconditions.checkState(
+          messageSize <= byteLimit,
+          "Message size is greater than request byte flow control limit.");
       lock.lock();
       try {
         if (outstandingMessages >= messageLimit
