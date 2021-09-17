@@ -41,8 +41,8 @@ import com.google.cloud.pubsub.v1.stub.SubscriberStubSettings;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.google.pubsub.v1.ProjectSubscriptionName;
 import com.google.pubsub.v1.PubsubMessage;
-import com.google.pubsub.v1.SubscriptionName;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -185,7 +185,7 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
    * @param receiver an implementation of {@link MessageReceiver} used to process the received
    *     messages
    */
-  public static Builder newBuilder(SubscriptionName subscription, MessageReceiver receiver) {
+  public static Builder newBuilder(ProjectSubscriptionName subscription, MessageReceiver receiver) {
     return newBuilder(subscription.toString(), receiver);
   }
 

@@ -210,7 +210,7 @@ public class SchemaServiceClient implements BackgroundResource {
    *
    * <pre>{@code
    * try (SchemaServiceClient schemaServiceClient = SchemaServiceClient.create()) {
-   *   String parent = SchemaName.of("[PROJECT]", "[SCHEMA]").toString();
+   *   String parent = ProjectName.of("[PROJECT]").toString();
    *   Schema schema = Schema.newBuilder().build();
    *   String schemaId = "schemaId-697673060";
    *   Schema response = schemaServiceClient.createSchema(parent, schema, schemaId);
@@ -248,7 +248,7 @@ public class SchemaServiceClient implements BackgroundResource {
    * try (SchemaServiceClient schemaServiceClient = SchemaServiceClient.create()) {
    *   CreateSchemaRequest request =
    *       CreateSchemaRequest.newBuilder()
-   *           .setParent(SchemaName.of("[PROJECT]", "[SCHEMA]").toString())
+   *           .setParent(ProjectName.of("[PROJECT]").toString())
    *           .setSchema(Schema.newBuilder().build())
    *           .setSchemaId("schemaId-697673060")
    *           .build();
@@ -273,7 +273,7 @@ public class SchemaServiceClient implements BackgroundResource {
    * try (SchemaServiceClient schemaServiceClient = SchemaServiceClient.create()) {
    *   CreateSchemaRequest request =
    *       CreateSchemaRequest.newBuilder()
-   *           .setParent(SchemaName.of("[PROJECT]", "[SCHEMA]").toString())
+   *           .setParent(ProjectName.of("[PROJECT]").toString())
    *           .setSchema(Schema.newBuilder().build())
    *           .setSchemaId("schemaId-697673060")
    *           .build();
@@ -473,7 +473,7 @@ public class SchemaServiceClient implements BackgroundResource {
    *           .setPageSize(883849137)
    *           .setPageToken("pageToken873572522")
    *           .build();
-   *   ApiFuture<Schema> future = schemaServiceClient.listSchemasPagedCallable().futureCall(request);
+   *   ApiFuture<ListSchemasPagedResponse> future = schemaServiceClient.listSchemasPagedCallable().futureCall(request);
    *   // Do something.
    *   for (Schema element : future.get().iterateAll()) {
    *     // doThingsWith(element);
@@ -503,7 +503,7 @@ public class SchemaServiceClient implements BackgroundResource {
    *           .build();
    *   while (true) {
    *     ListSchemasResponse response = schemaServiceClient.listSchemasCallable().call(request);
-   *     for (Schema element : response.getResponsesList()) {
+   *     for (Schema element : response.getSchemasList()) {
    *       // doThingsWith(element);
    *     }
    *     String nextPageToken = response.getNextPageToken();

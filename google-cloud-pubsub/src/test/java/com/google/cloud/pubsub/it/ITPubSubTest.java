@@ -35,10 +35,10 @@ import com.google.iam.v1.Policy;
 import com.google.iam.v1.SetIamPolicyRequest;
 import com.google.iam.v1.TestIamPermissionsRequest;
 import com.google.protobuf.ByteString;
+import com.google.pubsub.v1.ProjectSubscriptionName;
 import com.google.pubsub.v1.PubsubMessage;
 import com.google.pubsub.v1.PushConfig;
 import com.google.pubsub.v1.Subscription;
-import com.google.pubsub.v1.SubscriptionName;
 import com.google.pubsub.v1.TopicName;
 import java.util.Collections;
 import java.util.List;
@@ -94,7 +94,7 @@ public class ITPubSubTest {
   }
 
   private Subscription getSubscription(
-      SubscriptionName subscriptionName,
+      ProjectSubscriptionName subscriptionName,
       TopicName topicName,
       PushConfig pushConfig,
       int ackDeadline) {
@@ -151,8 +151,9 @@ public class ITPubSubTest {
             .setProject(projectId)
             .setTopic(formatForTest("testing-vpc-push-subscriber-topic"))
             .build();
-    SubscriptionName subscriptionName =
-        SubscriptionName.of(projectId, formatForTest("testing-vpc-push-subscriber-subscription"));
+    ProjectSubscriptionName subscriptionName =
+        ProjectSubscriptionName.of(
+            projectId, formatForTest("testing-vpc-push-subscriber-subscription"));
     topicAdminClient.createTopic(topicName);
 
     try {
@@ -178,8 +179,9 @@ public class ITPubSubTest {
             .setProject(projectId)
             .setTopic(formatForTest("testing-publish-subscribe-topic"))
             .build();
-    SubscriptionName subscriptionName =
-        SubscriptionName.of(projectId, formatForTest("testing-publish-subscribe-subscription"));
+    ProjectSubscriptionName subscriptionName =
+        ProjectSubscriptionName.of(
+            projectId, formatForTest("testing-publish-subscribe-subscription"));
 
     topicAdminClient.createTopic(topicName);
 

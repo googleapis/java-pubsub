@@ -59,6 +59,8 @@ import com.google.pubsub.v1.ListSubscriptionsResponse;
 import com.google.pubsub.v1.ModifyAckDeadlineRequest;
 import com.google.pubsub.v1.ModifyPushConfigRequest;
 import com.google.pubsub.v1.ProjectName;
+import com.google.pubsub.v1.ProjectSnapshotName;
+import com.google.pubsub.v1.ProjectSubscriptionName;
 import com.google.pubsub.v1.PullRequest;
 import com.google.pubsub.v1.PullResponse;
 import com.google.pubsub.v1.PushConfig;
@@ -67,11 +69,9 @@ import com.google.pubsub.v1.RetryPolicy;
 import com.google.pubsub.v1.SeekRequest;
 import com.google.pubsub.v1.SeekResponse;
 import com.google.pubsub.v1.Snapshot;
-import com.google.pubsub.v1.SnapshotName;
 import com.google.pubsub.v1.StreamingPullRequest;
 import com.google.pubsub.v1.StreamingPullResponse;
 import com.google.pubsub.v1.Subscription;
-import com.google.pubsub.v1.SubscriptionName;
 import com.google.pubsub.v1.TopicName;
 import com.google.pubsub.v1.UpdateSnapshotRequest;
 import com.google.pubsub.v1.UpdateSubscriptionRequest;
@@ -136,7 +136,7 @@ public class SubscriptionAdminClientTest {
   public void createSubscriptionTest() throws Exception {
     Subscription expectedResponse =
         Subscription.newBuilder()
-            .setName(SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
+            .setName(ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
             .setTopic(TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]").toString())
             .setPushConfig(PushConfig.newBuilder().build())
             .setAckDeadlineSeconds(2135351438)
@@ -153,7 +153,7 @@ public class SubscriptionAdminClientTest {
             .build();
     mockSubscriber.addResponse(expectedResponse);
 
-    SubscriptionName name = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
+    ProjectSubscriptionName name = ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
     TopicName topic = TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]");
     PushConfig pushConfig = PushConfig.newBuilder().build();
     int ackDeadlineSeconds = 2135351438;
@@ -182,7 +182,7 @@ public class SubscriptionAdminClientTest {
     mockSubscriber.addException(exception);
 
     try {
-      SubscriptionName name = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
+      ProjectSubscriptionName name = ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
       TopicName topic = TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]");
       PushConfig pushConfig = PushConfig.newBuilder().build();
       int ackDeadlineSeconds = 2135351438;
@@ -197,7 +197,7 @@ public class SubscriptionAdminClientTest {
   public void createSubscriptionTest2() throws Exception {
     Subscription expectedResponse =
         Subscription.newBuilder()
-            .setName(SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
+            .setName(ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
             .setTopic(TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]").toString())
             .setPushConfig(PushConfig.newBuilder().build())
             .setAckDeadlineSeconds(2135351438)
@@ -214,7 +214,7 @@ public class SubscriptionAdminClientTest {
             .build();
     mockSubscriber.addResponse(expectedResponse);
 
-    SubscriptionName name = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
+    ProjectSubscriptionName name = ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
     String topic = "topic110546223";
     PushConfig pushConfig = PushConfig.newBuilder().build();
     int ackDeadlineSeconds = 2135351438;
@@ -243,7 +243,7 @@ public class SubscriptionAdminClientTest {
     mockSubscriber.addException(exception);
 
     try {
-      SubscriptionName name = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
+      ProjectSubscriptionName name = ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
       String topic = "topic110546223";
       PushConfig pushConfig = PushConfig.newBuilder().build();
       int ackDeadlineSeconds = 2135351438;
@@ -258,7 +258,7 @@ public class SubscriptionAdminClientTest {
   public void createSubscriptionTest3() throws Exception {
     Subscription expectedResponse =
         Subscription.newBuilder()
-            .setName(SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
+            .setName(ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
             .setTopic(TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]").toString())
             .setPushConfig(PushConfig.newBuilder().build())
             .setAckDeadlineSeconds(2135351438)
@@ -319,7 +319,7 @@ public class SubscriptionAdminClientTest {
   public void createSubscriptionTest4() throws Exception {
     Subscription expectedResponse =
         Subscription.newBuilder()
-            .setName(SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
+            .setName(ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
             .setTopic(TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]").toString())
             .setPushConfig(PushConfig.newBuilder().build())
             .setAckDeadlineSeconds(2135351438)
@@ -380,7 +380,7 @@ public class SubscriptionAdminClientTest {
   public void getSubscriptionTest() throws Exception {
     Subscription expectedResponse =
         Subscription.newBuilder()
-            .setName(SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
+            .setName(ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
             .setTopic(TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]").toString())
             .setPushConfig(PushConfig.newBuilder().build())
             .setAckDeadlineSeconds(2135351438)
@@ -397,7 +397,8 @@ public class SubscriptionAdminClientTest {
             .build();
     mockSubscriber.addResponse(expectedResponse);
 
-    SubscriptionName subscription = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
+    ProjectSubscriptionName subscription =
+        ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
 
     Subscription actualResponse = client.getSubscription(subscription);
     Assert.assertEquals(expectedResponse, actualResponse);
@@ -419,7 +420,8 @@ public class SubscriptionAdminClientTest {
     mockSubscriber.addException(exception);
 
     try {
-      SubscriptionName subscription = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
+      ProjectSubscriptionName subscription =
+          ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
       client.getSubscription(subscription);
       Assert.fail("No exception raised");
     } catch (InvalidArgumentException e) {
@@ -431,7 +433,7 @@ public class SubscriptionAdminClientTest {
   public void getSubscriptionTest2() throws Exception {
     Subscription expectedResponse =
         Subscription.newBuilder()
-            .setName(SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
+            .setName(ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
             .setTopic(TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]").toString())
             .setPushConfig(PushConfig.newBuilder().build())
             .setAckDeadlineSeconds(2135351438)
@@ -482,7 +484,7 @@ public class SubscriptionAdminClientTest {
   public void updateSubscriptionTest() throws Exception {
     Subscription expectedResponse =
         Subscription.newBuilder()
-            .setName(SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
+            .setName(ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
             .setTopic(TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]").toString())
             .setPushConfig(PushConfig.newBuilder().build())
             .setAckDeadlineSeconds(2135351438)
@@ -631,7 +633,8 @@ public class SubscriptionAdminClientTest {
     Empty expectedResponse = Empty.newBuilder().build();
     mockSubscriber.addResponse(expectedResponse);
 
-    SubscriptionName subscription = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
+    ProjectSubscriptionName subscription =
+        ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
 
     client.deleteSubscription(subscription);
 
@@ -652,7 +655,8 @@ public class SubscriptionAdminClientTest {
     mockSubscriber.addException(exception);
 
     try {
-      SubscriptionName subscription = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
+      ProjectSubscriptionName subscription =
+          ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
       client.deleteSubscription(subscription);
       Assert.fail("No exception raised");
     } catch (InvalidArgumentException e) {
@@ -699,7 +703,8 @@ public class SubscriptionAdminClientTest {
     Empty expectedResponse = Empty.newBuilder().build();
     mockSubscriber.addResponse(expectedResponse);
 
-    SubscriptionName subscription = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
+    ProjectSubscriptionName subscription =
+        ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
     List<String> ackIds = new ArrayList<>();
     int ackDeadlineSeconds = 2135351438;
 
@@ -724,7 +729,8 @@ public class SubscriptionAdminClientTest {
     mockSubscriber.addException(exception);
 
     try {
-      SubscriptionName subscription = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
+      ProjectSubscriptionName subscription =
+          ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
       List<String> ackIds = new ArrayList<>();
       int ackDeadlineSeconds = 2135351438;
       client.modifyAckDeadline(subscription, ackIds, ackDeadlineSeconds);
@@ -779,7 +785,8 @@ public class SubscriptionAdminClientTest {
     Empty expectedResponse = Empty.newBuilder().build();
     mockSubscriber.addResponse(expectedResponse);
 
-    SubscriptionName subscription = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
+    ProjectSubscriptionName subscription =
+        ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
     List<String> ackIds = new ArrayList<>();
 
     client.acknowledge(subscription, ackIds);
@@ -802,7 +809,8 @@ public class SubscriptionAdminClientTest {
     mockSubscriber.addException(exception);
 
     try {
-      SubscriptionName subscription = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
+      ProjectSubscriptionName subscription =
+          ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
       List<String> ackIds = new ArrayList<>();
       client.acknowledge(subscription, ackIds);
       Assert.fail("No exception raised");
@@ -854,7 +862,8 @@ public class SubscriptionAdminClientTest {
         PullResponse.newBuilder().addAllReceivedMessages(new ArrayList<ReceivedMessage>()).build();
     mockSubscriber.addResponse(expectedResponse);
 
-    SubscriptionName subscription = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
+    ProjectSubscriptionName subscription =
+        ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
     int maxMessages = 496131527;
 
     PullResponse actualResponse = client.pull(subscription, maxMessages);
@@ -878,7 +887,8 @@ public class SubscriptionAdminClientTest {
     mockSubscriber.addException(exception);
 
     try {
-      SubscriptionName subscription = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
+      ProjectSubscriptionName subscription =
+          ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
       int maxMessages = 496131527;
       client.pull(subscription, maxMessages);
       Assert.fail("No exception raised");
@@ -932,7 +942,8 @@ public class SubscriptionAdminClientTest {
         PullResponse.newBuilder().addAllReceivedMessages(new ArrayList<ReceivedMessage>()).build();
     mockSubscriber.addResponse(expectedResponse);
 
-    SubscriptionName subscription = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
+    ProjectSubscriptionName subscription =
+        ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
     boolean returnImmediately = true;
     int maxMessages = 496131527;
 
@@ -958,7 +969,8 @@ public class SubscriptionAdminClientTest {
     mockSubscriber.addException(exception);
 
     try {
-      SubscriptionName subscription = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
+      ProjectSubscriptionName subscription =
+          ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
       boolean returnImmediately = true;
       int maxMessages = 496131527;
       client.pull(subscription, returnImmediately, maxMessages);
@@ -1021,7 +1033,7 @@ public class SubscriptionAdminClientTest {
     mockSubscriber.addResponse(expectedResponse);
     StreamingPullRequest request =
         StreamingPullRequest.newBuilder()
-            .setSubscription(SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
+            .setSubscription(ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
             .addAllAckIds(new ArrayList<String>())
             .addAllModifyDeadlineSeconds(new ArrayList<Integer>())
             .addAllModifyDeadlineAckIds(new ArrayList<String>())
@@ -1052,7 +1064,7 @@ public class SubscriptionAdminClientTest {
     mockSubscriber.addException(exception);
     StreamingPullRequest request =
         StreamingPullRequest.newBuilder()
-            .setSubscription(SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
+            .setSubscription(ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
             .addAllAckIds(new ArrayList<String>())
             .addAllModifyDeadlineSeconds(new ArrayList<Integer>())
             .addAllModifyDeadlineAckIds(new ArrayList<String>())
@@ -1086,7 +1098,8 @@ public class SubscriptionAdminClientTest {
     Empty expectedResponse = Empty.newBuilder().build();
     mockSubscriber.addResponse(expectedResponse);
 
-    SubscriptionName subscription = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
+    ProjectSubscriptionName subscription =
+        ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
     PushConfig pushConfig = PushConfig.newBuilder().build();
 
     client.modifyPushConfig(subscription, pushConfig);
@@ -1109,7 +1122,8 @@ public class SubscriptionAdminClientTest {
     mockSubscriber.addException(exception);
 
     try {
-      SubscriptionName subscription = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
+      ProjectSubscriptionName subscription =
+          ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
       PushConfig pushConfig = PushConfig.newBuilder().build();
       client.modifyPushConfig(subscription, pushConfig);
       Assert.fail("No exception raised");
@@ -1159,14 +1173,14 @@ public class SubscriptionAdminClientTest {
   public void getSnapshotTest() throws Exception {
     Snapshot expectedResponse =
         Snapshot.newBuilder()
-            .setName(SnapshotName.of("[PROJECT]", "[SNAPSHOT]").toString())
+            .setName(ProjectSnapshotName.of("[PROJECT]", "[SNAPSHOT]").toString())
             .setTopic(TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]").toString())
             .setExpireTime(Timestamp.newBuilder().build())
             .putAllLabels(new HashMap<String, String>())
             .build();
     mockSubscriber.addResponse(expectedResponse);
 
-    SnapshotName snapshot = SnapshotName.of("[PROJECT]", "[SNAPSHOT]");
+    ProjectSnapshotName snapshot = ProjectSnapshotName.of("[PROJECT]", "[SNAPSHOT]");
 
     Snapshot actualResponse = client.getSnapshot(snapshot);
     Assert.assertEquals(expectedResponse, actualResponse);
@@ -1188,7 +1202,7 @@ public class SubscriptionAdminClientTest {
     mockSubscriber.addException(exception);
 
     try {
-      SnapshotName snapshot = SnapshotName.of("[PROJECT]", "[SNAPSHOT]");
+      ProjectSnapshotName snapshot = ProjectSnapshotName.of("[PROJECT]", "[SNAPSHOT]");
       client.getSnapshot(snapshot);
       Assert.fail("No exception raised");
     } catch (InvalidArgumentException e) {
@@ -1200,7 +1214,7 @@ public class SubscriptionAdminClientTest {
   public void getSnapshotTest2() throws Exception {
     Snapshot expectedResponse =
         Snapshot.newBuilder()
-            .setName(SnapshotName.of("[PROJECT]", "[SNAPSHOT]").toString())
+            .setName(ProjectSnapshotName.of("[PROJECT]", "[SNAPSHOT]").toString())
             .setTopic(TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]").toString())
             .setExpireTime(Timestamp.newBuilder().build())
             .putAllLabels(new HashMap<String, String>())
@@ -1329,15 +1343,16 @@ public class SubscriptionAdminClientTest {
   public void createSnapshotTest() throws Exception {
     Snapshot expectedResponse =
         Snapshot.newBuilder()
-            .setName(SnapshotName.of("[PROJECT]", "[SNAPSHOT]").toString())
+            .setName(ProjectSnapshotName.of("[PROJECT]", "[SNAPSHOT]").toString())
             .setTopic(TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]").toString())
             .setExpireTime(Timestamp.newBuilder().build())
             .putAllLabels(new HashMap<String, String>())
             .build();
     mockSubscriber.addResponse(expectedResponse);
 
-    SnapshotName name = SnapshotName.of("[PROJECT]", "[SNAPSHOT]");
-    SubscriptionName subscription = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
+    ProjectSnapshotName name = ProjectSnapshotName.of("[PROJECT]", "[SNAPSHOT]");
+    ProjectSubscriptionName subscription =
+        ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
 
     Snapshot actualResponse = client.createSnapshot(name, subscription);
     Assert.assertEquals(expectedResponse, actualResponse);
@@ -1360,8 +1375,9 @@ public class SubscriptionAdminClientTest {
     mockSubscriber.addException(exception);
 
     try {
-      SnapshotName name = SnapshotName.of("[PROJECT]", "[SNAPSHOT]");
-      SubscriptionName subscription = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
+      ProjectSnapshotName name = ProjectSnapshotName.of("[PROJECT]", "[SNAPSHOT]");
+      ProjectSubscriptionName subscription =
+          ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
       client.createSnapshot(name, subscription);
       Assert.fail("No exception raised");
     } catch (InvalidArgumentException e) {
@@ -1373,14 +1389,14 @@ public class SubscriptionAdminClientTest {
   public void createSnapshotTest2() throws Exception {
     Snapshot expectedResponse =
         Snapshot.newBuilder()
-            .setName(SnapshotName.of("[PROJECT]", "[SNAPSHOT]").toString())
+            .setName(ProjectSnapshotName.of("[PROJECT]", "[SNAPSHOT]").toString())
             .setTopic(TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]").toString())
             .setExpireTime(Timestamp.newBuilder().build())
             .putAllLabels(new HashMap<String, String>())
             .build();
     mockSubscriber.addResponse(expectedResponse);
 
-    SnapshotName name = SnapshotName.of("[PROJECT]", "[SNAPSHOT]");
+    ProjectSnapshotName name = ProjectSnapshotName.of("[PROJECT]", "[SNAPSHOT]");
     String subscription = "subscription341203229";
 
     Snapshot actualResponse = client.createSnapshot(name, subscription);
@@ -1404,7 +1420,7 @@ public class SubscriptionAdminClientTest {
     mockSubscriber.addException(exception);
 
     try {
-      SnapshotName name = SnapshotName.of("[PROJECT]", "[SNAPSHOT]");
+      ProjectSnapshotName name = ProjectSnapshotName.of("[PROJECT]", "[SNAPSHOT]");
       String subscription = "subscription341203229";
       client.createSnapshot(name, subscription);
       Assert.fail("No exception raised");
@@ -1417,7 +1433,7 @@ public class SubscriptionAdminClientTest {
   public void createSnapshotTest3() throws Exception {
     Snapshot expectedResponse =
         Snapshot.newBuilder()
-            .setName(SnapshotName.of("[PROJECT]", "[SNAPSHOT]").toString())
+            .setName(ProjectSnapshotName.of("[PROJECT]", "[SNAPSHOT]").toString())
             .setTopic(TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]").toString())
             .setExpireTime(Timestamp.newBuilder().build())
             .putAllLabels(new HashMap<String, String>())
@@ -1425,7 +1441,8 @@ public class SubscriptionAdminClientTest {
     mockSubscriber.addResponse(expectedResponse);
 
     String name = "name3373707";
-    SubscriptionName subscription = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
+    ProjectSubscriptionName subscription =
+        ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
 
     Snapshot actualResponse = client.createSnapshot(name, subscription);
     Assert.assertEquals(expectedResponse, actualResponse);
@@ -1449,7 +1466,8 @@ public class SubscriptionAdminClientTest {
 
     try {
       String name = "name3373707";
-      SubscriptionName subscription = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
+      ProjectSubscriptionName subscription =
+          ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
       client.createSnapshot(name, subscription);
       Assert.fail("No exception raised");
     } catch (InvalidArgumentException e) {
@@ -1461,7 +1479,7 @@ public class SubscriptionAdminClientTest {
   public void createSnapshotTest4() throws Exception {
     Snapshot expectedResponse =
         Snapshot.newBuilder()
-            .setName(SnapshotName.of("[PROJECT]", "[SNAPSHOT]").toString())
+            .setName(ProjectSnapshotName.of("[PROJECT]", "[SNAPSHOT]").toString())
             .setTopic(TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]").toString())
             .setExpireTime(Timestamp.newBuilder().build())
             .putAllLabels(new HashMap<String, String>())
@@ -1505,7 +1523,7 @@ public class SubscriptionAdminClientTest {
   public void updateSnapshotTest() throws Exception {
     Snapshot expectedResponse =
         Snapshot.newBuilder()
-            .setName(SnapshotName.of("[PROJECT]", "[SNAPSHOT]").toString())
+            .setName(ProjectSnapshotName.of("[PROJECT]", "[SNAPSHOT]").toString())
             .setTopic(TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]").toString())
             .setExpireTime(Timestamp.newBuilder().build())
             .putAllLabels(new HashMap<String, String>())
@@ -1556,7 +1574,7 @@ public class SubscriptionAdminClientTest {
     Empty expectedResponse = Empty.newBuilder().build();
     mockSubscriber.addResponse(expectedResponse);
 
-    SnapshotName snapshot = SnapshotName.of("[PROJECT]", "[SNAPSHOT]");
+    ProjectSnapshotName snapshot = ProjectSnapshotName.of("[PROJECT]", "[SNAPSHOT]");
 
     client.deleteSnapshot(snapshot);
 
@@ -1577,7 +1595,7 @@ public class SubscriptionAdminClientTest {
     mockSubscriber.addException(exception);
 
     try {
-      SnapshotName snapshot = SnapshotName.of("[PROJECT]", "[SNAPSHOT]");
+      ProjectSnapshotName snapshot = ProjectSnapshotName.of("[PROJECT]", "[SNAPSHOT]");
       client.deleteSnapshot(snapshot);
       Assert.fail("No exception raised");
     } catch (InvalidArgumentException e) {
@@ -1626,7 +1644,7 @@ public class SubscriptionAdminClientTest {
 
     SeekRequest request =
         SeekRequest.newBuilder()
-            .setSubscription(SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
+            .setSubscription(ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
             .build();
 
     SeekResponse actualResponse = client.seek(request);
@@ -1653,7 +1671,7 @@ public class SubscriptionAdminClientTest {
     try {
       SeekRequest request =
           SeekRequest.newBuilder()
-              .setSubscription(SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
+              .setSubscription(ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
               .build();
       client.seek(request);
       Assert.fail("No exception raised");

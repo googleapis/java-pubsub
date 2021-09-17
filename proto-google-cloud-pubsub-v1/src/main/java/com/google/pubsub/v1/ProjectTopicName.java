@@ -23,7 +23,6 @@ import java.util.Map;
 
 /** AUTO-GENERATED DOCUMENTATION AND CLASS */
 @javax.annotation.Generated("by GAPIC protoc plugin")
-@Deprecated
 public class ProjectTopicName extends TopicName {
 
   private static final PathTemplate PATH_TEMPLATE =
