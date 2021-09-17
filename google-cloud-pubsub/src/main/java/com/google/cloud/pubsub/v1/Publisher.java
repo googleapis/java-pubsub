@@ -865,9 +865,12 @@ public class Publisher implements PublisherInterface {
     }
 
     void acquire(long messageSize) throws FlowController.FlowControlException {
-      Preconditions.checkState(
-          messageSize <= byteLimit,
-          "Message size is greater than request byte flow control limit.");
+      if (messageSize > byteLimit) {
+        logger.log(
+            Level.WARNING,
+            "Attempted to publish message with byte size > request byte flow control limit.");
+        throw new FlowController.MaxOutstandingRequestBytesReachedException(byteLimit);
+      }
       lock.lock();
       try {
         if (outstandingMessages >= messageLimit

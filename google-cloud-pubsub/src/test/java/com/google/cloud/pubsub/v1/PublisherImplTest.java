@@ -1087,12 +1087,12 @@ public class PublisherImplTest {
                     .build())
             .build();
 
-    // Sending a message that is too large results in an exception.
     try {
-      sendTestMessage(publisher, "AAAAAAAAAAAAAAAAAAAAA");
-      fail("Should have thrown an IllegalStateException");
-    } catch (Exception e) {
-      assertThat(e).isInstanceOf(IllegalStateException.class);
+      sendTestMessage(publisher, "AAAAAAAAAAAAAAAAAAAAA").get();
+      fail("Should have thrown a FlowController.MaxOutstandingRequestBytesReachedException");
+    } catch (ExecutionException e) {
+      assertThat(e.getCause())
+          .isInstanceOf(FlowController.MaxOutstandingRequestBytesReachedException.class);
     }
   }
 
