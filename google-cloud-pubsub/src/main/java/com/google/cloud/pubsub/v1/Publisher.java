@@ -56,7 +56,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -67,7 +66,8 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.threeten.bp.Duration;
-
+import static java.util.Objects.nonNull;
+import static java.util.Objects.isNull;
 /**
  * A Cloud Pub/Sub <a href="https://cloud.google.com/pubsub/docs/publisher">publisher</a>, that is
  * associated with a specific topic at creation.
@@ -128,8 +128,7 @@ public class Publisher implements PublisherInterface {
 
     this.batchingSettings = builder.batchingSettings;
     FlowControlSettings flowControl = this.batchingSettings.getFlowControlSettings();
-    if (flowControl != null
-        && flowControl.getLimitExceededBehavior() != FlowController.LimitExceededBehavior.Ignore) {
+    if (validateFlowControlSettings(flowControl)) {
       this.flowController =
           new MessageFlowController(
               flowControl.getMaxOutstandingElementCount(),
@@ -192,6 +191,11 @@ public class Publisher implements PublisherInterface {
     messagesWaiter = new Waiter();
   }
 
+  private boolean validateFlowControlSettings(FlowControlSettings flowControl) {
+    return nonNull(flowControl)
+            && flowControl.getLimitExceededBehavior() != FlowController.LimitExceededBehavior.Ignore;
+  }
+
   /** Topic which the publisher publishes to. */
   public TopicName getTopicName() {
     return TopicNames.parse(topicName);
@@ -244,7 +248,7 @@ public class Publisher implements PublisherInterface {
     final OutstandingPublish outstandingPublish =
         new OutstandingPublish(messageTransform.apply(message));
 
-    if (flowController != null) {
+    if (nonNull(flowController)) {
       try {
         flowController.acquire(outstandingPublish.messageSize);
       } catch (FlowController.FlowControlException e) {
@@ -265,7 +269,7 @@ public class Publisher implements PublisherInterface {
         return outstandingPublish.publishResult;
       }
       MessagesBatch messagesBatch = messagesBatches.get(orderingKey);
-      if (messagesBatch == null) {
+      if (isNull(messagesBatch)) {
         messagesBatch = new MessagesBatch(batchingSettings, orderingKey);
         messagesBatches.put(orderingKey, messagesBatch);
       }
@@ -297,12 +301,9 @@ public class Publisher implements PublisherInterface {
       for (final OutstandingBatch batch : batchesToSend) {
         logger.log(Level.FINER, "Scheduling a batch for immediate sending.");
         executor.execute(
-            new Runnable() {
-              @Override
-              public void run() {
-                publishOutstandingBatch(batch);
-              }
-            });
+                () ->
+                        publishOutstandingBatch(batch)
+        );
       }
     }
 
@@ -373,7 +374,7 @@ public class Publisher implements PublisherInterface {
     } finally {
       messagesBatchLock.unlock();
     }
-    if (unorderedOutstandingBatch != null) {
+    if (nonNull(unorderedOutstandingBatch)) {
       publishOutstandingBatch(unorderedOutstandingBatch);
     }
   }
@@ -406,7 +407,7 @@ public class Publisher implements PublisherInterface {
     } finally {
       messagesBatchLock.unlock();
     }
-    if (unorderedOutstandingBatch != null) {
+    if (nonNull(unorderedOutstandingBatch)) {
       publishOutstandingBatch(unorderedOutstandingBatch);
     }
   }
@@ -421,7 +422,7 @@ public class Publisher implements PublisherInterface {
     messagesBatchLock.lock();
     try {
       MessagesBatch batch = messagesBatches.get(orderingKey);
-      if (batch != null && !sequentialExecutor.hasTasksInflight(orderingKey)) {
+      if (nonNull(batch) && !sequentialExecutor.hasTasksInflight(orderingKey)) {
         publishOutstandingBatch(batch.popOutstandingBatch());
         messagesBatches.remove(orderingKey);
       }
@@ -446,7 +447,7 @@ public class Publisher implements PublisherInterface {
           @Override
           public void onSuccess(PublishResponse result) {
             try {
-              if (result == null || result.getMessageIdsCount() != outstandingBatch.size()) {
+              if (isNull(result) || result.getMessageIdsCount() != outstandingBatch.size()) {
                 outstandingBatch.onFailure(
                     new IllegalStateException(
                         String.format(
@@ -457,8 +458,8 @@ public class Publisher implements PublisherInterface {
               } else {
                 outstandingBatch.onSuccess(result.getMessageIdsList());
                 if (!activeAlarm.get()
-                    && outstandingBatch.orderingKey != null
-                    && !outstandingBatch.orderingKey.isEmpty()) {
+                        && nonNull(outstandingBatch.orderingKey)
+                        && !outstandingBatch.orderingKey.isEmpty()) {
                   publishAllWithoutInflightForKey(outstandingBatch.orderingKey);
                 }
               }
@@ -470,11 +471,11 @@ public class Publisher implements PublisherInterface {
           @Override
           public void onFailure(Throwable t) {
             try {
-              if (outstandingBatch.orderingKey != null && !outstandingBatch.orderingKey.isEmpty()) {
+              if (nonNull(outstandingBatch.orderingKey) && !outstandingBatch.orderingKey.isEmpty()) {
                 messagesBatchLock.lock();
                 try {
                   MessagesBatch messagesBatch = messagesBatches.get(outstandingBatch.orderingKey);
-                  if (messagesBatch != null) {
+                  if (nonNull(messagesBatch)) {
                     for (OutstandingPublish outstanding : messagesBatch.messages) {
                       outstanding.publishResult.setException(
                           SequentialExecutorService.CallbackExecutor.CANCELLATION_EXCEPTION);
@@ -493,18 +494,18 @@ public class Publisher implements PublisherInterface {
         };
 
     ApiFuture<PublishResponse> future;
-    if (outstandingBatch.orderingKey == null || outstandingBatch.orderingKey.isEmpty()) {
+    if (isNull(outstandingBatch.orderingKey) || outstandingBatch.orderingKey.isEmpty()) {
       future = publishCall(outstandingBatch);
     } else {
       // If ordering key is specified, publish the batch using the sequential executor.
       future =
-          sequentialExecutor.submit(
-              outstandingBatch.orderingKey,
-              new Callable<ApiFuture<PublishResponse>>() {
-                public ApiFuture<PublishResponse> call() {
-                  return publishCall(outstandingBatch);
-                }
-              });
+              sequentialExecutor.submit(
+                      outstandingBatch.orderingKey,
+                      () ->
+
+                              publishCall(outstandingBatch)
+
+              );
     }
     ApiFutures.addCallback(future, futureCallback, directExecutor());
   }
@@ -539,7 +540,7 @@ public class Publisher implements PublisherInterface {
 
     private void onFailure(Throwable t) {
       for (OutstandingPublish outstandingPublish : outstandingPublishes) {
-        if (flowController != null) {
+        if (nonNull(flowController)) {
           flowController.release(outstandingPublish.messageSize);
         }
         outstandingPublish.publishResult.setException(t);
@@ -550,7 +551,7 @@ public class Publisher implements PublisherInterface {
       Iterator<OutstandingPublish> messagesResultsIt = outstandingPublishes.iterator();
       for (String messageId : results) {
         OutstandingPublish nextPublish = messagesResultsIt.next();
-        if (flowController != null) {
+        if (nonNull(flowController)) {
           flowController.release(nextPublish.messageSize);
         }
         nextPublish.publishResult.set(messageId);
@@ -585,7 +586,7 @@ public class Publisher implements PublisherInterface {
   public void shutdown() {
     Preconditions.checkState(
         !shutdown.getAndSet(true), "Cannot shut down a publisher already shut-down.");
-    if (currentAlarmFuture != null && activeAlarm.getAndSet(false)) {
+    if (nonNull(currentAlarmFuture) && activeAlarm.getAndSet(false)) {
       currentAlarmFuture.cancel(false);
     }
     publishAllOutstanding();
@@ -874,7 +875,7 @@ public class Publisher implements PublisherInterface {
         // Start by acquiring a slot for a message.
         CountDownLatch messageWaiter = null;
         while (outstandingMessages >= messageLimit) {
-          if (messageWaiter == null) {
+          if (isNull(messageWaiter)) {
             // This message gets added to the back of the line.
             messageWaiter = new CountDownLatch(1);
             awaitingMessageAcquires.addLast(messageWaiter);
@@ -892,7 +893,7 @@ public class Publisher implements PublisherInterface {
           lock.lock();
         }
         ++outstandingMessages;
-        if (messageWaiter != null) {
+        if (nonNull(messageWaiter)) {
           awaitingMessageAcquires.removeFirst();
         }
 
@@ -910,7 +911,7 @@ public class Publisher implements PublisherInterface {
           Long available = byteLimit - outstandingBytes;
           bytesRemaining -= available;
           outstandingBytes = byteLimit;
-          if (bytesWaiter == null) {
+          if (isNull(bytesWaiter)) {
             // This message gets added to the back of the line.
             bytesWaiter = new CountDownLatch(1);
             awaitingBytesAcquires.addLast(bytesWaiter);
@@ -929,7 +930,7 @@ public class Publisher implements PublisherInterface {
         }
 
         outstandingBytes += bytesRemaining;
-        if (bytesWaiter != null) {
+        if (nonNull(bytesWaiter)) {
           awaitingBytesAcquires.removeFirst();
         }
         // There may be some surplus bytes left; let the next message waiting for bytes have some.

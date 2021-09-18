@@ -136,7 +136,7 @@ public class OpenCensusUtilTest {
       Collection<SpanData> spanDatas = runningSpanStore.getRunningSpans(RECEIVER_FILTER);
       for (SpanData spanData : spanDatas) {
         List<Link> links = spanData.getLinks().getLinks();
-        assertEquals(links.size(), 1);
+        assertEquals(1, links.size());
         Link link = links.get(0);
         assertEquals(Link.Type.PARENT_LINKED_SPAN, link.getType());
         assertEquals(parentLinkedSpan.getTraceId(), link.getTraceId());

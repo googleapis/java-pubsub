@@ -24,7 +24,6 @@ import io.opencensus.common.Scope;
 import io.opencensus.tags.TagContext;
 import io.opencensus.tags.Tagger;
 import io.opencensus.tags.Tags;
-import io.opencensus.tags.propagation.TagContextBinarySerializer;
 import io.opencensus.trace.Link;
 import io.opencensus.trace.SpanContext;
 import io.opencensus.trace.Tracer;
@@ -50,8 +49,6 @@ public class OpenCensusUtil {
   private static final String TRACEPARENT_KEY = "traceparent";
 
   private static final Tagger tagger = Tags.getTagger();
-  private static final TagContextBinarySerializer serializer =
-      Tags.getTagPropagationComponent().getBinarySerializer();
 
   private static final Tracer tracer = Tracing.getTracer();
   private static final TextFormat traceContextTextFormat =
@@ -134,7 +131,10 @@ public class OpenCensusUtil {
       SpanContext ctxt = traceContextTextFormat.extract(encodedParentSpanContext, getter);
       tracer.getCurrentSpan().addLink(Link.fromSpanContext(ctxt, Link.Type.PARENT_LINKED_SPAN));
     } catch (SpanContextParseException exn) {
-      logger.log(Level.INFO, "OpenCensus: Trace Context Deserialization Exception: " + exn);
+      logger.log(Level.INFO, new StringBuilder()
+              .append("OpenCensus: Trace Context Deserialization Exception: ")
+              .append(exn)
+              .toString());
     }
   }
 

@@ -153,9 +153,12 @@ class MessageDispatcher {
     @Override
     public void onFailure(Throwable t) {
       logger.log(
-          Level.WARNING,
-          "MessageReceiver failed to process ack ID: " + ackId + ", the message will be nacked.",
-          t);
+              Level.WARNING,
+              new StringBuilder().append("MessageReceiver failed to process ack ID: ")
+                      .append(ackId)
+                      .append(", the message will be nacked.")
+                      .append(t).toString()
+      );
       pendingNacks.add(ackId);
       forget();
     }
