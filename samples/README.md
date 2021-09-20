@@ -6,7 +6,12 @@
    cd java-pubsub/samples/snippets
    ```
 
-1. With [Maven] installed and the environment variable `GOOGLE_APPLICATION_CREDENTIALS` set to point to your [GCP service account] key file, run a sample that has the to-do section completed:
+1. [Obtain GCP user access credentials] via a web flow for your application. 
+   ```shell
+   gcloud auth application-default login
+   ```
+
+1. With [Maven] installed, run a sample that has the to-do section completed:
    ```shell
    mvn clean compile exec:java -Dexec.mainClass=pubsub.CreateTopicExample
    ```
@@ -17,4 +22,4 @@
    ```
 
 [Maven]: https://maven.apache.org/
-[GCP Service account]: https://cloud.google.com/iam/docs/service-accounts
+[Obtain GCP user access credentials]: https://cloud.google.com/sdk/gcloud/reference/auth/application-default/login
