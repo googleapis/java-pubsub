@@ -17,6 +17,7 @@ branchProtectionRules:
       - 'Kokoro - Test: Integration'
       - Kokoro - Against Pub/Sub Lite samples
       - cla/google
+      - OwlBot Post Processor
   - pattern: 1.111.0-sp
     isAdminEnforced: true
     requiredApprovingReviewCount: 1
