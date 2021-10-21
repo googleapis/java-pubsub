@@ -20,26 +20,32 @@
     <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-api</artifactId>
+      <version>1.41.0</version>
     </dependency>
     <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-stub</artifactId>
+      <version>1.41.0</version>
     </dependency>
     <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-protobuf</artifactId>
+      <version>1.41.0</version>
     </dependency>
     <dependency>
       <groupId>com.google.api</groupId>
       <artifactId>api-common</artifactId>
+      <version>2.0.5</version>
     </dependency>
     <dependency>
       <groupId>com.google.protobuf</groupId>
       <artifactId>protobuf-java</artifactId>
+      <version>3.18.1</version>
     </dependency>
     <dependency>
       <groupId>com.google.api.grpc</groupId>
       <artifactId>proto-google-common-protos</artifactId>
+      <version>2.6.0</version>
     </dependency>
 
     <dependency>
@@ -53,14 +59,17 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
+      <version>31.0.1-jre</version>
     </dependency>
     <dependency>
       <groupId>com.google.api</groupId>
       <artifactId>gax</artifactId>
+      <version>2.6.1</version>
     </dependency>
     <dependency>
       <groupId>com.google.api</groupId>
       <artifactId>gax-grpc</artifactId>
+      <version>2.6.1</version>
     </dependency>
     <dependency>
       <groupId>org.threeten</groupId>
@@ -77,6 +86,7 @@
     <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-core</artifactId>
+      <version>1.41.0</version>
     </dependency>
     <dependency>
       <groupId>com.google.errorprone</groupId>
@@ -85,10 +95,12 @@
     <dependency>
       <groupId>com.google.auto.value</groupId>
       <artifactId>auto-value-annotations</artifactId>
+      <version>1.8.2</version>
     </dependency>
     <dependency>
       <groupId>com.google.http-client</groupId>
       <artifactId>google-http-client</artifactId>
+      <version>1.40.1</version>
     </dependency>
 
     <!-- Test dependencies -->
@@ -110,6 +122,7 @@
     <dependency>
       <groupId>com.google.cloud</groupId>
       <artifactId>google-cloud-core</artifactId>
+      <version>2.2.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -131,6 +144,7 @@
     <dependency>
       <groupId>com.google.api</groupId>
       <artifactId>gax-grpc</artifactId>
+      <version>2.6.1</version>
       <classifier>testlib</classifier>
       <scope>test</scope>
     </dependency>
@@ -165,7 +179,7 @@
             <path>
               <groupId>com.google.auto.value</groupId>
               <artifactId>auto-value</artifactId>
-              <version>${auto-value-annotation.version}</version>
+              <version>1.8.2</version>
             </path>
           </annotationProcessorPaths>
         </configuration>
