@@ -33,6 +33,10 @@
       <artifactId>guava</artifactId>
       <version>31.0.1-jre</version>
     </dependency>
+    <dependency>
+      <groupId>javax.annotation</groupId>
+      <artifactId>javax.annotation-api</artifactId>
+    </dependency>
   </dependencies>
 
   <build>
