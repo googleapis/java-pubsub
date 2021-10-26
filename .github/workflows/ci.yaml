@@ -1,7 +1,7 @@
 on:
   push:
     branches:
-    - 1.114.7
+    - main
   pull_request:
 name: ci
 jobs:
