@@ -655,8 +655,8 @@ public class Publisher implements PublisherInterface {
 
     // Meaningful defaults.
     static final long DEFAULT_ELEMENT_COUNT_THRESHOLD = 100L;
-    static final long DEFAULT_REQUEST_BYTES_THRESHOLD = 1000L; // 1 kB
-    static final Duration DEFAULT_DELAY_THRESHOLD = Duration.ofMillis(1);
+    static final long DEFAULT_REQUEST_BYTES_THRESHOLD = 1L * 1024L * 1024L; // 1 MB
+    static final Duration DEFAULT_DELAY_THRESHOLD = Duration.ofMillis(10);
     private static final Duration DEFAULT_INITIAL_RPC_TIMEOUT = Duration.ofSeconds(5);
     private static final Duration DEFAULT_MAX_RPC_TIMEOUT = Duration.ofSeconds(60);
     private static final Duration DEFAULT_TOTAL_TIMEOUT = Duration.ofSeconds(600);
