@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.111.0-sp.2](https://www.github.com/googleapis/java-pubsub/compare/1.111.0-sp.1...v1.111.0-sp.2) (2021-11-11)
+
+
+### Dependencies
+
+* upgrade to a gson version without a vulnerability ([#910](https://www.github.com/googleapis/java-pubsub/issues/910)) ([aefef9f](https://www.github.com/googleapis/java-pubsub/commit/aefef9f05ce2f90355d1a05918609a9cfcee3443))
+
 ## [1.111.0-sp.1](https://www.github.com/googleapis/java-pubsub/compare/1.111.0...v1.111.0-sp.1) (2021-05-12)
 
 ## [1.111.0](https://www.github.com/googleapis/java-pubsub/compare/v1.110.3...v1.111.0) (2021-02-02)
