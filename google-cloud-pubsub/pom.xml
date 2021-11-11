@@ -152,6 +152,7 @@
             <ignoredUnusedDeclaredDependencies>
               <ignoredUnusedDeclaredDependency>io.opencensus:opencensus-impl</ignoredUnusedDeclaredDependency>
               <ignoredUnusedDeclaredDependency>javax.annotation:javax.annotation-api</ignoredUnusedDeclaredDependency>
+              <ignoredUnusedDeclaredDependency>com.google.code.gson:gson</ignoredUnusedDeclaredDependency>
             </ignoredUnusedDeclaredDependencies>
           </configuration>
         </plugin>
