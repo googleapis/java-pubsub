@@ -10,7 +10,7 @@
   <parent>
     <groupId>com.google.cloud</groupId>
     <artifactId>google-cloud-pubsub-parent</artifactId>
-    <version>1.111.0-sp.3-SNAPSHOT</version><!-- {x-version-update:google-cloud-pubsub:current} -->
+    <version>1.111.0-sp.2-SNAPSHOT</version><!-- {x-version-update:google-cloud-pubsub:current} -->
   </parent>
   <dependencies>
     <dependency>

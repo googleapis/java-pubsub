@@ -3,4 +3,4 @@
 
 proto-google-cloud-pubsub-v1:1.93.0-sp.2:1.93.0-sp.3-SNAPSHOT
 grpc-google-cloud-pubsub-v1:1.93.0-sp.2:1.93.0-sp.3-SNAPSHOT
-google-cloud-pubsub:1.111.0-sp.2:1.111.0-sp.3-SNAPSHOT
+google-cloud-pubsub:1.111.0-sp.2:1.111.0-sp.2-SNAPSHOT
