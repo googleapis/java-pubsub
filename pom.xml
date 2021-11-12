@@ -78,12 +78,12 @@
       <dependency>
         <groupId>com.google.api.grpc</groupId>
         <artifactId>proto-google-cloud-pubsub-v1</artifactId>
-        <version>1.93.0-sp.3-SNAPSHOT</version><!-- {x-version-update:proto-google-cloud-pubsub-v1:current} -->
+        <version>1.93.0-sp.2-SNAPSHOT</version><!-- {x-version-update:proto-google-cloud-pubsub-v1:current} -->
       </dependency>
       <dependency>
         <groupId>com.google.api.grpc</groupId>
         <artifactId>grpc-google-cloud-pubsub-v1</artifactId>
-        <version>1.93.0-sp.3-SNAPSHOT</version><!-- {x-version-update:grpc-google-cloud-pubsub-v1:current} -->
+        <version>1.93.0-sp.2-SNAPSHOT</version><!-- {x-version-update:grpc-google-cloud-pubsub-v1:current} -->
       </dependency>
       <dependency>
         <groupId>com.google.cloud</groupId>
