@@ -1,11 +1,12 @@
 # Changelog
 
-## [1.111.0-sp.2](https://www.github.com/googleapis/java-pubsub/compare/1.111.0-sp.1...v1.111.0-sp.2) (2021-11-11)
+## [1.111.0-sp.2](https://www.github.com/googleapis/java-pubsub/compare/1.111.0-sp.1...v1.111.0-sp.2) (2021-11-15)
 
 
 ### Dependencies
 
-* upgrade to a gson version without a vulnerability ([#910](https://www.github.com/googleapis/java-pubsub/issues/910)) ([aefef9f](https://www.github.com/googleapis/java-pubsub/commit/aefef9f05ce2f90355d1a05918609a9cfcee3443))
+* update google-cloud-shared-config to 0.11.0 ([#925](https://www.github.com/googleapis/java-pubsub/issues/925)) ([a6756f5](https://www.github.com/googleapis/java-pubsub/commit/a6756f54d24d43a66863fc3d657bfc314a0b248d))
+* update to gson 2.8.9 ([#922](https://www.github.com/googleapis/java-pubsub/issues/922)) ([8f51f97](https://www.github.com/googleapis/java-pubsub/commit/8f51f97951371f6eadc004eeb80cbc5ee3a70834))
 
 ## [1.111.0-sp.1](https://www.github.com/googleapis/java-pubsub/compare/1.111.0...v1.111.0-sp.1) (2021-05-12)
 
