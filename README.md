@@ -19,7 +19,7 @@ If you are using Maven with [BOM][libraries-bom], add this to your pom.xml file
     <dependency>
       <groupId>com.google.cloud</groupId>
       <artifactId>libraries-bom</artifactId>
-      <version>23.1.0</version>
+      <version>24.0.0</version>
       <type>pom</type>
       <scope>import</scope>
     </dependency>
@@ -51,7 +51,7 @@ If you are using Maven without BOM, add this to your dependencies:
 If you are using Gradle 5.x or later, add this to your dependencies
 
 ```Groovy
-implementation platform('com.google.cloud:libraries-bom:23.1.0')
+implementation platform('com.google.cloud:libraries-bom:24.0.0')
 
 implementation 'com.google.cloud:google-cloud-pubsub'
 ```
@@ -298,7 +298,7 @@ To get help, follow the instructions in the [shared Troubleshooting document][tr
 
 ## Supported Java Versions
 
-Java 7 or above is required for using this client.
+Java 8 or above is required for using this client.
 
 Google's Java client libraries,
 [Google Cloud Client Libraries][cloudlibs]
@@ -367,7 +367,6 @@ Apache 2.0 - See [LICENSE][license] for more information.
 
 Java Version | Status
 ------------ | ------
-Java 7 | [![Kokoro CI][kokoro-badge-image-1]][kokoro-badge-link-1]
 Java 8 | [![Kokoro CI][kokoro-badge-image-2]][kokoro-badge-link-2]
 Java 8 OSX | [![Kokoro CI][kokoro-badge-image-3]][kokoro-badge-link-3]
 Java 8 Windows | [![Kokoro CI][kokoro-badge-image-4]][kokoro-badge-link-4]
@@ -376,7 +375,7 @@ Java 11 | [![Kokoro CI][kokoro-badge-image-5]][kokoro-badge-link-5]
 Java is a registered trademark of Oracle and/or its affiliates.
 
 [product-docs]: https://cloud.google.com/pubsub/docs/
-[javadocs]: https://googleapis.dev/java/google-cloud-pubsub/latest/index.html
+[javadocs]: https://cloud.google.com/java/docs/reference/google-cloud-pubsub/latest/history
 [kokoro-badge-image-1]: http://storage.googleapis.com/cloud-devrel-public/java/badges/java-pubsub/java7.svg
 [kokoro-badge-link-1]: http://storage.googleapis.com/cloud-devrel-public/java/badges/java-pubsub/java7.html
 [kokoro-badge-image-2]: http://storage.googleapis.com/cloud-devrel-public/java/badges/java-pubsub/java8.svg
