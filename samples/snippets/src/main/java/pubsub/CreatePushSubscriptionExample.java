@@ -41,8 +41,7 @@ public class CreatePushSubscriptionExample {
       throws IOException {
     try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
       TopicName topicName = TopicName.of(projectId, topicId);
-      SubscriptionName subscriptionName =
-          SubscriptionName.of(projectId, subscriptionId);
+      SubscriptionName subscriptionName = SubscriptionName.of(projectId, subscriptionId);
       PushConfig pushConfig = PushConfig.newBuilder().setPushEndpoint(pushEndpoint).build();
 
       // Create a push subscription with default acknowledgement deadline of 10 seconds.
