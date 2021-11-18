@@ -37,8 +37,7 @@ public class UpdatePushConfigurationExample {
   public static void updatePushConfigurationExample(
       String projectId, String subscriptionId, String pushEndpoint) throws IOException {
     try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
-      SubscriptionName subscriptionName =
-          SubscriptionName.of(projectId, subscriptionId);
+      SubscriptionName subscriptionName = SubscriptionName.of(projectId, subscriptionId);
       PushConfig pushConfig = PushConfig.newBuilder().setPushEndpoint(pushEndpoint).build();
       subscriptionAdminClient.modifyPushConfig(subscriptionName, pushConfig);
       Subscription subscription = subscriptionAdminClient.getSubscription(subscriptionName);
