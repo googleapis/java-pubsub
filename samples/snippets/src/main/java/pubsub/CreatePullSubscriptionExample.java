@@ -39,8 +39,7 @@ public class CreatePullSubscriptionExample {
       String projectId, String subscriptionId, String topicId) throws IOException {
     try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
       TopicName topicName = TopicName.of(projectId, topicId);
-      SubscriptionName subscriptionName =
-          SubscriptionName.of(projectId, subscriptionId);
+      SubscriptionName subscriptionName = SubscriptionName.of(projectId, subscriptionId);
       // Create a pull subscription with default acknowledgement deadline of 10 seconds.
       // Messages not successfully acknowledged within 10 seconds will get resent by the server.
       Subscription subscription =
