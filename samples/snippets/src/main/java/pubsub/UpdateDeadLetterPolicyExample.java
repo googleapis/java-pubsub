@@ -48,8 +48,7 @@ public class UpdateDeadLetterPolicyExample {
       throws IOException {
     try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
 
-      SubscriptionName subscriptionName =
-          SubscriptionName.of(projectId, subscriptionId);
+      SubscriptionName subscriptionName = SubscriptionName.of(projectId, subscriptionId);
 
       System.out.println(
           "Before: " + subscriptionAdminClient.getSubscription(subscriptionName).getAllFields());
