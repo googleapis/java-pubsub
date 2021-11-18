@@ -36,8 +36,7 @@ public class DeleteSubscriptionExample {
   public static void deleteSubscriptionExample(String projectId, String subscriptionId)
       throws IOException {
     try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
-      SubscriptionName subscriptionName =
-          SubscriptionName.of(projectId, subscriptionId);
+      SubscriptionName subscriptionName = SubscriptionName.of(projectId, subscriptionId);
       try {
         subscriptionAdminClient.deleteSubscription(subscriptionName);
         System.out.println("Deleted subscription.");

@@ -36,8 +36,7 @@ public class DetachSubscriptionExample {
 
   public static void detachSubscriptionExample(String projectId, String subscriptionId)
       throws IOException {
-    SubscriptionName subscriptionName =
-        SubscriptionName.of(projectId, subscriptionId);
+    SubscriptionName subscriptionName = SubscriptionName.of(projectId, subscriptionId);
 
     try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
       topicAdminClient.detachSubscription(
