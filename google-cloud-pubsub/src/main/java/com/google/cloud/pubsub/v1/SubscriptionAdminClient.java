@@ -551,12 +551,12 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *     <p>If the subscriber never acknowledges the message, the Pub/Sub system will eventually
    *     redeliver the message.
    * @throws com.google.api.gax.rpc.ApiException if the remote call fails
-   * @deprecated Use {@link #createSubscription(ProjectSubscriptionName, TopicName, PushConfig,
-   *     int)} instead.
+   * @deprecated Use {@link #createSubscription(SubscriptionName, TopicName, PushConfig, int)}
+   *     instead.
    */
   @Deprecated
   public final Subscription createSubscription(
-      ProjectSubscriptionName name,
+      com.google.pubsub.v1.ProjectSubscriptionName name,
       ProjectTopicName topic,
       PushConfig pushConfig,
       int ackDeadlineSeconds) {
