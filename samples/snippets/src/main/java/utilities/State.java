@@ -46,7 +46,12 @@ public class State extends org.apache.avro.specific.SpecificRecordBase
   public static final org.apache.avro.Schema SCHEMA$ =
       new org.apache.avro.Schema.Parser()
           .parse(
-              "{\"type\":\"record\",\"name\":\"State\",\"namespace\":\"utilities\",\"doc\":\"A list of states in the United States of America.\",\"fields\":[{\"name\":\"name\",\"type\":\"string\",\"doc\":\"The common name of the state.\"},{\"name\":\"post_abbr\",\"type\":\"string\",\"doc\":\"The postal code abbreviation of the state.\"}]}");
+              "{\"type\":\"record\",\"name\":\"State\",\"namespace\":\"utilities\",\"doc\":\"A list"
+                  + " of states in the United States of"
+                  + " America.\",\"fields\":[{\"name\":\"name\",\"type\":\"string\",\"doc\":\"The"
+                  + " common name of the"
+                  + " state.\"},{\"name\":\"post_abbr\",\"type\":\"string\",\"doc\":\"The postal"
+                  + " code abbreviation of the state.\"}]}");
 
   public static org.apache.avro.Schema getClassSchema() {
     return SCHEMA$;

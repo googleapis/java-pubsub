@@ -108,8 +108,7 @@ public class PublisherImplTest {
         getTestPublisherBuilder()
             // To demonstrate that reaching duration will trigger publish
             .setBatchingSettings(
-                Publisher.Builder.DEFAULT_BATCHING_SETTINGS
-                    .toBuilder()
+                Publisher.Builder.DEFAULT_BATCHING_SETTINGS.toBuilder()
                     .setDelayThreshold(Duration.ofSeconds(5))
                     .setElementCountThreshold(10L)
                     .build())
@@ -138,8 +137,7 @@ public class PublisherImplTest {
     Publisher publisher =
         getTestPublisherBuilder()
             .setBatchingSettings(
-                Publisher.Builder.DEFAULT_BATCHING_SETTINGS
-                    .toBuilder()
+                Publisher.Builder.DEFAULT_BATCHING_SETTINGS.toBuilder()
                     .setElementCountThreshold(2L)
                     .setDelayThreshold(Duration.ofSeconds(100))
                     .build())
@@ -177,8 +175,7 @@ public class PublisherImplTest {
     Publisher publisher =
         getTestPublisherBuilder()
             .setBatchingSettings(
-                Publisher.Builder.DEFAULT_BATCHING_SETTINGS
-                    .toBuilder()
+                Publisher.Builder.DEFAULT_BATCHING_SETTINGS.toBuilder()
                     .setElementCountThreshold(2L)
                     .setDelayThreshold(Duration.ofSeconds(100))
                     .build())
@@ -213,8 +210,7 @@ public class PublisherImplTest {
     Publisher publisher =
         getTestPublisherBuilder()
             .setBatchingSettings(
-                Publisher.Builder.DEFAULT_BATCHING_SETTINGS
-                    .toBuilder()
+                Publisher.Builder.DEFAULT_BATCHING_SETTINGS.toBuilder()
                     .setDelayThreshold(Duration.ofSeconds(100))
                     .setElementCountThreshold(10L)
                     .build())
@@ -246,8 +242,7 @@ public class PublisherImplTest {
         getTestPublisherBuilder()
             // To demonstrate that reaching duration will trigger publish
             .setBatchingSettings(
-                Publisher.Builder.DEFAULT_BATCHING_SETTINGS
-                    .toBuilder()
+                Publisher.Builder.DEFAULT_BATCHING_SETTINGS.toBuilder()
                     .setElementCountThreshold(2L)
                     .setDelayThreshold(Duration.ofSeconds(5))
                     .build())
@@ -293,8 +288,7 @@ public class PublisherImplTest {
     Publisher publisher =
         getTestPublisherBuilder()
             .setBatchingSettings(
-                Publisher.Builder.DEFAULT_BATCHING_SETTINGS
-                    .toBuilder()
+                Publisher.Builder.DEFAULT_BATCHING_SETTINGS.toBuilder()
                     .setElementCountThreshold(3L)
                     .setDelayThreshold(Duration.ofSeconds(100))
                     .build())
@@ -346,8 +340,7 @@ public class PublisherImplTest {
     Publisher publisher =
         getTestPublisherBuilder()
             .setBatchingSettings(
-                Publisher.Builder.DEFAULT_BATCHING_SETTINGS
-                    .toBuilder()
+                Publisher.Builder.DEFAULT_BATCHING_SETTINGS.toBuilder()
                     .setElementCountThreshold(10L)
                     .setDelayThreshold(Duration.ofSeconds(100))
                     .build())
@@ -409,8 +402,7 @@ public class PublisherImplTest {
     Publisher publisher =
         getTestPublisherBuilder()
             .setBatchingSettings(
-                Publisher.Builder.DEFAULT_BATCHING_SETTINGS
-                    .toBuilder()
+                Publisher.Builder.DEFAULT_BATCHING_SETTINGS.toBuilder()
                     .setElementCountThreshold(10L)
                     .setRequestByteThreshold(20L)
                     .setDelayThreshold(Duration.ofSeconds(100))
@@ -453,8 +445,7 @@ public class PublisherImplTest {
         getTestPublisherBuilder()
             .setExecutorProvider(SINGLE_THREAD_EXECUTOR)
             .setRetrySettings(
-                Publisher.Builder.DEFAULT_RETRY_SETTINGS
-                    .toBuilder()
+                Publisher.Builder.DEFAULT_RETRY_SETTINGS.toBuilder()
                     .setTotalTimeout(Duration.ofSeconds(10))
                     .setMaxAttempts(1)
                     .build())
@@ -492,8 +483,7 @@ public class PublisherImplTest {
     Publisher publisher =
         getTestPublisherBuilder()
             .setBatchingSettings(
-                Publisher.Builder.DEFAULT_BATCHING_SETTINGS
-                    .toBuilder()
+                Publisher.Builder.DEFAULT_BATCHING_SETTINGS.toBuilder()
                     .setElementCountThreshold(2L)
                     .build())
             .setEnableMessageOrdering(true)
@@ -572,8 +562,7 @@ public class PublisherImplTest {
         getTestPublisherBuilder()
             .setExecutorProvider(SINGLE_THREAD_EXECUTOR)
             .setBatchingSettings(
-                Publisher.Builder.DEFAULT_BATCHING_SETTINGS
-                    .toBuilder()
+                Publisher.Builder.DEFAULT_BATCHING_SETTINGS.toBuilder()
                     .setElementCountThreshold(2L)
                     .setDelayThreshold(Duration.ofSeconds(500))
                     .build())
@@ -632,8 +621,7 @@ public class PublisherImplTest {
         getTestPublisherBuilder()
             .setExecutorProvider(SINGLE_THREAD_EXECUTOR)
             .setBatchingSettings(
-                Publisher.Builder.DEFAULT_BATCHING_SETTINGS
-                    .toBuilder()
+                Publisher.Builder.DEFAULT_BATCHING_SETTINGS.toBuilder()
                     .setElementCountThreshold(1L)
                     .setDelayThreshold(Duration.ofSeconds(5))
                     .build())
@@ -653,8 +641,7 @@ public class PublisherImplTest {
         getTestPublisherBuilder()
             .setExecutorProvider(SINGLE_THREAD_EXECUTOR)
             .setBatchingSettings(
-                Publisher.Builder.DEFAULT_BATCHING_SETTINGS
-                    .toBuilder()
+                Publisher.Builder.DEFAULT_BATCHING_SETTINGS.toBuilder()
                     .setElementCountThreshold(1L)
                     .setDelayThreshold(Duration.ofSeconds(5))
                     .build())
@@ -677,8 +664,7 @@ public class PublisherImplTest {
         getTestPublisherBuilder()
             .setExecutorProvider(SINGLE_THREAD_EXECUTOR)
             .setRetrySettings(
-                Publisher.Builder.DEFAULT_RETRY_SETTINGS
-                    .toBuilder()
+                Publisher.Builder.DEFAULT_RETRY_SETTINGS.toBuilder()
                     .setTotalTimeout(Duration.ofSeconds(10))
                     .setMaxAttempts(1)
                     .build())
@@ -702,8 +688,7 @@ public class PublisherImplTest {
         getTestPublisherBuilder()
             .setExecutorProvider(SINGLE_THREAD_EXECUTOR)
             .setRetrySettings(
-                Publisher.Builder.DEFAULT_RETRY_SETTINGS
-                    .toBuilder()
+                Publisher.Builder.DEFAULT_RETRY_SETTINGS.toBuilder()
                     .setTotalTimeout(Duration.ofSeconds(10))
                     .setMaxAttempts(3)
                     .build())
@@ -727,8 +712,7 @@ public class PublisherImplTest {
         getTestPublisherBuilder()
             .setExecutorProvider(SINGLE_THREAD_EXECUTOR)
             .setRetrySettings(
-                Publisher.Builder.DEFAULT_RETRY_SETTINGS
-                    .toBuilder()
+                Publisher.Builder.DEFAULT_RETRY_SETTINGS.toBuilder()
                     .setTotalTimeout(Duration.ofSeconds(10))
                     .setMaxAttempts(0)
                     .build())
@@ -753,13 +737,11 @@ public class PublisherImplTest {
         getTestPublisherBuilder()
             .setExecutorProvider(SINGLE_THREAD_EXECUTOR)
             .setRetrySettings(
-                Publisher.Builder.DEFAULT_RETRY_SETTINGS
-                    .toBuilder()
+                Publisher.Builder.DEFAULT_RETRY_SETTINGS.toBuilder()
                     .setTotalTimeout(Duration.ofSeconds(10))
                     .build())
             .setBatchingSettings(
-                Publisher.Builder.DEFAULT_BATCHING_SETTINGS
-                    .toBuilder()
+                Publisher.Builder.DEFAULT_BATCHING_SETTINGS.toBuilder()
                     .setElementCountThreshold(1L)
                     .setDelayThreshold(Duration.ofSeconds(5))
                     .build())
@@ -835,8 +817,7 @@ public class PublisherImplTest {
     }
     try {
       builder.setBatchingSettings(
-          Publisher.Builder.DEFAULT_BATCHING_SETTINGS
-              .toBuilder()
+          Publisher.Builder.DEFAULT_BATCHING_SETTINGS.toBuilder()
               .setRequestByteThreshold(null)
               .build());
       fail("Should have thrown an NullPointerException");
@@ -845,8 +826,7 @@ public class PublisherImplTest {
     }
     try {
       builder.setBatchingSettings(
-          Publisher.Builder.DEFAULT_BATCHING_SETTINGS
-              .toBuilder()
+          Publisher.Builder.DEFAULT_BATCHING_SETTINGS.toBuilder()
               .setRequestByteThreshold(0L)
               .build());
       fail("Should have thrown an IllegalArgumentException");
@@ -855,8 +835,7 @@ public class PublisherImplTest {
     }
     try {
       builder.setBatchingSettings(
-          Publisher.Builder.DEFAULT_BATCHING_SETTINGS
-              .toBuilder()
+          Publisher.Builder.DEFAULT_BATCHING_SETTINGS.toBuilder()
               .setRequestByteThreshold(-1L)
               .build());
       fail("Should have thrown an IllegalArgumentException");
@@ -865,8 +844,7 @@ public class PublisherImplTest {
     }
 
     builder.setBatchingSettings(
-        Publisher.Builder.DEFAULT_BATCHING_SETTINGS
-            .toBuilder()
+        Publisher.Builder.DEFAULT_BATCHING_SETTINGS.toBuilder()
             .setDelayThreshold(Duration.ofMillis(1))
             .build());
     try {
@@ -878,8 +856,7 @@ public class PublisherImplTest {
     }
     try {
       builder.setBatchingSettings(
-          Publisher.Builder.DEFAULT_BATCHING_SETTINGS
-              .toBuilder()
+          Publisher.Builder.DEFAULT_BATCHING_SETTINGS.toBuilder()
               .setDelayThreshold(Duration.ofMillis(-1))
               .build());
       fail("Should have thrown an IllegalArgumentException");
@@ -888,14 +865,12 @@ public class PublisherImplTest {
     }
 
     builder.setBatchingSettings(
-        Publisher.Builder.DEFAULT_BATCHING_SETTINGS
-            .toBuilder()
+        Publisher.Builder.DEFAULT_BATCHING_SETTINGS.toBuilder()
             .setElementCountThreshold(1L)
             .build());
     try {
       builder.setBatchingSettings(
-          Publisher.Builder.DEFAULT_BATCHING_SETTINGS
-              .toBuilder()
+          Publisher.Builder.DEFAULT_BATCHING_SETTINGS.toBuilder()
               .setElementCountThreshold(null)
               .build());
       fail("Should have thrown an NullPointerException");
@@ -904,8 +879,7 @@ public class PublisherImplTest {
     }
     try {
       builder.setBatchingSettings(
-          Publisher.Builder.DEFAULT_BATCHING_SETTINGS
-              .toBuilder()
+          Publisher.Builder.DEFAULT_BATCHING_SETTINGS.toBuilder()
               .setElementCountThreshold(0L)
               .build());
       fail("Should have thrown an IllegalArgumentException");
@@ -914,8 +888,7 @@ public class PublisherImplTest {
     }
     try {
       builder.setBatchingSettings(
-          Publisher.Builder.DEFAULT_BATCHING_SETTINGS
-              .toBuilder()
+          Publisher.Builder.DEFAULT_BATCHING_SETTINGS.toBuilder()
               .setElementCountThreshold(-1L)
               .build());
       fail("Should have thrown an IllegalArgumentException");
@@ -924,14 +897,12 @@ public class PublisherImplTest {
     }
 
     builder.setRetrySettings(
-        Publisher.Builder.DEFAULT_RETRY_SETTINGS
-            .toBuilder()
+        Publisher.Builder.DEFAULT_RETRY_SETTINGS.toBuilder()
             .setInitialRpcTimeout(Publisher.Builder.MIN_RPC_TIMEOUT)
             .build());
     try {
       builder.setRetrySettings(
-          Publisher.Builder.DEFAULT_RETRY_SETTINGS
-              .toBuilder()
+          Publisher.Builder.DEFAULT_RETRY_SETTINGS.toBuilder()
               .setInitialRpcTimeout(Publisher.Builder.MIN_RPC_TIMEOUT.minusMillis(1))
               .build());
       fail("Should have thrown an IllegalArgumentException");
@@ -939,14 +910,12 @@ public class PublisherImplTest {
       // Expected
     }
     builder.setRetrySettings(
-        Publisher.Builder.DEFAULT_RETRY_SETTINGS
-            .toBuilder()
+        Publisher.Builder.DEFAULT_RETRY_SETTINGS.toBuilder()
             .setTotalTimeout(Publisher.Builder.MIN_TOTAL_TIMEOUT)
             .build());
     try {
       builder.setRetrySettings(
-          Publisher.Builder.DEFAULT_RETRY_SETTINGS
-              .toBuilder()
+          Publisher.Builder.DEFAULT_RETRY_SETTINGS.toBuilder()
               .setTotalTimeout(Publisher.Builder.MIN_TOTAL_TIMEOUT.minusMillis(1))
               .build());
       fail("Should have thrown an IllegalArgumentException");
@@ -960,8 +929,7 @@ public class PublisherImplTest {
     Publisher publisher =
         getTestPublisherBuilder()
             .setBatchingSettings(
-                Publisher.Builder.getDefaultBatchingSettings()
-                    .toBuilder()
+                Publisher.Builder.getDefaultBatchingSettings().toBuilder()
                     .setRequestByteThreshold(5000L)
                     .build())
             .build();
@@ -973,8 +941,7 @@ public class PublisherImplTest {
     publisher =
         getTestPublisherBuilder()
             .setBatchingSettings(
-                Publisher.Builder.getDefaultBatchingSettings()
-                    .toBuilder()
+                Publisher.Builder.getDefaultBatchingSettings().toBuilder()
                     .setElementCountThreshold(500L)
                     .build())
             .build();
@@ -990,8 +957,7 @@ public class PublisherImplTest {
         getTestPublisherBuilder()
             .setExecutorProvider(SINGLE_THREAD_EXECUTOR)
             .setRetrySettings(
-                Publisher.Builder.DEFAULT_RETRY_SETTINGS
-                    .toBuilder()
+                Publisher.Builder.DEFAULT_RETRY_SETTINGS.toBuilder()
                     .setTotalTimeout(Duration.ofSeconds(10))
                     .setMaxAttempts(0)
                     .build())
@@ -1024,8 +990,7 @@ public class PublisherImplTest {
       Publisher publisher =
           getTestPublisherBuilder()
               .setBatchingSettings(
-                  Publisher.Builder.DEFAULT_BATCHING_SETTINGS
-                      .toBuilder()
+                  Publisher.Builder.DEFAULT_BATCHING_SETTINGS.toBuilder()
                       .setElementCountThreshold(1L)
                       .setDelayThreshold(Duration.ofSeconds(5))
                       .setFlowControlSettings(
@@ -1049,8 +1014,7 @@ public class PublisherImplTest {
       Publisher publisher =
           getTestPublisherBuilder()
               .setBatchingSettings(
-                  Publisher.Builder.DEFAULT_BATCHING_SETTINGS
-                      .toBuilder()
+                  Publisher.Builder.DEFAULT_BATCHING_SETTINGS.toBuilder()
                       .setElementCountThreshold(1L)
                       .setDelayThreshold(Duration.ofSeconds(5))
                       .setFlowControlSettings(
@@ -1074,8 +1038,7 @@ public class PublisherImplTest {
         getTestPublisherBuilder()
             .setExecutorProvider(SINGLE_THREAD_EXECUTOR)
             .setBatchingSettings(
-                Publisher.Builder.DEFAULT_BATCHING_SETTINGS
-                    .toBuilder()
+                Publisher.Builder.DEFAULT_BATCHING_SETTINGS.toBuilder()
                     .setElementCountThreshold(1L)
                     .setDelayThreshold(Duration.ofSeconds(5))
                     .setFlowControlSettings(
@@ -1102,8 +1065,7 @@ public class PublisherImplTest {
         getTestPublisherBuilder()
             .setExecutorProvider(SINGLE_THREAD_EXECUTOR)
             .setBatchingSettings(
-                Publisher.Builder.DEFAULT_BATCHING_SETTINGS
-                    .toBuilder()
+                Publisher.Builder.DEFAULT_BATCHING_SETTINGS.toBuilder()
                     .setElementCountThreshold(1L)
                     .setDelayThreshold(Duration.ofSeconds(5))
                     .setFlowControlSettings(
@@ -1144,8 +1106,7 @@ public class PublisherImplTest {
         getTestPublisherBuilder()
             .setExecutorProvider(SINGLE_THREAD_EXECUTOR)
             .setBatchingSettings(
-                Publisher.Builder.DEFAULT_BATCHING_SETTINGS
-                    .toBuilder()
+                Publisher.Builder.DEFAULT_BATCHING_SETTINGS.toBuilder()
                     .setElementCountThreshold(1L)
                     .setDelayThreshold(Duration.ofSeconds(5))
                     .setFlowControlSettings(
@@ -1191,8 +1152,7 @@ public class PublisherImplTest {
         getTestPublisherBuilder()
             .setExecutorProvider(SINGLE_THREAD_EXECUTOR)
             .setBatchingSettings(
-                Publisher.Builder.DEFAULT_BATCHING_SETTINGS
-                    .toBuilder()
+                Publisher.Builder.DEFAULT_BATCHING_SETTINGS.toBuilder()
                     .setElementCountThreshold(1L)
                     .setDelayThreshold(Duration.ofSeconds(5))
                     .setFlowControlSettings(

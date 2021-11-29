@@ -294,8 +294,7 @@ public class SubscriberTest {
     Subscriber subscriber =
         getTestSubscriberBuilder(testReceiver)
             .setFlowControlSettings(
-                Subscriber.Builder.DEFAULT_FLOW_CONTROL_SETTINGS
-                    .toBuilder()
+                Subscriber.Builder.DEFAULT_FLOW_CONTROL_SETTINGS.toBuilder()
                     .setMaxOutstandingElementCount(500L)
                     .build())
             .build();
@@ -307,8 +306,7 @@ public class SubscriberTest {
     subscriber =
         getTestSubscriberBuilder(testReceiver)
             .setFlowControlSettings(
-                Subscriber.Builder.DEFAULT_FLOW_CONTROL_SETTINGS
-                    .toBuilder()
+                Subscriber.Builder.DEFAULT_FLOW_CONTROL_SETTINGS.toBuilder()
                     .setMaxOutstandingRequestBytes(5_000_000_000L)
                     .build())
             .build();
