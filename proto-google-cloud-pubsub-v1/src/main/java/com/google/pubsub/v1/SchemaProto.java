@@ -77,8 +77,7 @@ public final class SchemaProto {
   static {
     java.lang.String[] descriptorData = {
       "\n"
-          + "\035google/pubsub/v1/schema.proto\022\020google."
-          + "pubsub.v1\032\034google/api/annotations.proto\032\027google/api/client.proto\032\037google/api/field_behavior.proto\032\031google/api/resource.proto\032\033google/protobuf/empty.proto\"\341\001\n"
+          + "\035google/pubsub/v1/schema.proto\022\020google.pubsub.v1\032\034google/api/annotations.proto\032\027google/api/client.proto\032\037google/api/field_behavior.proto\032\031google/api/resource.proto\032\033google/protobuf/empty.proto\"\341\001\n"
           + "\006Schema\022\021\n"
           + "\004name\030\001 \001(\tB\003\340A\002\022+\n"
           + "\004type\030\002 \001(\0162\035.google.pubsub.v1.Schema.Type\022\022\n\n"
@@ -142,8 +141,7 @@ public final class SchemaProto {
           + "parent,schema\022\242\001\n"
           + "\017ValidateMessage\022(.google.pubsub.v1.ValidateMes"
           + "sageRequest\032).google.pubsub.v1.ValidateM"
-          + "essageResponse\":\202\323\344\223\0024\"//v1/{parent=proj"
-          + "ects/*}/schemas:validateMessage:\001*\032p\312A\025pubsub.googleapis.com\322AUhttps://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/pubsubB\256\001\n"
+          + "essageResponse\":\202\323\344\223\0024\"//v1/{parent=projects/*}/schemas:validateMessage:\001*\032p\312A\025pubsub.googleapis.com\322AUhttps://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/pubsubB\256\001\n"
           + "\024com.google.pubsub.v1B\013SchemaProtoP\001Z6google.gol"
           + "ang.org/genproto/googleapis/pubsub/v1;pu"
           + "bsub\370\001\001\252\002\026Google.Cloud.PubSub.V1\312\002\026Googl"
