@@ -424,6 +424,7 @@ CREATE_SUBSCRIPTION = """
 PACKAGE = 'package com.google.cloud.pubsub.v1;'
 
 IMPORT_PROJECT_TOPIC_NAME = 'import com.google.pubsub.v1.ProjectTopicName;'
+IMPORT_PROJECT_SUBSCRIPTION_NAME = 'import com.google.pubsub.v1.ProjectSubscriptionName;'
 
 for library in s.get_staging_dirs():
     # put any special-case replacements here
@@ -508,6 +509,12 @@ for library in s.get_staging_dirs():
         '**/*AdminClient.java',
         PACKAGE,
         PACKAGE + '\n\n' + IMPORT_PROJECT_TOPIC_NAME + '\n'
+    )
+
+    s.replace(
+        '**/*AdminClient.java',
+        PACKAGE,
+        PACKAGE + '\n\n' + IMPORT_PROJECT_SUBSCRIPTION_NAME + '\n'
     )
 
     s.move(library)
