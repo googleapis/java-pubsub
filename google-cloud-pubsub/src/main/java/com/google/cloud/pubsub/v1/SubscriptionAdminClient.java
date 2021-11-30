@@ -1160,6 +1160,36 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *
    * <pre>{@code
    * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
+   *   ProjectSubscriptionName subscription = ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
+   *   subscriptionAdminClient.deleteSubscription(subscription);
+   * }
+   * }</pre>
+   *
+   * @param subscription Required. The subscription to delete. Format is
+   *     `projects/{project}/subscriptions/{sub}`.
+   * @throws com.google.api.gax.rpc.ApiException if the remote call fails
+   * @deprecated Use {@link #deleteSubscription(SubscriptionName)} instead.
+   */
+  @Deprecated
+  public final void deleteSubscription(ProjectSubscriptionName subscription) {
+    DeleteSubscriptionRequest request =
+        DeleteSubscriptionRequest.newBuilder()
+            .setSubscription(subscription == null ? null : subscription.toString())
+            .build();
+    deleteSubscription(request);
+  }
+
+  // AUTO-GENERATED DOCUMENTATION AND METHOD.
+  /**
+   * Deletes an existing subscription. All messages retained in the subscription are immediately
+   * dropped. Calls to `Pull` after deletion will return `NOT_FOUND`. After a subscription is
+   * deleted, a new one may be created with the same name, but the new one has no association with
+   * the old subscription or its topic unless the same topic is specified.
+   *
+   * <p>Sample code:
+   *
+   * <pre>{@code
+   * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
    *   DeleteSubscriptionRequest request =
    *       DeleteSubscriptionRequest.newBuilder()
    *           .setSubscription(SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
@@ -1317,7 +1347,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    * @deprecated Use {@link #modifyAckDeadline(SubscriptionName, List<String>, int)} instead.
    */
   @Deprecated
-  /* package-private */ final void modifyAckDeadline(
+  final void modifyAckDeadline(
       ProjectSubscriptionName subscription, List<String> ackIds, int ackDeadlineSeconds) {
     ModifyAckDeadlineRequest request =
         ModifyAckDeadlineRequest.newBuilder()
@@ -1734,7 +1764,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    * @deprecated Use {@link #pull(SubscriptionName, boolean, int)} instead.
    */
   @Deprecated
-  /* package-private */ final PullResponse pull(
+  final PullResponse pull(
       ProjectSubscriptionName subscription, boolean returnImmediately, int maxMessages) {
     PullRequest request =
         PullRequest.newBuilder()

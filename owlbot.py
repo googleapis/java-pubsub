@@ -590,7 +590,7 @@ GET_SUBSCRIPTION = """
   }
 """
 
-DELETE_SUBSCRIPTION_PREVIOUS = r'(\s+public final void deleteSubscription\(GetSubscriptionRequest request\) {\n\s+return.*\n\s+})'
+DELETE_SUBSCRIPTION_PREVIOUS = r'(\s+public final void deleteSubscription\(DeleteSubscriptionRequest request\) {\n\s+deleteSubscription.*\n\s+})'
 
 DELETE_SUBSCRIPTION = """
   // AUTO-GENERATED DOCUMENTATION AND METHOD.
