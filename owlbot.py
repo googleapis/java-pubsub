@@ -406,7 +406,7 @@ CREATE_SUBSCRIPTION = """
    */
   @Deprecated
   public final Subscription createSubscription(
-      com.google.pubsub.v1.ProjectSubscriptionName name,
+      ProjectSubscriptionName name,
       ProjectTopicName topic,
       PushConfig pushConfig,
       int ackDeadlineSeconds) {
