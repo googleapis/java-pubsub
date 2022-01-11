@@ -16,14 +16,17 @@
     <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-api</artifactId>
+      <version>1.36.2</version>
     </dependency>
     <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-stub</artifactId>
+      <version>1.36.2</version>
     </dependency>
     <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-protobuf</artifactId>
+      <version>1.36.2</version>
     </dependency>
     <dependency>
       <groupId>com.google.protobuf</groupId>
@@ -37,6 +40,7 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
+      <version>30.1.1-android</version>
     </dependency>
   </dependencies>
 
