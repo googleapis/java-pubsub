@@ -148,6 +148,7 @@
       <groupId>com.google.api</groupId>
       <artifactId>gax-grpc</artifactId>
       <classifier>testlib</classifier>
+      <version>1.64.0-sp.1</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
