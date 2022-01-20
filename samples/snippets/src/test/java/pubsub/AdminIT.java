@@ -190,7 +190,7 @@ public class AdminIT {
     bout.reset();
     // Test create a subscription with filtering enabled
     CreateSubscriptionWithFiltering.createSubscriptionWithFilteringExample(
-        projectId, topicId, filteredSubscriptionId, "");
+        projectId, topicId, filteredSubscriptionId, "attributes.author=\"unknown\"");
     assertThat(bout.toString()).contains("Created a subscription with filtering enabled");
     assertThat(bout.toString())
         .contains("google.pubsub.v1.Subscription.filter=attributes.author=\"unknown\"");
