@@ -65,7 +65,8 @@ public class SubscribeSyncWithLeaseExample {
       // Use pullCallable().futureCall to asynchronously perform this operation.
       PullResponse pullResponse = subscriber.pullCallable().call(pullRequest);
 
-      // Discontinue the program if the pull response is empty.
+      // Stop the program if the pull response is empty to avoid acknowledging
+      // an empty list of ack IDs.
       if (pullResponse.getReceivedMessagesList().isEmpty()) {
         System.out.println("No message was pulled. Exiting.");
         return;
