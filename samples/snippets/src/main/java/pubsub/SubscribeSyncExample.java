@@ -61,10 +61,10 @@ public class SubscribeSyncExample {
       // Use pullCallable().futureCall to asynchronously perform this operation.
       PullResponse pullResponse = subscriber.pullCallable().call(pullRequest);
 
-      // Exit the program if the pull response is empty.
+      // Discontinue the program if the pull response is empty.
       if (pullResponse.getReceivedMessagesList().isEmpty()) {
         System.out.println("No message was pulled. Exiting.");
-        System.exit(0);
+        return;
       }
 
       List<String> ackIds = new ArrayList<>();
