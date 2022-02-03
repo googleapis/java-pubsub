@@ -51,6 +51,7 @@ import com.google.pubsub.v1.PublishResponse;
 import com.google.pubsub.v1.PubsubMessage;
 import com.google.pubsub.v1.TopicName;
 import com.google.pubsub.v1.TopicNames;
+import io.grpc.CallOptions;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -68,7 +69,6 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import io.grpc.CallOptions;
 import org.threeten.bp.Duration;
 
 /**
@@ -450,9 +450,10 @@ public class Publisher implements PublisherInterface {
               PublishRequest.newBuilder()
                   .setTopic(topicName)
                   .addAllMessages(outstandingBatch.getMessages())
-                  .build(), context);
-     } else {
-       return publisherStub
+                  .build(),
+              context);
+    } else {
+      return publisherStub
           .publishCallable()
           .futureCall(
               PublishRequest.newBuilder()
