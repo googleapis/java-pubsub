@@ -60,12 +60,20 @@ public class SubscribeSyncExample {
 
       // Use pullCallable().futureCall to asynchronously perform this operation.
       PullResponse pullResponse = subscriber.pullCallable().call(pullRequest);
+
+      // Exit the program if the pull response is empty.
+      if (pullResponse.getReceivedMessagesList().isEmpty()) {
+        System.out.println("No message was pulled. Exiting.");
+        System.exit(0);
+      }
+
       List<String> ackIds = new ArrayList<>();
       for (ReceivedMessage message : pullResponse.getReceivedMessagesList()) {
         // Handle received message
         // ...
         ackIds.add(message.getAckId());
       }
+
       // Acknowledge received messages.
       AcknowledgeRequest acknowledgeRequest =
           AcknowledgeRequest.newBuilder()
