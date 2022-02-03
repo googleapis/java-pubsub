@@ -119,7 +119,7 @@ public class Publisher implements PublisherInterface {
   private final boolean enableCompression;
 
   /** The message is compressed when its size (in bytes) is above the threshold. */
-  private static final long MSG_COMPRESSION_THRESHOLD_BYTES = 1000L; // 1 kilobyte (https://en.wikipedia.org/wiki/Kilobyte)
+  private static final long MSG_COMPRESSION_THRESHOLD_BYTES = 1000L; // 1 kilobyte
 
   /** The maximum number of messages in one request. Defined by the API. */
   public static long getApiMaxRequestElementCount() {
