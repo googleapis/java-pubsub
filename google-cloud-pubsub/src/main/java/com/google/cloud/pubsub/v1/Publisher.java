@@ -35,6 +35,7 @@ import com.google.api.gax.core.ExecutorAsBackgroundResource;
 import com.google.api.gax.core.ExecutorProvider;
 import com.google.api.gax.core.FixedExecutorProvider;
 import com.google.api.gax.core.InstantiatingExecutorProvider;
+import com.google.api.gax.grpc.GrpcCallContext;
 import com.google.api.gax.retrying.RetrySettings;
 import com.google.api.gax.rpc.HeaderProvider;
 import com.google.api.gax.rpc.NoHeaderProvider;
@@ -67,6 +68,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import io.grpc.CallOptions;
 import org.threeten.bp.Duration;
 
 /**
@@ -113,6 +115,11 @@ public class Publisher implements PublisherInterface {
   private final ApiFunction<PubsubMessage, PubsubMessage> messageTransform;
 
   private MessageFlowController flowController = null;
+
+  private final boolean enableCompression;
+
+  /** The message is compressed when its size (in bytes) is above the threshold. */
+  private static final long MSG_COMPRESSION_THRESHOLD_BYTES = 1000L; // 1 kilobyte (https://en.wikipedia.org/wiki/Kilobyte)
 
   /** The maximum number of messages in one request. Defined by the API. */
   public static long getApiMaxRequestElementCount() {
@@ -191,6 +198,8 @@ public class Publisher implements PublisherInterface {
     backgroundResources = new BackgroundResourceAggregation(backgroundResourceList);
     shutdown = new AtomicBoolean(false);
     messagesWaiter = new Waiter();
+
+    enableCompression = builder.enableCompression;
   }
 
   /** Topic which the publisher publishes to. */
@@ -431,13 +440,25 @@ public class Publisher implements PublisherInterface {
   }
 
   private ApiFuture<PublishResponse> publishCall(OutstandingBatch outstandingBatch) {
-    return publisherStub
-        .publishCallable()
-        .futureCall(
-            PublishRequest.newBuilder()
-                .setTopic(topicName)
-                .addAllMessages(outstandingBatch.getMessages())
-                .build());
+    if (enableCompression && outstandingBatch.batchSizeBytes >= MSG_COMPRESSION_THRESHOLD_BYTES) {
+      GrpcCallContext context = GrpcCallContext.createDefault();
+      context = context.withCallOptions(CallOptions.DEFAULT.withCompression("gzip"));
+      return publisherStub
+          .publishCallable()
+          .futureCall(
+              PublishRequest.newBuilder()
+                  .setTopic(topicName)
+                  .addAllMessages(outstandingBatch.getMessages())
+                  .build(), context);
+     } else {
+       return publisherStub
+          .publishCallable()
+          .futureCall(
+              PublishRequest.newBuilder()
+                  .setTopic(topicName)
+                  .addAllMessages(outstandingBatch.getMessages())
+                  .build());
+    }
   }
 
   private void publishOutstandingBatch(final OutstandingBatch outstandingBatch) {
@@ -688,6 +709,7 @@ public class Publisher implements PublisherInterface {
         InstantiatingExecutorProvider.newBuilder()
             .setExecutorThreadCount(THREADS_PER_CPU * Runtime.getRuntime().availableProcessors())
             .build();
+    static final boolean DEFAULT_ENABLE_COMPRESSION = false;
 
     String topicName;
     private String endpoint = PublisherStubSettings.getDefaultEndpoint();
@@ -716,6 +738,8 @@ public class Publisher implements PublisherInterface {
             return input;
           }
         };
+
+    private boolean enableCompression = DEFAULT_ENABLE_COMPRESSION;
 
     private Builder(String topic) {
       this.topicName = Preconditions.checkNotNull(topic);
@@ -824,6 +848,12 @@ public class Publisher implements PublisherInterface {
     /** Gives the ability to override the gRPC endpoint. */
     public Builder setEndpoint(String endpoint) {
       this.endpoint = endpoint;
+      return this;
+    }
+
+    /** Gives the ability to enable gRPC compression. */
+    public Builder setEnableCompression(boolean enableCompression) {
+      this.enableCompression = enableCompression;
       return this;
     }
 
