@@ -147,6 +147,7 @@ public class Publisher implements PublisherInterface {
 
     this.enableMessageOrdering = builder.enableMessageOrdering;
     this.messageTransform = builder.messageTransform;
+    this.enableCompression = builder.enableCompression;
 
     messagesBatches = new HashMap<>();
     messagesBatchLock = new ReentrantLock();
@@ -198,8 +199,6 @@ public class Publisher implements PublisherInterface {
     backgroundResources = new BackgroundResourceAggregation(backgroundResourceList);
     shutdown = new AtomicBoolean(false);
     messagesWaiter = new Waiter();
-
-    enableCompression = builder.enableCompression;
   }
 
   /** Topic which the publisher publishes to. */
@@ -210,6 +209,11 @@ public class Publisher implements PublisherInterface {
   /** Topic which the publisher publishes to. */
   public String getTopicNameString() {
     return topicName;
+  }
+
+  /** Returns True/False if compression is enabled or disabled respectively. */
+  public boolean getEnableCompression() {
+    return this.enableCompression;
   }
 
   /**
