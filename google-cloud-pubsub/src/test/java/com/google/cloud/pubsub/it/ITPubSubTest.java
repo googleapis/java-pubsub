@@ -40,11 +40,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.rules.Timeout;
 
 public class ITPubSubTest {
@@ -439,7 +435,10 @@ public class ITPubSubTest {
         MoreExecutors.directExecutor());
     subscriber.startAsync();
 
-    Publisher publisher = Publisher.newBuilder(topicName).setEnableCompression(true).build();
+    Publisher publisher =
+        Publisher.newBuilder(topicName)
+            .setEnableCompression(true)
+            .build();
 
     String msg1 = generateMessage("msg1", 1000);
     String msg2 = generateMessage("msg2", 1500);
