@@ -24,7 +24,14 @@ import static org.junit.Assume.assumeTrue;
 import com.google.api.gax.rpc.PermissionDeniedException;
 import com.google.auto.value.AutoValue;
 import com.google.cloud.ServiceOptions;
-import com.google.cloud.pubsub.v1.*;
+import com.google.cloud.pubsub.v1.AckReplyConsumer;
+import com.google.cloud.pubsub.v1.MessageReceiver;
+import com.google.cloud.pubsub.v1.Publisher;
+import com.google.cloud.pubsub.v1.Subscriber;
+import com.google.cloud.pubsub.v1.SubscriptionAdminClient;
+import com.google.cloud.pubsub.v1.SubscriptionAdminSettings;
+import com.google.cloud.pubsub.v1.TopicAdminClient;
+import com.google.cloud.pubsub.v1.TopicAdminSettings;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.iam.v1.Binding;
 import com.google.iam.v1.GetIamPolicyRequest;
@@ -49,6 +56,7 @@ public class ITPubSubTest {
   private static TopicAdminClient topicAdminClient;
   private static SubscriptionAdminClient subscriptionAdminClient;
   private static String projectId;
+  private static String endPoint = "us-east1-pubsub.googleapis.com:443";
   private static final boolean IS_VPC_TEST =
       System.getenv("GOOGLE_CLOUD_TESTS_IN_VPCSC") != null
           && System.getenv("GOOGLE_CLOUD_TESTS_IN_VPCSC").equalsIgnoreCase("true");
@@ -83,8 +91,11 @@ public class ITPubSubTest {
 
   @BeforeClass
   public static void setupClass() throws Exception {
-    topicAdminClient = TopicAdminClient.create();
-    subscriptionAdminClient = SubscriptionAdminClient.create();
+    topicAdminClient =
+        TopicAdminClient.create(TopicAdminSettings.newBuilder().setEndpoint(endPoint).build());
+    subscriptionAdminClient =
+        SubscriptionAdminClient.create(
+            SubscriptionAdminSettings.newBuilder().setEndpoint(endPoint).build());
     projectId = ServiceOptions.getDefaultProjectId();
   }
 
@@ -205,6 +216,7 @@ public class ITPubSubTest {
                     receiveQueue.offer(MessageAndConsumer.create(message, consumer));
                   }
                 })
+            .setEndpoint(endPoint)
             .build();
     subscriber.addListener(
         new Subscriber.Listener() {
@@ -215,7 +227,7 @@ public class ITPubSubTest {
         MoreExecutors.directExecutor());
     subscriber.startAsync();
 
-    Publisher publisher = Publisher.newBuilder(topicName).build();
+    Publisher publisher = Publisher.newBuilder(topicName).setEndpoint(endPoint).build();
     publisher
         .publish(PubsubMessage.newBuilder().setData(ByteString.copyFromUtf8("msg1")).build())
         .get();
@@ -425,6 +437,7 @@ public class ITPubSubTest {
                     receiveQueue.offer(MessageAndConsumer.create(message, consumer));
                   }
                 })
+            .setEndpoint(endPoint)
             .build();
     subscriber.addListener(
         new Subscriber.Listener() {
@@ -436,9 +449,7 @@ public class ITPubSubTest {
     subscriber.startAsync();
 
     Publisher publisher =
-        Publisher.newBuilder(topicName)
-            .setEnableCompression(true)
-            .build();
+        Publisher.newBuilder(topicName).setEndpoint(endPoint).setEnableCompression(true).build();
 
     String msg1 = generateMessage("msg1", 1000);
     String msg2 = generateMessage("msg2", 1500);
