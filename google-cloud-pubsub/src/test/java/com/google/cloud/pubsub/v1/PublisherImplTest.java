@@ -296,8 +296,8 @@ public class PublisherImplTest {
             .build();
     assertTrue(publisher.getEnableCompression());
 
-    testPublisherServiceImpl
-        .addPublishResponse(PublishResponse.newBuilder().addMessageIds("1").addMessageIds("2"));
+    testPublisherServiceImpl.addPublishResponse(
+        PublishResponse.newBuilder().addMessageIds("1").addMessageIds("2"));
     ApiFuture<String> publishFuture1 = sendTestMessage(publisher, "A");
     ApiFuture<String> publishFuture2 = sendTestMessage(publisher, "B");
     assertEquals("1", publishFuture1.get());
