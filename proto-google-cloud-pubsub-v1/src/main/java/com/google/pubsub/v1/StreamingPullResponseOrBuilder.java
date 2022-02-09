@@ -79,6 +79,97 @@ public interface StreamingPullResponseOrBuilder
    *
    *
    * <pre>
+   * This field will only be set if `enable_exactly_once_delivery` is set to
+   * `true`.
+   * </pre>
+   *
+   * <code>
+   * .google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation acknowlege_confirmation = 2;
+   * </code>
+   *
+   * @return Whether the acknowlegeConfirmation field is set.
+   */
+  boolean hasAcknowlegeConfirmation();
+  /**
+   *
+   *
+   * <pre>
+   * This field will only be set if `enable_exactly_once_delivery` is set to
+   * `true`.
+   * </pre>
+   *
+   * <code>
+   * .google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation acknowlege_confirmation = 2;
+   * </code>
+   *
+   * @return The acknowlegeConfirmation.
+   */
+  com.google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation getAcknowlegeConfirmation();
+  /**
+   *
+   *
+   * <pre>
+   * This field will only be set if `enable_exactly_once_delivery` is set to
+   * `true`.
+   * </pre>
+   *
+   * <code>
+   * .google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation acknowlege_confirmation = 2;
+   * </code>
+   */
+  com.google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmationOrBuilder
+      getAcknowlegeConfirmationOrBuilder();
+
+  /**
+   *
+   *
+   * <pre>
+   * This field will only be set if `enable_exactly_once_delivery` is set to
+   * `true`.
+   * </pre>
+   *
+   * <code>
+   * .google.pubsub.v1.StreamingPullResponse.ModifyAckDeadlineConfirmation modify_ack_deadline_confirmation = 3;
+   * </code>
+   *
+   * @return Whether the modifyAckDeadlineConfirmation field is set.
+   */
+  boolean hasModifyAckDeadlineConfirmation();
+  /**
+   *
+   *
+   * <pre>
+   * This field will only be set if `enable_exactly_once_delivery` is set to
+   * `true`.
+   * </pre>
+   *
+   * <code>
+   * .google.pubsub.v1.StreamingPullResponse.ModifyAckDeadlineConfirmation modify_ack_deadline_confirmation = 3;
+   * </code>
+   *
+   * @return The modifyAckDeadlineConfirmation.
+   */
+  com.google.pubsub.v1.StreamingPullResponse.ModifyAckDeadlineConfirmation
+      getModifyAckDeadlineConfirmation();
+  /**
+   *
+   *
+   * <pre>
+   * This field will only be set if `enable_exactly_once_delivery` is set to
+   * `true`.
+   * </pre>
+   *
+   * <code>
+   * .google.pubsub.v1.StreamingPullResponse.ModifyAckDeadlineConfirmation modify_ack_deadline_confirmation = 3;
+   * </code>
+   */
+  com.google.pubsub.v1.StreamingPullResponse.ModifyAckDeadlineConfirmationOrBuilder
+      getModifyAckDeadlineConfirmationOrBuilder();
+
+  /**
+   *
+   *
+   * <pre>
    * Properties associated with this subscription.
    * </pre>
    *
