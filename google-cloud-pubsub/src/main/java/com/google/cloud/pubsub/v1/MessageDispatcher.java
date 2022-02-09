@@ -187,6 +187,7 @@ class MessageDispatcher {
   private MessageDispatcher(Builder builder) {
     executor = builder.executor;
     systemExecutor = builder.systemExecutor;
+    sequentialExecutor = new SequentialExecutorService.AutoExecutor(builder.executor);
     ackExpirationPadding = builder.ackExpirationPadding;
     maxAckExtensionPeriod = builder.maxAckExtensionPeriod;
     maxSecondsPerAckExtension = Math.toIntExact(builder.maxDurationPerAckExtension.getSeconds());
@@ -197,7 +198,6 @@ class MessageDispatcher {
     ackLatencyDistribution = builder.ackLatencyDistribution;
     clock = builder.clock;
     enableExactlyOnceDelivery = builder.enableExactlyOnceDelivery;
-    sequentialExecutor = new SequentialExecutorService.AutoExecutor(executor);
     jobLock = new ReentrantLock();
     messagesWaiter = new Waiter();
   }

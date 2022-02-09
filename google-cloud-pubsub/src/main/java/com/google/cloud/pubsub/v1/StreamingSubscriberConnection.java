@@ -139,7 +139,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
             .setFlowController(builder.flowController)
             .setEnableExactlyOnceDelivery(enableExactlyOnceDelivery)
             .setExecutor(builder.executor)
-            .setSystemExecutor(systemExecutor)
+            .setSystemExecutor(builder.systemExecutor)
             .setApiClock(clock)
             .build();
   }
