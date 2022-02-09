@@ -105,6 +105,7 @@ public class ITPubSubTest {
         .setTopic(topicName.toString())
         .setPushConfig(pushConfig)
         .setAckDeadlineSeconds(ackDeadline)
+        .setEnableExactlyOnceDelivery(enableExactlyOnceDelivery)
         .build();
   }
 
@@ -163,7 +164,8 @@ public class ITPubSubTest {
               subscriptionName,
               topicName,
               PushConfig.newBuilder().setPushEndpoint("https://random_point").build(),
-              10));
+              10,
+                  false));
       subscriptionAdminClient.deleteSubscription(subscriptionName);
       Assert.fail("No exception raised");
     } catch (PermissionDeniedException e) {
@@ -186,7 +188,7 @@ public class ITPubSubTest {
     topicAdminClient.createTopic(topicName);
 
     subscriptionAdminClient.createSubscription(
-        getSubscription(subscriptionName, topicName, PushConfig.newBuilder().build(), 10));
+        getSubscription(subscriptionName, topicName, PushConfig.newBuilder().build(), 10, false));
 
     final BlockingQueue<Object> receiveQueue = new LinkedBlockingQueue<>();
     Subscriber subscriber =
@@ -252,7 +254,7 @@ public class ITPubSubTest {
     topicAdminClient.createTopic(topicName);
 
     subscriptionAdminClient.createSubscription(
-        getSubscription(subscriptionName, topicName, PushConfig.newBuilder().build(), 10));
+        getSubscription(subscriptionName, topicName, PushConfig.newBuilder().build(), 10, true));
 
     final BlockingQueue<Object> receiveQueue = new LinkedBlockingQueue<>();
     Subscriber subscriber =
