@@ -124,5 +124,10 @@ public class PublisherIT {
     for (int i = 1; i <= 4; i++) {
       assertThat(bout.toString()).contains("message" + i);
     }
+
+    bout.reset();
+    // Test publish with compression.
+    PublishWithCompressionExample.publishWithCompressionExample(projectId, topicId);
+    assertThat(bout.toString()).contains("Published compressed message ID: ");
   }
 }

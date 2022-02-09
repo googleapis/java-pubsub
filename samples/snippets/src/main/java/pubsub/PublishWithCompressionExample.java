@@ -33,10 +33,10 @@ public class PublishWithCompressionExample {
     // Choose an existing topic.
     String topicId = "your-topic-id";
 
-    publishWithCompression(projectId, topicId);
+    publishWithCompressionExample(projectId, topicId);
   }
 
-  public static void publishWithCompression(String projectId, String topicId)
+  public static void publishWithCompressionExample(String projectId, String topicId)
       throws IOException, ExecutionException, InterruptedException {
     TopicName topicName = TopicName.of(projectId, topicId);
 
@@ -53,7 +53,7 @@ public class PublishWithCompressionExample {
       // Once published, returns a server-assigned message id (unique within the topic)
       ApiFuture<String> messageIdFuture = publisher.publish(pubsubMessage);
       String messageId = messageIdFuture.get();
-      System.out.println("Published message ID: " + messageId);
+      System.out.println("Published compressed message ID: " + messageId);
     } finally {
       if (publisher != null) {
         // When finished with the publisher, shutdown to free up resources.
