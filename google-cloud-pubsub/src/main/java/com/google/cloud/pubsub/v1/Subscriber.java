@@ -99,9 +99,10 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
 
   private static final Logger logger = Logger.getLogger(Subscriber.class.getName());
 
-  private final String subscriptionName;
+  private final String subscription;
   private final FlowControlSettings flowControlSettings;
   private final boolean useLegacyFlowControl;
+  private final boolean enableExactlyOnceDelivery;
   private final Duration maxAckExtensionPeriod;
   private final Duration maxDurationPerAckExtension;
   // The ExecutorProvider used to generate executors for processing messages.
@@ -112,21 +113,24 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
   private final Distribution ackLatencyDistribution =
       new Distribution(MAX_ACK_DEADLINE_SECONDS + 1);
 
-  private SubscriberStub subStub;
+  private SubscriberStub subscriberStub;
   private final SubscriberStubSettings subStubSettings;
   private final FlowController flowController;
   private final int numPullers;
 
   private final MessageReceiver receiver;
+  private final MessageReceiverWithAckResponse receiverWithAckResponse;
   private final List<StreamingSubscriberConnection> streamingSubscriberConnections;
   private final ApiClock clock;
   private final List<BackgroundResource> backgroundResources = new ArrayList<>();
 
   private Subscriber(Builder builder) {
     receiver = builder.receiver;
+    receiverWithAckResponse = builder.receiverWithAckResponse;
     flowControlSettings = builder.flowControlSettings;
     useLegacyFlowControl = builder.useLegacyFlowControl;
-    subscriptionName = builder.subscriptionName;
+    subscription = builder.subscription;
+    enableExactlyOnceDelivery = builder.enableExactlyOnceDelivery;
 
     maxAckExtensionPeriod = builder.maxAckExtensionPeriod;
     maxDurationPerAckExtension = builder.maxDurationPerAckExtension;
@@ -189,6 +193,11 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
     return newBuilder(subscription.toString(), receiver);
   }
 
+  public static Builder newBuilder(
+      ProjectSubscriptionName subscription, MessageReceiverWithAckResponse receiver) {
+    return newBuilder(subscription.toString(), receiver);
+  }
+
   /**
    * Constructs a new {@link Builder}.
    *
@@ -197,6 +206,10 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
    *     messages
    */
   public static Builder newBuilder(String subscription, MessageReceiver receiver) {
+    return new Builder(subscription, receiver);
+  }
+
+  public static Builder newBuilder(String subscription, MessageReceiverWithAckResponse receiver) {
     return new Builder(subscription, receiver);
   }
 
@@ -210,12 +223,17 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
 
   /** Subscription which the subscriber is subscribed to. */
   public String getSubscriptionNameString() {
-    return subscriptionName;
+    return subscription;
   }
 
   /** The flow control settings the Subscriber is configured with. */
   public FlowControlSettings getFlowControlSettings() {
     return flowControlSettings;
+  }
+
+  /** Returns the exactly once delivery configuration of the subscriber */
+  public boolean getEnableExactlyOnceDelivery() {
+    return enableExactlyOnceDelivery;
   }
 
   /**
@@ -262,7 +280,7 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
     logger.log(Level.FINE, "Starting subscriber group.");
 
     try {
-      this.subStub = GrpcSubscriberStub.create(subStubSettings);
+      this.subscriberStub = GrpcSubscriberStub.create(subStubSettings);
     } catch (IOException e) {
       // doesn't matter what we throw, the Service will just catch it and fail to start.
       throw new IllegalStateException(e);
@@ -310,7 +328,7 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
   private void runShutdown() {
     stopAllStreamingConnections();
     shutdownBackgroundResources();
-    subStub.shutdownNow();
+    subscriberStub.shutdownNow();
   }
 
   private void startStreamingConnections() {
@@ -321,22 +339,32 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
           backgroundResources.add(new ExecutorAsBackgroundResource((executor)));
         }
 
-        streamingSubscriberConnections.add(
-            new StreamingSubscriberConnection(
-                subscriptionName,
-                receiver,
-                ACK_EXPIRATION_PADDING,
-                maxAckExtensionPeriod,
-                maxDurationPerAckExtension,
-                ackLatencyDistribution,
-                subStub,
-                i,
-                flowControlSettings,
-                useLegacyFlowControl,
-                flowController,
-                executor,
-                alarmsExecutor,
-                clock));
+        StreamingSubscriberConnection.Builder streamingSubscriberConnectionBuilder;
+
+        if (enableExactlyOnceDelivery) {
+          streamingSubscriberConnectionBuilder =
+              StreamingSubscriberConnection.newBuilder(receiverWithAckResponse);
+        } else {
+          streamingSubscriberConnectionBuilder = StreamingSubscriberConnection.newBuilder(receiver);
+        }
+
+        StreamingSubscriberConnection streamingSubscriberConnection =
+            streamingSubscriberConnectionBuilder
+                .setSubscription(subscription)
+                .setAckExpirationPadding(ACK_EXPIRATION_PADDING)
+                .setMaxAckExtensionPeriod(maxAckExtensionPeriod)
+                .setMaxDurationPerAckExtension(maxDurationPerAckExtension)
+                .setAckLatencyDistribution(ackLatencyDistribution)
+                .setSubscriberStub(subscriberStub)
+                .setChannelAffinity(i)
+                .setFlowControlSettings(flowControlSettings)
+                .setUseLegacyFlowControl(useLegacyFlowControl)
+                .setExecutor(executor)
+                .setSystemExecutor(alarmsExecutor)
+                .setClock(clock)
+                .build();
+
+        streamingSubscriberConnections.add(streamingSubscriberConnection);
       }
       startConnections(
           streamingSubscriberConnections,
@@ -415,8 +443,9 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
             .build();
     private static final AtomicInteger SYSTEM_EXECUTOR_COUNTER = new AtomicInteger();
 
-    private String subscriptionName;
+    private String subscription;
     private MessageReceiver receiver;
+    private MessageReceiverWithAckResponse receiverWithAckResponse;
 
     private Duration maxAckExtensionPeriod = DEFAULT_MAX_ACK_EXTENSION_PERIOD;
     private Duration maxDurationPerAckExtension = DEFAULT_MAX_DURATION_PER_ACK_EXTENSION;
@@ -437,10 +466,16 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
     private Optional<ApiClock> clock = Optional.absent();
     private int parallelPullCount = 1;
     private String endpoint = SubscriberStubSettings.getDefaultEndpoint();
+    private boolean enableExactlyOnceDelivery = false;
 
-    Builder(String subscriptionName, MessageReceiver receiver) {
-      this.subscriptionName = subscriptionName;
+    Builder(String subscription, MessageReceiver receiver) {
+      this.subscription = subscription;
       this.receiver = receiver;
+    }
+
+    Builder(String subscription, MessageReceiverWithAckResponse receiverWithAckResponse) {
+      this.subscription = subscription;
+      this.receiverWithAckResponse = receiverWithAckResponse;
     }
 
     /**
@@ -584,6 +619,18 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
     /** Gives the ability to set a custom clock. */
     Builder setClock(ApiClock clock) {
       this.clock = Optional.of(clock);
+      return this;
+    }
+
+    /**
+     * Enable/Disable exactly once delivery If exactly once is true, receiverWithAckResponse must be
+     * set else, receiver must be set
+     */
+    public Builder setEnableExactlyOnceDelivery(boolean enableExactlyOnceDelivery) {
+      Preconditions.checkArgument(
+          (enableExactlyOnceDelivery && (receiverWithAckResponse != null))
+              || (!enableExactlyOnceDelivery && (receiver != null)));
+      this.enableExactlyOnceDelivery = enableExactlyOnceDelivery;
       return this;
     }
 
