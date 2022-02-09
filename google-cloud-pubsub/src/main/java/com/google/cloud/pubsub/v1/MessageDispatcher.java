@@ -34,13 +34,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.Executor;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
@@ -69,10 +63,13 @@ class MessageDispatcher {
   private final Duration ackExpirationPadding;
   private final Duration maxAckExtensionPeriod;
   private final int maxSecondsPerAckExtension;
-  private final MessageReceiver receiver;
+  private MessageReceiver receiver;
+  private MessageReceiverWithAckResponse receiverWithAckResponse;
+  private boolean enableExactlyOnceDelivery;
   private final AckProcessor ackProcessor;
 
   private final FlowController flowController;
+
   private final Waiter messagesWaiter;
 
   // Maps ID to "total expiration time". If it takes longer than this, stop extending.
@@ -187,31 +184,22 @@ class MessageDispatcher {
         List<String> acksToSend, List<PendingModifyAckDeadline> ackDeadlineExtensions);
   }
 
-  MessageDispatcher(
-      MessageReceiver receiver,
-      AckProcessor ackProcessor,
-      Duration ackExpirationPadding,
-      Duration maxAckExtensionPeriod,
-      Duration maxDurationPerAckExtension,
-      Distribution ackLatencyDistribution,
-      FlowController flowController,
-      Executor executor,
-      ScheduledExecutorService systemExecutor,
-      ApiClock clock) {
-    this.executor = executor;
-    this.systemExecutor = systemExecutor;
-    this.ackExpirationPadding = ackExpirationPadding;
-    this.maxAckExtensionPeriod = maxAckExtensionPeriod;
-    this.maxSecondsPerAckExtension = Math.toIntExact(maxDurationPerAckExtension.getSeconds());
-    this.receiver = receiver;
-    this.ackProcessor = ackProcessor;
-    this.flowController = flowController;
-    // 601 buckets of 1s resolution from 0s to MAX_ACK_DEADLINE_SECONDS
-    this.ackLatencyDistribution = ackLatencyDistribution;
+  private MessageDispatcher(Builder builder) {
+    executor = builder.executor;
+    systemExecutor = builder.systemExecutor;
+    ackExpirationPadding = builder.ackExpirationPadding;
+    maxAckExtensionPeriod = builder.maxAckExtensionPeriod;
+    maxSecondsPerAckExtension = Math.toIntExact(builder.maxDurationPerAckExtension.getSeconds());
+    receiver = builder.receiver;
+    receiverWithAckResponse = builder.receiverWithAckResponse;
+    ackProcessor = builder.ackProcessor;
+    flowController = builder.flowController;
+    ackLatencyDistribution = builder.ackLatencyDistribution;
+    clock = builder.clock;
+    enableExactlyOnceDelivery = builder.enableExactlyOnceDelivery;
+    sequentialExecutor = new SequentialExecutorService.AutoExecutor(executor);
     jobLock = new ReentrantLock();
     messagesWaiter = new Waiter();
-    this.clock = clock;
-    this.sequentialExecutor = new SequentialExecutorService.AutoExecutor(executor);
   }
 
   void start() {
@@ -364,7 +352,21 @@ class MessageDispatcher {
 
   private void processOutstandingMessage(final PubsubMessage message, final AckHandler ackHandler) {
     final SettableApiFuture<AckReply> response = SettableApiFuture.create();
-    final AckReplyConsumer consumer =
+//    if (enableExactlyOnceDelivery) {
+//      final AckReplyConsumerWithResponse consumer =
+//              new AckReplyConsumerWithResponse() {
+//                @Override
+//                public Future<AcknowledgementResponse> ack() {
+//                  return null;
+//                }
+//
+//                @Override
+//                public Future<AcknowledgementResponse> nack() {
+//                  return null;
+//                }
+//              }
+//    } else {
+      final AckReplyConsumer consumer =
         new AckReplyConsumer() {
           @Override
           public void ack() {
@@ -376,6 +378,7 @@ class MessageDispatcher {
             response.set(AckReply.NACK);
           }
         };
+//    }
     ApiFutures.addCallback(response, ackHandler, MoreExecutors.directExecutor());
     Runnable deliverMessageTask =
         new Runnable() {
@@ -483,5 +486,93 @@ class MessageDispatcher {
 
   private Instant now() {
     return Instant.ofEpochMilli(clock.millisTime());
+  }
+
+  /** Builder of {@link MessageDispatcher MessageDispatchers}. */
+  public static final class Builder {
+    private MessageReceiver receiver;
+    private MessageReceiverWithAckResponse receiverWithAckResponse;
+    private boolean enableExactlyOnceDelivery = false;
+
+    private AckProcessor ackProcessor;
+    private Duration ackExpirationPadding;
+    private Duration maxAckExtensionPeriod;
+    private Duration maxDurationPerAckExtension;
+    private Distribution ackLatencyDistribution;
+    private FlowController flowController;
+
+    private Executor executor;
+    private ScheduledExecutorService systemExecutor;
+    private ApiClock clock;
+
+    Builder(MessageReceiver receiver) {
+      this.receiver = receiver;
+    }
+
+    Builder(MessageReceiverWithAckResponse receiverWithAckResponse) {
+      this.receiverWithAckResponse = receiverWithAckResponse;
+    }
+
+    public Builder setEnableExactlyOnceDelivery(boolean enableExactlyOnceDelivery) {
+      this.enableExactlyOnceDelivery = enableExactlyOnceDelivery;
+      return this;
+    }
+
+    public Builder setAckProcessor(AckProcessor ackProcessor) {
+      this.ackProcessor = ackProcessor;
+      return this;
+    }
+
+    public Builder setAckExpirationPadding(Duration ackExpirationPadding) {
+      this.ackExpirationPadding = ackExpirationPadding;
+      return this;
+    }
+
+    public Builder setMaxAckExtensionPeriod(Duration maxAckExtensionPeriod) {
+      this.maxAckExtensionPeriod = maxAckExtensionPeriod;
+      return this;
+    }
+
+    public Builder setMaxDurationPerAckExtension(Duration maxDurationPerAckExtension) {
+      this.maxDurationPerAckExtension = maxDurationPerAckExtension;
+      return this;
+    }
+
+    public Builder setAckLatencyDistribution(Distribution ackLatencyDistribution) {
+      this.ackLatencyDistribution = ackLatencyDistribution;
+      return this;
+    }
+
+    public Builder setFlowController(FlowController flowController) {
+      this.flowController = flowController;
+      return this;
+    }
+
+    public Builder setExecutor(Executor executor) {
+      this.executor = executor;
+      return this;
+    }
+
+    public Builder setSystemExecutor(ScheduledExecutorService systemExecutor) {
+      this.systemExecutor = systemExecutor;
+      return this;
+    }
+
+    public Builder setApiClock(ApiClock clock) {
+      this.clock = clock;
+      return this;
+    }
+
+    public MessageDispatcher build() {
+      return new MessageDispatcher(this);
+    }
+  }
+
+  public static Builder newBuilder(MessageReceiver receiver) {
+    return new Builder(receiver);
+  }
+
+  public static Builder newBuilder(MessageReceiverWithAckResponse receiverWithAckResponse) {
+    return new Builder(receiverWithAckResponse);
   }
 }

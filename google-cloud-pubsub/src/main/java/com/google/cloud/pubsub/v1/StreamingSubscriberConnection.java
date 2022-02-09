@@ -72,7 +72,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
   private static final int MAX_PER_REQUEST_CHANGES = 1000;
 
   private final Duration streamAckDeadline;
-  private final SubscriberStub stub;
+  private final SubscriberStub subscriberStub;
   private final int channelAffinity;
   private final String subscription;
   private final ScheduledExecutorService systemExecutor;
@@ -81,9 +81,12 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
   private final FlowControlSettings flowControlSettings;
   private final boolean useLegacyFlowControl;
 
+  private final boolean enableExactlyOnceDelivery;
+
   private final AtomicLong channelReconnectBackoffMillis =
       new AtomicLong(INITIAL_CHANNEL_RECONNECT_BACKOFF.toMillis());
   private final Waiter ackOperationsWaiter = new Waiter();
+  private final ApiClock clock;
 
   private final Lock lock = new ReentrantLock();
   private ClientStream<StreamingPullRequest> clientStream;
@@ -95,48 +98,50 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
    */
   private final String clientId = UUID.randomUUID().toString();
 
-  public StreamingSubscriberConnection(
-      String subscription,
-      MessageReceiver receiver,
-      Duration ackExpirationPadding,
-      Duration maxAckExtensionPeriod,
-      Duration maxDurationPerAckExtension,
-      Distribution ackLatencyDistribution,
-      SubscriberStub stub,
-      int channelAffinity,
-      FlowControlSettings flowControlSettings,
-      boolean useLegacyFlowControl,
-      FlowController flowController,
-      ScheduledExecutorService executor,
-      ScheduledExecutorService systemExecutor,
-      ApiClock clock) {
-    this.subscription = subscription;
-    this.systemExecutor = systemExecutor;
-    if (maxDurationPerAckExtension.compareTo(DEFAULT_MAX_DURATION_PER_ACK_EXTENSION) == 0) {
-      this.streamAckDeadline = DEFAULT_STREAM_ACK_DEADLINE;
-    } else if (maxDurationPerAckExtension.compareTo(MIN_STREAM_ACK_DEADLINE) < 0) {
+  private StreamingSubscriberConnection(Builder builder) {
+    subscription = builder.subscription;
+    systemExecutor = builder.systemExecutor;
+    if (builder.maxDurationPerAckExtension.compareTo(DEFAULT_MAX_DURATION_PER_ACK_EXTENSION) == 0) {
+      streamAckDeadline = DEFAULT_STREAM_ACK_DEADLINE;
+    } else if (builder.maxDurationPerAckExtension.compareTo(MIN_STREAM_ACK_DEADLINE) < 0) {
       this.streamAckDeadline = MIN_STREAM_ACK_DEADLINE;
-    } else if (maxDurationPerAckExtension.compareTo(MAX_STREAM_ACK_DEADLINE) > 0) {
+    } else if (builder.maxDurationPerAckExtension.compareTo(MAX_STREAM_ACK_DEADLINE) > 0) {
       this.streamAckDeadline = MAX_STREAM_ACK_DEADLINE;
     } else {
-      this.streamAckDeadline = maxDurationPerAckExtension;
+      this.streamAckDeadline = builder.maxDurationPerAckExtension;
     }
-    this.stub = stub;
-    this.channelAffinity = channelAffinity;
-    this.messageDispatcher =
-        new MessageDispatcher(
-            receiver,
-            this,
-            ackExpirationPadding,
-            maxAckExtensionPeriod,
-            maxDurationPerAckExtension,
-            ackLatencyDistribution,
-            flowController,
-            executor,
-            systemExecutor,
-            clock);
-    this.flowControlSettings = flowControlSettings;
-    this.useLegacyFlowControl = useLegacyFlowControl;
+    subscriberStub = builder.subscriberStub;
+    channelAffinity = builder.channelAffinity;
+
+    MessageDispatcher.Builder messageDispatcherBuilder;
+    if (builder.receiver != null) {
+      messageDispatcherBuilder = MessageDispatcher.newBuilder(builder.receiver);
+    } else if (builder.receiverWithAckResponse != null) {
+      messageDispatcherBuilder = MessageDispatcher.newBuilder(builder.receiverWithAckResponse);
+    } else {
+      // Misconfiguration
+      throw new IllegalStateException();
+    }
+
+    clock = builder.clock;
+
+    flowControlSettings = builder.flowControlSettings;
+    useLegacyFlowControl = builder.useLegacyFlowControl;
+    enableExactlyOnceDelivery = builder.enableExactlyOnceDelivery;
+
+    messageDispatcher =
+        messageDispatcherBuilder
+            .setAckProcessor(this)
+            .setAckExpirationPadding(builder.ackExpirationPadding)
+            .setMaxAckExtensionPeriod(builder.maxAckExtensionPeriod)
+            .setMaxDurationPerAckExtension(builder.maxDurationPerAckExtension)
+            .setAckLatencyDistribution(builder.ackLatencyDistribution)
+            .setFlowController(builder.flowController)
+            .setEnableExactlyOnceDelivery(enableExactlyOnceDelivery)
+            .setExecutor(builder.executor)
+            .setSystemExecutor(systemExecutor)
+            .setApiClock(clock)
+            .build();
   }
 
   @Override
@@ -225,7 +230,8 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     final ResponseObserver<StreamingPullResponse> responseObserver =
         new StreamingPullResponseObserver(errorFuture);
     ClientStream<StreamingPullRequest> initClientStream =
-        stub.streamingPullCallable()
+        subscriberStub
+            .streamingPullCallable()
             .splitCall(
                 responseObserver,
                 GrpcCallContext.createDefault().withChannelAffinity(channelAffinity));
@@ -341,7 +347,8 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     for (PendingModifyAckDeadline modack : ackDeadlineExtensions) {
       for (List<String> idChunk : Lists.partition(modack.ackIds, MAX_PER_REQUEST_CHANGES)) {
         ApiFuture<Empty> future =
-            stub.modifyAckDeadlineCallable()
+            subscriberStub
+                .modifyAckDeadlineCallable()
                 .futureCall(
                     ModifyAckDeadlineRequest.newBuilder()
                         .setSubscription(subscription)
@@ -355,7 +362,8 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
 
     for (List<String> idChunk : Lists.partition(acksToSend, MAX_PER_REQUEST_CHANGES)) {
       ApiFuture<Empty> future =
-          stub.acknowledgeCallable()
+          subscriberStub
+              .acknowledgeCallable()
               .futureCall(
                   AcknowledgeRequest.newBuilder()
                       .setSubscription(subscription)
@@ -366,5 +374,110 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     }
 
     ackOperationsWaiter.incrementPendingCount(pendingOperations);
+  }
+
+  /** Builder of {@link StreamingSubscriberConnection StreamingSubscriberConnections}. */
+  public static final class Builder {
+    private MessageReceiver receiver;
+    private MessageReceiverWithAckResponse receiverWithAckResponse;
+    private String subscription;
+    private Duration ackExpirationPadding;
+    private Duration maxAckExtensionPeriod;
+    private Duration maxDurationPerAckExtension;
+    private Distribution ackLatencyDistribution;
+    private SubscriberStub subscriberStub;
+    private int channelAffinity;
+    private FlowController flowController;
+    private FlowControlSettings flowControlSettings;
+    private boolean useLegacyFlowControl;
+    private boolean enableExactlyOnceDelivery;
+    private ScheduledExecutorService executor;
+    private ScheduledExecutorService systemExecutor;
+    private ApiClock clock;
+
+    Builder(MessageReceiver receiver) {
+      this.receiver = receiver;
+    }
+
+    Builder(MessageReceiverWithAckResponse receiverWithAckResponse) {
+      this.receiverWithAckResponse = receiverWithAckResponse;
+    }
+
+    public Builder setSubscription(String subscription) {
+      this.subscription = subscription;
+      return this;
+    }
+
+    public Builder setAckExpirationPadding(Duration ackExpirationPadding) {
+      this.ackExpirationPadding = ackExpirationPadding;
+      return this;
+    }
+
+    public Builder setMaxAckExtensionPeriod(Duration maxAckExtensionPeriod) {
+      this.maxAckExtensionPeriod = maxAckExtensionPeriod;
+      return this;
+    }
+
+    public Builder setMaxDurationPerAckExtension(Duration maxDurationPerAckExtension) {
+      this.maxDurationPerAckExtension = maxDurationPerAckExtension;
+      return this;
+    }
+
+    public Builder setAckLatencyDistribution(Distribution ackLatencyDistribution) {
+      this.ackLatencyDistribution = ackLatencyDistribution;
+      return this;
+    }
+
+    public Builder setSubscriberStub(SubscriberStub subscriberStub) {
+      this.subscriberStub = subscriberStub;
+      return this;
+    }
+
+    public Builder setChannelAffinity(int channelAffinity) {
+      this.channelAffinity = channelAffinity;
+      return this;
+    }
+
+    public Builder setFlowController(FlowController flowController) {
+      this.flowController = flowController;
+      return this;
+    }
+
+    public Builder setFlowControlSettings(FlowControlSettings flowControlSettings) {
+      this.flowControlSettings = flowControlSettings;
+      return this;
+    }
+
+    public Builder setUseLegacyFlowControl(boolean useLegacyFlowControl) {
+      this.useLegacyFlowControl = useLegacyFlowControl;
+      return this;
+    }
+
+    public Builder setExecutor(ScheduledExecutorService executor) {
+      this.executor = executor;
+      return this;
+    }
+
+    public Builder setSystemExecutor(ScheduledExecutorService systemExecutor) {
+      this.systemExecutor = systemExecutor;
+      return this;
+    }
+
+    public Builder setClock(ApiClock clock) {
+      this.clock = clock;
+      return this;
+    }
+
+    public StreamingSubscriberConnection build() {
+      return new StreamingSubscriberConnection(this);
+    }
+  }
+
+  public static Builder newBuilder(MessageReceiver receiver) {
+    return new Builder(receiver);
+  }
+
+  public static Builder newBuilder(MessageReceiverWithAckResponse receiverWithAckResponse) {
+    return new Builder(receiverWithAckResponse);
   }
 }

@@ -96,7 +96,7 @@ public class MessageDispatcherTest {
             consumers.add(consumer);
           }
         };
-    MessageDispatcher.AckProcessor processor =
+    MessageDispatcher.AckProcessor ackProcessor =
         new MessageDispatcher.AckProcessor() {
           public void sendAckOperations(
               List<String> acksToSend,
@@ -124,17 +124,18 @@ public class MessageDispatcherTest {
                 .build());
 
     dispatcher =
-        new MessageDispatcher(
-            receiver,
-            processor,
-            Duration.ofSeconds(5),
-            Duration.ofMinutes(60),
-            Duration.ofSeconds(MAX_SECONDS_PER_ACK_EXTENSION),
-            new Distribution(Subscriber.MAX_ACK_DEADLINE_SECONDS + 1),
-            flowController,
-            MoreExecutors.directExecutor(),
-            systemExecutor,
-            clock);
+        MessageDispatcher.newBuilder(receiver)
+            .setAckProcessor(ackProcessor)
+            .setAckExpirationPadding(Duration.ofSeconds(5))
+            .setMaxAckExtensionPeriod(Duration.ofMinutes(60))
+            .setMaxDurationPerAckExtension(Duration.ofSeconds(MAX_SECONDS_PER_ACK_EXTENSION))
+            .setAckLatencyDistribution(new Distribution(Subscriber.MAX_ACK_DEADLINE_SECONDS + 1))
+            .setFlowController(flowController)
+            .setExecutor(MoreExecutors.directExecutor())
+            .setSystemExecutor(systemExecutor)
+            .setApiClock(clock)
+            .build();
+
     dispatcher.setMessageDeadlineSeconds(Subscriber.MIN_ACK_DEADLINE_SECONDS);
 
     messageContainsDeliveryAttempt = true;
