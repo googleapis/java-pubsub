@@ -18,7 +18,7 @@ package com.google.cloud.pubsub.v1;
 
 import java.util.concurrent.Future;
 
-enum AcknowledgementResponse {
+enum AckResponse {
   PERMISSION_DENIED,
   FAILED_PRECONDITION,
   SUCCESSFUL,
@@ -27,7 +27,7 @@ enum AcknowledgementResponse {
 }
 
 public interface AckReplyConsumerWithResponse {
-  Future<AcknowledgementResponse> ack();
+  Future<AckResponse> ack();
 
-  Future<AcknowledgementResponse> nack();
+  Future<AckResponse> nack();
 }

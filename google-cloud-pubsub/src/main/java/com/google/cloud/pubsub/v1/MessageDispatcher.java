@@ -350,35 +350,34 @@ class MessageDispatcher {
 
   private void processOutstandingMessage(final PubsubMessage message, final AckHandler ackHandler) {
     final SettableApiFuture<AckReply> response = SettableApiFuture.create();
+    final AckReplyConsumer ackReplyConsumer =
+            new AckReplyConsumer() {
+              @Override
+              public void ack() {
+                response.set(AckReply.ACK);
+              }
 
+              @Override
+              public void nack() {
+                response.set(AckReply.NACK);
+              }
+            };
+    ApiFutures.addCallback(response, ackHandler, MoreExecutors.directExecutor());
+
+    SettableApiFuture<AckResponse> ackResponseSettableApiFuture = SettableApiFuture.create();
     final AckReplyConsumerWithResponse ackReplyConsumerWithResponse =
             new AckReplyConsumerWithResponse() {
               @Override
-              public Future<AcknowledgementResponse> ack() {
-                response.set(AckReply.ACK);
-                return null;
+              public Future<AckResponse> ack() {
+                return ackResponseSettableApiFuture;
               }
 
               @Override
-              public Future<AcknowledgementResponse> nack() {
-                response.set(AckReply.NACK);
-                return null;
+              public Future<AckResponse> nack() {
+                return ackResponseSettableApiFuture;
               }
             };
-    final AckReplyConsumer ackReplyConsumer =
-        new AckReplyConsumer() {
-          @Override
-          public void ack() {
-            response.set(AckReply.ACK);
-          }
 
-          @Override
-          public void nack() {
-            response.set(AckReply.NACK);
-          }
-        };
-
-    ApiFutures.addCallback(response, ackHandler, MoreExecutors.directExecutor());
     Runnable deliverMessageTask =
         new Runnable() {
           @Override
