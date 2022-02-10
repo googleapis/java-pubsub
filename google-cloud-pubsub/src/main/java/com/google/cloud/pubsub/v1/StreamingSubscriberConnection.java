@@ -47,8 +47,9 @@ import com.google.pubsub.v1.ModifyAckDeadlineRequest;
 import com.google.pubsub.v1.StreamingPullRequest;
 import com.google.pubsub.v1.StreamingPullResponse;
 import io.grpc.Status;
-import java.util.List;
-import java.util.UUID;
+
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
@@ -81,8 +82,6 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
   private final FlowControlSettings flowControlSettings;
   private final boolean useLegacyFlowControl;
 
-  private final boolean enableExactlyOnceDelivery;
-
   private final AtomicLong channelReconnectBackoffMillis =
       new AtomicLong(INITIAL_CHANNEL_RECONNECT_BACKOFF.toMillis());
   private final Waiter ackOperationsWaiter = new Waiter();
@@ -113,7 +112,6 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     subscriberStub = builder.subscriberStub;
     channelAffinity = builder.channelAffinity;
     clock = builder.clock;
-    enableExactlyOnceDelivery = builder.enableExactlyOnceDelivery;
 
     MessageDispatcher.Builder messageDispatcherBuilder;
     if (builder.receiver != null) {
@@ -326,48 +324,136 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
   @Override
   public void sendAckOperations(
       List<String> acksToSend, List<PendingModifyAckDeadline> ackDeadlineExtensions) {
-    ApiFutureCallback<Empty> loggingCallback =
-        new ApiFutureCallback<Empty>() {
-          @Override
-          public void onSuccess(Empty empty) {
-            ackOperationsWaiter.incrementPendingCount(-1);
-          }
 
-          @Override
-          public void onFailure(Throwable t) {
-            ackOperationsWaiter.incrementPendingCount(-1);
-            Level level = isAlive() ? Level.WARNING : Level.FINER;
-            logger.log(level, "failed to send operations", t);
-          }
-        };
+//    if (true) {
+//      sendAckOperationsNoResponse(acksToSend, ackDeadlineExtensions);
+//      return;
+//    }
 
     int pendingOperations = 0;
     for (PendingModifyAckDeadline modack : ackDeadlineExtensions) {
       for (List<String> idChunk : Lists.partition(modack.ackIds, MAX_PER_REQUEST_CHANGES)) {
+        ApiFutureCallback<Empty> ephemeralLoggingCallback =
+                new ApiFutureCallback<Empty>() {
+                  @Override
+                  public void onSuccess(Empty empty) {
+                    ackOperationsWaiter.incrementPendingCount(-1);
+                  }
+
+                  @Override
+                  public void onFailure(Throwable t) {
+                    ackOperationsWaiter.incrementPendingCount(-1);
+                    Level level = isAlive() ? Level.WARNING : Level.FINER;
+                    logger.log(level, "failed to send operations", t);
+                  }
+                };
         ApiFuture<Empty> future =
-            subscriberStub
-                .modifyAckDeadlineCallable()
-                .futureCall(
-                    ModifyAckDeadlineRequest.newBuilder()
-                        .setSubscription(subscription)
-                        .addAllAckIds(idChunk)
-                        .setAckDeadlineSeconds(modack.deadlineExtensionSeconds)
-                        .build());
-        ApiFutures.addCallback(future, loggingCallback, directExecutor());
+                subscriberStub
+                        .modifyAckDeadlineCallable()
+                        .futureCall(
+                                ModifyAckDeadlineRequest.newBuilder()
+                                        .setSubscription(subscription)
+                                        .addAllAckIds(idChunk)
+                                        .setAckDeadlineSeconds(modack.deadlineExtensionSeconds)
+                                        .build());
+        ApiFutures.addCallback(future, ephemeralLoggingCallback, directExecutor());
+        pendingOperations++;
+      }
+    }
+
+//    Map<String, ApiFuture> futureMap = new HashMap<>();
+    List<ApiFuture> futures = Collections.emptyList();
+
+    for (List<String> idChunk : Lists.partition(acksToSend, MAX_PER_REQUEST_CHANGES)) {
+      for (String ackId : idChunk) {
+        ApiFuture<Empty> future =
+                subscriberStub
+                        .acknowledgeCallable()
+                        .futureCall(
+                                AcknowledgeRequest.newBuilder()
+                                        .setSubscription(subscription)
+                                        .addAllAckIds(idChunk)
+                                        .build());
+        ApiFutureCallback<Empty> ephemeralLoggingCallback =
+                new ApiFutureCallback<Empty>() {
+                  @Override
+                  public void onSuccess(Empty empty) {
+                    ackOperationsWaiter.incrementPendingCount(-1);
+                  }
+
+                  @Override
+                  public void onFailure(Throwable t) {
+                    ackOperationsWaiter.incrementPendingCount(-1);
+                    Level level = isAlive() ? Level.WARNING : Level.FINER;
+                    logger.log(level, "failed to send operations", t);
+                  }
+                };
+        ApiFutures.addCallback(future, ephemeralLoggingCallback, directExecutor());
+        futures.add(future);
+        pendingOperations++;
+      }
+    }
+
+    ackOperationsWaiter.incrementPendingCount(pendingOperations);
+  }
+
+  // Mostly here to make sure nothing breaks horribly
+  private void sendAckOperationsNoResponse(List<String> acksToSend, List<PendingModifyAckDeadline> ackDeadlineExtensions) {
+    int pendingOperations = 0;
+    for (PendingModifyAckDeadline modack : ackDeadlineExtensions) {
+      for (List<String> idChunk : Lists.partition(modack.ackIds, MAX_PER_REQUEST_CHANGES)) {
+        ApiFutureCallback<Empty> ephemeralLoggingCallback =
+                new ApiFutureCallback<Empty>() {
+                  @Override
+                  public void onSuccess(Empty empty) {
+                    ackOperationsWaiter.incrementPendingCount(-1);
+                  }
+
+                  @Override
+                  public void onFailure(Throwable t) {
+                    ackOperationsWaiter.incrementPendingCount(-1);
+                    Level level = isAlive() ? Level.WARNING : Level.FINER;
+                    logger.log(level, "failed to send operations", t);
+                  }
+                };
+        ApiFuture<Empty> future =
+                subscriberStub
+                        .modifyAckDeadlineCallable()
+                        .futureCall(
+                                ModifyAckDeadlineRequest.newBuilder()
+                                        .setSubscription(subscription)
+                                        .addAllAckIds(idChunk)
+                                        .setAckDeadlineSeconds(modack.deadlineExtensionSeconds)
+                                        .build());
+        ApiFutures.addCallback(future, ephemeralLoggingCallback, directExecutor());
         pendingOperations++;
       }
     }
 
     for (List<String> idChunk : Lists.partition(acksToSend, MAX_PER_REQUEST_CHANGES)) {
       ApiFuture<Empty> future =
-          subscriberStub
-              .acknowledgeCallable()
-              .futureCall(
-                  AcknowledgeRequest.newBuilder()
-                      .setSubscription(subscription)
-                      .addAllAckIds(idChunk)
-                      .build());
-      ApiFutures.addCallback(future, loggingCallback, directExecutor());
+              subscriberStub
+                      .acknowledgeCallable()
+                      .futureCall(
+                              AcknowledgeRequest.newBuilder()
+                                      .setSubscription(subscription)
+                                      .addAllAckIds(idChunk)
+                                      .build());
+      ApiFutureCallback<Empty> ephemeralLoggingCallback =
+              new ApiFutureCallback<Empty>() {
+                @Override
+                public void onSuccess(Empty empty) {
+                  ackOperationsWaiter.incrementPendingCount(-1);
+                }
+
+                @Override
+                public void onFailure(Throwable t) {
+                  ackOperationsWaiter.incrementPendingCount(-1);
+                  Level level = isAlive() ? Level.WARNING : Level.FINER;
+                  logger.log(level, "failed to send operations", t);
+                }
+              };
+      ApiFutures.addCallback(future, ephemeralLoggingCallback, directExecutor());
       pendingOperations++;
     }
 
@@ -388,7 +474,6 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     private FlowController flowController;
     private FlowControlSettings flowControlSettings;
     private boolean useLegacyFlowControl;
-    private boolean enableExactlyOnceDelivery;
     private ScheduledExecutorService executor;
     private ScheduledExecutorService systemExecutor;
     private ApiClock clock;

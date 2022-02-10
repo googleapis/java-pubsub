@@ -369,6 +369,8 @@ class MessageDispatcher {
             new AckReplyConsumerWithResponse() {
               @Override
               public Future<AckResponse> ack() {
+//                response.set(AckReply.ACK);
+//                ackResponseSettableApiFuture.set(AckResponse.SUCCESSFUL);
                 return ackResponseSettableApiFuture;
               }
 
