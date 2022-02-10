@@ -228,16 +228,16 @@ public class ITPubSubTest {
     publisher.awaitTermination(1, TimeUnit.MINUTES);
 
     // Ack the first message.
-    MessageAndConsumer toAck = pollQueue(receiveQueue);
+    MessageAndConsumer toAck = pollQueueMessageAndConsumer(receiveQueue);
     toAck.consumer().ack();
 
     // Nack the other.
-    MessageAndConsumer toNack = pollQueue(receiveQueue);
+    MessageAndConsumer toNack = pollQueueMessageAndConsumer(receiveQueue);
     assertThat(toNack.message().getData()).isNotEqualTo(toAck.message().getData());
     toNack.consumer().nack();
 
     // We should get the nacked message back.
-    MessageAndConsumer redelivered = pollQueue(receiveQueue);
+    MessageAndConsumer redelivered = pollQueueMessageAndConsumer(receiveQueue);
     assertThat(redelivered.message().getData()).isEqualTo(toNack.message().getData());
     redelivered.consumer().ack();
 
@@ -294,25 +294,41 @@ public class ITPubSubTest {
     publisher.awaitTermination(1, TimeUnit.MINUTES);
 
     // Ack the first message.
-    MessageAndConsumer toAck = pollQueue(receiveQueue);
-    toAck.consumer().ack();
+    MessageAndConsumerWithResponse toAck = pollQueueMessageAndConsumerWithResponse(receiveQueue);
+    toAck.consumerWithResponse().ack();
 
     // Nack the other.
-//    MessageAndConsumer toNack = pollQueue(receiveQueue);
-//    assertThat(toNack.message().getData()).isNotEqualTo(toAck.message().getData());
-//    toNack.consumer().nack();
+    MessageAndConsumer toNack = pollQueueMessageAndConsumer(receiveQueue);
+    assertThat(toNack.message().getData()).isNotEqualTo(toAck.message().getData());
+    toNack.consumer().nack();
 
     // We should get the nacked message back.
-//    MessageAndConsumer redelivered = pollQueue(receiveQueue);
-//    assertThat(redelivered.message().getData()).isEqualTo(toNack.message().getData());
-//    redelivered.consumer().ack();
+    MessageAndConsumer redelivered = pollQueueMessageAndConsumer(receiveQueue);
+    assertThat(redelivered.message().getData()).isEqualTo(toNack.message().getData());
+    redelivered.consumer().ack();
 
     subscriber.stopAsync().awaitTerminated();
     subscriptionAdminClient.deleteSubscription(subscriptionName);
     topicAdminClient.deleteTopic(topicName);
   }
 
-  private MessageAndConsumer pollQueue(BlockingQueue<Object> queue) throws InterruptedException {
+  private MessageAndConsumer pollQueueMessageAndConsumer(BlockingQueue<Object> queue) throws InterruptedException {
+    Object obj = pollQueue(queue);
+    if (obj instanceof MessageAndConsumer) {
+      return (MessageAndConsumer) obj;
+    }
+    throw new IllegalStateException("expected either MessageAndConsumer or Throwable, found: " + obj);
+  }
+
+  private MessageAndConsumerWithResponse pollQueueMessageAndConsumerWithResponse(BlockingQueue<Object> queue) throws InterruptedException {
+    Object obj = pollQueue(queue);
+    if (obj instanceof MessageAndConsumerWithResponse) {
+      return (MessageAndConsumerWithResponse) obj;
+    }
+    throw new IllegalStateException("expected either MessageAndConsumerWithResponse or Throwable, found: " + obj);
+  }
+
+  private Object pollQueue(BlockingQueue<Object> queue) throws InterruptedException {
     Object obj = queue.poll(10, TimeUnit.MINUTES);
     if (obj == null) {
       return null;
@@ -320,10 +336,7 @@ public class ITPubSubTest {
     if (obj instanceof Throwable) {
       throw new IllegalStateException("unexpected error", (Throwable) obj);
     }
-    if (obj instanceof MessageAndConsumer) {
-      return (MessageAndConsumer) obj;
-    }
-    throw new IllegalStateException(
-        "expected either MessageAndConsumer or Throwable, found: " + obj);
+
+    return obj;
   }
 }

@@ -102,7 +102,6 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
   private final String subscription;
   private final FlowControlSettings flowControlSettings;
   private final boolean useLegacyFlowControl;
-  private final boolean enableExactlyOnceDelivery;
   private final Duration maxAckExtensionPeriod;
   private final Duration maxDurationPerAckExtension;
   // The ExecutorProvider used to generate executors for processing messages.
@@ -130,7 +129,6 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
     flowControlSettings = builder.flowControlSettings;
     useLegacyFlowControl = builder.useLegacyFlowControl;
     subscription = builder.subscription;
-    enableExactlyOnceDelivery = builder.enableExactlyOnceDelivery;
 
     maxAckExtensionPeriod = builder.maxAckExtensionPeriod;
     maxDurationPerAckExtension = builder.maxDurationPerAckExtension;
@@ -229,11 +227,6 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
   /** The flow control settings the Subscriber is configured with. */
   public FlowControlSettings getFlowControlSettings() {
     return flowControlSettings;
-  }
-
-  /** Returns the exactly once delivery configuration of the subscriber */
-  public boolean getEnableExactlyOnceDelivery() {
-    return enableExactlyOnceDelivery;
   }
 
   /**
@@ -341,7 +334,7 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
 
         StreamingSubscriberConnection.Builder streamingSubscriberConnectionBuilder;
 
-        if (enableExactlyOnceDelivery) {
+        if (receiverWithAckResponse != null) {
           streamingSubscriberConnectionBuilder =
               StreamingSubscriberConnection.newBuilder(receiverWithAckResponse);
         } else {

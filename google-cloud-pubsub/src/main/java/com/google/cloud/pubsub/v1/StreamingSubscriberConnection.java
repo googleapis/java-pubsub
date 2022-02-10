@@ -133,7 +133,6 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
             .setMaxDurationPerAckExtension(builder.maxDurationPerAckExtension)
             .setAckLatencyDistribution(builder.ackLatencyDistribution)
             .setFlowController(builder.flowController)
-            .setEnableExactlyOnceDelivery(enableExactlyOnceDelivery)
             .setExecutor(builder.executor)
             .setSystemExecutor(builder.systemExecutor)
             .setApiClock(clock)

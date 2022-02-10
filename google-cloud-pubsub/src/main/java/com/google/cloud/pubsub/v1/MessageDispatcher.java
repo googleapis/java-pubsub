@@ -65,7 +65,6 @@ class MessageDispatcher {
   private final int maxSecondsPerAckExtension;
   private MessageReceiver receiver;
   private MessageReceiverWithAckResponse receiverWithAckResponse;
-  private boolean enableExactlyOnceDelivery;
   private final AckProcessor ackProcessor;
 
   private final FlowController flowController;
@@ -196,7 +195,6 @@ class MessageDispatcher {
     flowController = builder.flowController;
     ackLatencyDistribution = builder.ackLatencyDistribution;
     clock = builder.clock;
-    enableExactlyOnceDelivery = builder.enableExactlyOnceDelivery;
     jobLock = new ReentrantLock();
     messagesWaiter = new Waiter();
     sequentialExecutor = new SequentialExecutorService.AutoExecutor(builder.executor);
@@ -352,21 +350,22 @@ class MessageDispatcher {
 
   private void processOutstandingMessage(final PubsubMessage message, final AckHandler ackHandler) {
     final SettableApiFuture<AckReply> response = SettableApiFuture.create();
-//    if (enableExactlyOnceDelivery) {
-//      final AckReplyConsumerWithResponse consumer =
-//              new AckReplyConsumerWithResponse() {
-//                @Override
-//                public Future<AcknowledgementResponse> ack() {
-//                  return null;
-//                }
-//
-//                @Override
-//                public Future<AcknowledgementResponse> nack() {
-//                  return null;
-//                }
-//              }
-//    } else {
-      final AckReplyConsumer consumer =
+
+    final AckReplyConsumerWithResponse ackReplyConsumerWithResponse =
+            new AckReplyConsumerWithResponse() {
+              @Override
+              public Future<AcknowledgementResponse> ack() {
+                response.set(AckReply.ACK);
+                return null;
+              }
+
+              @Override
+              public Future<AcknowledgementResponse> nack() {
+                response.set(AckReply.NACK);
+                return null;
+              }
+            };
+    final AckReplyConsumer ackReplyConsumer =
         new AckReplyConsumer() {
           @Override
           public void ack() {
@@ -378,7 +377,7 @@ class MessageDispatcher {
             response.set(AckReply.NACK);
           }
         };
-//    }
+
     ApiFutures.addCallback(response, ackHandler, MoreExecutors.directExecutor());
     Runnable deliverMessageTask =
         new Runnable() {
@@ -395,8 +394,11 @@ class MessageDispatcher {
                 ackHandler.forget();
                 return;
               }
-
-              receiver.receiveMessage(message, consumer);
+              if (receiverWithAckResponse != null) {
+                receiverWithAckResponse.receiveMessage(message, ackReplyConsumerWithResponse);
+              } else {
+                receiver.receiveMessage(message, ackReplyConsumer);
+              }
             } catch (Exception e) {
               response.setException(e);
             }
@@ -492,7 +494,6 @@ class MessageDispatcher {
   public static final class Builder {
     private MessageReceiver receiver;
     private MessageReceiverWithAckResponse receiverWithAckResponse;
-    private boolean enableExactlyOnceDelivery = false;
 
     private AckProcessor ackProcessor;
     private Duration ackExpirationPadding;
@@ -511,11 +512,6 @@ class MessageDispatcher {
 
     Builder(MessageReceiverWithAckResponse receiverWithAckResponse) {
       this.receiverWithAckResponse = receiverWithAckResponse;
-    }
-
-    public Builder setEnableExactlyOnceDelivery(boolean enableExactlyOnceDelivery) {
-      this.enableExactlyOnceDelivery = enableExactlyOnceDelivery;
-      return this;
     }
 
     public Builder setAckProcessor(AckProcessor ackProcessor) {
