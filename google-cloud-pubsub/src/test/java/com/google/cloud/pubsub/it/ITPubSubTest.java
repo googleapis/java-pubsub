@@ -22,12 +22,7 @@ import static org.junit.Assume.assumeTrue;
 import com.google.api.gax.rpc.PermissionDeniedException;
 import com.google.auto.value.AutoValue;
 import com.google.cloud.ServiceOptions;
-import com.google.cloud.pubsub.v1.AckReplyConsumer;
-import com.google.cloud.pubsub.v1.MessageReceiver;
-import com.google.cloud.pubsub.v1.Publisher;
-import com.google.cloud.pubsub.v1.Subscriber;
-import com.google.cloud.pubsub.v1.SubscriptionAdminClient;
-import com.google.cloud.pubsub.v1.TopicAdminClient;
+import com.google.cloud.pubsub.v1.*;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.iam.v1.Binding;
 import com.google.iam.v1.GetIamPolicyRequest;
@@ -73,6 +68,17 @@ public class ITPubSubTest {
 
     static MessageAndConsumer create(PubsubMessage message, AckReplyConsumer consumer) {
       return new AutoValue_ITPubSubTest_MessageAndConsumer(message, consumer);
+    }
+  }
+
+  @AutoValue
+  abstract static class MessageAndConsumerWithResponse {
+    abstract PubsubMessage message();
+
+    abstract AckReplyConsumerWithResponse consumerWithResponse();
+
+    static MessageAndConsumerWithResponse create(PubsubMessage message, AckReplyConsumerWithResponse consumerWithResponse) {
+      return new AutoValue_ITPubSubTest_MessageAndConsumerWithResponse(message, consumerWithResponse);
     }
   }
 
@@ -239,72 +245,72 @@ public class ITPubSubTest {
     subscriptionAdminClient.deleteSubscription(subscriptionName);
     topicAdminClient.deleteTopic(topicName);
   }
-//
-//  @Test
-//  public void testPublishSubscribeExactlyOnce() throws Exception {
-//    TopicName topicName =
-//        TopicName.newBuilder()
-//            .setProject(projectId)
-//            .setTopic(formatForTest("testing-publish-subscribe-exactly-once-topic"))
-//            .build();
-//    SubscriptionName subscriptionName =
-//        SubscriptionName.of(
-//            projectId, formatForTest("testing-publish-subscribe-exactly-once-subscription"));
-//
-//    topicAdminClient.createTopic(topicName);
-//
-//    subscriptionAdminClient.createSubscription(
-//        getSubscription(subscriptionName, topicName, PushConfig.newBuilder().build(), 10, true));
-//
-//    final BlockingQueue<Object> receiveQueue = new LinkedBlockingQueue<>();
-//    Subscriber subscriber =
-//        Subscriber.newBuilder(
-//                subscriptionName.toString(),
-//                new MessageReceiver() {
-//                  @Override
-//                  public void receiveMessage(
-//                      final PubsubMessage message, final AckReplyConsumer consumer) {
-//                    receiveQueue.offer(MessageAndConsumer.create(message, consumer));
-//                  }
-//                })
-//            .build();
-//    subscriber.addListener(
-//        new Subscriber.Listener() {
-//          public void failed(Subscriber.State from, Throwable failure) {
-//            receiveQueue.offer(failure);
-//          }
-//        },
-//        MoreExecutors.directExecutor());
-//    subscriber.startAsync();
-//
-//    Publisher publisher = Publisher.newBuilder(topicName).build();
-//    publisher
-//        .publish(PubsubMessage.newBuilder().setData(ByteString.copyFromUtf8("msg1")).build())
-//        .get();
-//    publisher
-//        .publish(PubsubMessage.newBuilder().setData(ByteString.copyFromUtf8("msg2")).build())
-//        .get();
-//    publisher.shutdown();
-//    publisher.awaitTermination(1, TimeUnit.MINUTES);
-//
-//    // Ack the first message.
-//    MessageAndConsumer toAck = pollQueue(receiveQueue);
-//    toAck.consumer().ack();
-//
-//    // Nack the other.
+
+  @Test
+  public void testPublishSubscribeExactlyOnce() throws Exception {
+    TopicName topicName =
+        TopicName.newBuilder()
+            .setProject(projectId)
+            .setTopic(formatForTest("testing-publish-subscribe-exactly-once-topic"))
+            .build();
+    SubscriptionName subscriptionName =
+        SubscriptionName.of(
+            projectId, formatForTest("testing-publish-subscribe-exactly-once-subscription"));
+
+    topicAdminClient.createTopic(topicName);
+
+    subscriptionAdminClient.createSubscription(
+        getSubscription(subscriptionName, topicName, PushConfig.newBuilder().build(), 10, true));
+
+    final BlockingQueue<Object> receiveQueue = new LinkedBlockingQueue<>();
+    Subscriber subscriber =
+        Subscriber.newBuilder(
+                subscriptionName.toString(),
+                new MessageReceiverWithAckResponse() {
+                  @Override
+                  public void receiveMessage(
+                      final PubsubMessage message, final AckReplyConsumerWithResponse consumerWithResponse) {
+                    receiveQueue.offer(MessageAndConsumerWithResponse.create(message, consumerWithResponse));
+                  }
+                })
+            .build();
+    subscriber.addListener(
+        new Subscriber.Listener() {
+          public void failed(Subscriber.State from, Throwable failure) {
+            receiveQueue.offer(failure);
+          }
+        },
+        MoreExecutors.directExecutor());
+    subscriber.startAsync();
+
+    Publisher publisher = Publisher.newBuilder(topicName).build();
+    publisher
+        .publish(PubsubMessage.newBuilder().setData(ByteString.copyFromUtf8("msg1")).build())
+        .get();
+    publisher
+        .publish(PubsubMessage.newBuilder().setData(ByteString.copyFromUtf8("msg2")).build())
+        .get();
+    publisher.shutdown();
+    publisher.awaitTermination(1, TimeUnit.MINUTES);
+
+    // Ack the first message.
+    MessageAndConsumer toAck = pollQueue(receiveQueue);
+    toAck.consumer().ack();
+
+    // Nack the other.
 //    MessageAndConsumer toNack = pollQueue(receiveQueue);
 //    assertThat(toNack.message().getData()).isNotEqualTo(toAck.message().getData());
 //    toNack.consumer().nack();
-//
-//    // We should get the nacked message back.
+
+    // We should get the nacked message back.
 //    MessageAndConsumer redelivered = pollQueue(receiveQueue);
 //    assertThat(redelivered.message().getData()).isEqualTo(toNack.message().getData());
 //    redelivered.consumer().ack();
-//
-//    subscriber.stopAsync().awaitTerminated();
-//    subscriptionAdminClient.deleteSubscription(subscriptionName);
-//    topicAdminClient.deleteTopic(topicName);
-//  }
+
+    subscriber.stopAsync().awaitTerminated();
+    subscriptionAdminClient.deleteSubscription(subscriptionName);
+    topicAdminClient.deleteTopic(topicName);
+  }
 
   private MessageAndConsumer pollQueue(BlockingQueue<Object> queue) throws InterruptedException {
     Object obj = queue.poll(10, TimeUnit.MINUTES);
