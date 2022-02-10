@@ -358,6 +358,7 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
                 .setSubscriberStub(subscriberStub)
                 .setChannelAffinity(i)
                 .setFlowControlSettings(flowControlSettings)
+                .setFlowController(flowController)
                 .setUseLegacyFlowControl(useLegacyFlowControl)
                 .setExecutor(executor)
                 .setSystemExecutor(alarmsExecutor)

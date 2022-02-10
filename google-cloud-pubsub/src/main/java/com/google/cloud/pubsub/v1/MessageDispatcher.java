@@ -187,7 +187,6 @@ class MessageDispatcher {
   private MessageDispatcher(Builder builder) {
     executor = builder.executor;
     systemExecutor = builder.systemExecutor;
-    sequentialExecutor = new SequentialExecutorService.AutoExecutor(builder.executor);
     ackExpirationPadding = builder.ackExpirationPadding;
     maxAckExtensionPeriod = builder.maxAckExtensionPeriod;
     maxSecondsPerAckExtension = Math.toIntExact(builder.maxDurationPerAckExtension.getSeconds());
@@ -200,6 +199,7 @@ class MessageDispatcher {
     enableExactlyOnceDelivery = builder.enableExactlyOnceDelivery;
     jobLock = new ReentrantLock();
     messagesWaiter = new Waiter();
+    sequentialExecutor = new SequentialExecutorService.AutoExecutor(builder.executor);
   }
 
   void start() {

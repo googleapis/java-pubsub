@@ -112,6 +112,8 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     }
     subscriberStub = builder.subscriberStub;
     channelAffinity = builder.channelAffinity;
+    clock = builder.clock;
+    enableExactlyOnceDelivery = builder.enableExactlyOnceDelivery;
 
     MessageDispatcher.Builder messageDispatcherBuilder;
     if (builder.receiver != null) {
@@ -122,12 +124,6 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
       // Misconfiguration
       throw new IllegalStateException();
     }
-
-    clock = builder.clock;
-
-    flowControlSettings = builder.flowControlSettings;
-    useLegacyFlowControl = builder.useLegacyFlowControl;
-    enableExactlyOnceDelivery = builder.enableExactlyOnceDelivery;
 
     messageDispatcher =
         messageDispatcherBuilder
@@ -142,6 +138,9 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
             .setSystemExecutor(builder.systemExecutor)
             .setApiClock(clock)
             .build();
+
+    flowControlSettings = builder.flowControlSettings;
+    useLegacyFlowControl = builder.useLegacyFlowControl;
   }
 
   @Override

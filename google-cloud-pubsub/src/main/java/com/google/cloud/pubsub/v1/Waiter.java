@@ -20,7 +20,7 @@ import com.google.api.core.InternalApi;
 
 /**
  * A barrier kind of object that helps keep track of pending actions and synchronously wait until
- * all have completed.
+ * all have completed.ackOperationsWaiter
  */
 class Waiter {
   private int pendingCount;
