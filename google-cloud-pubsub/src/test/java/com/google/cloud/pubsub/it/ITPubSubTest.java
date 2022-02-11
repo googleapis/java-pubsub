@@ -222,9 +222,9 @@ public class ITPubSubTest {
     publisher
         .publish(PubsubMessage.newBuilder().setData(ByteString.copyFromUtf8("msg1")).build())
         .get();
-//    publisher
-//        .publish(PubsubMessage.newBuilder().setData(ByteString.copyFromUtf8("msg2")).build())
-//        .get();
+    publisher
+        .publish(PubsubMessage.newBuilder().setData(ByteString.copyFromUtf8("msg2")).build())
+        .get();
     publisher.shutdown();
     publisher.awaitTermination(1, TimeUnit.MINUTES);
 
@@ -233,14 +233,14 @@ public class ITPubSubTest {
     toAck.consumer().ack();
 
     // Nack the other.
-//    MessageAndConsumer toNack = pollQueueMessageAndConsumer(receiveQueue);
-//    assertThat(toNack.message().getData()).isNotEqualTo(toAck.message().getData());
-//    toNack.consumer().nack();
+    MessageAndConsumer toNack = pollQueueMessageAndConsumer(receiveQueue);
+    assertThat(toNack.message().getData()).isNotEqualTo(toAck.message().getData());
+    toNack.consumer().nack();
 
     // We should get the nacked message back.
-//    MessageAndConsumer redelivered = pollQueueMessageAndConsumer(receiveQueue);
-//    assertThat(redelivered.message().getData()).isEqualTo(toNack.message().getData());
-//    redelivered.consumer().ack();
+    MessageAndConsumer redeliveredToAck = pollQueueMessageAndConsumer(receiveQueue);
+    assertThat(redeliveredToAck.message().getData()).isEqualTo(toNack.message().getData());
+    redeliveredToAck.consumer().ack();
 
     subscriber.stopAsync().awaitTerminated();
     subscriptionAdminClient.deleteSubscription(subscriptionName);
@@ -288,25 +288,31 @@ public class ITPubSubTest {
     publisher
         .publish(PubsubMessage.newBuilder().setData(ByteString.copyFromUtf8("msg1")).build())
         .get();
-//    publisher
-//        .publish(PubsubMessage.newBuilder().setData(ByteString.copyFromUtf8("msg2")).build())
-//        .get();
+    publisher
+        .publish(PubsubMessage.newBuilder().setData(ByteString.copyFromUtf8("msg2")).build())
+        .get();
     publisher.shutdown();
     publisher.awaitTermination(1, TimeUnit.MINUTES);
 
     // Ack the first message.
     MessageAndConsumerWithResponse toAck = pollQueueMessageAndConsumerWithResponse(receiveQueue);
-    Future<AckResponse> ackFuture = toAck.consumerWithResponse().ack();
+    Future<AckResponse> ackResponseFuture = toAck.consumerWithResponse().ack();
+
+    // TODO: Validate the future
 
     // Nack the other.
-//    MessageAndConsumer toNack = pollQueueMessageAndConsumer(receiveQueue);
-//    assertThat(toNack.message().getData()).isNotEqualTo(toAck.message().getData());
-//    toNack.consumer().nack();
+    MessageAndConsumerWithResponse toNack = pollQueueMessageAndConsumerWithResponse(receiveQueue);
+    assertThat(toNack.message().getData()).isNotEqualTo(toAck.message().getData());
+    Future<AckResponse> nackResponseFuture = toNack.consumerWithResponse().nack();
+
+    // TODO: Validate the future
 
     // We should get the nacked message back.
-//    MessageAndConsumer redelivered = pollQueueMessageAndConsumer(receiveQueue);
-//    assertThat(redelivered.message().getData()).isEqualTo(toNack.message().getData());
-//    redelivered.consumer().ack();
+    MessageAndConsumerWithResponse redeliveredToAck = pollQueueMessageAndConsumerWithResponse(receiveQueue);
+    assertThat(redeliveredToAck.message().getData()).isEqualTo(toNack.message().getData());
+    Future<AckResponse> redeliveredAckFuture = redeliveredToAck.consumerWithResponse().ack();
+
+    // TODO: Validate the future
 
     subscriber.stopAsync().awaitTerminated();
     subscriptionAdminClient.deleteSubscription(subscriptionName);

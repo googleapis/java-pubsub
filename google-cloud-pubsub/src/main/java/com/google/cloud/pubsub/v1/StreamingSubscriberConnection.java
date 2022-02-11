@@ -323,7 +323,11 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
   @Override
   public void sendAckOperations(
       List<String> acksToSend, List<PendingModifyAckDeadline> ackDeadlineExtensions) {
+    send_modacks(ackDeadlineExtensions);
+    send_acks(acksToSend);
+  }
 
+  private void send_modacks(List<PendingModifyAckDeadline> ackDeadlineExtensions) {
     int pendingOperations = 0;
     for (PendingModifyAckDeadline modack : ackDeadlineExtensions) {
       for (List<String> idChunk : Lists.partition(modack.ackIds, MAX_PER_REQUEST_CHANGES)) {
@@ -354,7 +358,48 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
         pendingOperations++;
       }
     }
+    ackOperationsWaiter.incrementPendingCount(pendingOperations);
+  }
 
+//  private List<PendingModifyAckDeadline> send_unary_modacks(List<PendingModifyAckDeadline> ackDeadlineExtensions) {
+//    int pendingOperations = 0;
+//    for (PendingModifyAckDeadline modack : ackDeadlineExtensions) {
+//      for (List<String> idChunk : Lists.partition(modack.ackIds, MAX_PER_REQUEST_CHANGES)) {
+//        ApiFutureCallback<Empty> loggingCallback =
+//                new ApiFutureCallback<Empty>() {
+//                  @Override
+//                  public void onSuccess(Empty empty) {
+//                    ackOperationsWaiter.incrementPendingCount(-1);
+//                  }
+//
+//                  @Override
+//                  public void onFailure(Throwable t) {
+//                    ackOperationsWaiter.incrementPendingCount(-1);
+//                    Level level = isAlive() ? Level.WARNING : Level.FINER;
+//                    logger.log(level, "failed to send operations", t);
+//                  }
+//                };
+//
+//        ApiFuture<Empty> future =
+//                subscriberStub.modifyAckDeadlineCallable()
+//                        .futureCall(
+//                                ModifyAckDeadlineRequest.newBuilder()
+//                                        .setSubscription(subscription)
+//                                        .addAllAckIds(idChunk)
+//                                        .setAckDeadlineSeconds(modack.deadlineExtensionSeconds)
+//                                        .build());
+//        ApiFutures.addCallback(future, loggingCallback, directExecutor());
+//        pendingOperations++;
+//      }
+//    }
+//    ackOperationsWaiter.incrementPendingCount(pendingOperations);
+//
+//    // Process futures
+//
+//  }
+
+  private void send_acks(List<String> acksToSend) {
+    int pendingOperations = 0;
     for (List<String> idChunk : Lists.partition(acksToSend, MAX_PER_REQUEST_CHANGES)) {
       ApiFutureCallback<Empty> loggingCallback =
               new ApiFutureCallback<Empty>() {
@@ -380,7 +425,6 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
       ApiFutures.addCallback(future, loggingCallback, directExecutor());
       pendingOperations++;
     }
-
     ackOperationsWaiter.incrementPendingCount(pendingOperations);
   }
 

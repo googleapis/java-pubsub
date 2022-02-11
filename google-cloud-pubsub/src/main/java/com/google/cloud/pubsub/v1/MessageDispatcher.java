@@ -41,6 +41,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import io.grpc.Status;
 import org.threeten.bp.Duration;
 import org.threeten.bp.Instant;
 import org.threeten.bp.temporal.ChronoUnit;
@@ -154,12 +156,18 @@ class MessageDispatcher {
 
     @Override
     public void onFailure(Throwable t) {
-      logger.log(
-          Level.WARNING,
-          "MessageReceiver failed to process ack ID: " + ackId + ", the message will be nacked.",
-          t);
-      pendingNacks.add(ackId);
-      forget();
+      Status status = Status.fromThrowable(t);
+      String description = status.getDescription();
+
+//      if (description.startsWith("PERMANENT_")) {
+        logger.log(
+                Level.WARNING,
+                "MessageReceiver failed to process ack ID: " + ackId + ", the message will be nacked.",
+                t);
+        pendingNacks.add(ackId);
+        forget();
+//      }
+//      // else retry
     }
 
     @Override
@@ -354,22 +362,6 @@ class MessageDispatcher {
   }
 
   private void processOutstandingMessage(final PubsubMessage message, final AckHandler ackHandler) {
-    SettableApiFuture<AckResponse> ackResponseSettableApiFuture = SettableApiFuture.create();
-    final AckReplyConsumerWithResponse ackReplyConsumerWithResponse =
-            new AckReplyConsumerWithResponse() {
-              @Override
-              public Future<AckResponse> ack() {
-                return ackResponseSettableApiFuture;
-              }
-
-              @Override
-              public Future<AckResponse> nack() {
-                return ackResponseSettableApiFuture;
-              }
-            };
-
-    ackHandler.addAckResponseSettableApiFuture(ackResponseSettableApiFuture);
-
     final SettableApiFuture<AckReply> ackReplySettableApiFuture = SettableApiFuture.create();
     final AckReplyConsumer ackReplyConsumer =
             new AckReplyConsumer() {
@@ -383,6 +375,25 @@ class MessageDispatcher {
                 ackReplySettableApiFuture.set(AckReply.NACK);
               }
             };
+
+    SettableApiFuture<AckResponse> ackResponseSettableApiFuture = SettableApiFuture.create();
+    final AckReplyConsumerWithResponse ackReplyConsumerWithResponse =
+            new AckReplyConsumerWithResponse() {
+              @Override
+              public Future<AckResponse> ack() {
+                ackReplySettableApiFuture.set(AckReply.ACK);
+                return ackResponseSettableApiFuture;
+              }
+
+              @Override
+              public Future<AckResponse> nack() {
+                ackReplySettableApiFuture.set(AckReply.NACK);
+                return ackResponseSettableApiFuture;
+              }
+            };
+
+    ackHandler.addAckResponseSettableApiFuture(ackResponseSettableApiFuture);
+
     ApiFutures.addCallback(ackReplySettableApiFuture, ackHandler, MoreExecutors.directExecutor());
 
     Runnable deliverMessageTask =
