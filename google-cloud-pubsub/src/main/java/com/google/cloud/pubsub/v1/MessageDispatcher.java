@@ -26,6 +26,7 @@ import com.google.api.gax.batching.FlowController.FlowControlException;
 import com.google.api.gax.core.Distribution;
 import com.google.common.primitives.Ints;
 import com.google.common.util.concurrent.MoreExecutors;
+import com.google.protobuf.Any;
 import com.google.pubsub.v1.PubsubMessage;
 import com.google.pubsub.v1.ReceivedMessage;
 import java.util.ArrayList;
@@ -42,7 +43,10 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import io.grpc.Status;
+import com.google.rpc.ErrorInfo;
+import com.google.rpc.Status;
+import io.grpc.protobuf.StatusProto;
+
 import org.threeten.bp.Duration;
 import org.threeten.bp.Instant;
 import org.threeten.bp.temporal.ChronoUnit;
@@ -79,6 +83,8 @@ class MessageDispatcher {
   private final LinkedBlockingQueue<String> pendingAcks = new LinkedBlockingQueue<>();
   private final LinkedBlockingQueue<String> pendingNacks = new LinkedBlockingQueue<>();
   private final LinkedBlockingQueue<String> pendingReceipts = new LinkedBlockingQueue<>();
+
+  private final ConcurrentMap<String, String> ackIdsToErrorMetadataMap = new ConcurrentHashMap<>();
 
   // Start the deadline at the minimum ack deadline so messages which arrive before this is
   // updated will not have a long ack deadline.
@@ -128,6 +134,9 @@ class MessageDispatcher {
     private final Instant totalExpiration;
     private SettableApiFuture<AckResponse> ackResponseSettableApiFuture;
 
+    private final String ERROR_METADATA_PERMANENT_PREFIX = "PERMANENT_";
+    private final String ERROR_METADATA_TRANSIENT_PREFIX = "TRANSIENT_";
+
     private AckHandler(String ackId, int outstandingBytes, Instant totalExpiration) {
       this.ackId = ackId;
       this.outstandingBytes = outstandingBytes;
@@ -154,20 +163,61 @@ class MessageDispatcher {
       messagesWaiter.incrementPendingCount(-1);
     }
 
+    private void updateAckIdsToErrorInfoMapFromStatus(Status status) {
+      for (Any any : status.getDetailsList()) {
+        if (any.is(ErrorInfo.class)) {
+          try {
+            ErrorInfo errorInfo = any.unpack(ErrorInfo.class);
+            Map<String, String> metadataMap = errorInfo.getMetadataMap();
+            for (String ackId : metadataMap.keySet()) {
+              ackIdsToErrorMetadataMap.putIfAbsent(ackId, metadataMap.get(ackId));
+            }
+          } catch (Throwable throwable) {
+          }
+        }
+      }
+    }
+
     @Override
     public void onFailure(Throwable t) {
-      Status status = Status.fromThrowable(t);
-      String description = status.getDescription();
+      // Check if we have already processed this ack's error info (from batching)
+      if (!ackIdsToErrorMetadataMap.containsKey(this.ackId)) {
+        // Parse through our response
+        // move this somewhere else
+        Status status = StatusProto.fromThrowable(t);
+        if (status != null) {
+          updateAckIdsToErrorInfoMapFromStatus(status);
+        }
+      }
 
-//      if (description.startsWith("PERMANENT_")) {
+      if (!ackIdsToErrorMetadataMap.containsKey(this.ackId)) {
+        // This probably should be changed
         logger.log(
                 Level.WARNING,
                 "MessageReceiver failed to process ack ID: " + ackId + ", the message will be nacked.",
                 t);
         pendingNacks.add(ackId);
         forget();
-//      }
-//      // else retry
+      }
+
+      String errorMetadata = ackIdsToErrorMetadataMap.get(this.ackId);
+
+      if (errorMetadata.startsWith(ERROR_METADATA_PERMANENT_PREFIX)) {
+        logger.log(
+                Level.WARNING,
+                "MessageReceiver permanently failed to process ack ID: " + ackId + ", the message.",
+                t);
+        forget();
+      } else {
+        logger.log(
+                Level.WARNING,
+                "MessageReceiver failed to process ack ID: " + ackId + ", the message will be retried.",
+                t);
+
+        // Determine if it should be removed to prevent retry loop
+        pendingNacks.add(ackId);
+        forget();
+      }
     }
 
     @Override
