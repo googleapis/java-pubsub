@@ -259,7 +259,7 @@ public class ITPubSubTest {
 
     topicAdminClient.createTopic(topicName);
 
-    subscriptionAdminClient.createSubscription(
+    Subscription subscription = subscriptionAdminClient.createSubscription(
         getSubscription(subscriptionName, topicName, PushConfig.newBuilder().build(), 10, true));
 
     final BlockingQueue<Object> receiveQueue = new LinkedBlockingQueue<>();
