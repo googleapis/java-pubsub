@@ -39,6 +39,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import org.junit.AfterClass;
@@ -295,7 +296,7 @@ public class ITPubSubTest {
 
     // Ack the first message.
     MessageAndConsumerWithResponse toAck = pollQueueMessageAndConsumerWithResponse(receiveQueue);
-    toAck.consumerWithResponse().ack();
+    Future<AckResponse> ackFuture = toAck.consumerWithResponse().ack();
 
     // Nack the other.
 //    MessageAndConsumer toNack = pollQueueMessageAndConsumer(receiveQueue);

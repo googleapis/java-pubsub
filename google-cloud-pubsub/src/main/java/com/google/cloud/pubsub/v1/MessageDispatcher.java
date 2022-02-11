@@ -73,7 +73,6 @@ class MessageDispatcher {
 
   // Maps ID to "total expiration time". If it takes longer than this, stop extending.
   private final ConcurrentMap<String, AckHandler> pendingMessages = new ConcurrentHashMap<>();
-  private final ConcurrentMap<String, AckResponseHandler> pendingMessageFutures = new ConcurrentHashMap<>();
 
   private final LinkedBlockingQueue<String> pendingAcks = new LinkedBlockingQueue<>();
   private final LinkedBlockingQueue<String> pendingNacks = new LinkedBlockingQueue<>();
@@ -125,12 +124,18 @@ class MessageDispatcher {
     private final int outstandingBytes;
     private final long receivedTimeMillis;
     private final Instant totalExpiration;
+    private SettableApiFuture<AckResponse> ackResponseSettableApiFuture;
 
     private AckHandler(String ackId, int outstandingBytes, Instant totalExpiration) {
       this.ackId = ackId;
       this.outstandingBytes = outstandingBytes;
       this.receivedTimeMillis = clock.millisTime();
       this.totalExpiration = totalExpiration;
+    }
+
+    private AckHandler addAckResponseSettableApiFuture(SettableApiFuture<AckResponse> ackResponseSettableApiFuture) {
+      this.ackResponseSettableApiFuture = ackResponseSettableApiFuture;
+      return this;
     }
 
     /** Stop extending deadlines for this message and free flow control. */
@@ -160,6 +165,7 @@ class MessageDispatcher {
     @Override
     public void onSuccess(AckReply reply) {
       LinkedBlockingQueue<String> destination;
+      this.ackResponseSettableApiFuture.set(AckResponse.SUCCESSFUL);
       switch (reply) {
         case ACK:
           destination = pendingAcks;
@@ -176,61 +182,6 @@ class MessageDispatcher {
       }
       destination.add(ackId);
       forget();
-    }
-  }
-
-  private class AckResponseHandler implements ApiFutureCallback<AckResponse> {
-    private final String messageId;
-    private SettableApiFuture<AckResponse> ackResponseSettableApiFuture;
-
-    private AckResponseHandler(String messageId, SettableApiFuture<AckResponse> ackResponseSettableApiFuture) {
-      this.messageId = messageId;
-      this.ackResponseSettableApiFuture = ackResponseSettableApiFuture;
-    }
-
-//    /** Stop extending deadlines for this message and free flow control. */
-//    private void forget() {
-//      if (pendingMessages.remove(ackId) == null) {
-//        /*
-//         * We're forgetting the message for the second time. Probably because we ran out of total
-//         * expiration, forget the message, then the user finishes working on the message, and forget
-//         * again. Turn the second forget into a no-op so we don't free twice.
-//         */
-//        return;
-//      }
-//      flowController.release(1, outstandingBytes);
-//      messagesWaiter.incrementPendingCount(-1);
-//    }
-
-    @Override
-    public void onFailure(Throwable t) {
-      logger.log(
-              Level.WARNING,
-              "Something bad happened",
-              t);
-//      pendingNacks.add(ackId);
-//      forget();
-    }
-
-    @Override
-    public void onSuccess(AckResponse ackResponse) {
-      LinkedBlockingQueue<String> destination;
-//      switch (reply) {
-//        case ACK:
-//          destination = pendingAcks;
-//          // Record the latency rounded to the next closest integer.
-//          ackLatencyDistribution.record(
-//                  Ints.saturatedCast(
-//                          (long) Math.ceil((clock.millisTime() - receivedTimeMillis) / 1000D)));
-//          break;
-//        case NACK:
-//          destination = pendingNacks;
-//          break;
-//        default:
-//          throw new IllegalArgumentException(String.format("AckReply: %s not supported", reply));
-//      }
-//      destination.add(ackId);
-//      forget();
     }
   }
 
@@ -403,6 +354,22 @@ class MessageDispatcher {
   }
 
   private void processOutstandingMessage(final PubsubMessage message, final AckHandler ackHandler) {
+    SettableApiFuture<AckResponse> ackResponseSettableApiFuture = SettableApiFuture.create();
+    final AckReplyConsumerWithResponse ackReplyConsumerWithResponse =
+            new AckReplyConsumerWithResponse() {
+              @Override
+              public Future<AckResponse> ack() {
+                return ackResponseSettableApiFuture;
+              }
+
+              @Override
+              public Future<AckResponse> nack() {
+                return ackResponseSettableApiFuture;
+              }
+            };
+
+    ackHandler.addAckResponseSettableApiFuture(ackResponseSettableApiFuture);
+
     final SettableApiFuture<AckReply> ackReplySettableApiFuture = SettableApiFuture.create();
     final AckReplyConsumer ackReplyConsumer =
             new AckReplyConsumer() {
@@ -417,22 +384,6 @@ class MessageDispatcher {
               }
             };
     ApiFutures.addCallback(ackReplySettableApiFuture, ackHandler, MoreExecutors.directExecutor());
-
-    SettableApiFuture<AckResponse> ackResponseSettableApiFuture = SettableApiFuture.create();
-    final AckReplyConsumerWithResponse ackReplyConsumerWithResponse =
-            new AckReplyConsumerWithResponse() {
-              @Override
-              public Future<AckResponse> ack() {
-                return ackResponseSettableApiFuture;
-              }
-
-              @Override
-              public Future<AckResponse> nack() {
-                return ackResponseSettableApiFuture;
-              }
-            };
-    AckResponseHandler ackResponseHandler = new AckResponseHandler(message.getMessageId(), ackResponseSettableApiFuture);
-    ApiFutures.addCallback(ackResponseSettableApiFuture, ackResponseHandler);
 
     Runnable deliverMessageTask =
         new Runnable() {

@@ -18,14 +18,6 @@ package com.google.cloud.pubsub.v1;
 
 import java.util.concurrent.Future;
 
-enum AckResponse {
-  PERMISSION_DENIED,
-  FAILED_PRECONDITION,
-  SUCCESSFUL,
-  INVALID,
-  UNORDERED
-}
-
 public interface AckReplyConsumerWithResponse {
   Future<AckResponse> ack();
 
