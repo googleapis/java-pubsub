@@ -100,7 +100,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     subscription = builder.subscription;
     systemExecutor = builder.systemExecutor;
     if (builder.maxDurationPerAckExtension.compareTo(DEFAULT_MAX_DURATION_PER_ACK_EXTENSION) == 0) {
-      streamAckDeadline = DEFAULT_STREAM_ACK_DEADLINE;
+      this.streamAckDeadline = DEFAULT_STREAM_ACK_DEADLINE;
     } else if (builder.maxDurationPerAckExtension.compareTo(MIN_STREAM_ACK_DEADLINE) < 0) {
       this.streamAckDeadline = MIN_STREAM_ACK_DEADLINE;
     } else if (builder.maxDurationPerAckExtension.compareTo(MAX_STREAM_ACK_DEADLINE) > 0) {

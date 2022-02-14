@@ -183,41 +183,45 @@ class MessageDispatcher {
       // Check if we have already processed this ack's error info (from batching)
       if (!ackIdsToErrorMetadataMap.containsKey(this.ackId)) {
         // Parse through our response
-        // move this somewhere else
         Status status = StatusProto.fromThrowable(t);
         if (status != null) {
           updateAckIdsToErrorInfoMapFromStatus(status);
         }
       }
 
+      // Refactor/clean this up
       if (!ackIdsToErrorMetadataMap.containsKey(this.ackId)) {
-        // This probably should be changed
         logger.log(
                 Level.WARNING,
-                "MessageReceiver failed to process ack ID: " + ackId + ", the message will be nacked.",
+                "MessageReceiver failed to process ack ID: " + ackId + " with no error info returned." +
+                        "The message will be nacked.",
                 t);
         pendingNacks.add(ackId);
-        forget();
-      }
-
-      String errorMetadata = ackIdsToErrorMetadataMap.get(this.ackId);
-
-      if (errorMetadata.startsWith(ERROR_METADATA_PERMANENT_PREFIX)) {
-        logger.log(
-                Level.WARNING,
-                "MessageReceiver permanently failed to process ack ID: " + ackId + ", the message.",
-                t);
-        forget();
       } else {
-        logger.log(
-                Level.WARNING,
-                "MessageReceiver failed to process ack ID: " + ackId + ", the message will be retried.",
-                t);
-
-        // Determine if it should be removed to prevent retry loop
-        pendingNacks.add(ackId);
-        forget();
+        String errorMetadata = ackIdsToErrorMetadataMap.get(this.ackId);
+        if (errorMetadata.startsWith(ERROR_METADATA_PERMANENT_PREFIX)) {
+          logger.log(
+                  Level.WARNING,
+                  "MessageReceiver permanently failed to process ack ID: " + ackId +
+                          ", the message will not be retried.",
+                  t);
+        } else if (errorMetadata.startsWith(ERROR_METADATA_TRANSIENT_PREFIX)) {
+          logger.log(
+                  Level.WARNING,
+                  "MessageReceiver transiently failed to process ack ID: " + ackId + ", the message will be retried.",
+                  t);
+          pendingNacks.add(ackId);
+        } else {
+          logger.log(
+                  Level.WARNING,
+                  "MessageReceiver failed to process ack ID: " + ackId + " with unknown error info returned." +
+                          "The message will be nacked.",
+                  t);
+          pendingNacks.add(ackId);
+        }
       }
+
+      forget();
     }
 
     @Override
@@ -493,6 +497,11 @@ class MessageDispatcher {
     } else if (sec > Subscriber.MAX_ACK_DEADLINE_SECONDS) {
       sec = Subscriber.MAX_ACK_DEADLINE_SECONDS;
     }
+
+//    if (sec > Subscriber.MIN_ACK_DEADLINE_SECONDS) {
+//
+//    }
+
     return sec;
   }
 

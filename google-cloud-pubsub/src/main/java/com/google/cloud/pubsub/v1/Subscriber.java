@@ -115,6 +115,7 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
   private SubscriberStub subscriberStub;
   private final SubscriberStubSettings subStubSettings;
   private final FlowController flowController;
+  private boolean exactlyOnceDeliveryEnabled = false;
   private final int numPullers;
 
   private final MessageReceiver receiver;
@@ -356,6 +357,7 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
                 .setExecutor(executor)
                 .setSystemExecutor(alarmsExecutor)
                 .setClock(clock)
+//                    .setEnableExactlyOnceDelivery()
                 .build();
 
         streamingSubscriberConnections.add(streamingSubscriberConnection);
@@ -460,7 +462,6 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
     private Optional<ApiClock> clock = Optional.absent();
     private int parallelPullCount = 1;
     private String endpoint = SubscriberStubSettings.getDefaultEndpoint();
-    private boolean enableExactlyOnceDelivery = false;
 
     Builder(String subscription, MessageReceiver receiver) {
       this.subscription = subscription;
@@ -613,18 +614,6 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
     /** Gives the ability to set a custom clock. */
     Builder setClock(ApiClock clock) {
       this.clock = Optional.of(clock);
-      return this;
-    }
-
-    /**
-     * Enable/Disable exactly once delivery If exactly once is true, receiverWithAckResponse must be
-     * set else, receiver must be set
-     */
-    public Builder setEnableExactlyOnceDelivery(boolean enableExactlyOnceDelivery) {
-      Preconditions.checkArgument(
-          (enableExactlyOnceDelivery && (receiverWithAckResponse != null))
-              || (!enableExactlyOnceDelivery && (receiver != null)));
-      this.enableExactlyOnceDelivery = enableExactlyOnceDelivery;
       return this;
     }
 
