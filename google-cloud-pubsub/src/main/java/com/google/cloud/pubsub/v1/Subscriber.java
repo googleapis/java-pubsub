@@ -143,6 +143,8 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
                 .setLimitExceededBehavior(LimitExceededBehavior.Block)
                 .build());
 
+    exactlyOnceDeliveryEnabled = builder.exactlyOnceDeliveryEnabled;
+
     this.numPullers = builder.parallelPullCount;
 
     executorProvider = builder.executorProvider;
@@ -293,6 +295,8 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
                 try {
                   startStreamingConnections();
                   notifyStarted();
+                } catch (IllegalStateException t) {
+                  notifyFailed(t);
                 } catch (Throwable t) {
                   notifyFailed(t);
                 }
@@ -357,7 +361,7 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
                 .setExecutor(executor)
                 .setSystemExecutor(alarmsExecutor)
                 .setClock(clock)
-//                    .setEnableExactlyOnceDelivery()
+                .setExactlyOnceDeliveryEnabled(exactlyOnceDeliveryEnabled)
                 .build();
 
         streamingSubscriberConnections.add(streamingSubscriberConnection);
@@ -377,6 +381,12 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
                   throw e;
                 }
                 // It could happen that we are shutting down while some channels fail.
+              }
+
+              if (failure instanceof StreamingSubscriberConnection.ExactlyOnceEnabledStateChanged) {
+                logger.log(Level.WARNING, "exactlyOnceEnabled state changed. restarting streaming connections for subscription {0}", subscription);
+                exactlyOnceDeliveryEnabled = ((StreamingSubscriberConnection.ExactlyOnceEnabledStateChanged) failure).isExactlyOnceEnabled();
+                startStreamingConnections();
               }
             }
           });
@@ -448,6 +458,8 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
 
     private boolean useLegacyFlowControl = false;
     private FlowControlSettings flowControlSettings = DEFAULT_FLOW_CONTROL_SETTINGS;
+
+    private boolean exactlyOnceDeliveryEnabled = false;
 
     private ExecutorProvider executorProvider = DEFAULT_EXECUTOR_PROVIDER;
     private ExecutorProvider systemExecutorProvider = null;
@@ -538,6 +550,11 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
      */
     public Builder setUseLegacyFlowControl(boolean value) {
       this.useLegacyFlowControl = value;
+      return this;
+    }
+
+    public Builder setExactlyOnceDeliveryEnabled(boolean exactlyOnceDeliveryEnabled) {
+      this.exactlyOnceDeliveryEnabled = exactlyOnceDeliveryEnabled;
       return this;
     }
 

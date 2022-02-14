@@ -319,6 +319,11 @@ public class SubscriberTest {
         Subscriber.Builder.DEFAULT_FLOW_CONTROL_SETTINGS.getMaxOutstandingElementCount());
   }
 
+  @Test
+  public void testExactlyOnceEnabledStateChange() {
+
+  }
+
   private Subscriber startSubscriber(Builder testSubscriberBuilder) {
     Subscriber subscriber = testSubscriberBuilder.build();
     subscriber.startAsync().awaitRunning();

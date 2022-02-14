@@ -208,6 +208,7 @@ public class ITPubSubTest {
                     receiveQueue.offer(MessageAndConsumer.create(message, consumer));
                   }
                 })
+                .setExactlyOnceDeliveryEnabled(true)
             .build();
     subscriber.addListener(
         new Subscriber.Listener() {
@@ -247,6 +248,14 @@ public class ITPubSubTest {
     topicAdminClient.deleteTopic(topicName);
   }
 
+  //  private TopicAdminClient getTopicAdminClientStaging() throws IOException {
+//    return TopicAdminClient.create(TopicAdminSettings.newBuilder().setEndpoint("staging-pubsub.sandbox.googleapis.com:443").build());
+//  }
+//
+//  private SubscriptionAdminClient getSubscriptionAdminClientStaging() throws IOException {
+//    return SubscriptionAdminClient.create( SubscriptionAdminSettings.newBuilder().setEndpoint("staging-pubsub.sandbox.googleapis.com:443").build());
+//  }
+
   @Test
   public void testPublishSubscribeExactlyOnce() throws Exception {
     TopicName topicName =
@@ -261,7 +270,6 @@ public class ITPubSubTest {
     topicAdminClient.createTopic(topicName);
 
     Subscription subscription = getSubscription(subscriptionName, topicName, PushConfig.newBuilder().build(), 10, true);
-
 
     final BlockingQueue<Object> receiveQueue = new LinkedBlockingQueue<>();
     Subscriber subscriber =

@@ -81,6 +81,8 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
   private final FlowControlSettings flowControlSettings;
   private final boolean useLegacyFlowControl;
 
+  private final boolean enableExactlyOnceDelivery;
+
   private final AtomicLong channelReconnectBackoffMillis =
       new AtomicLong(INITIAL_CHANNEL_RECONNECT_BACKOFF.toMillis());
   private final Waiter ackOperationsWaiter = new Waiter();
@@ -110,6 +112,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     }
     subscriberStub = builder.subscriberStub;
     channelAffinity = builder.channelAffinity;
+    enableExactlyOnceDelivery = builder.exactlyOnceDeliveryEnabled;
     clock = builder.clock;
 
     MessageDispatcher.Builder messageDispatcherBuilder;
@@ -118,7 +121,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     } else if (builder.receiverWithAckResponse != null) {
       messageDispatcherBuilder = MessageDispatcher.newBuilder(builder.receiverWithAckResponse);
     } else {
-      // Misconfiguration
+      // Move this to a pre-condition
       throw new IllegalStateException();
     }
 
@@ -165,6 +168,19 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     ackOperationsWaiter.waitComplete();
   }
 
+  public class ExactlyOnceEnabledStateChanged extends IllegalStateException {
+    private boolean exactlyOnceEnabled;
+
+    public ExactlyOnceEnabledStateChanged setExactlyOnceEnabled(boolean exactlyOnceEnabled) {
+      this.exactlyOnceEnabled = exactlyOnceEnabled;
+      return this;
+    }
+
+    public boolean isExactlyOnceEnabled() {
+      return exactlyOnceEnabled;
+    }
+  }
+
   private class StreamingPullResponseObserver implements ResponseObserver<StreamingPullResponse> {
 
     final SettableApiFuture<Void> errorFuture;
@@ -192,8 +208,16 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     @Override
     public void onResponse(StreamingPullResponse response) {
       channelReconnectBackoffMillis.set(INITIAL_CHANNEL_RECONNECT_BACKOFF.toMillis());
-      messageDispatcher.processReceivedMessages(response.getReceivedMessagesList());
-      // Only request more if we're not shutdown.
+
+      if (response.getSubscriptionProperties().getExactlyOnceDeliveryEnabled() == enableExactlyOnceDelivery) {
+        messageDispatcher.processReceivedMessages(response.getReceivedMessagesList());
+      } else {
+        ExactlyOnceEnabledStateChanged exactlyOnceEnabledStateChangeException = new ExactlyOnceEnabledStateChanged();
+        exactlyOnceEnabledStateChangeException.setExactlyOnceEnabled(response.getSubscriptionProperties().getExactlyOnceDeliveryEnabled());
+        errorFuture.setException(exactlyOnceEnabledStateChangeException);
+      }
+
+      // Only request more if we're not shutdown.f
       // If errorFuture is done, the stream has either failed or hung up,
       // and we don't need to request.
       if (isAlive() && !errorFuture.isDone()) {
@@ -277,6 +301,13 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
 
           @Override
           public void onFailure(Throwable cause) {
+            if (cause instanceof ExactlyOnceEnabledStateChanged) {
+              logger.log(Level.WARNING, "exactlyOnceEnabled state changed for streaming subscriber connection", cause);
+              runShutdown();
+              notifyFailed(cause);
+              return;
+            }
+
             if (!isAlive()) {
               // we don't care about subscription failures when we're no longer running.
               logger.log(Level.FINE, "pull failure after service no longer running", cause);
@@ -404,6 +435,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     private int channelAffinity;
     private FlowController flowController;
     private FlowControlSettings flowControlSettings;
+    private boolean exactlyOnceDeliveryEnabled;
     private boolean useLegacyFlowControl;
     private ScheduledExecutorService executor;
     private ScheduledExecutorService systemExecutor;
@@ -464,6 +496,11 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
 
     public Builder setUseLegacyFlowControl(boolean useLegacyFlowControl) {
       this.useLegacyFlowControl = useLegacyFlowControl;
+      return this;
+    }
+
+    public Builder setExactlyOnceDeliveryEnabled(boolean exactlyOnceDeliveryEnabled) {
+      this.exactlyOnceDeliveryEnabled = exactlyOnceDeliveryEnabled;
       return this;
     }
 
