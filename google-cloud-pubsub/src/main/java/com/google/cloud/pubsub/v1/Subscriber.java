@@ -382,12 +382,6 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
                 }
                 // It could happen that we are shutting down while some channels fail.
               }
-
-              if (failure instanceof StreamingSubscriberConnection.ExactlyOnceEnabledStateChanged) {
-                logger.log(Level.WARNING, "exactlyOnceEnabled state changed. restarting streaming connections for subscription {0}", subscription);
-                exactlyOnceDeliveryEnabled = ((StreamingSubscriberConnection.ExactlyOnceEnabledStateChanged) failure).isExactlyOnceEnabled();
-                startStreamingConnections();
-              }
             }
           });
     }

@@ -29,6 +29,9 @@ import com.google.common.util.concurrent.MoreExecutors;
 import com.google.protobuf.Any;
 import com.google.pubsub.v1.PubsubMessage;
 import com.google.pubsub.v1.ReceivedMessage;
+import com.google.rpc.ErrorInfo;
+import com.google.rpc.Status;
+import io.grpc.protobuf.StatusProto;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -42,11 +45,6 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import com.google.rpc.ErrorInfo;
-import com.google.rpc.Status;
-import io.grpc.protobuf.StatusProto;
-
 import org.threeten.bp.Duration;
 import org.threeten.bp.Instant;
 import org.threeten.bp.temporal.ChronoUnit;
@@ -75,6 +73,8 @@ class MessageDispatcher {
 
   private final FlowController flowController;
 
+  private AtomicBoolean enableExactlyOnceDelivery;
+
   private final Waiter messagesWaiter;
 
   // Maps ID to "total expiration time". If it takes longer than this, stop extending.
@@ -83,8 +83,6 @@ class MessageDispatcher {
   private final LinkedBlockingQueue<String> pendingAcks = new LinkedBlockingQueue<>();
   private final LinkedBlockingQueue<String> pendingNacks = new LinkedBlockingQueue<>();
   private final LinkedBlockingQueue<String> pendingReceipts = new LinkedBlockingQueue<>();
-
-  private final ConcurrentMap<String, String> ackIdsToErrorMetadataMap = new ConcurrentHashMap<>();
 
   // Start the deadline at the minimum ack deadline so messages which arrive before this is
   // updated will not have a long ack deadline.
@@ -134,17 +132,25 @@ class MessageDispatcher {
     private final Instant totalExpiration;
     private SettableApiFuture<AckResponse> ackResponseSettableApiFuture;
 
+    private boolean enableExactlyOnceDelivery;
+
     private final String ERROR_METADATA_PERMANENT_PREFIX = "PERMANENT_";
     private final String ERROR_METADATA_TRANSIENT_PREFIX = "TRANSIENT_";
 
-    private AckHandler(String ackId, int outstandingBytes, Instant totalExpiration) {
+    private AckHandler(
+        String ackId,
+        int outstandingBytes,
+        Instant totalExpiration,
+        boolean enableExactlyOnceDelivery) {
       this.ackId = ackId;
       this.outstandingBytes = outstandingBytes;
       this.receivedTimeMillis = clock.millisTime();
       this.totalExpiration = totalExpiration;
+      this.enableExactlyOnceDelivery = enableExactlyOnceDelivery;
     }
 
-    private AckHandler addAckResponseSettableApiFuture(SettableApiFuture<AckResponse> ackResponseSettableApiFuture) {
+    private AckHandler addAckResponseSettableApiFuture(
+        SettableApiFuture<AckResponse> ackResponseSettableApiFuture) {
       this.ackResponseSettableApiFuture = ackResponseSettableApiFuture;
       return this;
     }
@@ -163,64 +169,62 @@ class MessageDispatcher {
       messagesWaiter.incrementPendingCount(-1);
     }
 
-    private void updateAckIdsToErrorInfoMapFromStatus(Status status) {
+    private String getErrorInfoFromStatus(Status status) throws NoSuchFieldException {
       for (Any any : status.getDetailsList()) {
         if (any.is(ErrorInfo.class)) {
           try {
             ErrorInfo errorInfo = any.unpack(ErrorInfo.class);
             Map<String, String> metadataMap = errorInfo.getMetadataMap();
-            for (String ackId : metadataMap.keySet()) {
-              ackIdsToErrorMetadataMap.putIfAbsent(ackId, metadataMap.get(ackId));
+            if (metadataMap.containsKey(ackId)) {
+              return metadataMap.get(ackId);
             }
           } catch (Throwable throwable) {
           }
         }
       }
+      throw new NoSuchFieldException(ackId.toString());
     }
 
     @Override
     public void onFailure(Throwable t) {
-      // Check if we have already processed this ack's error info (from batching)
-      if (!ackIdsToErrorMetadataMap.containsKey(this.ackId)) {
-        // Parse through our response
-        Status status = StatusProto.fromThrowable(t);
-        if (status != null) {
-          updateAckIdsToErrorInfoMapFromStatus(status);
-        }
-      }
-
-      // Refactor/clean this up
-      if (!ackIdsToErrorMetadataMap.containsKey(this.ackId)) {
-        logger.log(
+      Status status = StatusProto.fromThrowable(t);
+      if (status != null) {
+        try {
+          String errorInfo = getErrorInfoFromStatus(status);
+          if (errorInfo.startsWith(ERROR_METADATA_PERMANENT_PREFIX)) {
+            logger.log(
                 Level.WARNING,
-                "MessageReceiver failed to process ack ID: " + ackId + " with no error info returned." +
-                        "The message will be nacked.",
+                "MessageReceiver permanently failed to process ack ID: "
+                    + ackId
+                    + ", the message will not be retried.",
                 t);
-        pendingNacks.add(ackId);
-      } else {
-        String errorMetadata = ackIdsToErrorMetadataMap.get(this.ackId);
-        if (errorMetadata.startsWith(ERROR_METADATA_PERMANENT_PREFIX)) {
+          } else if (errorInfo.startsWith(ERROR_METADATA_TRANSIENT_PREFIX)) {
+            logger.log(
+                Level.WARNING,
+                "MessageReceiver transiently failed to process ack ID: "
+                    + ackId
+                    + ", the message will be retried.",
+                t);
+            pendingAcks.add(ackId);
+          } else {
+            logger.log(
+                Level.WARNING,
+                "MessageReceiver failed to process ack ID: "
+                    + ackId
+                    + " with unknown error info returned."
+                    + "The message will not be retried.",
+                t);
+          }
+        } catch (NoSuchFieldException noSuchFieldException) {
           logger.log(
-                  Level.WARNING,
-                  "MessageReceiver permanently failed to process ack ID: " + ackId +
-                          ", the message will not be retried.",
-                  t);
-        } else if (errorMetadata.startsWith(ERROR_METADATA_TRANSIENT_PREFIX)) {
-          logger.log(
-                  Level.WARNING,
-                  "MessageReceiver transiently failed to process ack ID: " + ackId + ", the message will be retried.",
-                  t);
-          pendingNacks.add(ackId);
-        } else {
-          logger.log(
-                  Level.WARNING,
-                  "MessageReceiver failed to process ack ID: " + ackId + " with unknown error info returned." +
-                          "The message will be nacked.",
-                  t);
-          pendingNacks.add(ackId);
+              Level.WARNING,
+              "MessageReceiver failed to process ack ID: "
+                  + ackId
+                  + " with no error info returned."
+                  + "The message will not be retried.",
+              t);
         }
       }
-
       forget();
     }
 
@@ -262,6 +266,7 @@ class MessageDispatcher {
     receiverWithAckResponse = builder.receiverWithAckResponse;
     ackProcessor = builder.ackProcessor;
     flowController = builder.flowController;
+    enableExactlyOnceDelivery = new AtomicBoolean(builder.enableExactlyOnceDelivery);
     ackLatencyDistribution = builder.ackLatencyDistribution;
     clock = builder.clock;
     jobLock = new ReentrantLock();
@@ -354,6 +359,11 @@ class MessageDispatcher {
     return messageDeadlineSeconds.get();
   }
 
+  @InternalApi
+  void setEnableExactlyOnceDelivery(boolean enableExactlyOnceDelivery) {
+    this.enableExactlyOnceDelivery.set(enableExactlyOnceDelivery);
+  }
+
   private static class OutstandingMessage {
     private final ReceivedMessage receivedMessage;
     private final AckHandler ackHandler;
@@ -368,7 +378,12 @@ class MessageDispatcher {
     Instant totalExpiration = now().plus(maxAckExtensionPeriod);
     List<OutstandingMessage> outstandingBatch = new ArrayList<>(messages.size());
     for (ReceivedMessage message : messages) {
-      AckHandler ackHandler = new AckHandler(message.getAckId(), message.getMessage().getSerializedSize(), totalExpiration);
+      AckHandler ackHandler =
+          new AckHandler(
+              message.getAckId(),
+              message.getMessage().getSerializedSize(),
+              totalExpiration,
+              enableExactlyOnceDelivery.get());
       if (pendingMessages.putIfAbsent(message.getAckId(), ackHandler) != null) {
         // putIfAbsent puts ackHandler if ackID isn't previously mapped, then return the
         // previously-mapped element.
@@ -418,33 +433,33 @@ class MessageDispatcher {
   private void processOutstandingMessage(final PubsubMessage message, final AckHandler ackHandler) {
     final SettableApiFuture<AckReply> ackReplySettableApiFuture = SettableApiFuture.create();
     final AckReplyConsumer ackReplyConsumer =
-            new AckReplyConsumer() {
-              @Override
-              public void ack() {
-                ackReplySettableApiFuture.set(AckReply.ACK);
-              }
+        new AckReplyConsumer() {
+          @Override
+          public void ack() {
+            ackReplySettableApiFuture.set(AckReply.ACK);
+          }
 
-              @Override
-              public void nack() {
-                ackReplySettableApiFuture.set(AckReply.NACK);
-              }
-            };
+          @Override
+          public void nack() {
+            ackReplySettableApiFuture.set(AckReply.NACK);
+          }
+        };
 
     SettableApiFuture<AckResponse> ackResponseSettableApiFuture = SettableApiFuture.create();
     final AckReplyConsumerWithResponse ackReplyConsumerWithResponse =
-            new AckReplyConsumerWithResponse() {
-              @Override
-              public Future<AckResponse> ack() {
-                ackReplySettableApiFuture.set(AckReply.ACK);
-                return ackResponseSettableApiFuture;
-              }
+        new AckReplyConsumerWithResponse() {
+          @Override
+          public Future<AckResponse> ack() {
+            ackReplySettableApiFuture.set(AckReply.ACK);
+            return ackResponseSettableApiFuture;
+          }
 
-              @Override
-              public Future<AckResponse> nack() {
-                ackReplySettableApiFuture.set(AckReply.NACK);
-                return ackResponseSettableApiFuture;
-              }
-            };
+          @Override
+          public Future<AckResponse> nack() {
+            ackReplySettableApiFuture.set(AckReply.NACK);
+            return ackResponseSettableApiFuture;
+          }
+        };
 
     ackHandler.addAckResponseSettableApiFuture(ackResponseSettableApiFuture);
 
@@ -498,9 +513,9 @@ class MessageDispatcher {
       sec = Subscriber.MAX_ACK_DEADLINE_SECONDS;
     }
 
-//    if (sec > Subscriber.MIN_ACK_DEADLINE_SECONDS) {
-//
-//    }
+    //    if (sec > Subscriber.MIN_ACK_DEADLINE_SECONDS) {
+    //
+    //    }
 
     return sec;
   }
@@ -577,6 +592,7 @@ class MessageDispatcher {
     private Duration maxDurationPerAckExtension;
     private Distribution ackLatencyDistribution;
     private FlowController flowController;
+    private boolean enableExactlyOnceDelivery;
 
     private Executor executor;
     private ScheduledExecutorService systemExecutor;
@@ -617,6 +633,11 @@ class MessageDispatcher {
 
     public Builder setFlowController(FlowController flowController) {
       this.flowController = flowController;
+      return this;
+    }
+
+    public Builder setEnableExactlyOnceDelivery(boolean enableExactlyOnceDelivery) {
+      this.enableExactlyOnceDelivery = enableExactlyOnceDelivery;
       return this;
     }
 

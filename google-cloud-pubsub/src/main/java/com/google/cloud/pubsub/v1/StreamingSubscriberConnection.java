@@ -41,22 +41,26 @@ import com.google.cloud.pubsub.v1.MessageDispatcher.PendingModifyAckDeadline;
 import com.google.cloud.pubsub.v1.stub.SubscriberStub;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.MoreExecutors;
+import com.google.protobuf.Any;
 import com.google.protobuf.Empty;
 import com.google.pubsub.v1.AcknowledgeRequest;
 import com.google.pubsub.v1.ModifyAckDeadlineRequest;
 import com.google.pubsub.v1.StreamingPullRequest;
 import com.google.pubsub.v1.StreamingPullResponse;
+import com.google.rpc.ErrorInfo;
 import io.grpc.Status;
-
 import java.util.*;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Nullable;
+
+import io.grpc.protobuf.StatusProto;
 import org.threeten.bp.Duration;
 
 /** Implementation of {@link AckProcessor} based on Cloud Pub/Sub streaming pull. */
@@ -81,7 +85,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
   private final FlowControlSettings flowControlSettings;
   private final boolean useLegacyFlowControl;
 
-  private final boolean enableExactlyOnceDelivery;
+  private AtomicBoolean enableExactlyOnceDelivery;
 
   private final AtomicLong channelReconnectBackoffMillis =
       new AtomicLong(INITIAL_CHANNEL_RECONNECT_BACKOFF.toMillis());
@@ -112,17 +116,14 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     }
     subscriberStub = builder.subscriberStub;
     channelAffinity = builder.channelAffinity;
-    enableExactlyOnceDelivery = builder.exactlyOnceDeliveryEnabled;
+    enableExactlyOnceDelivery = new AtomicBoolean(builder.exactlyOnceDeliveryEnabled);
     clock = builder.clock;
 
     MessageDispatcher.Builder messageDispatcherBuilder;
     if (builder.receiver != null) {
       messageDispatcherBuilder = MessageDispatcher.newBuilder(builder.receiver);
-    } else if (builder.receiverWithAckResponse != null) {
-      messageDispatcherBuilder = MessageDispatcher.newBuilder(builder.receiverWithAckResponse);
     } else {
-      // Move this to a pre-condition
-      throw new IllegalStateException();
+      messageDispatcherBuilder = MessageDispatcher.newBuilder(builder.receiverWithAckResponse);
     }
 
     messageDispatcher =
@@ -133,6 +134,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
             .setMaxDurationPerAckExtension(builder.maxDurationPerAckExtension)
             .setAckLatencyDistribution(builder.ackLatencyDistribution)
             .setFlowController(builder.flowController)
+            .setEnableExactlyOnceDelivery(enableExactlyOnceDelivery.get())
             .setExecutor(builder.executor)
             .setSystemExecutor(builder.systemExecutor)
             .setApiClock(clock)
@@ -168,19 +170,6 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     ackOperationsWaiter.waitComplete();
   }
 
-  public class ExactlyOnceEnabledStateChanged extends IllegalStateException {
-    private boolean exactlyOnceEnabled;
-
-    public ExactlyOnceEnabledStateChanged setExactlyOnceEnabled(boolean exactlyOnceEnabled) {
-      this.exactlyOnceEnabled = exactlyOnceEnabled;
-      return this;
-    }
-
-    public boolean isExactlyOnceEnabled() {
-      return exactlyOnceEnabled;
-    }
-  }
-
   private class StreamingPullResponseObserver implements ResponseObserver<StreamingPullResponse> {
 
     final SettableApiFuture<Void> errorFuture;
@@ -208,16 +197,18 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     @Override
     public void onResponse(StreamingPullResponse response) {
       channelReconnectBackoffMillis.set(INITIAL_CHANNEL_RECONNECT_BACKOFF.toMillis());
+      boolean isExactlyOnceDeliveryEnabled =
+          response.getSubscriptionProperties().getExactlyOnceDeliveryEnabled();
 
-      if (response.getSubscriptionProperties().getExactlyOnceDeliveryEnabled() == enableExactlyOnceDelivery) {
-        messageDispatcher.processReceivedMessages(response.getReceivedMessagesList());
-      } else {
-        ExactlyOnceEnabledStateChanged exactlyOnceEnabledStateChangeException = new ExactlyOnceEnabledStateChanged();
-        exactlyOnceEnabledStateChangeException.setExactlyOnceEnabled(response.getSubscriptionProperties().getExactlyOnceDeliveryEnabled());
-        errorFuture.setException(exactlyOnceEnabledStateChangeException);
+      if (enableExactlyOnceDelivery.get() != isExactlyOnceDeliveryEnabled) {
+        enableExactlyOnceDelivery.set(isExactlyOnceDeliveryEnabled);
+        messageDispatcher.setEnableExactlyOnceDelivery(isExactlyOnceDeliveryEnabled);
+        // TODO: ModAckDeadline changes
       }
 
-      // Only request more if we're not shutdown.f
+      messageDispatcher.processReceivedMessages(response.getReceivedMessagesList());
+
+      // Only request more if we're not shutdown.
       // If errorFuture is done, the stream has either failed or hung up,
       // and we don't need to request.
       if (isAlive() && !errorFuture.isDone()) {
@@ -301,12 +292,26 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
 
           @Override
           public void onFailure(Throwable cause) {
-            if (cause instanceof ExactlyOnceEnabledStateChanged) {
-              logger.log(Level.WARNING, "exactlyOnceEnabled state changed for streaming subscriber connection", cause);
-              runShutdown();
-              notifyFailed(cause);
-              return;
+            com.google.rpc.Status status = StatusProto.fromThrowable(cause);
+            if (status != null) {
+              for (Any any : status.getDetailsList()) {
+                if (any.is(ErrorInfo.class)) {
+                  try {
+                    ErrorInfo errorInfo = any.unpack(ErrorInfo.class);
+                    Map<String, String> metadataMap = errorInfo.getMetadataMap();
+
+                  } catch (Throwable throwable) {
+                  }
+                }
+              }
             }
+            //            if (cause instanceof ExactlyOnceEnabledStateChanged) {
+            //              logger.log(Level.WARNING, "exactlyOnceEnabled state changed for
+            // streaming subscriber connection", cause);
+            //              runShutdown();
+            //              notifyFailed(cause);
+            //              return;
+            //            }
 
             if (!isAlive()) {
               // we don't care about subscription failures when we're no longer running.
@@ -363,28 +368,29 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     for (PendingModifyAckDeadline modack : ackDeadlineExtensions) {
       for (List<String> idChunk : Lists.partition(modack.ackIds, MAX_PER_REQUEST_CHANGES)) {
         ApiFutureCallback<Empty> loggingCallback =
-                new ApiFutureCallback<Empty>() {
-                  @Override
-                  public void onSuccess(Empty empty) {
-                    ackOperationsWaiter.incrementPendingCount(-1);
-                  }
+            new ApiFutureCallback<Empty>() {
+              @Override
+              public void onSuccess(Empty empty) {
+                ackOperationsWaiter.incrementPendingCount(-1);
+              }
 
-                  @Override
-                  public void onFailure(Throwable t) {
-                    ackOperationsWaiter.incrementPendingCount(-1);
-                    Level level = isAlive() ? Level.WARNING : Level.FINER;
-                    logger.log(level, "failed to send operations", t);
-                  }
-                };
+              @Override
+              public void onFailure(Throwable t) {
+                ackOperationsWaiter.incrementPendingCount(-1);
+                Level level = isAlive() ? Level.WARNING : Level.FINER;
+                logger.log(level, "failed to send operations", t);
+              }
+            };
 
         ApiFuture<Empty> future =
-                subscriberStub.modifyAckDeadlineCallable()
-                        .futureCall(
-                                ModifyAckDeadlineRequest.newBuilder()
-                                        .setSubscription(subscription)
-                                        .addAllAckIds(idChunk)
-                                        .setAckDeadlineSeconds(modack.deadlineExtensionSeconds)
-                                        .build());
+            subscriberStub
+                .modifyAckDeadlineCallable()
+                .futureCall(
+                    ModifyAckDeadlineRequest.newBuilder()
+                        .setSubscription(subscription)
+                        .addAllAckIds(idChunk)
+                        .setAckDeadlineSeconds(modack.deadlineExtensionSeconds)
+                        .build());
         ApiFutures.addCallback(future, loggingCallback, directExecutor());
         pendingOperations++;
       }
@@ -396,26 +402,27 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     int pendingOperations = 0;
     for (List<String> idChunk : Lists.partition(acksToSend, MAX_PER_REQUEST_CHANGES)) {
       ApiFutureCallback<Empty> loggingCallback =
-              new ApiFutureCallback<Empty>() {
-                @Override
-                public void onSuccess(Empty empty) {
-                  ackOperationsWaiter.incrementPendingCount(-1);
-                }
+          new ApiFutureCallback<Empty>() {
+            @Override
+            public void onSuccess(Empty empty) {
+              ackOperationsWaiter.incrementPendingCount(-1);
+            }
 
-                @Override
-                public void onFailure(Throwable t) {
-                  ackOperationsWaiter.incrementPendingCount(-1);
-                  Level level = isAlive() ? Level.WARNING : Level.FINER;
-                  logger.log(level, "failed to send operations", t);
-                }
-              };
+            @Override
+            public void onFailure(Throwable t) {
+              ackOperationsWaiter.incrementPendingCount(-1);
+              Level level = isAlive() ? Level.WARNING : Level.FINER;
+              logger.log(level, "failed to send operations", t);
+            }
+          };
       ApiFuture<Empty> future =
-              subscriberStub.acknowledgeCallable()
-                      .futureCall(
-                              AcknowledgeRequest.newBuilder()
-                                      .setSubscription(subscription)
-                                      .addAllAckIds(idChunk)
-                                      .build());
+          subscriberStub
+              .acknowledgeCallable()
+              .futureCall(
+                  AcknowledgeRequest.newBuilder()
+                      .setSubscription(subscription)
+                      .addAllAckIds(idChunk)
+                      .build());
       ApiFutures.addCallback(future, loggingCallback, directExecutor());
       pendingOperations++;
     }

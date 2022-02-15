@@ -36,10 +36,7 @@ import com.google.api.gax.rpc.StatusCode;
 import com.google.cloud.pubsub.v1.Subscriber.Builder;
 import com.google.pubsub.v1.ProjectSubscriptionName;
 import com.google.pubsub.v1.PubsubMessage;
-import io.grpc.ManagedChannel;
-import io.grpc.Server;
-import io.grpc.Status;
-import io.grpc.StatusException;
+import io.grpc.*;
 import io.grpc.inprocess.InProcessChannelBuilder;
 import io.grpc.inprocess.InProcessServerBuilder;
 import java.util.concurrent.Executors;
@@ -317,11 +314,6 @@ public class SubscriberTest {
     assertEquals(
         subscriber.getFlowControlSettings().getMaxOutstandingElementCount(),
         Subscriber.Builder.DEFAULT_FLOW_CONTROL_SETTINGS.getMaxOutstandingElementCount());
-  }
-
-  @Test
-  public void testExactlyOnceEnabledStateChange() {
-
   }
 
   private Subscriber startSubscriber(Builder testSubscriberBuilder) {
