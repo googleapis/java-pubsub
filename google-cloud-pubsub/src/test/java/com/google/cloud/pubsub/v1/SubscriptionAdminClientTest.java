@@ -1022,7 +1022,7 @@ public class SubscriptionAdminClientTest {
     StreamingPullResponse expectedResponse =
         StreamingPullResponse.newBuilder()
             .addAllReceivedMessages(new ArrayList<ReceivedMessage>())
-            .setAcknowlegeConfirmation(
+            .setAcknowledgeConfirmation(
                 StreamingPullResponse.AcknowledgeConfirmation.newBuilder().build())
             .setModifyAckDeadlineConfirmation(
                 StreamingPullResponse.ModifyAckDeadlineConfirmation.newBuilder().build())

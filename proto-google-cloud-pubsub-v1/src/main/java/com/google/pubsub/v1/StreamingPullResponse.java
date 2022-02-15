@@ -83,24 +83,6 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
                       com.google.pubsub.v1.ReceivedMessage.parser(), extensionRegistry));
               break;
             }
-          case 18:
-            {
-              com.google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation.Builder
-                  subBuilder = null;
-              if (acknowlegeConfirmation_ != null) {
-                subBuilder = acknowlegeConfirmation_.toBuilder();
-              }
-              acknowlegeConfirmation_ =
-                  input.readMessage(
-                      com.google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation.parser(),
-                      extensionRegistry);
-              if (subBuilder != null) {
-                subBuilder.mergeFrom(acknowlegeConfirmation_);
-                acknowlegeConfirmation_ = subBuilder.buildPartial();
-              }
-
-              break;
-            }
           case 26:
             {
               com.google.pubsub.v1.StreamingPullResponse.ModifyAckDeadlineConfirmation.Builder
@@ -134,6 +116,24 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
               if (subBuilder != null) {
                 subBuilder.mergeFrom(subscriptionProperties_);
                 subscriptionProperties_ = subBuilder.buildPartial();
+              }
+
+              break;
+            }
+          case 42:
+            {
+              com.google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation.Builder
+                  subBuilder = null;
+              if (acknowledgeConfirmation_ != null) {
+                subBuilder = acknowledgeConfirmation_.toBuilder();
+              }
+              acknowledgeConfirmation_ =
+                  input.readMessage(
+                      com.google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation.parser(),
+                      extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(acknowledgeConfirmation_);
+                acknowledgeConfirmation_ = subBuilder.buildPartial();
               }
 
               break;
@@ -3527,9 +3527,9 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
     return receivedMessages_.get(index);
   }
 
-  public static final int ACKNOWLEGE_CONFIRMATION_FIELD_NUMBER = 2;
+  public static final int ACKNOWLEDGE_CONFIRMATION_FIELD_NUMBER = 5;
   private com.google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation
-      acknowlegeConfirmation_;
+      acknowledgeConfirmation_;
   /**
    *
    *
@@ -3539,14 +3539,14 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
    * </pre>
    *
    * <code>
-   * .google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation acknowlege_confirmation = 2;
+   * .google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation acknowledge_confirmation = 5;
    * </code>
    *
-   * @return Whether the acknowlegeConfirmation field is set.
+   * @return Whether the acknowledgeConfirmation field is set.
    */
   @java.lang.Override
-  public boolean hasAcknowlegeConfirmation() {
-    return acknowlegeConfirmation_ != null;
+  public boolean hasAcknowledgeConfirmation() {
+    return acknowledgeConfirmation_ != null;
   }
   /**
    *
@@ -3557,17 +3557,17 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
    * </pre>
    *
    * <code>
-   * .google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation acknowlege_confirmation = 2;
+   * .google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation acknowledge_confirmation = 5;
    * </code>
    *
-   * @return The acknowlegeConfirmation.
+   * @return The acknowledgeConfirmation.
    */
   @java.lang.Override
   public com.google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation
-      getAcknowlegeConfirmation() {
-    return acknowlegeConfirmation_ == null
+      getAcknowledgeConfirmation() {
+    return acknowledgeConfirmation_ == null
         ? com.google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation.getDefaultInstance()
-        : acknowlegeConfirmation_;
+        : acknowledgeConfirmation_;
   }
   /**
    *
@@ -3578,13 +3578,13 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
    * </pre>
    *
    * <code>
-   * .google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation acknowlege_confirmation = 2;
+   * .google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation acknowledge_confirmation = 5;
    * </code>
    */
   @java.lang.Override
   public com.google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmationOrBuilder
-      getAcknowlegeConfirmationOrBuilder() {
-    return getAcknowlegeConfirmation();
+      getAcknowledgeConfirmationOrBuilder() {
+    return getAcknowledgeConfirmation();
   }
 
   public static final int MODIFY_ACK_DEADLINE_CONFIRMATION_FIELD_NUMBER = 3;
@@ -3721,14 +3721,14 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
     for (int i = 0; i < receivedMessages_.size(); i++) {
       output.writeMessage(1, receivedMessages_.get(i));
     }
-    if (acknowlegeConfirmation_ != null) {
-      output.writeMessage(2, getAcknowlegeConfirmation());
-    }
     if (modifyAckDeadlineConfirmation_ != null) {
       output.writeMessage(3, getModifyAckDeadlineConfirmation());
     }
     if (subscriptionProperties_ != null) {
       output.writeMessage(4, getSubscriptionProperties());
+    }
+    if (acknowledgeConfirmation_ != null) {
+      output.writeMessage(5, getAcknowledgeConfirmation());
     }
     unknownFields.writeTo(output);
   }
@@ -3742,10 +3742,6 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
     for (int i = 0; i < receivedMessages_.size(); i++) {
       size += com.google.protobuf.CodedOutputStream.computeMessageSize(1, receivedMessages_.get(i));
     }
-    if (acknowlegeConfirmation_ != null) {
-      size +=
-          com.google.protobuf.CodedOutputStream.computeMessageSize(2, getAcknowlegeConfirmation());
-    }
     if (modifyAckDeadlineConfirmation_ != null) {
       size +=
           com.google.protobuf.CodedOutputStream.computeMessageSize(
@@ -3754,6 +3750,10 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
     if (subscriptionProperties_ != null) {
       size +=
           com.google.protobuf.CodedOutputStream.computeMessageSize(4, getSubscriptionProperties());
+    }
+    if (acknowledgeConfirmation_ != null) {
+      size +=
+          com.google.protobuf.CodedOutputStream.computeMessageSize(5, getAcknowledgeConfirmation());
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -3772,9 +3772,9 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
         (com.google.pubsub.v1.StreamingPullResponse) obj;
 
     if (!getReceivedMessagesList().equals(other.getReceivedMessagesList())) return false;
-    if (hasAcknowlegeConfirmation() != other.hasAcknowlegeConfirmation()) return false;
-    if (hasAcknowlegeConfirmation()) {
-      if (!getAcknowlegeConfirmation().equals(other.getAcknowlegeConfirmation())) return false;
+    if (hasAcknowledgeConfirmation() != other.hasAcknowledgeConfirmation()) return false;
+    if (hasAcknowledgeConfirmation()) {
+      if (!getAcknowledgeConfirmation().equals(other.getAcknowledgeConfirmation())) return false;
     }
     if (hasModifyAckDeadlineConfirmation() != other.hasModifyAckDeadlineConfirmation())
       return false;
@@ -3801,9 +3801,9 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
       hash = (37 * hash) + RECEIVED_MESSAGES_FIELD_NUMBER;
       hash = (53 * hash) + getReceivedMessagesList().hashCode();
     }
-    if (hasAcknowlegeConfirmation()) {
-      hash = (37 * hash) + ACKNOWLEGE_CONFIRMATION_FIELD_NUMBER;
-      hash = (53 * hash) + getAcknowlegeConfirmation().hashCode();
+    if (hasAcknowledgeConfirmation()) {
+      hash = (37 * hash) + ACKNOWLEDGE_CONFIRMATION_FIELD_NUMBER;
+      hash = (53 * hash) + getAcknowledgeConfirmation().hashCode();
     }
     if (hasModifyAckDeadlineConfirmation()) {
       hash = (37 * hash) + MODIFY_ACK_DEADLINE_CONFIRMATION_FIELD_NUMBER;
@@ -3967,11 +3967,11 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
       } else {
         receivedMessagesBuilder_.clear();
       }
-      if (acknowlegeConfirmationBuilder_ == null) {
-        acknowlegeConfirmation_ = null;
+      if (acknowledgeConfirmationBuilder_ == null) {
+        acknowledgeConfirmation_ = null;
       } else {
-        acknowlegeConfirmation_ = null;
-        acknowlegeConfirmationBuilder_ = null;
+        acknowledgeConfirmation_ = null;
+        acknowledgeConfirmationBuilder_ = null;
       }
       if (modifyAckDeadlineConfirmationBuilder_ == null) {
         modifyAckDeadlineConfirmation_ = null;
@@ -4022,10 +4022,10 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
       } else {
         result.receivedMessages_ = receivedMessagesBuilder_.build();
       }
-      if (acknowlegeConfirmationBuilder_ == null) {
-        result.acknowlegeConfirmation_ = acknowlegeConfirmation_;
+      if (acknowledgeConfirmationBuilder_ == null) {
+        result.acknowledgeConfirmation_ = acknowledgeConfirmation_;
       } else {
-        result.acknowlegeConfirmation_ = acknowlegeConfirmationBuilder_.build();
+        result.acknowledgeConfirmation_ = acknowledgeConfirmationBuilder_.build();
       }
       if (modifyAckDeadlineConfirmationBuilder_ == null) {
         result.modifyAckDeadlineConfirmation_ = modifyAckDeadlineConfirmation_;
@@ -4113,8 +4113,8 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
           }
         }
       }
-      if (other.hasAcknowlegeConfirmation()) {
-        mergeAcknowlegeConfirmation(other.getAcknowlegeConfirmation());
+      if (other.hasAcknowledgeConfirmation()) {
+        mergeAcknowledgeConfirmation(other.getAcknowledgeConfirmation());
       }
       if (other.hasModifyAckDeadlineConfirmation()) {
         mergeModifyAckDeadlineConfirmation(other.getModifyAckDeadlineConfirmation());
@@ -4508,12 +4508,12 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
     }
 
     private com.google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation
-        acknowlegeConfirmation_;
+        acknowledgeConfirmation_;
     private com.google.protobuf.SingleFieldBuilderV3<
             com.google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation,
             com.google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation.Builder,
             com.google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmationOrBuilder>
-        acknowlegeConfirmationBuilder_;
+        acknowledgeConfirmationBuilder_;
     /**
      *
      *
@@ -4523,13 +4523,13 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
      * </pre>
      *
      * <code>
-     * .google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation acknowlege_confirmation = 2;
+     * .google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation acknowledge_confirmation = 5;
      * </code>
      *
-     * @return Whether the acknowlegeConfirmation field is set.
+     * @return Whether the acknowledgeConfirmation field is set.
      */
-    public boolean hasAcknowlegeConfirmation() {
-      return acknowlegeConfirmationBuilder_ != null || acknowlegeConfirmation_ != null;
+    public boolean hasAcknowledgeConfirmation() {
+      return acknowledgeConfirmationBuilder_ != null || acknowledgeConfirmation_ != null;
     }
     /**
      *
@@ -4540,20 +4540,20 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
      * </pre>
      *
      * <code>
-     * .google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation acknowlege_confirmation = 2;
+     * .google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation acknowledge_confirmation = 5;
      * </code>
      *
-     * @return The acknowlegeConfirmation.
+     * @return The acknowledgeConfirmation.
      */
     public com.google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation
-        getAcknowlegeConfirmation() {
-      if (acknowlegeConfirmationBuilder_ == null) {
-        return acknowlegeConfirmation_ == null
+        getAcknowledgeConfirmation() {
+      if (acknowledgeConfirmationBuilder_ == null) {
+        return acknowledgeConfirmation_ == null
             ? com.google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation
                 .getDefaultInstance()
-            : acknowlegeConfirmation_;
+            : acknowledgeConfirmation_;
       } else {
-        return acknowlegeConfirmationBuilder_.getMessage();
+        return acknowledgeConfirmationBuilder_.getMessage();
       }
     }
     /**
@@ -4565,19 +4565,19 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
      * </pre>
      *
      * <code>
-     * .google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation acknowlege_confirmation = 2;
+     * .google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation acknowledge_confirmation = 5;
      * </code>
      */
-    public Builder setAcknowlegeConfirmation(
+    public Builder setAcknowledgeConfirmation(
         com.google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation value) {
-      if (acknowlegeConfirmationBuilder_ == null) {
+      if (acknowledgeConfirmationBuilder_ == null) {
         if (value == null) {
           throw new NullPointerException();
         }
-        acknowlegeConfirmation_ = value;
+        acknowledgeConfirmation_ = value;
         onChanged();
       } else {
-        acknowlegeConfirmationBuilder_.setMessage(value);
+        acknowledgeConfirmationBuilder_.setMessage(value);
       }
 
       return this;
@@ -4591,17 +4591,17 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
      * </pre>
      *
      * <code>
-     * .google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation acknowlege_confirmation = 2;
+     * .google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation acknowledge_confirmation = 5;
      * </code>
      */
-    public Builder setAcknowlegeConfirmation(
+    public Builder setAcknowledgeConfirmation(
         com.google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation.Builder
             builderForValue) {
-      if (acknowlegeConfirmationBuilder_ == null) {
-        acknowlegeConfirmation_ = builderForValue.build();
+      if (acknowledgeConfirmationBuilder_ == null) {
+        acknowledgeConfirmation_ = builderForValue.build();
         onChanged();
       } else {
-        acknowlegeConfirmationBuilder_.setMessage(builderForValue.build());
+        acknowledgeConfirmationBuilder_.setMessage(builderForValue.build());
       }
 
       return this;
@@ -4615,24 +4615,24 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
      * </pre>
      *
      * <code>
-     * .google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation acknowlege_confirmation = 2;
+     * .google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation acknowledge_confirmation = 5;
      * </code>
      */
-    public Builder mergeAcknowlegeConfirmation(
+    public Builder mergeAcknowledgeConfirmation(
         com.google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation value) {
-      if (acknowlegeConfirmationBuilder_ == null) {
-        if (acknowlegeConfirmation_ != null) {
-          acknowlegeConfirmation_ =
+      if (acknowledgeConfirmationBuilder_ == null) {
+        if (acknowledgeConfirmation_ != null) {
+          acknowledgeConfirmation_ =
               com.google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation.newBuilder(
-                      acknowlegeConfirmation_)
+                      acknowledgeConfirmation_)
                   .mergeFrom(value)
                   .buildPartial();
         } else {
-          acknowlegeConfirmation_ = value;
+          acknowledgeConfirmation_ = value;
         }
         onChanged();
       } else {
-        acknowlegeConfirmationBuilder_.mergeFrom(value);
+        acknowledgeConfirmationBuilder_.mergeFrom(value);
       }
 
       return this;
@@ -4646,16 +4646,16 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
      * </pre>
      *
      * <code>
-     * .google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation acknowlege_confirmation = 2;
+     * .google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation acknowledge_confirmation = 5;
      * </code>
      */
-    public Builder clearAcknowlegeConfirmation() {
-      if (acknowlegeConfirmationBuilder_ == null) {
-        acknowlegeConfirmation_ = null;
+    public Builder clearAcknowledgeConfirmation() {
+      if (acknowledgeConfirmationBuilder_ == null) {
+        acknowledgeConfirmation_ = null;
         onChanged();
       } else {
-        acknowlegeConfirmation_ = null;
-        acknowlegeConfirmationBuilder_ = null;
+        acknowledgeConfirmation_ = null;
+        acknowledgeConfirmationBuilder_ = null;
       }
 
       return this;
@@ -4669,14 +4669,14 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
      * </pre>
      *
      * <code>
-     * .google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation acknowlege_confirmation = 2;
+     * .google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation acknowledge_confirmation = 5;
      * </code>
      */
     public com.google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation.Builder
-        getAcknowlegeConfirmationBuilder() {
+        getAcknowledgeConfirmationBuilder() {
 
       onChanged();
-      return getAcknowlegeConfirmationFieldBuilder().getBuilder();
+      return getAcknowledgeConfirmationFieldBuilder().getBuilder();
     }
     /**
      *
@@ -4687,18 +4687,18 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
      * </pre>
      *
      * <code>
-     * .google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation acknowlege_confirmation = 2;
+     * .google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation acknowledge_confirmation = 5;
      * </code>
      */
     public com.google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmationOrBuilder
-        getAcknowlegeConfirmationOrBuilder() {
-      if (acknowlegeConfirmationBuilder_ != null) {
-        return acknowlegeConfirmationBuilder_.getMessageOrBuilder();
+        getAcknowledgeConfirmationOrBuilder() {
+      if (acknowledgeConfirmationBuilder_ != null) {
+        return acknowledgeConfirmationBuilder_.getMessageOrBuilder();
       } else {
-        return acknowlegeConfirmation_ == null
+        return acknowledgeConfirmation_ == null
             ? com.google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation
                 .getDefaultInstance()
-            : acknowlegeConfirmation_;
+            : acknowledgeConfirmation_;
       }
     }
     /**
@@ -4710,24 +4710,24 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
      * </pre>
      *
      * <code>
-     * .google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation acknowlege_confirmation = 2;
+     * .google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation acknowledge_confirmation = 5;
      * </code>
      */
     private com.google.protobuf.SingleFieldBuilderV3<
             com.google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation,
             com.google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation.Builder,
             com.google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmationOrBuilder>
-        getAcknowlegeConfirmationFieldBuilder() {
-      if (acknowlegeConfirmationBuilder_ == null) {
-        acknowlegeConfirmationBuilder_ =
+        getAcknowledgeConfirmationFieldBuilder() {
+      if (acknowledgeConfirmationBuilder_ == null) {
+        acknowledgeConfirmationBuilder_ =
             new com.google.protobuf.SingleFieldBuilderV3<
                 com.google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation,
                 com.google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation.Builder,
                 com.google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmationOrBuilder>(
-                getAcknowlegeConfirmation(), getParentForChildren(), isClean());
-        acknowlegeConfirmation_ = null;
+                getAcknowledgeConfirmation(), getParentForChildren(), isClean());
+        acknowledgeConfirmation_ = null;
       }
-      return acknowlegeConfirmationBuilder_;
+      return acknowledgeConfirmationBuilder_;
     }
 
     private com.google.pubsub.v1.StreamingPullResponse.ModifyAckDeadlineConfirmation

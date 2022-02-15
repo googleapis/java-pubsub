@@ -84,12 +84,12 @@ public interface StreamingPullResponseOrBuilder
    * </pre>
    *
    * <code>
-   * .google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation acknowlege_confirmation = 2;
+   * .google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation acknowledge_confirmation = 5;
    * </code>
    *
-   * @return Whether the acknowlegeConfirmation field is set.
+   * @return Whether the acknowledgeConfirmation field is set.
    */
-  boolean hasAcknowlegeConfirmation();
+  boolean hasAcknowledgeConfirmation();
   /**
    *
    *
@@ -99,12 +99,12 @@ public interface StreamingPullResponseOrBuilder
    * </pre>
    *
    * <code>
-   * .google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation acknowlege_confirmation = 2;
+   * .google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation acknowledge_confirmation = 5;
    * </code>
    *
-   * @return The acknowlegeConfirmation.
+   * @return The acknowledgeConfirmation.
    */
-  com.google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation getAcknowlegeConfirmation();
+  com.google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation getAcknowledgeConfirmation();
   /**
    *
    *
@@ -114,11 +114,11 @@ public interface StreamingPullResponseOrBuilder
    * </pre>
    *
    * <code>
-   * .google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation acknowlege_confirmation = 2;
+   * .google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation acknowledge_confirmation = 5;
    * </code>
    */
   com.google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmationOrBuilder
-      getAcknowlegeConfirmationOrBuilder();
+      getAcknowledgeConfirmationOrBuilder();
 
   /**
    *
