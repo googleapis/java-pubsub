@@ -36,6 +36,7 @@ import com.google.api.gax.rpc.ApiExceptionFactory;
 import com.google.api.gax.rpc.ClientStream;
 import com.google.api.gax.rpc.ResponseObserver;
 import com.google.api.gax.rpc.StreamController;
+import com.google.auto.value.AutoValue;
 import com.google.cloud.pubsub.v1.MessageDispatcher.AckProcessor;
 import com.google.cloud.pubsub.v1.MessageDispatcher.PendingModifyAckDeadline;
 import com.google.cloud.pubsub.v1.stub.SubscriberStub;
@@ -74,6 +75,9 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
   private static final Duration INITIAL_CHANNEL_RECONNECT_BACKOFF = Duration.ofMillis(100);
   private static final Duration MAX_CHANNEL_RECONNECT_BACKOFF = Duration.ofSeconds(10);
   private static final int MAX_PER_REQUEST_CHANGES = 1000;
+
+  private final String PERMANENT_ERROR_METADATA_PREFIX = "PERMANENT_";
+  private final String TRANSIENT_ERROR_METADATA_PREFIX = "TRANSIENT_";
 
   private final Duration streamAckDeadline;
   private final SubscriberStub subscriberStub;
@@ -291,34 +295,20 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
 
           @Override
           public void onFailure(Throwable cause) {
-            com.google.rpc.Status status = StatusProto.fromThrowable(cause);
-            if (status != null) {
-              for (Any any : status.getDetailsList()) {
-                if (any.is(ErrorInfo.class)) {
-                  try {
-                    ErrorInfo errorInfo = any.unpack(ErrorInfo.class);
-                    Map<String, String> metadataMap = errorInfo.getMetadataMap();
-                    logger.log(Level.FINE, "pull failure after service no longer running", cause);
-                  } catch (Throwable throwable) {
-                  }
-                }
-              }
-            }
-
             if (!isAlive()) {
               // we don't care about subscription failures when we're no longer running.
               logger.log(Level.FINE, "pull failure after service no longer running", cause);
               return;
             }
-//            if (!StatusUtil.isRetryable(cause)) {
-//              ApiException gaxException =
-//                  ApiExceptionFactory.createException(
-//                      cause, GrpcStatusCode.of(Status.fromThrowable(cause).getCode()), false);
-//              logger.log(Level.SEVERE, "terminated streaming with exception", gaxException);
-//              runShutdown();
-//              notifyFailed(gaxException);
-//              return;
-//            }
+            if (!StatusUtil.isRetryable(cause)) {
+              ApiException gaxException =
+                  ApiExceptionFactory.createException(
+                      cause, GrpcStatusCode.of(Status.fromThrowable(cause).getCode()), false);
+              logger.log(Level.SEVERE, "terminated streaming with exception", gaxException);
+              runShutdown();
+              notifyFailed(gaxException);
+              return;
+            }
             logger.log(Level.FINE, "stream closed with retryable exception; will reconnect", cause);
             long backoffMillis = channelReconnectBackoffMillis.get();
             long newBackoffMillis =
@@ -348,11 +338,12 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     return state == State.RUNNING || state == State.STARTING;
   }
 
+
   @Override
   public void sendAckOperations(
       List<String> acksToSend, List<PendingModifyAckDeadline> ackDeadlineExtensions) {
-    send_modacks(ackDeadlineExtensions);
-    send_acks(acksToSend);
+//    send_modacks(ackDeadlineExtensions);
+   send_acks(acksToSend);
   }
 
   private void send_modacks(List<PendingModifyAckDeadline> ackDeadlineExtensions) {
@@ -404,8 +395,28 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
   }
 
   private void send_acks(List<String> acksToSend) {
+
+    if (acksToSend.isEmpty()) {
+      return;
+    }
+
+    Map<String, SettableApiFuture<Map<String, String>>> ackFutureMap = send_unary_acks(acksToSend);
+    AcksToRetryAcksToFail acksToRetryAcksToFail = processAckFutures(ackFutureMap);
+
+    List<String> acksToRetry = acksToRetryAcksToFail.AcksToRetry();
+    if (!acksToRetry.isEmpty()) {
+      send_acks(acksToRetry);
+    }
+  }
+
+  private Map<String, SettableApiFuture<Map<String, String>>> send_unary_acks(List<String> acksToSend) {
     int pendingOperations = 0;
+    Map<String, SettableApiFuture<Map<String, String>>> futureMap = new HashMap<>();
     for (List<String> idChunk : Lists.partition(acksToSend, MAX_PER_REQUEST_CHANGES)) {
+      SettableApiFuture<Map<String, String>> errorFuture = SettableApiFuture.create();
+      for (String ackId : idChunk) {
+        futureMap.put(ackId, errorFuture);
+      }
       ApiFutureCallback<Empty> loggingCallback =
           new ApiFutureCallback<Empty>() {
             @Override
@@ -417,12 +428,15 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
             public void onFailure(Throwable t) {
               ackOperationsWaiter.incrementPendingCount(-1);
               com.google.rpc.Status status = StatusProto.fromThrowable(t);
+              Map<String, String> metadataMap = new HashMap<>();
               if (status != null) {
                 for (Any any : status.getDetailsList()) {
                   if (any.is(ErrorInfo.class)) {
                     try {
                       ErrorInfo errorInfo = any.unpack(ErrorInfo.class);
-                      Map<String, String> metadataMap = errorInfo.getMetadataMap();
+                      metadataMap = errorInfo.getMetadataMap();
+                      errorFuture.set(metadataMap);
+                      // remove this log
                       logger.log(Level.FINE, "failed to send operations. errorInfo.metadataMap", metadataMap);
                     } catch (Throwable throwable) {
                     }
@@ -433,18 +447,61 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
               logger.log(level, "failed to send operations", t);
             }
           };
+
+      // msg1 - testing-publish-subscribe-exactly-once-subscription-10
+       String msg1AckId = "KxkOdxoCUUY3KSIxOw1KX1VYBSEdHEpPPAkeagZSCDtZOz1oa1kQbgJFU35fWhxbaFhZfA9UXx94fWt1QmoLpPzA80hfazkzYF9ccAdUDB17emZ1als7tpOPw-yeeQExUPmi8KdnLcPSiL9HZjc9KBJLLD5-MzVFQV5AEkw4AERJUytDCypYEU4EISE-MD4ZV1BVHA0pQBteXw";
+      List<String> badAckIds = new ArrayList<>();
+      badAckIds.add(msg1AckId);
+      idChunk = badAckIds;
       ApiFuture<Empty> future =
-          subscriberStub
-              .acknowledgeCallable()
-              .futureCall(
-                  AcknowledgeRequest.newBuilder()
-                      .setSubscription(subscription)
-                      .addAllAckIds(idChunk)
-                      .build());
+              subscriberStub
+                      .acknowledgeCallable()
+                      .futureCall(
+                              AcknowledgeRequest.newBuilder()
+                                      .setSubscription(subscription)
+                                      .addAllAckIds(idChunk)
+                                      .build());
       ApiFutures.addCallback(future, loggingCallback, directExecutor());
       pendingOperations++;
     }
     ackOperationsWaiter.incrementPendingCount(pendingOperations);
+    return futureMap;
+  }
+
+  @AutoValue
+  abstract static class AcksToRetryAcksToFail {
+    abstract List<String> AcksToRetry();
+    abstract List<String> AcksToFail();
+  }
+
+  private AcksToRetryAcksToFail processAckFutures(Map<String, SettableApiFuture<Map<String, String>>> futureCallbackMap) {
+    List<String> acksToRetry = new ArrayList<>();
+    List<String> acksToFail = new ArrayList<>();
+    futureCallbackMap.forEach(
+            (ackId, errorFuture) -> {
+              try {
+                Map<String, String> metadataMap = errorFuture.get();
+                if (metadataMap.containsKey(ackId)) {
+                  String errorMessage = metadataMap.get(ackId);
+                  if (errorMessage.startsWith(TRANSIENT_ERROR_METADATA_PREFIX)) {
+                    acksToRetry.add(ackId);
+                    logger.log(Level.WARNING, "Transient error, will retry.", errorMessage);
+                  } else if (errorMessage.startsWith(PERMANENT_ERROR_METADATA_PREFIX)) {
+                    acksToFail.add(ackId);
+                    logger.log(Level.WARNING, "Permanent error, will not retry.", errorMessage);
+                  } else {
+                    acksToFail.add(ackId);
+                    logger.log(Level.WARNING, "unknown error message", errorMessage);
+                  }
+                }
+              } catch (Throwable t) {
+                // TODO: Make this to something useful
+                logger.log(Level.WARNING, "here for a breakpoint");
+              }
+            }
+    );
+
+    return new AutoValue_StreamingSubscriberConnection_AcksToRetryAcksToFail(acksToRetry, acksToFail);
   }
 
   /** Builder of {@link StreamingSubscriberConnection StreamingSubscriberConnections}. */

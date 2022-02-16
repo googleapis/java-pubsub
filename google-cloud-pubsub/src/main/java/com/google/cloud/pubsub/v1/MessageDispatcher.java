@@ -24,6 +24,7 @@ import com.google.api.core.SettableApiFuture;
 import com.google.api.gax.batching.FlowController;
 import com.google.api.gax.batching.FlowController.FlowControlException;
 import com.google.api.gax.core.Distribution;
+import com.google.api.gax.rpc.InvalidArgumentException;
 import com.google.common.primitives.Ints;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.protobuf.Any;
@@ -132,21 +133,14 @@ class MessageDispatcher {
     private final Instant totalExpiration;
     private SettableApiFuture<AckResponse> ackResponseSettableApiFuture;
 
-    private boolean enableExactlyOnceDelivery;
-
-    private final String ERROR_METADATA_PERMANENT_PREFIX = "PERMANENT_";
-    private final String ERROR_METADATA_TRANSIENT_PREFIX = "TRANSIENT_";
-
     private AckHandler(
         String ackId,
         int outstandingBytes,
-        Instant totalExpiration,
-        boolean enableExactlyOnceDelivery) {
+        Instant totalExpiration) {
       this.ackId = ackId;
       this.outstandingBytes = outstandingBytes;
       this.receivedTimeMillis = clock.millisTime();
       this.totalExpiration = totalExpiration;
-      this.enableExactlyOnceDelivery = enableExactlyOnceDelivery;
     }
 
     private AckHandler addAckResponseSettableApiFuture(
@@ -169,84 +163,22 @@ class MessageDispatcher {
       messagesWaiter.incrementPendingCount(-1);
     }
 
-    private String getErrorInfoFromStatus(Status status) throws NoSuchFieldException {
-      for (Any any : status.getDetailsList()) {
-        if (any.is(ErrorInfo.class)) {
-          try {
-            ErrorInfo errorInfo = any.unpack(ErrorInfo.class);
-            Map<String, String> metadataMap = errorInfo.getMetadataMap();
-            if (metadataMap.containsKey(ackId)) {
-              return metadataMap.get(ackId);
-            }
-          } catch (Throwable throwable) {
-          }
-        }
-      }
-      throw new NoSuchFieldException(ackId.toString());
-    }
-
     @Override
     public void onFailure(Throwable t) {
-      com.google.rpc.Status status = StatusProto.fromThrowable(t);
-      if (status != null) {
-        for (Any any : status.getDetailsList()) {
-          if (any.is(ErrorInfo.class)) {
-            try {
-              ErrorInfo errorInfo = any.unpack(ErrorInfo.class);
-              Map<String, String> metadataMap = errorInfo.getMetadataMap();
-              logger.log(Level.FINE, "failed to send operations. errorInfo.metadataMap", metadataMap);
-            } catch (Throwable throwable) {
-            }
-          }
-        }
+      if (t instanceof InvalidArgumentException) {
+        this.ackResponseSettableApiFuture.set(AckResponse.INVALID);
+//      } else if (t instanceof ) {
+        // add something ^
+      } else {
+        this.ackResponseSettableApiFuture.set(AckResponse.UNORDERED);
       }
 
-      // Old
+      // Change this logic?
       logger.log(
               Level.WARNING,
               "MessageReceiver failed to process ack ID: " + ackId + ", the message will be nacked.",
               t);
       pendingNacks.add(ackId);
-      forget();
-//      Status status = StatusProto.fromThrowable(t);
-//      if (status != null) {
-//        try {
-//          String errorInfo = getErrorInfoFromStatus(status);
-//          if (errorInfo.startsWith(ERROR_METADATA_PERMANENT_PREFIX)) {
-//            logger.log(
-//                Level.WARNING,
-//                "MessageReceiver permanently failed to process ack ID: "
-//                    + ackId
-//                    + ", the message will not be retried.",
-//                t);
-//          } else if (errorInfo.startsWith(ERROR_METADATA_TRANSIENT_PREFIX)) {
-//            logger.log(
-//                Level.WARNING,
-//                "MessageReceiver transiently failed to process ack ID: "
-//                    + ackId
-//                    + ", the message will be retried.",
-//                t);
-//            pendingAcks.add(ackId);
-//          } else {
-//            logger.log(
-//                Level.WARNING,
-//                "MessageReceiver failed to process ack ID: "
-//                    + ackId
-//                    + " with unknown error info returned."
-//                    + "The message will not be retried.",
-//                t);
-//          }
-//        } catch (NoSuchFieldException noSuchFieldException) {
-//          logger.log(
-//              Level.WARNING,
-//              "MessageReceiver failed to process ack ID: "
-//                  + ackId
-//                  + " with no error info returned."
-//                  + "The message will not be retried.",
-//              t);
-//        }
-//      }
-
       forget();
     }
 
@@ -404,8 +336,7 @@ class MessageDispatcher {
           new AckHandler(
               message.getAckId(),
               message.getMessage().getSerializedSize(),
-              totalExpiration,
-              enableExactlyOnceDelivery.get());
+              totalExpiration);
       if (pendingMessages.putIfAbsent(message.getAckId(), ackHandler) != null) {
         // putIfAbsent puts ackHandler if ackID isn't previously mapped, then return the
         // previously-mapped element.
@@ -484,7 +415,6 @@ class MessageDispatcher {
         };
 
     ackHandler.addAckResponseSettableApiFuture(ackResponseSettableApiFuture);
-
     ApiFutures.addCallback(ackReplySettableApiFuture, ackHandler, MoreExecutors.directExecutor());
 
     Runnable deliverMessageTask =
