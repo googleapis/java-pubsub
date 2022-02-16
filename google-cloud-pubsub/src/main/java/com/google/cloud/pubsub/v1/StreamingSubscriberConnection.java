@@ -199,7 +199,6 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
       channelReconnectBackoffMillis.set(INITIAL_CHANNEL_RECONNECT_BACKOFF.toMillis());
       boolean isExactlyOnceDeliveryEnabled =
           response.getSubscriptionProperties().getExactlyOnceDeliveryEnabled();
-
       if (enableExactlyOnceDelivery.get() != isExactlyOnceDeliveryEnabled) {
         enableExactlyOnceDelivery.set(isExactlyOnceDeliveryEnabled);
         messageDispatcher.setEnableExactlyOnceDelivery(isExactlyOnceDeliveryEnabled);
@@ -299,34 +298,27 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
                   try {
                     ErrorInfo errorInfo = any.unpack(ErrorInfo.class);
                     Map<String, String> metadataMap = errorInfo.getMetadataMap();
-
+                    logger.log(Level.FINE, "pull failure after service no longer running", cause);
                   } catch (Throwable throwable) {
                   }
                 }
               }
             }
-            //            if (cause instanceof ExactlyOnceEnabledStateChanged) {
-            //              logger.log(Level.WARNING, "exactlyOnceEnabled state changed for
-            // streaming subscriber connection", cause);
-            //              runShutdown();
-            //              notifyFailed(cause);
-            //              return;
-            //            }
 
             if (!isAlive()) {
               // we don't care about subscription failures when we're no longer running.
               logger.log(Level.FINE, "pull failure after service no longer running", cause);
               return;
             }
-            if (!StatusUtil.isRetryable(cause)) {
-              ApiException gaxException =
-                  ApiExceptionFactory.createException(
-                      cause, GrpcStatusCode.of(Status.fromThrowable(cause).getCode()), false);
-              logger.log(Level.SEVERE, "terminated streaming with exception", gaxException);
-              runShutdown();
-              notifyFailed(gaxException);
-              return;
-            }
+//            if (!StatusUtil.isRetryable(cause)) {
+//              ApiException gaxException =
+//                  ApiExceptionFactory.createException(
+//                      cause, GrpcStatusCode.of(Status.fromThrowable(cause).getCode()), false);
+//              logger.log(Level.SEVERE, "terminated streaming with exception", gaxException);
+//              runShutdown();
+//              notifyFailed(gaxException);
+//              return;
+//            }
             logger.log(Level.FINE, "stream closed with retryable exception; will reconnect", cause);
             long backoffMillis = channelReconnectBackoffMillis.get();
             long newBackoffMillis =
@@ -376,6 +368,19 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
 
               @Override
               public void onFailure(Throwable t) {
+                com.google.rpc.Status status = StatusProto.fromThrowable(t);
+                if (status != null) {
+                  for (Any any : status.getDetailsList()) {
+                    if (any.is(ErrorInfo.class)) {
+                      try {
+                        ErrorInfo errorInfo = any.unpack(ErrorInfo.class);
+                        Map<String, String> metadataMap = errorInfo.getMetadataMap();
+                        logger.log(Level.FINE, "failed to send operations. errorInfo.metadataMap", metadataMap);
+                      } catch (Throwable throwable) {
+                      }
+                    }
+                  }
+                }
                 ackOperationsWaiter.incrementPendingCount(-1);
                 Level level = isAlive() ? Level.WARNING : Level.FINER;
                 logger.log(level, "failed to send operations", t);
@@ -411,6 +416,19 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
             @Override
             public void onFailure(Throwable t) {
               ackOperationsWaiter.incrementPendingCount(-1);
+              com.google.rpc.Status status = StatusProto.fromThrowable(t);
+              if (status != null) {
+                for (Any any : status.getDetailsList()) {
+                  if (any.is(ErrorInfo.class)) {
+                    try {
+                      ErrorInfo errorInfo = any.unpack(ErrorInfo.class);
+                      Map<String, String> metadataMap = errorInfo.getMetadataMap();
+                      logger.log(Level.FINE, "failed to send operations. errorInfo.metadataMap", metadataMap);
+                    } catch (Throwable throwable) {
+                    }
+                  }
+                }
+              }
               Level level = isAlive() ? Level.WARNING : Level.FINER;
               logger.log(level, "failed to send operations", t);
             }

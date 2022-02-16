@@ -187,44 +187,66 @@ class MessageDispatcher {
 
     @Override
     public void onFailure(Throwable t) {
-      Status status = StatusProto.fromThrowable(t);
+      com.google.rpc.Status status = StatusProto.fromThrowable(t);
       if (status != null) {
-        try {
-          String errorInfo = getErrorInfoFromStatus(status);
-          if (errorInfo.startsWith(ERROR_METADATA_PERMANENT_PREFIX)) {
-            logger.log(
-                Level.WARNING,
-                "MessageReceiver permanently failed to process ack ID: "
-                    + ackId
-                    + ", the message will not be retried.",
-                t);
-          } else if (errorInfo.startsWith(ERROR_METADATA_TRANSIENT_PREFIX)) {
-            logger.log(
-                Level.WARNING,
-                "MessageReceiver transiently failed to process ack ID: "
-                    + ackId
-                    + ", the message will be retried.",
-                t);
-            pendingAcks.add(ackId);
-          } else {
-            logger.log(
-                Level.WARNING,
-                "MessageReceiver failed to process ack ID: "
-                    + ackId
-                    + " with unknown error info returned."
-                    + "The message will not be retried.",
-                t);
+        for (Any any : status.getDetailsList()) {
+          if (any.is(ErrorInfo.class)) {
+            try {
+              ErrorInfo errorInfo = any.unpack(ErrorInfo.class);
+              Map<String, String> metadataMap = errorInfo.getMetadataMap();
+              logger.log(Level.FINE, "failed to send operations. errorInfo.metadataMap", metadataMap);
+            } catch (Throwable throwable) {
+            }
           }
-        } catch (NoSuchFieldException noSuchFieldException) {
-          logger.log(
-              Level.WARNING,
-              "MessageReceiver failed to process ack ID: "
-                  + ackId
-                  + " with no error info returned."
-                  + "The message will not be retried.",
-              t);
         }
       }
+
+      // Old
+      logger.log(
+              Level.WARNING,
+              "MessageReceiver failed to process ack ID: " + ackId + ", the message will be nacked.",
+              t);
+      pendingNacks.add(ackId);
+      forget();
+//      Status status = StatusProto.fromThrowable(t);
+//      if (status != null) {
+//        try {
+//          String errorInfo = getErrorInfoFromStatus(status);
+//          if (errorInfo.startsWith(ERROR_METADATA_PERMANENT_PREFIX)) {
+//            logger.log(
+//                Level.WARNING,
+//                "MessageReceiver permanently failed to process ack ID: "
+//                    + ackId
+//                    + ", the message will not be retried.",
+//                t);
+//          } else if (errorInfo.startsWith(ERROR_METADATA_TRANSIENT_PREFIX)) {
+//            logger.log(
+//                Level.WARNING,
+//                "MessageReceiver transiently failed to process ack ID: "
+//                    + ackId
+//                    + ", the message will be retried.",
+//                t);
+//            pendingAcks.add(ackId);
+//          } else {
+//            logger.log(
+//                Level.WARNING,
+//                "MessageReceiver failed to process ack ID: "
+//                    + ackId
+//                    + " with unknown error info returned."
+//                    + "The message will not be retried.",
+//                t);
+//          }
+//        } catch (NoSuchFieldException noSuchFieldException) {
+//          logger.log(
+//              Level.WARNING,
+//              "MessageReceiver failed to process ack ID: "
+//                  + ackId
+//                  + " with no error info returned."
+//                  + "The message will not be retried.",
+//              t);
+//        }
+//      }
+
       forget();
     }
 

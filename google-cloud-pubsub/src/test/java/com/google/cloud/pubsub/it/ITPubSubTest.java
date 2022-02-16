@@ -282,7 +282,7 @@ public class ITPubSubTest {
     topicAdminClientStaging.createTopic(topicName);
 
     subscriptionAdminClientStaging.createSubscription(
-        getSubscription(subscriptionName, topicName, PushConfig.newBuilder().build(), 60, true));
+        getSubscription(subscriptionName, topicName, PushConfig.newBuilder().build(), 10, true));
 
     final BlockingQueue<Object> receiveQueue = new LinkedBlockingQueue<>();
     Subscriber subscriber =
@@ -304,7 +304,7 @@ public class ITPubSubTest {
                     .setKeepAliveTime(Duration.ofMinutes(5))
                     .setEndpoint("staging-pubsub.sandbox.googleapis.com:443")
                     .build()
-            )
+            ).setParallelPullCount(1)
             .build();
     subscriber.addListener(
         new Subscriber.Listener() {
@@ -319,23 +319,50 @@ public class ITPubSubTest {
         Publisher.newBuilder(topicName)
             .setEndpoint("staging-pubsub.sandbox.googleapis.com:443")
             .build();
-    publisher
-        .publish(PubsubMessage.newBuilder().setData(ByteString.copyFromUtf8("msg1")).build())
+//    publisher
+//        .publish(PubsubMessage.newBuilder().setData(ByteString.copyFromUtf8("msg1")).build())
+//        .get();
+//    publisher
+//        .publish(PubsubMessage.newBuilder().setData(ByteString.copyFromUtf8("msg2")).build())
+//        .get();
+
+    PubsubMessage message = PubsubMessage.newBuilder().setData(ByteString.copyFromUtf8("msg1")).build();
+    System.out.println("publishing...");
+    for (int i = 0; i < 1000; i++) {
+      publisher
+        .publish(message)
         .get();
-    publisher
-        .publish(PubsubMessage.newBuilder().setData(ByteString.copyFromUtf8("msg2")).build())
-        .get();
+      if (i % 100 == 0) {
+        System.out.println("published: " + i + " messages");
+      }
+    }
+
     publisher.shutdown();
     publisher.awaitTermination(1, TimeUnit.MINUTES);
 
     // Ack the first message.
-    MessageAndConsumerWithResponse toAck = pollQueueMessageAndConsumerWithResponse(receiveQueue);
-    Future<AckResponse> ackResponseFuture = toAck.consumerWithResponse().ack();
+
+    System.out.println("consuming/acking...");
+
+    for (int i = 0; i < 1000; i++) {
+      MessageAndConsumerWithResponse toAck = pollQueueMessageAndConsumerWithResponse(receiveQueue);
+      toAck.consumerWithResponse().ack();
+
+      if (i % 100 == 0) {
+        System.out.println("consumed: " + i + " messages");
+      }
+    }
+
+//    MessageAndConsumerWithResponse toAck = pollQueueMessageAndConsumerWithResponse(receiveQueue);
+//    Future<AckResponse> ackResponseFuture = toAck.consumerWithResponse().ack();
 
     // TODO: Validate the future
 
+//    MessageAndConsumerWithResponse toNack = pollQueueMessageAndConsumerWithResponse(receiveQueue);
+//    Future<AckResponse> nackResponseFuture = toNack.consumerWithResponse().nack();
+
 //    MessageAndConsumerWithResponse toAck2 = pollQueueMessageAndConsumerWithResponse(receiveQueue);
-//    Future<AckResponse> ackResponseFuture2 = toAck.consumerWithResponse().ack();
+//    Future<AckResponse> ackResponseFuture2 = toAck2.consumerWithResponse().ack();
 
     subscriber.stopAsync().awaitTerminated();
     subscriptionAdminClient.deleteSubscription(subscriptionName);
