@@ -22,17 +22,24 @@ import com.google.cloud.pubsub.v1.Publisher;
 import com.google.protobuf.ByteString;
 import com.google.pubsub.v1.PubsubMessage;
 import com.google.pubsub.v1.TopicName;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.LogManager;
 
 public class PublishWithCompressionExample {
+
   public static void main(String... args) throws Exception {
     // TODO(developer): Replace these variables before running the sample.
     String projectId = "your-project-id";
-    // Choose an existing topic.
     String topicId = "your-topic-id";
+    boolean allowLogging = false; // Set to true to get the stdout logs
 
+    if (allowLogging) {
+      setUpLogs();
+    }
     publishWithCompressionExample(projectId, topicId);
   }
 
@@ -42,12 +49,11 @@ public class PublishWithCompressionExample {
 
     Publisher publisher = null;
     try {
-      // Create a publisher instance with default settings bound to the topic
+      // Create a publisher instance bound to the topic with compression enabled and other default
+      // settings
       publisher = Publisher.newBuilder(topicName).setEnableCompression(true).build();
 
-      // Compression works only for messages of size >= 1KB
-      String message = generateMessage("Hello!", 2000);
-      ByteString data = ByteString.copyFromUtf8(message);
+      ByteString data = generateData("Hello!", 2000);
       PubsubMessage pubsubMessage = PubsubMessage.newBuilder().setData(data).build();
 
       // Once published, returns a server-assigned message id (unique within the topic)
@@ -63,14 +69,38 @@ public class PublishWithCompressionExample {
     }
   }
 
-  /** Generate message of given bytes by repeatedly concatenating a token.* */
-  private static String generateMessage(String token, int bytes) {
-    String result = "";
+  // Generates data of given bytes by repeatedly concatenating a token.
+  // TODO(developer): Replace this method with your own data generation logic
+  private static ByteString generateData(String token, int bytes) {
+    String message = "";
     int tokenBytes = token.length();
     for (int i = 0; i < Math.floor(bytes / tokenBytes) + 1; i++) {
-      result = result.concat(token);
+      message = message.concat(token);
     }
-    return result;
+    return ByteString.copyFromUtf8(message);
+  }
+
+  private static void setUpLogs() throws IOException {
+    String handlers = "handlers = java.util.logging.ConsoleHandler";
+    String handlerLevelProp = "java.util.logging.ConsoleHandler.level = ALL";
+    String fineProp = ".level = FINE";
+    String handlerFormatterProp =
+        "java.util.logging.ConsoleHandler.formatter = java.util.logging.SimpleFormatter";
+    String format = "java.util.logging.SimpleFormatter.format=[%1$tF %1$tT] %4$-5s %5$s %n";
+
+    LogManager.getLogManager()
+        .readConfiguration(
+            new ByteArrayInputStream(
+                (handlers
+                        + "\n"
+                        + handlerLevelProp
+                        + "\n"
+                        + fineProp
+                        + "\n"
+                        + handlerFormatterProp
+                        + "\n"
+                        + format)
+                    .getBytes(StandardCharsets.UTF_8)));
   }
 }
 // [END pubsub_publish_with_compression]
