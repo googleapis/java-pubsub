@@ -117,9 +117,7 @@ public class Publisher implements PublisherInterface {
   private MessageFlowController flowController = null;
 
   private final boolean enableCompression;
-
-  /** The message is compressed when its size (in bytes) is above the threshold. */
-  private static final long MSG_COMPRESSION_THRESHOLD_BYTES = 1000L; // 1 kilobyte
+  private final long compressionBytesThreshold;
 
   /** The maximum number of messages in one request. Defined by the API. */
   public static long getApiMaxRequestElementCount() {
@@ -148,6 +146,7 @@ public class Publisher implements PublisherInterface {
     this.enableMessageOrdering = builder.enableMessageOrdering;
     this.messageTransform = builder.messageTransform;
     this.enableCompression = builder.enableCompression;
+    this.compressionBytesThreshold = builder.compressionBytesThreshold;
 
     messagesBatches = new HashMap<>();
     messagesBatchLock = new ReentrantLock();
@@ -444,7 +443,7 @@ public class Publisher implements PublisherInterface {
   }
 
   private ApiFuture<PublishResponse> publishCall(OutstandingBatch outstandingBatch) {
-    if (enableCompression && outstandingBatch.batchSizeBytes >= MSG_COMPRESSION_THRESHOLD_BYTES) {
+    if (enableCompression && outstandingBatch.batchSizeBytes >= compressionBytesThreshold) {
       GrpcCallContext context = GrpcCallContext.createDefault();
       context = context.withCallOptions(CallOptions.DEFAULT.withCompression("gzip"));
       return publisherStub
@@ -681,6 +680,7 @@ public class Publisher implements PublisherInterface {
     // Meaningful defaults.
     static final long DEFAULT_ELEMENT_COUNT_THRESHOLD = 100L;
     static final long DEFAULT_REQUEST_BYTES_THRESHOLD = 1000L; // 1 kB
+    static final long DEFAULT_COMPRESSION_BYTES_THRESHOLD = 500L;
     static final Duration DEFAULT_DELAY_THRESHOLD = Duration.ofMillis(1);
     private static final Duration DEFAULT_INITIAL_RPC_TIMEOUT = Duration.ofSeconds(5);
     private static final Duration DEFAULT_MAX_RPC_TIMEOUT = Duration.ofSeconds(60);
@@ -745,6 +745,7 @@ public class Publisher implements PublisherInterface {
         };
 
     private boolean enableCompression = DEFAULT_ENABLE_COMPRESSION;
+    private long compressionBytesThreshold = DEFAULT_COMPRESSION_BYTES_THRESHOLD;
 
     private Builder(String topic) {
       this.topicName = Preconditions.checkNotNull(topic);
@@ -859,6 +860,12 @@ public class Publisher implements PublisherInterface {
     /** Gives the ability to enable gRPC compression. */
     public Builder setEnableCompression(boolean enableCompression) {
       this.enableCompression = enableCompression;
+      return this;
+    }
+
+    /** Gives the ability to set the threshold in bytes above which gRPC compression happens. */
+    public Builder setCompressionBytesThreshold(long compressionBytesThreshold) {
+      this.compressionBytesThreshold = compressionBytesThreshold;
       return this;
     }
 
