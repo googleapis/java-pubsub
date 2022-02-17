@@ -337,9 +337,9 @@ public class ITPubSubTest {
 //    publisher
 //            .publish(PubsubMessage.newBuilder().setData(ByteString.copyFromUtf8("msg4")).build())
 //            .get();
-//    publisher
-//            .publish(PubsubMessage.newBuilder().setData(ByteString.copyFromUtf8("msg5")).build())
-//            .get();
+    publisher
+            .publish(PubsubMessage.newBuilder().setData(ByteString.copyFromUtf8("msg5")).build())
+            .get();
 //    publisher
 //            .publish(PubsubMessage.newBuilder().setData(ByteString.copyFromUtf8("msg6")).build())
 //            .get();

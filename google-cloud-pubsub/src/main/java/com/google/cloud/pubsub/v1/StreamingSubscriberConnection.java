@@ -40,7 +40,9 @@ import com.google.auto.value.AutoValue;
 import com.google.cloud.pubsub.v1.MessageDispatcher.AckProcessor;
 import com.google.cloud.pubsub.v1.MessageDispatcher.PendingModifyAckDeadline;
 import com.google.cloud.pubsub.v1.stub.SubscriberStub;
+import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Table;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.protobuf.Any;
 import com.google.protobuf.Empty;
@@ -342,14 +344,62 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
   @Override
   public void sendAckOperations(
       List<String> acksToSend, List<PendingModifyAckDeadline> ackDeadlineExtensions) {
-//    send_modacks(ackDeadlineExtensions);
+    send_modacks(ackDeadlineExtensions);
    send_acks(acksToSend);
   }
 
-  private void send_modacks(List<PendingModifyAckDeadline> ackDeadlineExtensions) {
+  @AutoValue
+  abstract static class ModacksToRetryModacksToFail {
+    abstract List<PendingModifyAckDeadline> ModacksToRetry();
+    abstract List<PendingModifyAckDeadline> ModacksToFail();
+  }
+
+  @AutoValue
+  abstract static class AcksToRetryAcksToFail {
+    abstract List<String> AcksToRetry();
+    abstract List<String> AcksToFail();
+  }
+
+  private Map<String, String> getMetadataMapFromThrowable(Throwable t) {
+    com.google.rpc.Status status = StatusProto.fromThrowable(t);
+    Map<String, String> metadataMap = new HashMap<>();
+    if (status != null) {
+      for (Any any : status.getDetailsList()) {
+        if (any.is(ErrorInfo.class)) {
+          try {
+            ErrorInfo errorInfo = any.unpack(ErrorInfo.class);
+            metadataMap = errorInfo.getMetadataMap();
+          } catch (Throwable throwable) {
+          }
+        }
+      }
+    }
+
+    return metadataMap;
+  }
+
+  private void send_modacks(List<PendingModifyAckDeadline> modacksToSend) {
+    if (modacksToSend.isEmpty()) {
+      return;
+    }
+    Table<Integer, SettableApiFuture<Map<String, String>>, String> modAckFutureMap = send_unary_modacks(modacksToSend);
+    ModacksToRetryModacksToFail modAcksToRetryModAcksToFail = processModackFutures(modAckFutureMap);
+
+    List<PendingModifyAckDeadline> modacksToRetry = modAcksToRetryModAcksToFail.ModacksToRetry();
+    if (!modacksToRetry.isEmpty()) {
+      send_modacks(modacksToRetry);
+    }
+  }
+
+  private Table<Integer, SettableApiFuture<Map<String, String>>, String> send_unary_modacks(List<PendingModifyAckDeadline> modacksToSend) {
     int pendingOperations = 0;
-    for (PendingModifyAckDeadline modack : ackDeadlineExtensions) {
+    Table<Integer, SettableApiFuture<Map<String, String>>, String> futureTable = HashBasedTable.create();
+    for (PendingModifyAckDeadline modack : modacksToSend) {
       for (List<String> idChunk : Lists.partition(modack.ackIds, MAX_PER_REQUEST_CHANGES)) {
+        SettableApiFuture<Map<String, String>> errorFuture = SettableApiFuture.create();
+        for (String ackId : idChunk) {
+          futureTable.put(modack.deadlineExtensionSeconds, errorFuture, ackId);
+        }
         ApiFutureCallback<Empty> loggingCallback =
             new ApiFutureCallback<Empty>() {
               @Override
@@ -359,20 +409,10 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
 
               @Override
               public void onFailure(Throwable t) {
-                com.google.rpc.Status status = StatusProto.fromThrowable(t);
-                if (status != null) {
-                  for (Any any : status.getDetailsList()) {
-                    if (any.is(ErrorInfo.class)) {
-                      try {
-                        ErrorInfo errorInfo = any.unpack(ErrorInfo.class);
-                        Map<String, String> metadataMap = errorInfo.getMetadataMap();
-                        logger.log(Level.FINE, "failed to send operations. errorInfo.metadataMap", metadataMap);
-                      } catch (Throwable throwable) {
-                      }
-                    }
-                  }
+                Map<String, String> metadataMap = getMetadataMapFromThrowable(t);
+                if (!metadataMap.isEmpty()) {
+                  errorFuture.set(metadataMap);
                 }
-                ackOperationsWaiter.incrementPendingCount(-1);
                 Level level = isAlive() ? Level.WARNING : Level.FINER;
                 logger.log(level, "failed to send operations", t);
               }
@@ -392,17 +432,80 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
       }
     }
     ackOperationsWaiter.incrementPendingCount(pendingOperations);
+    return futureTable;
+  }
+
+  private ModacksToRetryModacksToFail processModackFutures(Table<Integer, SettableApiFuture<Map<String, String>>, String> futureCallbackTable) {
+    List<PendingModifyAckDeadline> modacksToRetry = new ArrayList<>();
+    List<PendingModifyAckDeadline> modacksToFail = new ArrayList<>();
+
+    // Iterate through row instead
+    for (Table.Cell<Integer, SettableApiFuture<Map<String, String>>, String> cell : futureCallbackTable.cellSet()) {
+      // Unpacking cell values for readability
+      Integer deadlineExtensionSeconds = cell.getRowKey();
+      SettableApiFuture<Map<String, String>> future = cell.getColumnKey();
+      String ackId = cell.getValue();
+      try {
+        // Check the future for a metadataMap
+        Map<String, String> metadataMap = future.get();
+        if (metadataMap.containsKey(cell.getColumnKey())) {
+          String errorMessage = metadataMap.get(ackId);
+          if (errorMessage.startsWith(TRANSIENT_ERROR_METADATA_PREFIX)) {
+            modacksToRetry.add(ackId);
+            logger.log(Level.WARNING, "Transient error, will retry.", errorMessage);
+          } else if (errorMessage.startsWith(PERMANENT_ERROR_METADATA_PREFIX)) {
+            modacksToFail.add(ackId);
+            logger.log(Level.WARNING, "Permanent error, will not retry.", errorMessage);
+          } else {
+            modacksToFail.add(ackId);
+            logger.log(Level.WARNING, "unknown error message", errorMessage);
+          }
+        }
+
+
+      } catch (Throwable t) {
+        // TODO: Make this to something useful
+        logger.log(Level.WARNING, "here for a breakpoint");
+      }
+    }
+
+
+//    futureCallbackMap.forEach(
+//            (ackId, errorFuture) -> {
+//              try {
+//                Map<String, String> metadataMap = errorFuture.get();
+//                if (metadataMap.containsKey(ackId)) {
+//                  String errorMessage = metadataMap.get(ackId);
+//                  if (errorMessage.startsWith(TRANSIENT_ERROR_METADATA_PREFIX)) {
+//                    modacksToRetry.add(ackId);
+//                    logger.log(Level.WARNING, "Transient error, will retry.", errorMessage);
+//                  } else if (errorMessage.startsWith(PERMANENT_ERROR_METADATA_PREFIX)) {
+//                    modacksToFail.add(ackId);
+//                    logger.log(Level.WARNING, "Permanent error, will not retry.", errorMessage);
+//                  } else {
+//                    modacksToFail.add(ackId);
+//                    logger.log(Level.WARNING, "unknown error message", errorMessage);
+//                  }
+//                }
+//              } catch (Throwable t) {
+//                // TODO: Make this to something useful
+//                logger.log(Level.WARNING, "here for a breakpoint");
+//              }
+//            }
+//    );
+
+    return new AutoValue_StreamingSubscriberConnection_ModacksToRetryModacksToFail(
+      modacksToRetry,
+            modacksToFail
+    );
   }
 
   private void send_acks(List<String> acksToSend) {
-
     if (acksToSend.isEmpty()) {
       return;
     }
-
     Map<String, SettableApiFuture<Map<String, String>>> ackFutureMap = send_unary_acks(acksToSend);
     AcksToRetryAcksToFail acksToRetryAcksToFail = processAckFutures(ackFutureMap);
-
     List<String> acksToRetry = acksToRetryAcksToFail.AcksToRetry();
     if (!acksToRetry.isEmpty()) {
       send_acks(acksToRetry);
@@ -427,21 +530,9 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
             @Override
             public void onFailure(Throwable t) {
               ackOperationsWaiter.incrementPendingCount(-1);
-              com.google.rpc.Status status = StatusProto.fromThrowable(t);
-              Map<String, String> metadataMap = new HashMap<>();
-              if (status != null) {
-                for (Any any : status.getDetailsList()) {
-                  if (any.is(ErrorInfo.class)) {
-                    try {
-                      ErrorInfo errorInfo = any.unpack(ErrorInfo.class);
-                      metadataMap = errorInfo.getMetadataMap();
-                      errorFuture.set(metadataMap);
-                      // remove this log
-                      logger.log(Level.FINE, "failed to send operations. errorInfo.metadataMap", metadataMap);
-                    } catch (Throwable throwable) {
-                    }
-                  }
-                }
+              Map<String, String> metadataMap = getMetadataMapFromThrowable(t);
+              if (!metadataMap.isEmpty()) {
+                errorFuture.set(metadataMap);
               }
               Level level = isAlive() ? Level.WARNING : Level.FINER;
               logger.log(level, "failed to send operations", t);
@@ -466,12 +557,6 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     }
     ackOperationsWaiter.incrementPendingCount(pendingOperations);
     return futureMap;
-  }
-
-  @AutoValue
-  abstract static class AcksToRetryAcksToFail {
-    abstract List<String> AcksToRetry();
-    abstract List<String> AcksToFail();
   }
 
   private AcksToRetryAcksToFail processAckFutures(Map<String, SettableApiFuture<Map<String, String>>> futureCallbackMap) {
