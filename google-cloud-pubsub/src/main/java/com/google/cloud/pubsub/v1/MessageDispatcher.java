@@ -24,15 +24,11 @@ import com.google.api.core.SettableApiFuture;
 import com.google.api.gax.batching.FlowController;
 import com.google.api.gax.batching.FlowController.FlowControlException;
 import com.google.api.gax.core.Distribution;
-import com.google.api.gax.rpc.InvalidArgumentException;
 import com.google.common.primitives.Ints;
 import com.google.common.util.concurrent.MoreExecutors;
-import com.google.protobuf.Any;
 import com.google.pubsub.v1.PubsubMessage;
 import com.google.pubsub.v1.ReceivedMessage;
-import com.google.rpc.ErrorInfo;
-import com.google.rpc.Status;
-import io.grpc.protobuf.StatusProto;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -81,7 +77,8 @@ class MessageDispatcher {
   // Maps ID to "total expiration time". If it takes longer than this, stop extending.
   private final ConcurrentMap<String, AckHandler> pendingMessages = new ConcurrentHashMap<>();
 
-  private final LinkedBlockingQueue<String> pendingAcks = new LinkedBlockingQueue<>();
+//  private final LinkedBlockingQueue<String> pendingAcks = new LinkedBlockingQueue<>();
+private final LinkedBlockingQueue<AckWithMessageFuture> pendingAcks = new LinkedBlockingQueue<>();
   private final LinkedBlockingQueue<String> pendingNacks = new LinkedBlockingQueue<>();
   private final LinkedBlockingQueue<String> pendingReceipts = new LinkedBlockingQueue<>();
 
@@ -106,7 +103,7 @@ class MessageDispatcher {
       this(deadlineExtensionSeconds, Arrays.asList(ackIds));
     }
 
-    private PendingModifyAckDeadline(int deadlineExtensionSeconds, Collection<String> ackIds) {
+    PendingModifyAckDeadline(int deadlineExtensionSeconds, Collection<String> ackIds) {
       this.ackIds = new ArrayList<String>(ackIds);
       this.deadlineExtensionSeconds = deadlineExtensionSeconds;
     }
@@ -116,6 +113,20 @@ class MessageDispatcher {
       return String.format(
           "PendingModifyAckDeadline{extension: %d sec, ackIds: %s}",
           deadlineExtensionSeconds, ackIds);
+    }
+  }
+
+  static class AckWithMessageFuture {
+    String ackId;
+    SettableApiFuture<AckResponse> messageFuture;
+
+    AckWithMessageFuture(String ackId, SettableApiFuture<AckResponse> messageFuture) {
+      this.ackId = ackId;
+      this.messageFuture = messageFuture;
+    }
+
+    AckWithMessageFuture(String ackId) {
+      this.ackId = ackId;
     }
   }
 
@@ -165,15 +176,6 @@ class MessageDispatcher {
 
     @Override
     public void onFailure(Throwable t) {
-      if (t instanceof InvalidArgumentException) {
-        this.ackResponseSettableApiFuture.set(AckResponse.INVALID);
-//      } else if (t instanceof ) {
-        // add something ^
-      } else {
-        this.ackResponseSettableApiFuture.set(AckResponse.UNORDERED);
-      }
-
-      // Change this logic?
       logger.log(
               Level.WARNING,
               "MessageReceiver failed to process ack ID: " + ackId + ", the message will be nacked.",
@@ -184,8 +186,8 @@ class MessageDispatcher {
 
     @Override
     public void onSuccess(AckReply reply) {
-      LinkedBlockingQueue<String> destination;
-      this.ackResponseSettableApiFuture.set(AckResponse.SUCCESSFUL);
+//      LinkedBlockingQueue<String> destination;
+      LinkedBlockingQueue<AckWithMessageFuture> destination;
       switch (reply) {
         case ACK:
           destination = pendingAcks;
@@ -194,20 +196,20 @@ class MessageDispatcher {
               Ints.saturatedCast(
                   (long) Math.ceil((clock.millisTime() - receivedTimeMillis) / 1000D)));
           break;
-        case NACK:
-          destination = pendingNacks;
-          break;
+//        case NACK:
+//          destination = pendingNacks;
+//          break;
         default:
           throw new IllegalArgumentException(String.format("AckReply: %s not supported", reply));
       }
-      destination.add(ackId);
+      destination.add(new AckWithMessageFuture(ackId, this.ackResponseSettableApiFuture));
       forget();
     }
   }
 
   interface AckProcessor {
     void sendAckOperations(
-        List<String> acksToSend, List<PendingModifyAckDeadline> ackDeadlineExtensions);
+            List<MessageDispatcher.AckWithMessageFuture> acksToSend, List<PendingModifyAckDeadline> ackDeadlineExtensions);
   }
 
   private MessageDispatcher(Builder builder) {
@@ -499,17 +501,16 @@ class MessageDispatcher {
     logger.log(Level.FINER, "Sending {0} modacks", modack.ackIds.size() + modacks.size());
     modacks.add(modack);
 
-    List<String> acksToSend = Collections.emptyList();
+    List<AckWithMessageFuture> acksToSend = Collections.emptyList();
     ackProcessor.sendAckOperations(acksToSend, modacks);
   }
 
   @InternalApi
   void processOutstandingAckOperations() {
     List<PendingModifyAckDeadline> modifyAckDeadlinesToSend = new ArrayList<>();
-
-    List<String> acksToSend = new ArrayList<>();
-    pendingAcks.drainTo(acksToSend);
-    logger.log(Level.FINER, "Sending {0} acks", acksToSend.size());
+    List<AckWithMessageFuture> acksToSendWithFutures = new ArrayList<>();
+    pendingAcks.drainTo(acksToSendWithFutures);
+    logger.log(Level.FINER, "Sending {0} acks", acksToSendWithFutures.size());
 
     PendingModifyAckDeadline nacksToSend = new PendingModifyAckDeadline(0);
     pendingNacks.drainTo(nacksToSend.ackIds);
@@ -519,14 +520,14 @@ class MessageDispatcher {
     }
 
     PendingModifyAckDeadline receiptsToSend =
-        new PendingModifyAckDeadline(getMessageDeadlineSeconds());
+            new PendingModifyAckDeadline(getMessageDeadlineSeconds());
     pendingReceipts.drainTo(receiptsToSend.ackIds);
     logger.log(Level.FINER, "Sending {0} receipts", receiptsToSend.ackIds.size());
     if (!receiptsToSend.ackIds.isEmpty()) {
       modifyAckDeadlinesToSend.add(receiptsToSend);
     }
 
-    ackProcessor.sendAckOperations(acksToSend, modifyAckDeadlinesToSend);
+    ackProcessor.sendAckOperations(acksToSendWithFutures, modifyAckDeadlinesToSend);
   }
 
   private Instant now() {

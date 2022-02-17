@@ -31,16 +31,12 @@ import com.google.api.gax.batching.FlowController;
 import com.google.api.gax.core.Distribution;
 import com.google.api.gax.grpc.GrpcCallContext;
 import com.google.api.gax.grpc.GrpcStatusCode;
-import com.google.api.gax.rpc.ApiException;
-import com.google.api.gax.rpc.ApiExceptionFactory;
-import com.google.api.gax.rpc.ClientStream;
-import com.google.api.gax.rpc.ResponseObserver;
-import com.google.api.gax.rpc.StreamController;
-import com.google.auto.value.AutoValue;
+import com.google.api.gax.rpc.*;
 import com.google.cloud.pubsub.v1.MessageDispatcher.AckProcessor;
 import com.google.cloud.pubsub.v1.MessageDispatcher.PendingModifyAckDeadline;
 import com.google.cloud.pubsub.v1.stub.SubscriberStub;
 import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Table;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -340,24 +336,72 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     return state == State.RUNNING || state == State.STARTING;
   }
 
-
   @Override
   public void sendAckOperations(
-      List<String> acksToSend, List<PendingModifyAckDeadline> ackDeadlineExtensions) {
-    send_modacks(ackDeadlineExtensions);
-   send_acks(acksToSend);
+          List<MessageDispatcher.AckWithMessageFuture> acksToSend, List<PendingModifyAckDeadline> ackDeadlineExtensions) {
+    // Check if we have futures attached, if not, we can use legacy workflow
+    if ((!acksToSend.isEmpty() && acksToSend.get(0).messageFuture != null)) {
+      sendAckOperationsNoFutures(acksToSend, ackDeadlineExtensions);
+    } else {
+      List<String> failedModackIds = sendModacks(ackDeadlineExtensions, new ArrayList<>());
+
+      // Do something with the modack failures...
+
+      sendAcksWithFutures(acksToSend);
+    }
   }
 
-  @AutoValue
-  abstract static class ModacksToRetryModacksToFail {
-    abstract List<PendingModifyAckDeadline> ModacksToRetry();
-    abstract List<PendingModifyAckDeadline> ModacksToFail();
-  }
+  private void sendAckOperationsNoFutures(List<MessageDispatcher.AckWithMessageFuture> acksToSend, List<PendingModifyAckDeadline> ackDeadlineExtensions) {
+    ApiFutureCallback<Empty> loggingCallback =
+            new ApiFutureCallback<Empty>() {
+              @Override
+              public void onSuccess(Empty empty) {
+                ackOperationsWaiter.incrementPendingCount(-1);
+              }
 
-  @AutoValue
-  abstract static class AcksToRetryAcksToFail {
-    abstract List<String> AcksToRetry();
-    abstract List<String> AcksToFail();
+              @Override
+              public void onFailure(Throwable t) {
+                ackOperationsWaiter.incrementPendingCount(-1);
+                Level level = isAlive() ? Level.WARNING : Level.FINER;
+                logger.log(level, "failed to send operations", t);
+              }
+            };
+    int pendingOperations = 0;
+    for (PendingModifyAckDeadline modack : ackDeadlineExtensions) {
+      for (List<String> idChunk : Lists.partition(modack.ackIds, MAX_PER_REQUEST_CHANGES)) {
+        ApiFuture<Empty> future =
+                subscriberStub.modifyAckDeadlineCallable()
+                        .futureCall(
+                                ModifyAckDeadlineRequest.newBuilder()
+                                        .setSubscription(subscription)
+                                        .addAllAckIds(idChunk)
+                                        .setAckDeadlineSeconds(modack.deadlineExtensionSeconds)
+                                        .build());
+        ApiFutures.addCallback(future, loggingCallback, directExecutor());
+        pendingOperations++;
+      }
+    }
+
+    for (List<MessageDispatcher.AckWithMessageFuture> idChunk : Lists.partition(acksToSend, MAX_PER_REQUEST_CHANGES)) {
+      List<String> ackIdsInRequest = new ArrayList<String>();
+      idChunk.forEach(
+              (ackWithMessageFuture -> {
+                ackIdsInRequest.add(ackWithMessageFuture.ackId);
+              })
+      );
+
+      ApiFuture<Empty> future =
+              subscriberStub.acknowledgeCallable()
+                      .futureCall(
+                              AcknowledgeRequest.newBuilder()
+                                      .setSubscription(subscription)
+                                      .addAllAckIds(ackIdsInRequest)
+                                      .build());
+      ApiFutures.addCallback(future, loggingCallback, directExecutor());
+      pendingOperations++;
+    }
+
+    ackOperationsWaiter.incrementPendingCount(pendingOperations);
   }
 
   private Map<String, String> getMetadataMapFromThrowable(Throwable t) {
@@ -374,32 +418,43 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
         }
       }
     }
-
     return metadataMap;
   }
 
-  private void send_modacks(List<PendingModifyAckDeadline> modacksToSend) {
-    if (modacksToSend.isEmpty()) {
-      return;
-    }
-    Table<Integer, SettableApiFuture<Map<String, String>>, String> modAckFutureMap = send_unary_modacks(modacksToSend);
-    ModacksToRetryModacksToFail modAcksToRetryModAcksToFail = processModackFutures(modAckFutureMap);
+  private class ModacksToRetryModacksToFail {
+    List<PendingModifyAckDeadline> modackIdsToRetry;
+    List<String> modackIdsFailed;
 
-    List<PendingModifyAckDeadline> modacksToRetry = modAcksToRetryModAcksToFail.ModacksToRetry();
-    if (!modacksToRetry.isEmpty()) {
-      send_modacks(modacksToRetry);
+    ModacksToRetryModacksToFail(List<PendingModifyAckDeadline> modackIdsToRetry, List<String> modackIdsFailed) {
+      this.modackIdsToRetry = modackIdsToRetry;
+      this.modackIdsFailed = modackIdsFailed;
     }
   }
 
-  private Table<Integer, SettableApiFuture<Map<String, String>>, String> send_unary_modacks(List<PendingModifyAckDeadline> modacksToSend) {
+  private List<String> sendModacks(List<PendingModifyAckDeadline> modacksToSend, List<String> failedModackIds) {
+    if (modacksToSend.isEmpty()) {
+      return new ArrayList<String>();
+    }
+    Table<Integer, ImmutableList<String>, SettableApiFuture<Map<String, String>>> modAckFutureMap = send_unary_modacks(modacksToSend);
+    ModacksToRetryModacksToFail modAcksToRetryModAcksToFail = processModackFutures(modAckFutureMap);
+
+    List<PendingModifyAckDeadline> modacksToRetry = modAcksToRetryModAcksToFail.modackIdsToRetry;
+    failedModackIds.addAll(modAcksToRetryModAcksToFail.modackIdsFailed);
+
+    if (!modacksToRetry.isEmpty()) {
+      sendModacks(modacksToRetry, failedModackIds);
+    }
+
+    return failedModackIds;
+  }
+
+  private Table<Integer, ImmutableList<String>, SettableApiFuture<Map<String, String>>> send_unary_modacks(List<PendingModifyAckDeadline> modacksToSend) {
     int pendingOperations = 0;
-    Table<Integer, SettableApiFuture<Map<String, String>>, String> futureTable = HashBasedTable.create();
+    Table<Integer, ImmutableList<String>, SettableApiFuture<Map<String, String>>> futureTable = HashBasedTable.create();
     for (PendingModifyAckDeadline modack : modacksToSend) {
-      for (List<String> idChunk : Lists.partition(modack.ackIds, MAX_PER_REQUEST_CHANGES)) {
+      for (List<String> ackIdsInRequest : Lists.partition(modack.ackIds, MAX_PER_REQUEST_CHANGES)) {
         SettableApiFuture<Map<String, String>> errorFuture = SettableApiFuture.create();
-        for (String ackId : idChunk) {
-          futureTable.put(modack.deadlineExtensionSeconds, errorFuture, ackId);
-        }
+        futureTable.put(modack.deadlineExtensionSeconds, ImmutableList.copyOf(ackIdsInRequest), errorFuture);
         ApiFutureCallback<Empty> loggingCallback =
             new ApiFutureCallback<Empty>() {
               @Override
@@ -424,7 +479,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
                 .futureCall(
                     ModifyAckDeadlineRequest.newBuilder()
                         .setSubscription(subscription)
-                        .addAllAckIds(idChunk)
+                        .addAllAckIds(ackIdsInRequest)
                         .setAckDeadlineSeconds(modack.deadlineExtensionSeconds)
                         .build());
         ApiFutures.addCallback(future, loggingCallback, directExecutor());
@@ -435,96 +490,65 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     return futureTable;
   }
 
-  private ModacksToRetryModacksToFail processModackFutures(Table<Integer, SettableApiFuture<Map<String, String>>, String> futureCallbackTable) {
+  private ModacksToRetryModacksToFail processModackFutures(Table<Integer, ImmutableList<String>, SettableApiFuture<Map<String, String>>> futureCallbackTable) {
     List<PendingModifyAckDeadline> modacksToRetry = new ArrayList<>();
-    List<PendingModifyAckDeadline> modacksToFail = new ArrayList<>();
-
-    // Iterate through row instead
-    for (Table.Cell<Integer, SettableApiFuture<Map<String, String>>, String> cell : futureCallbackTable.cellSet()) {
-      // Unpacking cell values for readability
-      Integer deadlineExtensionSeconds = cell.getRowKey();
-      SettableApiFuture<Map<String, String>> future = cell.getColumnKey();
-      String ackId = cell.getValue();
-      try {
-        // Check the future for a metadataMap
-        Map<String, String> metadataMap = future.get();
-        if (metadataMap.containsKey(cell.getColumnKey())) {
-          String errorMessage = metadataMap.get(ackId);
-          if (errorMessage.startsWith(TRANSIENT_ERROR_METADATA_PREFIX)) {
-            modacksToRetry.add(ackId);
-            logger.log(Level.WARNING, "Transient error, will retry.", errorMessage);
-          } else if (errorMessage.startsWith(PERMANENT_ERROR_METADATA_PREFIX)) {
-            modacksToFail.add(ackId);
-            logger.log(Level.WARNING, "Permanent error, will not retry.", errorMessage);
-          } else {
-            modacksToFail.add(ackId);
-            logger.log(Level.WARNING, "unknown error message", errorMessage);
-          }
+    List<String> modackIdsFailed = new ArrayList<>();
+    for (Integer deadlineExtensionSeconds : futureCallbackTable.rowKeySet()) {
+      Map<ImmutableList<String>, SettableApiFuture<Map<String, String>>> rowMap = futureCallbackTable.row(deadlineExtensionSeconds);
+      List<String> ackIdsToRetry = new ArrayList<>();
+      List<String> ackIdsToFail = new ArrayList<>();
+      for (ImmutableList<String> ackIdsInRequest : rowMap.keySet()) {
+        try {
+          Map<String, String> metadataMap = rowMap.get(ackIdsInRequest).get();
+          metadataMap.forEach(
+                  (ackId, errorMessage) -> {
+                    if (errorMessage.startsWith(TRANSIENT_ERROR_METADATA_PREFIX)) {
+                      ackIdsToRetry.add(ackId);
+                      logger.log(Level.WARNING, "Transient error detected, will retry", errorMessage);
+                    } else if (errorMessage.startsWith(PERMANENT_ERROR_METADATA_PREFIX)) {
+                      ackIdsToFail.add(ackId);
+                      logger.log(Level.WARNING, "Permanent error detected, will not retry", errorMessage);
+                    } else {
+                      logger.log(Level.WARNING, "Unknown error detected, will not retry", errorMessage);
+                      ackIdsToFail.add(ackId);
+                    }
+                  }
+          );
+        } catch (Throwable t) {
+          logger.log(Level.WARNING, "Failed to retrieve future. resending ackIds", t);
+          ackIdsToRetry.addAll(ackIdsInRequest);
         }
-
-
-      } catch (Throwable t) {
-        // TODO: Make this to something useful
-        logger.log(Level.WARNING, "here for a breakpoint");
       }
+      modacksToRetry.add(new PendingModifyAckDeadline(deadlineExtensionSeconds, ackIdsToRetry));
+      modackIdsFailed.addAll(ackIdsToFail);
     }
-
-
-//    futureCallbackMap.forEach(
-//            (ackId, errorFuture) -> {
-//              try {
-//                Map<String, String> metadataMap = errorFuture.get();
-//                if (metadataMap.containsKey(ackId)) {
-//                  String errorMessage = metadataMap.get(ackId);
-//                  if (errorMessage.startsWith(TRANSIENT_ERROR_METADATA_PREFIX)) {
-//                    modacksToRetry.add(ackId);
-//                    logger.log(Level.WARNING, "Transient error, will retry.", errorMessage);
-//                  } else if (errorMessage.startsWith(PERMANENT_ERROR_METADATA_PREFIX)) {
-//                    modacksToFail.add(ackId);
-//                    logger.log(Level.WARNING, "Permanent error, will not retry.", errorMessage);
-//                  } else {
-//                    modacksToFail.add(ackId);
-//                    logger.log(Level.WARNING, "unknown error message", errorMessage);
-//                  }
-//                }
-//              } catch (Throwable t) {
-//                // TODO: Make this to something useful
-//                logger.log(Level.WARNING, "here for a breakpoint");
-//              }
-//            }
-//    );
-
-    return new AutoValue_StreamingSubscriberConnection_ModacksToRetryModacksToFail(
-      modacksToRetry,
-            modacksToFail
-    );
+    return new ModacksToRetryModacksToFail(modacksToRetry, modackIdsFailed);
   }
 
-  private void send_acks(List<String> acksToSend) {
-    if (acksToSend.isEmpty()) {
-      return;
-    }
-    Map<String, SettableApiFuture<Map<String, String>>> ackFutureMap = send_unary_acks(acksToSend);
-    AcksToRetryAcksToFail acksToRetryAcksToFail = processAckFutures(ackFutureMap);
-    List<String> acksToRetry = acksToRetryAcksToFail.AcksToRetry();
-    if (!acksToRetry.isEmpty()) {
-      send_acks(acksToRetry);
+  private void sendAcksWithFutures(List<MessageDispatcher.AckWithMessageFuture> ackIdWithMessageFutureToSend) {
+    if (!ackIdWithMessageFutureToSend.isEmpty()) {
+      Map<String, SettableApiFuture<Map<String, String>>> ackFutureMap = send_unary_acks(ackIdWithMessageFutureToSend);
+      List<MessageDispatcher.AckWithMessageFuture> acksToResend = processAckFutures(ackIdWithMessageFutureToSend, ackFutureMap);
+      sendAcksWithFutures(acksToResend);
     }
   }
 
-  private Map<String, SettableApiFuture<Map<String, String>>> send_unary_acks(List<String> acksToSend) {
+  private Map<String, SettableApiFuture<Map<String, String>>> send_unary_acks(List<MessageDispatcher.AckWithMessageFuture> acksToSend) {
     int pendingOperations = 0;
     Map<String, SettableApiFuture<Map<String, String>>> futureMap = new HashMap<>();
-    for (List<String> idChunk : Lists.partition(acksToSend, MAX_PER_REQUEST_CHANGES)) {
-      SettableApiFuture<Map<String, String>> errorFuture = SettableApiFuture.create();
-      for (String ackId : idChunk) {
-        futureMap.put(ackId, errorFuture);
+    for (List<MessageDispatcher.AckWithMessageFuture> ackIdWithMessageFutureInRequest : Lists.partition(acksToSend, MAX_PER_REQUEST_CHANGES)) {
+      List<String> ackIdsInRequest = new ArrayList<>();
+      SettableApiFuture<Map<String, String>> responseFuture = SettableApiFuture.create();
+      for (MessageDispatcher.AckWithMessageFuture ackWithMessageFuture : ackIdWithMessageFutureInRequest) {
+        futureMap.put(ackWithMessageFuture.ackId, responseFuture);
+        ackIdsInRequest.add(ackWithMessageFuture.ackId);
       }
       ApiFutureCallback<Empty> loggingCallback =
           new ApiFutureCallback<Empty>() {
             @Override
             public void onSuccess(Empty empty) {
               ackOperationsWaiter.incrementPendingCount(-1);
+              responseFuture.set(new HashMap<>());
             }
 
             @Override
@@ -532,25 +556,27 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
               ackOperationsWaiter.incrementPendingCount(-1);
               Map<String, String> metadataMap = getMetadataMapFromThrowable(t);
               if (!metadataMap.isEmpty()) {
-                errorFuture.set(metadataMap);
+                responseFuture.set(metadataMap);
               }
               Level level = isAlive() ? Level.WARNING : Level.FINER;
               logger.log(level, "failed to send operations", t);
             }
           };
 
+
       // msg1 - testing-publish-subscribe-exactly-once-subscription-10
-       String msg1AckId = "KxkOdxoCUUY3KSIxOw1KX1VYBSEdHEpPPAkeagZSCDtZOz1oa1kQbgJFU35fWhxbaFhZfA9UXx94fWt1QmoLpPzA80hfazkzYF9ccAdUDB17emZ1als7tpOPw-yeeQExUPmi8KdnLcPSiL9HZjc9KBJLLD5-MzVFQV5AEkw4AERJUytDCypYEU4EISE-MD4ZV1BVHA0pQBteXw";
-      List<String> badAckIds = new ArrayList<>();
-      badAckIds.add(msg1AckId);
-      idChunk = badAckIds;
+//      String msg1AckId = "XysZDncaAlFGNykiMTsNSl9VWAUhHRxKTzwJHmoGWAs7WDs-aGNdfAECRVN-XlxNDWEOCn0ABw0TcndhXVpCtaCJ5WV-b3klBWtfWnYAUggZcHhlcm5ynr3K_P-0fUEnNc7919UxcdTCl4FTZjQ9KBJLLD5-MzVFQV5AEkw4AERJUytDCypYEU4EISE-MD4ZV1BVHA0pQBte";
+//      ArrayList<String> badAckIds = new ArrayList<String>();
+//      badAckIds.add(msg1AckId);
+//      ackIdsInRequest = badAckIds;
+
       ApiFuture<Empty> future =
               subscriberStub
                       .acknowledgeCallable()
                       .futureCall(
                               AcknowledgeRequest.newBuilder()
                                       .setSubscription(subscription)
-                                      .addAllAckIds(idChunk)
+                                      .addAllAckIds(ackIdsInRequest)
                                       .build());
       ApiFutures.addCallback(future, loggingCallback, directExecutor());
       pendingOperations++;
@@ -559,34 +585,41 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     return futureMap;
   }
 
-  private AcksToRetryAcksToFail processAckFutures(Map<String, SettableApiFuture<Map<String, String>>> futureCallbackMap) {
-    List<String> acksToRetry = new ArrayList<>();
-    List<String> acksToFail = new ArrayList<>();
-    futureCallbackMap.forEach(
-            (ackId, errorFuture) -> {
+  private List<MessageDispatcher.AckWithMessageFuture> processAckFutures(List<MessageDispatcher.AckWithMessageFuture> ackIdToSendWithMessageFuture, Map<String, SettableApiFuture<Map<String, String>>> futureMap) {
+    List<MessageDispatcher.AckWithMessageFuture> retryAckIdsWithMessageFuture = new ArrayList<>();
+    ackIdToSendWithMessageFuture.forEach(
+            (ackIdWithMessageFuture) -> {
+              String ackId = ackIdWithMessageFuture.ackId;
+
+              // For testing
+//              String msg1AckId = "XysZDncaAlFGNykiMTsNSl9VWAUhHRxKTzwJHmoGUS8yNCF8d2tZfAECRVN-XlxNDWEPDyBVVwoTc3dhXVpCjKmJ5WV-b3klBWtfWnEEUg8ed3Rid2Jyw43q3P-0fUEnNff019UxcZn7-8dQZjQ9KRJLLD5-MzVFQV5AEkw4AERJUytDCypYEU4EISE-MD4ZV1BVHA0pQBte";
+//              ackId = msg1AckId;
+
+              SettableApiFuture<Map<String, String>> future = futureMap.get(ackId);
               try {
-                Map<String, String> metadataMap = errorFuture.get();
+                // Blocking operation to check the response of the ack request
+                Map<String, String> metadataMap = future.get();
                 if (metadataMap.containsKey(ackId)) {
                   String errorMessage = metadataMap.get(ackId);
                   if (errorMessage.startsWith(TRANSIENT_ERROR_METADATA_PREFIX)) {
-                    acksToRetry.add(ackId);
-                    logger.log(Level.WARNING, "Transient error, will retry.", errorMessage);
+                    // Retry and do not set message future
+                    logger.log(Level.WARNING, "Transient error message, will resend", errorMessage);
+                    retryAckIdsWithMessageFuture.add(ackIdWithMessageFuture);
                   } else if (errorMessage.startsWith(PERMANENT_ERROR_METADATA_PREFIX)) {
-                    acksToFail.add(ackId);
-                    logger.log(Level.WARNING, "Permanent error, will not retry.", errorMessage);
-                  } else {
-                    acksToFail.add(ackId);
-                    logger.log(Level.WARNING, "unknown error message", errorMessage);
+                    logger.log(Level.WARNING, "Permanent error message, will not resend", errorMessage);
+                    ackIdWithMessageFuture.messageFuture.set(AckResponse.INVALID);
                   }
+                } else {
+                  ackIdWithMessageFuture.messageFuture.set(AckResponse.SUCCESSFUL);
                 }
+
               } catch (Throwable t) {
-                // TODO: Make this to something useful
-                logger.log(Level.WARNING, "here for a breakpoint");
+                logger.log(Level.WARNING, "Failed to retrieve future. resending ackIds", t);
+                retryAckIdsWithMessageFuture.add(ackIdWithMessageFuture);
               }
             }
     );
-
-    return new AutoValue_StreamingSubscriberConnection_AcksToRetryAcksToFail(acksToRetry, acksToFail);
+    return retryAckIdsWithMessageFuture;
   }
 
   /** Builder of {@link StreamingSubscriberConnection StreamingSubscriberConnections}. */
