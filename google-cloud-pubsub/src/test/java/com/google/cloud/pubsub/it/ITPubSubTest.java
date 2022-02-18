@@ -274,21 +274,21 @@ public class ITPubSubTest {
         TopicName.newBuilder()
             .setProject(projectId)
 //            .setTopic(formatForTest("testing-publish-subscribe-exactly-once-topic"))
-                .setTopic("testing-publish-subscribe-exactly-once-topic-11")
+                .setTopic("testing-publish-subscribe-exactly-once-topic-12")
             .build();
     SubscriptionName subscriptionName =
         SubscriptionName.of(
             projectId,
 //            formatForTest("testing-publish-subscribe-exactly-once-subscription")
-            "testing-publish-subscribe-exactly-once-subscription-11"
+            "testing-publish-subscribe-exactly-once-subscription-12"
         );
 
 //    subscriptionAdminClientStaging.deleteSubscription(subscriptionName);
 //    topicAdminClientStaging.deleteTopic(topicName);
-//
-//    topicAdminClientStaging.createTopic(topicName);
-//    subscriptionAdminClientStaging.createSubscription(
-//        getSubscription(subscriptionName, topicName, PushConfig.newBuilder().build(), 600, true));
+
+    topicAdminClientStaging.createTopic(topicName);
+    subscriptionAdminClientStaging.createSubscription(
+        getSubscription(subscriptionName, topicName, PushConfig.newBuilder().build(), 600, true));
 //
     final BlockingQueue<Object> receiveQueue = new LinkedBlockingQueue<>();
     Subscriber subscriber =

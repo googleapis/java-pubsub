@@ -28,7 +28,9 @@
 //import com.google.protobuf.ByteString;
 //import com.google.pubsub.v1.PubsubMessage;
 //import com.google.pubsub.v1.ReceivedMessage;
-//import java.util.*;
+//import java.util.ArrayList;
+//import java.util.Collections;
+//import java.util.List;
 //import java.util.concurrent.LinkedBlockingQueue;
 //import java.util.concurrent.ScheduledThreadPoolExecutor;
 //import java.util.concurrent.TimeUnit;
@@ -94,7 +96,7 @@
 //            consumers.add(consumer);
 //          }
 //        };
-//    MessageDispatcher.AckProcessor ackProcessor =
+//    MessageDispatcher.AckProcessor processor =
 //        new MessageDispatcher.AckProcessor() {
 //          public void sendAckOperations(
 //              List<String> acksToSend,
@@ -122,18 +124,17 @@
 //                .build());
 //
 //    dispatcher =
-//        MessageDispatcher.newBuilder(receiver)
-//            .setAckProcessor(ackProcessor)
-//            .setAckExpirationPadding(Duration.ofSeconds(5))
-//            .setMaxAckExtensionPeriod(Duration.ofMinutes(60))
-//            .setMaxDurationPerAckExtension(Duration.ofSeconds(MAX_SECONDS_PER_ACK_EXTENSION))
-//            .setAckLatencyDistribution(new Distribution(Subscriber.MAX_ACK_DEADLINE_SECONDS + 1))
-//            .setFlowController(flowController)
-//            .setExecutor(MoreExecutors.directExecutor())
-//            .setSystemExecutor(systemExecutor)
-//            .setApiClock(clock)
-//            .build();
-//
+//        new MessageDispatcher(
+//            receiver,
+//            processor,
+//            Duration.ofSeconds(5),
+//            Duration.ofMinutes(60),
+//            Duration.ofSeconds(MAX_SECONDS_PER_ACK_EXTENSION),
+//            new Distribution(Subscriber.MAX_ACK_DEADLINE_SECONDS + 1),
+//            flowController,
+//            MoreExecutors.directExecutor(),
+//            systemExecutor,
+//            clock);
 //    dispatcher.setMessageDeadlineSeconds(Subscriber.MIN_ACK_DEADLINE_SECONDS);
 //
 //    messageContainsDeliveryAttempt = true;

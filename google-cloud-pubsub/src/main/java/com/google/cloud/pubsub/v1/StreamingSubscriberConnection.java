@@ -340,10 +340,10 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
   public void sendAckOperations(
           List<MessageDispatcher.AckWithMessageFuture> acksToSend, List<PendingModifyAckDeadline> ackDeadlineExtensions) {
     // Check if we have futures attached, if not, we can use legacy workflow
-    if ((!acksToSend.isEmpty() && acksToSend.get(0).messageFuture != null)) {
+    if ((!acksToSend.isEmpty() && acksToSend.get(0).messageFuture == null)) {
       sendAckOperationsNoFutures(acksToSend, ackDeadlineExtensions);
     } else {
-      List<String> failedModackIds = sendModacks(ackDeadlineExtensions, new ArrayList<>());
+//      List<String> failedModackIds = sendModacks(ackDeadlineExtensions, new ArrayList<>());
 
       // Do something with the modack failures...
 
