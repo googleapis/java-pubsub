@@ -1,4 +1,4 @@
-///*
+/// *
 // * Copyright 2017 Google LLC
 // *
 // * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,33 +14,33 @@
 // * limitations under the License.
 // */
 //
-//package com.google.cloud.pubsub.v1;
+// package com.google.cloud.pubsub.v1;
 //
-//import static com.google.common.truth.Truth.assertThat;
-//import static org.junit.Assert.assertFalse;
-//import static org.junit.Assert.assertTrue;
+// import static com.google.common.truth.Truth.assertThat;
+// import static org.junit.Assert.assertFalse;
+// import static org.junit.Assert.assertTrue;
 //
-//import com.google.api.gax.batching.FlowControlSettings;
-//import com.google.api.gax.batching.FlowController;
-//import com.google.api.gax.core.Distribution;
-//import com.google.auto.value.AutoValue;
-//import com.google.common.util.concurrent.MoreExecutors;
-//import com.google.protobuf.ByteString;
-//import com.google.pubsub.v1.PubsubMessage;
-//import com.google.pubsub.v1.ReceivedMessage;
-//import java.util.ArrayList;
-//import java.util.Collections;
-//import java.util.List;
-//import java.util.concurrent.LinkedBlockingQueue;
-//import java.util.concurrent.ScheduledThreadPoolExecutor;
-//import java.util.concurrent.TimeUnit;
-//import org.junit.Before;
-//import org.junit.Test;
-//import org.threeten.bp.Duration;
+// import com.google.api.gax.batching.FlowControlSettings;
+// import com.google.api.gax.batching.FlowController;
+// import com.google.api.gax.core.Distribution;
+// import com.google.auto.value.AutoValue;
+// import com.google.common.util.concurrent.MoreExecutors;
+// import com.google.protobuf.ByteString;
+// import com.google.pubsub.v1.PubsubMessage;
+// import com.google.pubsub.v1.ReceivedMessage;
+// import java.util.ArrayList;
+// import java.util.Collections;
+// import java.util.List;
+// import java.util.concurrent.LinkedBlockingQueue;
+// import java.util.concurrent.ScheduledThreadPoolExecutor;
+// import java.util.concurrent.TimeUnit;
+// import org.junit.Before;
+// import org.junit.Test;
+// import org.threeten.bp.Duration;
 //
-//import static org.mockito.Mockito.*;
+// import static org.mockito.Mockito.*;
 //
-//public class MessageDispatcherTest {
+// public class MessageDispatcherTest {
 //  private static final ByteString MESSAGE_DATA = ByteString.copyFromUtf8("message-data");
 //  private static final int DELIVERY_INFO_COUNT = 3;
 //  private static final ReceivedMessage TEST_MESSAGE =
@@ -86,7 +86,8 @@
 //    MessageReceiver receiver =
 //        new MessageReceiver() {
 //          @Override
-//          public void receiveMessage(final PubsubMessage message, final AckReplyConsumer consumer) {
+//          public void receiveMessage(final PubsubMessage message, final AckReplyConsumer consumer)
+// {
 //            assertThat(message.getData()).isEqualTo(MESSAGE_DATA);
 //            if (messageContainsDeliveryAttempt) {
 //              assertTrue(message.containsAttributes("googclient_deliveryattempt"));
@@ -251,4 +252,4 @@
 //
 //    assertThat(dispatcher.computeDeadlineSeconds()).isEqualTo(MAX_SECONDS_PER_ACK_EXTENSION);
 //  }
-//}
+// }

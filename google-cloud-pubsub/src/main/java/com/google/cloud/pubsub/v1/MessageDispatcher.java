@@ -28,7 +28,6 @@ import com.google.common.primitives.Ints;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.pubsub.v1.PubsubMessage;
 import com.google.pubsub.v1.ReceivedMessage;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -77,8 +76,7 @@ class MessageDispatcher {
   // Maps ID to "total expiration time". If it takes longer than this, stop extending.
   private final ConcurrentMap<String, AckHandler> pendingMessages = new ConcurrentHashMap<>();
 
-//  private final LinkedBlockingQueue<String> pendingAcks = new LinkedBlockingQueue<>();
-private final LinkedBlockingQueue<AckWithMessageFuture> pendingAcks = new LinkedBlockingQueue<>();
+  private final LinkedBlockingQueue<AckWithMessageFuture> pendingAcks = new LinkedBlockingQueue<>();
   private final LinkedBlockingQueue<String> pendingNacks = new LinkedBlockingQueue<>();
   private final LinkedBlockingQueue<String> pendingReceipts = new LinkedBlockingQueue<>();
 
@@ -144,10 +142,7 @@ private final LinkedBlockingQueue<AckWithMessageFuture> pendingAcks = new Linked
     private final Instant totalExpiration;
     private SettableApiFuture<AckResponse> ackResponseSettableApiFuture;
 
-    private AckHandler(
-        String ackId,
-        int outstandingBytes,
-        Instant totalExpiration) {
+    private AckHandler(String ackId, int outstandingBytes, Instant totalExpiration) {
       this.ackId = ackId;
       this.outstandingBytes = outstandingBytes;
       this.receivedTimeMillis = clock.millisTime();
@@ -177,39 +172,37 @@ private final LinkedBlockingQueue<AckWithMessageFuture> pendingAcks = new Linked
     @Override
     public void onFailure(Throwable t) {
       logger.log(
-              Level.WARNING,
-              "MessageReceiver failed to process ack ID: " + ackId + ", the message will be nacked.",
-              t);
+          Level.WARNING,
+          "MessageReceiver failed to process ack ID: " + ackId + ", the message will be nacked.",
+          t);
       pendingNacks.add(ackId);
       forget();
     }
 
     @Override
     public void onSuccess(AckReply reply) {
-//      LinkedBlockingQueue<String> destination;
-      LinkedBlockingQueue<AckWithMessageFuture> destination;
       switch (reply) {
         case ACK:
-          destination = pendingAcks;
           // Record the latency rounded to the next closest integer.
           ackLatencyDistribution.record(
               Ints.saturatedCast(
                   (long) Math.ceil((clock.millisTime() - receivedTimeMillis) / 1000D)));
+          pendingAcks.add(new AckWithMessageFuture(ackId, ackResponseSettableApiFuture));
           break;
-//        case NACK:
-//          destination = pendingNacks;
-//          break;
+        case NACK:
+          pendingNacks.add(ackId);
+          break;
         default:
           throw new IllegalArgumentException(String.format("AckReply: %s not supported", reply));
       }
-      destination.add(new AckWithMessageFuture(ackId, this.ackResponseSettableApiFuture));
       forget();
     }
   }
 
   interface AckProcessor {
     void sendAckOperations(
-            List<MessageDispatcher.AckWithMessageFuture> acksToSend, List<PendingModifyAckDeadline> ackDeadlineExtensions);
+        List<MessageDispatcher.AckWithMessageFuture> acksToSend,
+        List<PendingModifyAckDeadline> ackDeadlineExtensions);
   }
 
   private MessageDispatcher(Builder builder) {
@@ -336,9 +329,7 @@ private final LinkedBlockingQueue<AckWithMessageFuture> pendingAcks = new Linked
     for (ReceivedMessage message : messages) {
       AckHandler ackHandler =
           new AckHandler(
-              message.getAckId(),
-              message.getMessage().getSerializedSize(),
-              totalExpiration);
+              message.getAckId(), message.getMessage().getSerializedSize(), totalExpiration);
       if (pendingMessages.putIfAbsent(message.getAckId(), ackHandler) != null) {
         // putIfAbsent puts ackHandler if ackID isn't previously mapped, then return the
         // previously-mapped element.
@@ -520,7 +511,7 @@ private final LinkedBlockingQueue<AckWithMessageFuture> pendingAcks = new Linked
     }
 
     PendingModifyAckDeadline receiptsToSend =
-            new PendingModifyAckDeadline(getMessageDeadlineSeconds());
+        new PendingModifyAckDeadline(getMessageDeadlineSeconds());
     pendingReceipts.drainTo(receiptsToSend.ackIds);
     logger.log(Level.FINER, "Sending {0} receipts", receiptsToSend.ackIds.size());
     if (!receiptsToSend.ackIds.isEmpty()) {

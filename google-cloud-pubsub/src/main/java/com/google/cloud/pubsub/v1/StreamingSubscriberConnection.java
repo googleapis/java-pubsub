@@ -35,6 +35,7 @@ import com.google.api.gax.rpc.*;
 import com.google.cloud.pubsub.v1.MessageDispatcher.AckProcessor;
 import com.google.cloud.pubsub.v1.MessageDispatcher.PendingModifyAckDeadline;
 import com.google.cloud.pubsub.v1.stub.SubscriberStub;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -48,6 +49,7 @@ import com.google.pubsub.v1.StreamingPullRequest;
 import com.google.pubsub.v1.StreamingPullResponse;
 import com.google.rpc.ErrorInfo;
 import io.grpc.Status;
+import io.grpc.protobuf.StatusProto;
 import java.util.*;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -58,8 +60,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Nullable;
-
-import io.grpc.protobuf.StatusProto;
 import org.threeten.bp.Duration;
 
 /** Implementation of {@link AckProcessor} based on Cloud Pub/Sub streaming pull. */
@@ -70,7 +70,10 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
   @InternalApi static final Duration DEFAULT_STREAM_ACK_DEADLINE = Duration.ofSeconds(60);
   @InternalApi static final Duration MAX_STREAM_ACK_DEADLINE = Duration.ofSeconds(600);
   @InternalApi static final Duration MIN_STREAM_ACK_DEADLINE = Duration.ofSeconds(10);
-  @InternalApi static final Duration MIN_STREAM_ACK_DEADLINE_EXACTLY_ONCE_ENABLED = Duration.ofSeconds(60);
+
+  @InternalApi
+  static final Duration MIN_STREAM_ACK_DEADLINE_EXACTLY_ONCE_ENABLED = Duration.ofSeconds(60);
+
   private static final Duration INITIAL_CHANNEL_RECONNECT_BACKOFF = Duration.ofMillis(100);
   private static final Duration MAX_CHANNEL_RECONNECT_BACKOFF = Duration.ofSeconds(10);
   private static final int MAX_PER_REQUEST_CHANGES = 1000;
@@ -110,9 +113,13 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     systemExecutor = builder.systemExecutor;
     if (builder.maxDurationPerAckExtension.compareTo(DEFAULT_MAX_DURATION_PER_ACK_EXTENSION) == 0) {
       this.streamAckDeadline = DEFAULT_STREAM_ACK_DEADLINE;
-    } else if ((builder.exactlyOnceDeliveryEnabled == false) && (builder.maxDurationPerAckExtension.compareTo(MIN_STREAM_ACK_DEADLINE) < 0)) {
+    } else if ((builder.exactlyOnceDeliveryEnabled == false)
+        && (builder.maxDurationPerAckExtension.compareTo(MIN_STREAM_ACK_DEADLINE) < 0)) {
       this.streamAckDeadline = MIN_STREAM_ACK_DEADLINE;
-    } else if ((builder.exactlyOnceDeliveryEnabled) && (builder.maxDurationPerAckExtension.compareTo(MIN_STREAM_ACK_DEADLINE_EXACTLY_ONCE_ENABLED) < 0)) {
+    } else if ((builder.exactlyOnceDeliveryEnabled)
+        && (builder.maxDurationPerAckExtension.compareTo(
+                MIN_STREAM_ACK_DEADLINE_EXACTLY_ONCE_ENABLED)
+            < 0)) {
       this.streamAckDeadline = MIN_STREAM_ACK_DEADLINE_EXACTLY_ONCE_ENABLED;
     } else if (builder.maxDurationPerAckExtension.compareTo(MAX_STREAM_ACK_DEADLINE) > 0) {
       this.streamAckDeadline = MAX_STREAM_ACK_DEADLINE;
@@ -341,7 +348,8 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
 
   @Override
   public void sendAckOperations(
-          List<MessageDispatcher.AckWithMessageFuture> acksToSend, List<PendingModifyAckDeadline> ackDeadlineExtensions) {
+      List<MessageDispatcher.AckWithMessageFuture> acksToSend,
+      List<PendingModifyAckDeadline> ackDeadlineExtensions) {
     Set<String> failedModackIds = sendModacks(ackDeadlineExtensions, new HashSet<String>());
     if (!failedModackIds.isEmpty()) {
       // We want to remove the failed ackIds from the acksToSend and propagate the failed message
@@ -374,7 +382,8 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     return metadataMap;
   }
 
-  private ApiFutureCallback<Empty> getLoggingCallback(SettableApiFuture<Map<String, String>> responseFuture) {
+  private ApiFutureCallback<Empty> getLoggingCallback(
+      SettableApiFuture<Map<String, String>> responseFuture) {
     return new ApiFutureCallback<Empty>() {
       @Override
       public void onSuccess(Empty empty) {
@@ -415,14 +424,17 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     List<PendingModifyAckDeadline> modackIdsToRetry;
     List<String> modackIdsFailed;
 
-    ModacksToRetryModacksToFail(List<PendingModifyAckDeadline> modackIdsToRetry, List<String> modackIdsFailed) {
+    ModacksToRetryModacksToFail(
+        List<PendingModifyAckDeadline> modackIdsToRetry, List<String> modackIdsFailed) {
       this.modackIdsToRetry = modackIdsToRetry;
       this.modackIdsFailed = modackIdsFailed;
     }
   }
 
-  private Set<String> sendModacks(List<PendingModifyAckDeadline> modacksToSend, Set<String> failedModackIds) {
-    Table<Integer, ImmutableList<String>, SettableApiFuture<Map<String, String>>> modAckFutureMap = sendUnaryModacks(modacksToSend);
+  private Set<String> sendModacks(
+      List<PendingModifyAckDeadline> modacksToSend, Set<String> failedModackIds) {
+    Table<Integer, ImmutableList<String>, SettableApiFuture<Map<String, String>>> modAckFutureMap =
+        sendUnaryModacks(modacksToSend);
     ModacksToRetryModacksToFail modAcksToRetryModAcksToFail = processModackFutures(modAckFutureMap);
     List<PendingModifyAckDeadline> modacksToRetry = modAcksToRetryModAcksToFail.modackIdsToRetry;
     failedModackIds.addAll(modAcksToRetryModAcksToFail.modackIdsFailed);
@@ -434,15 +446,18 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     return failedModackIds;
   }
 
-  private Table<Integer, ImmutableList<String>, SettableApiFuture<Map<String, String>>> sendUnaryModacks(List<PendingModifyAckDeadline> modacksToSend) {
+  private Table<Integer, ImmutableList<String>, SettableApiFuture<Map<String, String>>>
+      sendUnaryModacks(List<PendingModifyAckDeadline> modacksToSend) {
     int pendingOperations = 0;
-    Table<Integer, ImmutableList<String>, SettableApiFuture<Map<String, String>>> futureTable = HashBasedTable.create();
+    Table<Integer, ImmutableList<String>, SettableApiFuture<Map<String, String>>> futureTable =
+        HashBasedTable.create();
     for (PendingModifyAckDeadline modack : modacksToSend) {
       for (List<String> ackIdsInRequest : Lists.partition(modack.ackIds, MAX_PER_REQUEST_CHANGES)) {
         ApiFutureCallback<Empty> loggingCallback;
         if (enableExactlyOnceDelivery.get()) {
           SettableApiFuture<Map<String, String>> errorFuture = SettableApiFuture.create();
-          futureTable.put(modack.deadlineExtensionSeconds, ImmutableList.copyOf(ackIdsInRequest), errorFuture);
+          futureTable.put(
+              modack.deadlineExtensionSeconds, ImmutableList.copyOf(ackIdsInRequest), errorFuture);
           loggingCallback = getLoggingCallback(errorFuture);
         } else {
           loggingCallback = getLoggingCallback();
@@ -464,27 +479,30 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     return futureTable;
   }
 
-  private ModacksToRetryModacksToFail processModackFutures(Table<Integer, ImmutableList<String>, SettableApiFuture<Map<String, String>>> futureCallbackTable) {
+  private ModacksToRetryModacksToFail processModackFutures(
+      Table<Integer, ImmutableList<String>, SettableApiFuture<Map<String, String>>>
+          futureCallbackTable) {
     List<PendingModifyAckDeadline> modacksToRetry = new ArrayList<>();
     List<String> modackIdsFailed = new ArrayList<>();
     for (Integer deadlineExtensionSeconds : futureCallbackTable.rowKeySet()) {
-      Map<ImmutableList<String>, SettableApiFuture<Map<String, String>>> rowMap = futureCallbackTable.row(deadlineExtensionSeconds);
+      Map<ImmutableList<String>, SettableApiFuture<Map<String, String>>> rowMap =
+          futureCallbackTable.row(deadlineExtensionSeconds);
       List<String> ackIdsToRetry = new ArrayList<>();
       List<String> ackIdsToFail = new ArrayList<>();
       for (ImmutableList<String> ackIdsInRequest : rowMap.keySet()) {
         try {
           Map<String, String> metadataMap = rowMap.get(ackIdsInRequest).get();
           metadataMap.forEach(
-                  (ackId, errorMessage) -> {
-                    if (errorMessage.startsWith(TRANSIENT_ERROR_METADATA_PREFIX)) {
-                      ackIdsToRetry.add(ackId);
-                      logger.log(Level.WARNING, "Transient error detected, will retry", errorMessage);
-                    } else if (errorMessage.startsWith(PERMANENT_ERROR_METADATA_PREFIX)) {
-                      ackIdsToFail.add(ackId);
-                      logger.log(Level.WARNING, "Permanent error detected, will not retry", errorMessage);
-                    }
-                  }
-          );
+              (ackId, errorMessage) -> {
+                if (errorMessage.startsWith(TRANSIENT_ERROR_METADATA_PREFIX)) {
+                  ackIdsToRetry.add(ackId);
+                  logger.log(Level.WARNING, "Transient error detected, will retry", errorMessage);
+                } else if (errorMessage.startsWith(PERMANENT_ERROR_METADATA_PREFIX)) {
+                  ackIdsToFail.add(ackId);
+                  logger.log(
+                      Level.WARNING, "Permanent error detected, will not retry", errorMessage);
+                }
+              });
         } catch (Throwable t) {
           logger.log(Level.WARNING, "Failed to retrieve future. resending ackIds", t);
           ackIdsToRetry.addAll(ackIdsInRequest);
@@ -496,27 +514,33 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     return new ModacksToRetryModacksToFail(modacksToRetry, modackIdsFailed);
   }
 
-  private void sendAcksWithFutures(List<MessageDispatcher.AckWithMessageFuture> ackIdWithMessageFutureToSend) {
+  private void sendAcksWithFutures(
+      List<MessageDispatcher.AckWithMessageFuture> ackIdWithMessageFutureToSend) {
     if (!ackIdWithMessageFutureToSend.isEmpty()) {
-      Map<String, SettableApiFuture<Map<String, String>>> ackFutureMap = sendUnaryAcks(ackIdWithMessageFutureToSend);
+      Map<String, SettableApiFuture<Map<String, String>>> ackFutureMap =
+          sendUnaryAcks(ackIdWithMessageFutureToSend);
 
       if (ackFutureMap.isEmpty()) {
         return;
       }
-      List<MessageDispatcher.AckWithMessageFuture> acksToResend = processAckFutures(ackIdWithMessageFutureToSend, ackFutureMap);
+      List<MessageDispatcher.AckWithMessageFuture> acksToResend =
+          processAckFutures(ackIdWithMessageFutureToSend, ackFutureMap);
       sendAcksWithFutures(acksToResend);
     }
   }
 
-  private Map<String, SettableApiFuture<Map<String, String>>> sendUnaryAcks(List<MessageDispatcher.AckWithMessageFuture> acksToSend) {
+  private Map<String, SettableApiFuture<Map<String, String>>> sendUnaryAcks(
+      List<MessageDispatcher.AckWithMessageFuture> acksToSend) {
     int pendingOperations = 0;
     Map<String, SettableApiFuture<Map<String, String>>> futureMap = new HashMap<>();
-    for (List<MessageDispatcher.AckWithMessageFuture> ackIdWithMessageFutureInRequest : Lists.partition(acksToSend, MAX_PER_REQUEST_CHANGES)) {
+    for (List<MessageDispatcher.AckWithMessageFuture> ackIdWithMessageFutureInRequest :
+        Lists.partition(acksToSend, MAX_PER_REQUEST_CHANGES)) {
       List<String> ackIdsInRequest = new ArrayList<>();
       ApiFutureCallback<Empty> loggingCallback;
       if (enableExactlyOnceDelivery.get()) {
         SettableApiFuture<Map<String, String>> responseFuture = SettableApiFuture.create();
-        for (MessageDispatcher.AckWithMessageFuture ackWithMessageFuture : ackIdWithMessageFutureInRequest) {
+        for (MessageDispatcher.AckWithMessageFuture ackWithMessageFuture :
+            ackIdWithMessageFutureInRequest) {
           futureMap.put(ackWithMessageFuture.ackId, responseFuture);
           ackIdsInRequest.add(ackWithMessageFuture.ackId);
         }
@@ -525,13 +549,13 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
         loggingCallback = getLoggingCallback();
       }
       ApiFuture<Empty> future =
-              subscriberStub
-                      .acknowledgeCallable()
-                      .futureCall(
-                              AcknowledgeRequest.newBuilder()
-                                      .setSubscription(subscription)
-                                      .addAllAckIds(ackIdsInRequest)
-                                      .build());
+          subscriberStub
+              .acknowledgeCallable()
+              .futureCall(
+                  AcknowledgeRequest.newBuilder()
+                      .setSubscription(subscription)
+                      .addAllAckIds(ackIdsInRequest)
+                      .build());
       ApiFutures.addCallback(future, loggingCallback, directExecutor());
       pendingOperations++;
     }
@@ -539,35 +563,36 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     return futureMap;
   }
 
-  private List<MessageDispatcher.AckWithMessageFuture> processAckFutures(List<MessageDispatcher.AckWithMessageFuture> ackIdToSendWithMessageFuture, Map<String, SettableApiFuture<Map<String, String>>> futureMap) {
+  private List<MessageDispatcher.AckWithMessageFuture> processAckFutures(
+      List<MessageDispatcher.AckWithMessageFuture> ackIdToSendWithMessageFuture,
+      Map<String, SettableApiFuture<Map<String, String>>> futureMap) {
     List<MessageDispatcher.AckWithMessageFuture> retryAckIdsWithMessageFuture = new ArrayList<>();
     ackIdToSendWithMessageFuture.forEach(
-            (ackIdWithMessageFuture) -> {
-              String ackId = ackIdWithMessageFuture.ackId;
-              SettableApiFuture<Map<String, String>> future = futureMap.get(ackId);
-              try {
-                // Blocking operation to check the response of the ack request
-                Map<String, String> metadataMap = future.get();
-                if (metadataMap.containsKey(ackId)) {
-                  String errorMessage = metadataMap.get(ackId);
-                  if (errorMessage.startsWith(TRANSIENT_ERROR_METADATA_PREFIX)) {
-                    // Retry and do not set message future
-                    logger.log(Level.WARNING, "Transient error message, will resend", errorMessage);
-                    retryAckIdsWithMessageFuture.add(ackIdWithMessageFuture);
-                  } else if (errorMessage.startsWith(PERMANENT_ERROR_METADATA_PREFIX)) {
-                    logger.log(Level.WARNING, "Permanent error message, will not resend", errorMessage);
-                    ackIdWithMessageFuture.messageFuture.set(AckResponse.INVALID);
-                  }
-                } else {
-                  ackIdWithMessageFuture.messageFuture.set(AckResponse.SUCCESSFUL);
-                }
-
-              } catch (Throwable t) {
-                logger.log(Level.WARNING, "Failed to retrieve future. resending ackIds", t);
+        (ackIdWithMessageFuture) -> {
+          String ackId = ackIdWithMessageFuture.ackId;
+          SettableApiFuture<Map<String, String>> future = futureMap.get(ackId);
+          try {
+            // Blocking operation to check the response of the ack request
+            Map<String, String> metadataMap = future.get();
+            if (metadataMap.containsKey(ackId)) {
+              String errorMessage = metadataMap.get(ackId);
+              if (errorMessage.startsWith(TRANSIENT_ERROR_METADATA_PREFIX)) {
+                // Retry and do not set message future
+                logger.log(Level.WARNING, "Transient error message, will resend", errorMessage);
                 retryAckIdsWithMessageFuture.add(ackIdWithMessageFuture);
+              } else if (errorMessage.startsWith(PERMANENT_ERROR_METADATA_PREFIX)) {
+                logger.log(Level.WARNING, "Permanent error message, will not resend", errorMessage);
+                ackIdWithMessageFuture.messageFuture.set(AckResponse.INVALID);
               }
+            } else {
+              ackIdWithMessageFuture.messageFuture.set(AckResponse.SUCCESSFUL);
             }
-    );
+
+          } catch (Throwable t) {
+            logger.log(Level.WARNING, "Failed to retrieve future. resending ackIds", t);
+            retryAckIdsWithMessageFuture.add(ackIdWithMessageFuture);
+          }
+        });
     return retryAckIdsWithMessageFuture;
   }
 
@@ -649,6 +674,9 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     }
 
     public Builder setExactlyOnceDeliveryEnabled(boolean exactlyOnceDeliveryEnabled) {
+      // If the receiverWithAckResponse has been set, we must have exactlyOnceDelivery enabled
+      Preconditions.checkArgument(
+              (this.receiverWithAckResponse == null) || ((this.receiverWithAckResponse != null) && (exactlyOnceDeliveryEnabled)));
       this.exactlyOnceDeliveryEnabled = exactlyOnceDeliveryEnabled;
       return this;
     }
