@@ -366,6 +366,12 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
   }
 
   private Map<String, String> getMetadataMapFromThrowable(Throwable t) {
+    // This converts a Throwable (from a "OK" grpc response) to a map of metadata
+    // will be of the format:
+    // {
+    //    "ACK-ID-1": "PERMANENT_*",
+    //    "ACK-ID-2": "TRANSIENT_*"
+    // }
     com.google.rpc.Status status = StatusProto.fromThrowable(t);
     Map<String, String> metadataMap = new HashMap<>();
     if (status != null) {
@@ -455,10 +461,15 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
       for (List<String> ackIdsInRequest : Lists.partition(modack.ackIds, MAX_PER_REQUEST_CHANGES)) {
         ApiFutureCallback<Empty> loggingCallback;
         if (enableExactlyOnceDelivery.get()) {
-          SettableApiFuture<Map<String, String>> errorFuture = SettableApiFuture.create();
+          // If enableExactlyOnceDelivery is true:
+          // 1) make a response future
+          // 2) add it to our future map
+          // 3) add it to the logging callback
+          // 4) populate the ackIds for the request
+          SettableApiFuture<Map<String, String>> responseFuture = SettableApiFuture.create();
           futureTable.put(
-              modack.deadlineExtensionSeconds, ImmutableList.copyOf(ackIdsInRequest), errorFuture);
-          loggingCallback = getLoggingCallback(errorFuture);
+              modack.deadlineExtensionSeconds, ImmutableList.copyOf(ackIdsInRequest), responseFuture);
+          loggingCallback = getLoggingCallback(responseFuture);
         } else {
           loggingCallback = getLoggingCallback();
         }
@@ -538,6 +549,11 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
       List<String> ackIdsInRequest = new ArrayList<>();
       ApiFutureCallback<Empty> loggingCallback;
       if (enableExactlyOnceDelivery.get()) {
+        // If enableExactlyOnceDelivery is true:
+        // 1) make a response future
+        // 2) add it to our map
+        // 3) add it to the logging callback
+        // 4) populate the ackIds for the request
         SettableApiFuture<Map<String, String>> responseFuture = SettableApiFuture.create();
         for (MessageDispatcher.AckWithMessageFuture ackWithMessageFuture :
             ackIdWithMessageFutureInRequest) {
@@ -546,6 +562,11 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
         }
         loggingCallback = getLoggingCallback(responseFuture);
       } else {
+        // else, we just need to populate the ackIds for the request
+        for (MessageDispatcher.AckWithMessageFuture ackWithMessageFuture :
+                ackIdWithMessageFutureInRequest) {
+          ackIdsInRequest.add(ackWithMessageFuture.ackId);
+        }
         loggingCallback = getLoggingCallback();
       }
       ApiFuture<Empty> future =
