@@ -183,9 +183,9 @@ public class StreamingSubscriberTest {
                 ApiFutures.immediateFuture(null)
         );
 
-        when(mockSubscriberStub.acknowledgeCallable().futureCall(ackRequestSuccess)).thenReturn(
-                ApiFutures.immediateFailedFuture()
-        );
+//        when(mockSubscriberStub.acknowledgeCallable().futureCall(ackRequestSuccess)).thenReturn(
+//                ApiFutures.immediateFailedFuture()
+//        );
 
         StreamingSubscriberConnection streamingSubscriberConnection = getStreamingSubscriberBuilderReceiver(mockSubscriberStub, receiverWithAckResponse).build();
 

@@ -343,7 +343,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     if ((!acksToSend.isEmpty() && acksToSend.get(0).messageFuture == null)) {
       sendAckOperationsNoFutures(acksToSend, ackDeadlineExtensions);
     } else {
-//      List<String> failedModackIds = sendModacks(ackDeadlineExtensions, new ArrayList<>());
+      List<String> failedModackIds = sendModacks(ackDeadlineExtensions, new ArrayList<>());
 
       // Do something with the modack failures...
 
