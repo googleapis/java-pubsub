@@ -343,7 +343,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     if ((!acksToSend.isEmpty() && acksToSend.get(0).messageFuture == null)) {
       sendAckOperationsNoFutures(acksToSend, ackDeadlineExtensions);
     } else {
-      List<String> failedModackIds = sendModacks(ackDeadlineExtensions, new ArrayList<>());
+//      List<String> failedModackIds = sendModacks(ackDeadlineExtensions, new ArrayList<>());
 
       // Do something with the modack failures...
 
@@ -435,7 +435,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     if (modacksToSend.isEmpty()) {
       return new ArrayList<String>();
     }
-    Table<Integer, ImmutableList<String>, SettableApiFuture<Map<String, String>>> modAckFutureMap = send_unary_modacks(modacksToSend);
+    Table<Integer, ImmutableList<String>, SettableApiFuture<Map<String, String>>> modAckFutureMap = sendUnaryModacks(modacksToSend);
     ModacksToRetryModacksToFail modAcksToRetryModAcksToFail = processModackFutures(modAckFutureMap);
 
     List<PendingModifyAckDeadline> modacksToRetry = modAcksToRetryModAcksToFail.modackIdsToRetry;
@@ -448,7 +448,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     return failedModackIds;
   }
 
-  private Table<Integer, ImmutableList<String>, SettableApiFuture<Map<String, String>>> send_unary_modacks(List<PendingModifyAckDeadline> modacksToSend) {
+  private Table<Integer, ImmutableList<String>, SettableApiFuture<Map<String, String>>> sendUnaryModacks(List<PendingModifyAckDeadline> modacksToSend) {
     int pendingOperations = 0;
     Table<Integer, ImmutableList<String>, SettableApiFuture<Map<String, String>>> futureTable = HashBasedTable.create();
     for (PendingModifyAckDeadline modack : modacksToSend) {
@@ -527,13 +527,13 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
 
   private void sendAcksWithFutures(List<MessageDispatcher.AckWithMessageFuture> ackIdWithMessageFutureToSend) {
     if (!ackIdWithMessageFutureToSend.isEmpty()) {
-      Map<String, SettableApiFuture<Map<String, String>>> ackFutureMap = send_unary_acks(ackIdWithMessageFutureToSend);
+      Map<String, SettableApiFuture<Map<String, String>>> ackFutureMap = sendUnaryAcks(ackIdWithMessageFutureToSend);
       List<MessageDispatcher.AckWithMessageFuture> acksToResend = processAckFutures(ackIdWithMessageFutureToSend, ackFutureMap);
       sendAcksWithFutures(acksToResend);
     }
   }
 
-  private Map<String, SettableApiFuture<Map<String, String>>> send_unary_acks(List<MessageDispatcher.AckWithMessageFuture> acksToSend) {
+  private Map<String, SettableApiFuture<Map<String, String>>> sendUnaryAcks(List<MessageDispatcher.AckWithMessageFuture> acksToSend) {
     int pendingOperations = 0;
     Map<String, SettableApiFuture<Map<String, String>>> futureMap = new HashMap<>();
     for (List<MessageDispatcher.AckWithMessageFuture> ackIdWithMessageFutureInRequest : Lists.partition(acksToSend, MAX_PER_REQUEST_CHANGES)) {
