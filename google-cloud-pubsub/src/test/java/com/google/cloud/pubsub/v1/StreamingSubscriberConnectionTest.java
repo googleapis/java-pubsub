@@ -46,7 +46,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 /** Tests for {@link StreamingSubscriberConnection}. */
-public class StreamingSubscriberTest {
+public class StreamingSubscriberConnectionTest {
     @Rule public TestName testName = new TestName();
 
     FakeClock mockClock;
