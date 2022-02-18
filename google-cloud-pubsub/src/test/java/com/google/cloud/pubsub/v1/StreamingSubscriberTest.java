@@ -23,6 +23,7 @@ import com.google.api.gax.batching.FlowController;
 import com.google.api.gax.core.Distribution;
 import com.google.cloud.pubsub.v1.stub.SubscriberStub;
 import com.google.pubsub.v1.AcknowledgeRequest;
+import com.google.pubsub.v1.ModifyAckDeadlineRequest;
 import com.google.pubsub.v1.PubsubMessage;
 import org.junit.After;
 import org.junit.Before;
@@ -173,13 +174,25 @@ public class StreamingSubscriberTest {
                 .addAckIds(MOCK_ACK_ID_2)
                 .build();
 
-        List<MessageDispatcher.AckWithMessageFuture> mockAcksWithFuture = new ArrayList<>();
-        mockAcksWithFuture.add(mockAckWithMessageFutureSuccess);
-        mockAcksWithFuture.add(mockAckWithMessageFutureInvalid);
+        List<MessageDispatcher.AckWithMessageFuture> mockAcksWithFutureSuccess = new ArrayList<>();
+        mockAcksWithFutureSuccess.add(mockAckWithMessageFutureSuccess);
+//        mockAcksWithFuture.add(mockAckWithMessageFutureInvalid);
+
+        ModifyAckDeadlineRequest modAckDeadlineRequestSuccess = ModifyAckDeadlineRequest.newBuilder()
+                .setSubscription(MOCK_SUBSCRIPTION_NAME)
+                .addAckIds(MOCK_ACK_ID_1)
+                .build();
+
+        List<MessageDispatcher.PendingModifyAckDeadline> modAckRequests = new ArrayList<>();
+        modAckRequests.add();
 
         SubscriberStub mockSubscriberStub = mock(SubscriberStub.class, RETURNS_DEEP_STUBS);
 
         when(mockSubscriberStub.acknowledgeCallable().futureCall(ackRequestSuccess)).thenReturn(
+                ApiFutures.immediateFuture(null)
+        );
+
+        when(mockSubscriberStub.modifyAckDeadlineCallable().futureCall(modAckDeadlineRequestSuccess)).thenReturn(
                 ApiFutures.immediateFuture(null)
         );
 
@@ -190,12 +203,12 @@ public class StreamingSubscriberTest {
         StreamingSubscriberConnection streamingSubscriberConnection = getStreamingSubscriberBuilderReceiver(mockSubscriberStub, receiverWithAckResponse).build();
 
         streamingSubscriberConnection.sendAckOperations(
-                mockAcksWithFuture,
-                getMockModAcks(1)
+                mockAcksWithFutureSuccess,
+                modifyAckDeadlineRequests
         );
 
         assertEquals(AckResponse.SUCCESSFUL, messageFutureSuccess);
-        assertEquals(AckResponse.INVALID, messageFutureSuccess);
+//        assertEquals(AckResponse.INVALID, messageFutureSuccess);
 
     }
 }

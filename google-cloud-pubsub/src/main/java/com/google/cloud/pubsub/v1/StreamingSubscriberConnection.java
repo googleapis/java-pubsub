@@ -563,13 +563,6 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
             }
           };
 
-
-      // msg1 - testing-publish-subscribe-exactly-once-subscription-10
-//      String msg1AckId = "XysZDncaAlFGNykiMTsNSl9VWAUhHRxKTzwJHmoGWAs7WDs-aGNdfAECRVN-XlxNDWEOCn0ABw0TcndhXVpCtaCJ5WV-b3klBWtfWnYAUggZcHhlcm5ynr3K_P-0fUEnNc7919UxcdTCl4FTZjQ9KBJLLD5-MzVFQV5AEkw4AERJUytDCypYEU4EISE-MD4ZV1BVHA0pQBte";
-//      ArrayList<String> badAckIds = new ArrayList<String>();
-//      badAckIds.add(msg1AckId);
-//      ackIdsInRequest = badAckIds;
-
       ApiFuture<Empty> future =
               subscriberStub
                       .acknowledgeCallable()
@@ -590,11 +583,6 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     ackIdToSendWithMessageFuture.forEach(
             (ackIdWithMessageFuture) -> {
               String ackId = ackIdWithMessageFuture.ackId;
-
-              // For testing
-//              String msg1AckId = "XysZDncaAlFGNykiMTsNSl9VWAUhHRxKTzwJHmoGUS8yNCF8d2tZfAECRVN-XlxNDWEPDyBVVwoTc3dhXVpCjKmJ5WV-b3klBWtfWnEEUg8ed3Rid2Jyw43q3P-0fUEnNff019UxcZn7-8dQZjQ9KRJLLD5-MzVFQV5AEkw4AERJUytDCypYEU4EISE-MD4ZV1BVHA0pQBte";
-//              ackId = msg1AckId;
-
               SettableApiFuture<Map<String, String>> future = futureMap.get(ackId);
               try {
                 // Blocking operation to check the response of the ack request
