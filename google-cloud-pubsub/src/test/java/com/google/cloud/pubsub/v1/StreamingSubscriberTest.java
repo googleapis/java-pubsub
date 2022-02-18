@@ -16,7 +16,6 @@
 
 package com.google.cloud.pubsub.v1;
 
-import com.google.api.core.ApiFuture;
 import com.google.api.core.ApiFutures;
 import com.google.api.core.SettableApiFuture;
 import com.google.api.gax.batching.FlowControlSettings;
@@ -25,10 +24,8 @@ import com.google.api.gax.core.Distribution;
 import com.google.api.gax.rpc.StatusCode;
 import com.google.cloud.pubsub.v1.stub.SubscriberStub;
 import com.google.protobuf.Any;
-import com.google.protobuf.Empty;
 import com.google.pubsub.v1.AcknowledgeRequest;
 import com.google.pubsub.v1.ModifyAckDeadlineRequest;
-import com.google.pubsub.v1.PubsubMessage;
 import com.google.rpc.ErrorInfo;
 import com.google.rpc.Status;
 import io.grpc.StatusException;
@@ -44,8 +41,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
@@ -57,7 +52,7 @@ public class StreamingSubscriberTest {
     FakeClock mockClock;
     FakeScheduledExecutorService systemExecutor;
     FakeScheduledExecutorService executor;
-
+    SubscriberStub mockSubscriberStub;
 
     String MOCK_SUBSCRIPTION_NAME = "MOCK-SUBSCRIPTION";
     String MOCK_ACK_ID_1 = "MOCK-ACK-ID-1";
@@ -67,28 +62,20 @@ public class StreamingSubscriberTest {
     String PERMANENT_FAILURE_METADATA_PREFIX = "PERMANENT_FAILURE_";
     String TRANSIENT_FAILURE_ERROR_METADATA_PREFIX = "TRANSIENT_FAILURE_";
 
-    Integer DEFAULT_MOCK_ACK_EXTENSION = 10;
+    Integer MOCK_ACK_EXTENSION_DEFAULT = 10;
 
     @Before
     public void setUp() {
         mockClock = new FakeClock();
         systemExecutor = new FakeScheduledExecutorService();
-
+        mockSubscriberStub = mock(SubscriberStub.class, RETURNS_DEEP_STUBS);
     }
 
     @After
-    public void tearDown() {
-    }
+    public void tearDown() {}
 
     private StreamingSubscriberConnection.Builder getStreamingSubscriberBuilderReceiver(SubscriberStub mockSubscriberStub) {
-        MessageReceiver messageReceiver = new MessageReceiver() {
-            @Override
-            public void receiveMessage(PubsubMessage message, AckReplyConsumer consumer) {
-                consumer.ack();
-            }
-        };
-
-        return StreamingSubscriberConnection.newBuilder(messageReceiver)
+        return StreamingSubscriberConnection.newBuilder(mock(MessageReceiver.class))
                 .setSubscription(MOCK_SUBSCRIPTION_NAME)
                 .setAckExpirationPadding(Duration.ofSeconds(5))
                 .setMaxDurationPerAckExtension(Duration.ofSeconds(5))
@@ -103,8 +90,8 @@ public class StreamingSubscriberTest {
                 .setExactlyOnceDeliveryEnabled(false);
     }
 
-    private StreamingSubscriberConnection.Builder getStreamingSubscriberBuilderReceiver(SubscriberStub mockSubscriberStub, MessageReceiverWithAckResponse receiverWithAckResponse) {
-        return StreamingSubscriberConnection.newBuilder(receiverWithAckResponse)
+    private StreamingSubscriberConnection.Builder getStreamingSubscriberBuilderReceiverWithAckResponse(SubscriberStub mockSubscriberStub, boolean setExactlyOnceDeliveryEnabled) {
+        return StreamingSubscriberConnection.newBuilder(mock(MessageReceiverWithAckResponse.class))
                 .setSubscription(MOCK_SUBSCRIPTION_NAME)
                 .setAckExpirationPadding(Duration.ofSeconds(5))
                 .setMaxDurationPerAckExtension(Duration.ofSeconds(5))
@@ -116,30 +103,7 @@ public class StreamingSubscriberTest {
                 .setExecutor(executor)
                 .setSystemExecutor(systemExecutor)
                 .setClock(mockClock)
-                .setExactlyOnceDeliveryEnabled(false);
-    }
-
-    private List<MessageDispatcher.AckWithMessageFuture> getMockAckWithFutureNoFuture(int numAcks) {
-        List<MessageDispatcher.AckWithMessageFuture> mockAckWithNoFutures = new ArrayList<>();
-        for (int i = 0; i < numAcks; i++) {
-            mockAckWithNoFutures.add(new MessageDispatcher.AckWithMessageFuture("MOCK-ACK-ID-" + i));
-        }
-        return mockAckWithNoFutures;
-    }
-
-    private List<MessageDispatcher.PendingModifyAckDeadline> getMockModAcks(int numModAcks) {
-        List<MessageDispatcher.PendingModifyAckDeadline> mockModAcks = new ArrayList<>();
-        List<String> modAckIds = new ArrayList<>();
-        for (int i = 0; i < numModAcks; i++) {
-            modAckIds.add("MOCK-ACK-ID-"  + i);
-        }
-        mockModAcks.add(
-                new MessageDispatcher.PendingModifyAckDeadline(
-                        DEFAULT_MOCK_ACK_EXTENSION,
-                        modAckIds
-                )
-        );
-        return mockModAcks;
+                .setExactlyOnceDeliveryEnabled(setExactlyOnceDeliveryEnabled);
     }
 
     private StatusException getMockStatusException(Map<String, String> metadata) {
@@ -150,46 +114,29 @@ public class StreamingSubscriberTest {
 
     @Test
     public void testSendAckOperations() {
-        SubscriberStub mockSubscriberStub = mock(SubscriberStub.class, RETURNS_DEEP_STUBS);
         when(mockSubscriberStub.modifyAckDeadlineCallable().futureCall(any())).thenReturn(
                 ApiFutures.immediateFuture(null)
         );
         StreamingSubscriberConnection streamingSubscriberConnection = getStreamingSubscriberBuilderReceiver(mockSubscriberStub).build();
-        streamingSubscriberConnection.sendAckOperations(getMockAckWithFutureNoFuture(2), getMockModAcks(1));
+        List<MessageDispatcher.PendingModifyAckDeadline> modifyAckDeadlineList = new ArrayList<MessageDispatcher.PendingModifyAckDeadline>();
+        modifyAckDeadlineList.add(
+                new MessageDispatcher.PendingModifyAckDeadline(
+                        MOCK_ACK_EXTENSION_DEFAULT,
+                        MOCK_ACK_ID_1
+                )
+        );
+
+        List<MessageDispatcher.AckWithMessageFuture> ackWithMessageFutureList = new ArrayList<MessageDispatcher.AckWithMessageFuture>();
+        ackWithMessageFutureList.add(new MessageDispatcher.AckWithMessageFuture(MOCK_ACK_ID_1));
+        streamingSubscriberConnection.sendAckOperations(ackWithMessageFutureList, modifyAckDeadlineList);
     }
 
     @Test
-    public void testSendAckOperationsFutures() throws Throwable {
-        final BlockingQueue<Object> receiveQueue = new LinkedBlockingQueue<>();
-        MessageReceiverWithAckResponse receiverWithAckResponse = new MessageReceiverWithAckResponse() {
-            @Override
-            public void receiveMessage(final PubsubMessage message, final AckReplyConsumerWithResponse ackReplyConsumerWithResponse) {
-                receiveQueue.offer(ackReplyConsumerWithResponse);
-            }
-        };
-
-        SubscriberStub mockSubscriberStub = mock(SubscriberStub.class, RETURNS_DEEP_STUBS);
-
-        // Mock Modacks
-        List<MessageDispatcher.PendingModifyAckDeadline> pendingModifyAckDeadlineList = new ArrayList<>();
-
-        // Request Success - MOCK_ACK_ID_1
-        MessageDispatcher.PendingModifyAckDeadline pendingModifyAckDeadlineSuccess = new MessageDispatcher.PendingModifyAckDeadline(DEFAULT_MOCK_ACK_EXTENSION, MOCK_ACK_ID_1);
-//        pendingModifyAckDeadlineList.add(pendingModifyAckDeadlineSuccess);
-
-        ModifyAckDeadlineRequest modAckDeadlineRequestSuccess = ModifyAckDeadlineRequest.newBuilder()
-                .setSubscription(MOCK_SUBSCRIPTION_NAME)
-                .addAckIds(MOCK_ACK_ID_1)
-                .build();
-
-        when(mockSubscriberStub.modifyAckDeadlineCallable().futureCall(modAckDeadlineRequestSuccess)).thenReturn(
-                ApiFutures.immediateFuture(null)
-        );
-
-        // Mock Acks
-        List<MessageDispatcher.AckWithMessageFuture> ackWithMessageFutureList = new ArrayList<>();
-        Map<String, String> metadataMap = new HashMap<>();
-        List<String> ackIds = new ArrayList<>();
+    public void testSendAckOperationsAcksFutures() throws Throwable {
+        // Only sending ack operations with messages futures
+        List<MessageDispatcher.AckWithMessageFuture> ackWithMessageFutureList = new ArrayList<MessageDispatcher.AckWithMessageFuture>();
+        Map<String, String> metadataMap = new HashMap<String, String>();
+        List<String> ackIds = new ArrayList<String>();
 
         // Request Success - MOCK_ACK_ID_1
         ackIds.add(MOCK_ACK_ID_1);
@@ -238,16 +185,76 @@ public class StreamingSubscriberTest {
                 ApiFutures.immediateFuture(null)
         );
 
-        StreamingSubscriberConnection streamingSubscriberConnection = getStreamingSubscriberBuilderReceiver(mockSubscriberStub, receiverWithAckResponse).build();
+        StreamingSubscriberConnection streamingSubscriberConnection = getStreamingSubscriberBuilderReceiverWithAckResponse(mockSubscriberStub, true).build();
 
         streamingSubscriberConnection.sendAckOperations(
                 ackWithMessageFutureList,
-                pendingModifyAckDeadlineList
+                new ArrayList<MessageDispatcher.PendingModifyAckDeadline>()
         );
 
         assertEquals(AckResponse.SUCCESSFUL, messageFutureSuccess.get());
         assertEquals(AckResponse.INVALID, messageFutureInvalid.get());
         assertEquals(AckResponse.SUCCESSFUL, messageFutureTransientFailureSuccess.get());
-        assertEquals(true, true);
+    }
+
+    @Test
+    public void testSendAckOperationsModacksFutures() throws Throwable {
+        // Only sending ack operations with messages futures
+        Map<String, String> metadataMap = new HashMap<String, String>();
+        List<String> modackIds = new ArrayList<String>();
+
+        // Success - MOCK_ACK_ID_1
+        modackIds.add(MOCK_ACK_ID_1);
+
+        // Permanent Failure Invalid - MOCK_ACK_ID_2
+        modackIds.add(MOCK_ACK_ID_2);
+        metadataMap.put(MOCK_ACK_ID_2, PERMANENT_FAILURE_METADATA_PREFIX + "INVALID_ACK_ID");
+
+        // Transient Failure - MOCK_ACK_ID_3
+        modackIds.add(MOCK_ACK_ID_3);
+        metadataMap.put(MOCK_ACK_ID_3, TRANSIENT_FAILURE_ERROR_METADATA_PREFIX + "UNORDERED_ACK_ID");
+
+        StreamingSubscriberConnection streamingSubscriberConnection = getStreamingSubscriberBuilderReceiverWithAckResponse(mockSubscriberStub, true).build();
+
+        ModifyAckDeadlineRequest modackRequestInitial = ModifyAckDeadlineRequest.newBuilder()
+                .setSubscription(MOCK_SUBSCRIPTION_NAME)
+                .addAllAckIds(modackIds)
+                .setAckDeadlineSeconds(MOCK_ACK_EXTENSION_DEFAULT)
+                .build();
+
+        when(mockSubscriberStub.modifyAckDeadlineCallable().futureCall(modackRequestInitial)).thenReturn(
+                ApiFutures.immediateFailedFuture(getMockStatusException(metadataMap))
+        );
+
+        // Need to mock a second request/response for the retry for transient
+        ModifyAckDeadlineRequest modackRequestRetry = ModifyAckDeadlineRequest.newBuilder()
+                .setSubscription(MOCK_SUBSCRIPTION_NAME)
+                .setAckDeadlineSeconds(MOCK_ACK_EXTENSION_DEFAULT)
+                .addAckIds(MOCK_ACK_ID_3)
+                .build();
+        when(mockSubscriberStub.modifyAckDeadlineCallable().futureCall(modackRequestRetry)).thenReturn(
+                ApiFutures.immediateFuture(null)
+        );
+
+        List<MessageDispatcher.PendingModifyAckDeadline> modifyAckDeadlineList = new ArrayList<MessageDispatcher.PendingModifyAckDeadline>();
+        modifyAckDeadlineList.add(
+                new MessageDispatcher.PendingModifyAckDeadline(MOCK_ACK_EXTENSION_DEFAULT, modackIds)
+        );
+
+        // Set up our ack to confirm failure
+        List<MessageDispatcher.AckWithMessageFuture> ackWithMessageFutureList = new ArrayList<MessageDispatcher.AckWithMessageFuture>();
+        SettableApiFuture<AckResponse> messageFutureInvalid = SettableApiFuture.create();
+        MessageDispatcher.AckWithMessageFuture mockAckWithMessageFutureInvalid = new MessageDispatcher.AckWithMessageFuture(
+                MOCK_ACK_ID_2,
+                messageFutureInvalid
+        );
+        ackWithMessageFutureList.add(mockAckWithMessageFutureInvalid);
+
+        streamingSubscriberConnection.sendAckOperations(
+                ackWithMessageFutureList,
+                modifyAckDeadlineList
+        );
+
+        assertEquals(AckResponse.INVALID, messageFutureInvalid.get());
     }
 }

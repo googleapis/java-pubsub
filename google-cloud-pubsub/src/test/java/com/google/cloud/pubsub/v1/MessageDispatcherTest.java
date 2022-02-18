@@ -38,6 +38,8 @@
 //import org.junit.Test;
 //import org.threeten.bp.Duration;
 //
+//import static org.mockito.Mockito.*;
+//
 //public class MessageDispatcherTest {
 //  private static final ByteString MESSAGE_DATA = ByteString.copyFromUtf8("message-data");
 //  private static final int DELIVERY_INFO_COUNT = 3;
@@ -96,7 +98,8 @@
 //            consumers.add(consumer);
 //          }
 //        };
-//    MessageDispatcher.AckProcessor processor =
+////    MessageDispatcher.AckProcessor processor = mock(MessageDispatcher.AckProcessor.class);
+//
 //        new MessageDispatcher.AckProcessor() {
 //          public void sendAckOperations(
 //              List<String> acksToSend,

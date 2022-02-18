@@ -70,6 +70,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
   @InternalApi static final Duration DEFAULT_STREAM_ACK_DEADLINE = Duration.ofSeconds(60);
   @InternalApi static final Duration MAX_STREAM_ACK_DEADLINE = Duration.ofSeconds(600);
   @InternalApi static final Duration MIN_STREAM_ACK_DEADLINE = Duration.ofSeconds(10);
+  @InternalApi static final Duration MIN_STREAM_ACK_DEADLINE_EXACTLY_ONCE_ENABLED = Duration.ofSeconds(60);
   private static final Duration INITIAL_CHANNEL_RECONNECT_BACKOFF = Duration.ofMillis(100);
   private static final Duration MAX_CHANNEL_RECONNECT_BACKOFF = Duration.ofSeconds(10);
   private static final int MAX_PER_REQUEST_CHANGES = 1000;
@@ -109,8 +110,10 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     systemExecutor = builder.systemExecutor;
     if (builder.maxDurationPerAckExtension.compareTo(DEFAULT_MAX_DURATION_PER_ACK_EXTENSION) == 0) {
       this.streamAckDeadline = DEFAULT_STREAM_ACK_DEADLINE;
-    } else if (builder.maxDurationPerAckExtension.compareTo(MIN_STREAM_ACK_DEADLINE) < 0) {
+    } else if ((builder.exactlyOnceDeliveryEnabled == false) && (builder.maxDurationPerAckExtension.compareTo(MIN_STREAM_ACK_DEADLINE) < 0)) {
       this.streamAckDeadline = MIN_STREAM_ACK_DEADLINE;
+    } else if ((builder.exactlyOnceDeliveryEnabled) && (builder.maxDurationPerAckExtension.compareTo(MIN_STREAM_ACK_DEADLINE_EXACTLY_ONCE_ENABLED) < 0)) {
+      this.streamAckDeadline = MIN_STREAM_ACK_DEADLINE_EXACTLY_ONCE_ENABLED;
     } else if (builder.maxDurationPerAckExtension.compareTo(MAX_STREAM_ACK_DEADLINE) > 0) {
       this.streamAckDeadline = MAX_STREAM_ACK_DEADLINE;
     } else {
@@ -339,69 +342,19 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
   @Override
   public void sendAckOperations(
           List<MessageDispatcher.AckWithMessageFuture> acksToSend, List<PendingModifyAckDeadline> ackDeadlineExtensions) {
-    // Check if we have futures attached, if not, we can use legacy workflow
-    if ((!acksToSend.isEmpty() && acksToSend.get(0).messageFuture == null)) {
-      sendAckOperationsNoFutures(acksToSend, ackDeadlineExtensions);
-    } else {
-//      List<String> failedModackIds = sendModacks(ackDeadlineExtensions, new ArrayList<>());
-
-      // Do something with the modack failures...
-
-      sendAcksWithFutures(acksToSend);
-    }
-  }
-
-  private void sendAckOperationsNoFutures(List<MessageDispatcher.AckWithMessageFuture> acksToSend, List<PendingModifyAckDeadline> ackDeadlineExtensions) {
-    ApiFutureCallback<Empty> loggingCallback =
-            new ApiFutureCallback<Empty>() {
-              @Override
-              public void onSuccess(Empty empty) {
-                ackOperationsWaiter.incrementPendingCount(-1);
-              }
-
-              @Override
-              public void onFailure(Throwable t) {
-                ackOperationsWaiter.incrementPendingCount(-1);
-                Level level = isAlive() ? Level.WARNING : Level.FINER;
-                logger.log(level, "failed to send operations", t);
-              }
-            };
-    int pendingOperations = 0;
-    for (PendingModifyAckDeadline modack : ackDeadlineExtensions) {
-      for (List<String> idChunk : Lists.partition(modack.ackIds, MAX_PER_REQUEST_CHANGES)) {
-        ApiFuture<Empty> future =
-                subscriberStub.modifyAckDeadlineCallable()
-                        .futureCall(
-                                ModifyAckDeadlineRequest.newBuilder()
-                                        .setSubscription(subscription)
-                                        .addAllAckIds(idChunk)
-                                        .setAckDeadlineSeconds(modack.deadlineExtensionSeconds)
-                                        .build());
-        ApiFutures.addCallback(future, loggingCallback, directExecutor());
-        pendingOperations++;
+    Set<String> failedModackIds = sendModacks(ackDeadlineExtensions, new HashSet<String>());
+    if (!failedModackIds.isEmpty()) {
+      // We want to remove the failed ackIds from the acksToSend and propagate the failed message
+      Iterator<MessageDispatcher.AckWithMessageFuture> it = acksToSend.iterator();
+      while (it.hasNext()) {
+        MessageDispatcher.AckWithMessageFuture ackWithMessageFuture = it.next();
+        if (failedModackIds.contains(ackWithMessageFuture.ackId)) {
+          ackWithMessageFuture.messageFuture.set(AckResponse.INVALID);
+          it.remove();
+        }
       }
     }
-
-    for (List<MessageDispatcher.AckWithMessageFuture> idChunk : Lists.partition(acksToSend, MAX_PER_REQUEST_CHANGES)) {
-      List<String> ackIdsInRequest = new ArrayList<String>();
-      idChunk.forEach(
-              (ackWithMessageFuture -> {
-                ackIdsInRequest.add(ackWithMessageFuture.ackId);
-              })
-      );
-
-      ApiFuture<Empty> future =
-              subscriberStub.acknowledgeCallable()
-                      .futureCall(
-                              AcknowledgeRequest.newBuilder()
-                                      .setSubscription(subscription)
-                                      .addAllAckIds(ackIdsInRequest)
-                                      .build());
-      ApiFutures.addCallback(future, loggingCallback, directExecutor());
-      pendingOperations++;
-    }
-
-    ackOperationsWaiter.incrementPendingCount(pendingOperations);
+    sendAcksWithFutures(acksToSend);
   }
 
   private Map<String, String> getMetadataMapFromThrowable(Throwable t) {
@@ -421,6 +374,43 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     return metadataMap;
   }
 
+  private ApiFutureCallback<Empty> getLoggingCallback(SettableApiFuture<Map<String, String>> responseFuture) {
+    return new ApiFutureCallback<Empty>() {
+      @Override
+      public void onSuccess(Empty empty) {
+        ackOperationsWaiter.incrementPendingCount(-1);
+        responseFuture.set(new HashMap<>());
+      }
+
+      @Override
+      public void onFailure(Throwable t) {
+        ackOperationsWaiter.incrementPendingCount(-1);
+        Map<String, String> metadataMap = getMetadataMapFromThrowable(t);
+        if (!metadataMap.isEmpty()) {
+          responseFuture.set(metadataMap);
+        }
+        Level level = isAlive() ? Level.WARNING : Level.FINER;
+        logger.log(level, "failed to send operations", t);
+      }
+    };
+  }
+
+  private ApiFutureCallback<Empty> getLoggingCallback() {
+    return new ApiFutureCallback<Empty>() {
+      @Override
+      public void onSuccess(Empty empty) {
+        ackOperationsWaiter.incrementPendingCount(-1);
+      }
+
+      @Override
+      public void onFailure(Throwable t) {
+        ackOperationsWaiter.incrementPendingCount(-1);
+        Level level = isAlive() ? Level.WARNING : Level.FINER;
+        logger.log(level, "failed to send operations", t);
+      }
+    };
+  }
+
   private class ModacksToRetryModacksToFail {
     List<PendingModifyAckDeadline> modackIdsToRetry;
     List<String> modackIdsFailed;
@@ -431,13 +421,9 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     }
   }
 
-  private List<String> sendModacks(List<PendingModifyAckDeadline> modacksToSend, List<String> failedModackIds) {
-    if (modacksToSend.isEmpty()) {
-      return new ArrayList<String>();
-    }
+  private Set<String> sendModacks(List<PendingModifyAckDeadline> modacksToSend, Set<String> failedModackIds) {
     Table<Integer, ImmutableList<String>, SettableApiFuture<Map<String, String>>> modAckFutureMap = sendUnaryModacks(modacksToSend);
     ModacksToRetryModacksToFail modAcksToRetryModAcksToFail = processModackFutures(modAckFutureMap);
-
     List<PendingModifyAckDeadline> modacksToRetry = modAcksToRetryModAcksToFail.modackIdsToRetry;
     failedModackIds.addAll(modAcksToRetryModAcksToFail.modackIdsFailed);
 
@@ -453,26 +439,14 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     Table<Integer, ImmutableList<String>, SettableApiFuture<Map<String, String>>> futureTable = HashBasedTable.create();
     for (PendingModifyAckDeadline modack : modacksToSend) {
       for (List<String> ackIdsInRequest : Lists.partition(modack.ackIds, MAX_PER_REQUEST_CHANGES)) {
-        SettableApiFuture<Map<String, String>> errorFuture = SettableApiFuture.create();
-        futureTable.put(modack.deadlineExtensionSeconds, ImmutableList.copyOf(ackIdsInRequest), errorFuture);
-        ApiFutureCallback<Empty> loggingCallback =
-            new ApiFutureCallback<Empty>() {
-              @Override
-              public void onSuccess(Empty empty) {
-                ackOperationsWaiter.incrementPendingCount(-1);
-              }
-
-              @Override
-              public void onFailure(Throwable t) {
-                Map<String, String> metadataMap = getMetadataMapFromThrowable(t);
-                if (!metadataMap.isEmpty()) {
-                  errorFuture.set(metadataMap);
-                }
-                Level level = isAlive() ? Level.WARNING : Level.FINER;
-                logger.log(level, "failed to send operations", t);
-              }
-            };
-
+        ApiFutureCallback<Empty> loggingCallback;
+        if (enableExactlyOnceDelivery.get()) {
+          SettableApiFuture<Map<String, String>> errorFuture = SettableApiFuture.create();
+          futureTable.put(modack.deadlineExtensionSeconds, ImmutableList.copyOf(ackIdsInRequest), errorFuture);
+          loggingCallback = getLoggingCallback(errorFuture);
+        } else {
+          loggingCallback = getLoggingCallback();
+        }
         ApiFuture<Empty> future =
             subscriberStub
                 .modifyAckDeadlineCallable()
@@ -508,9 +482,6 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
                     } else if (errorMessage.startsWith(PERMANENT_ERROR_METADATA_PREFIX)) {
                       ackIdsToFail.add(ackId);
                       logger.log(Level.WARNING, "Permanent error detected, will not retry", errorMessage);
-                    } else {
-                      logger.log(Level.WARNING, "Unknown error detected, will not retry", errorMessage);
-                      ackIdsToFail.add(ackId);
                     }
                   }
           );
@@ -528,6 +499,10 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
   private void sendAcksWithFutures(List<MessageDispatcher.AckWithMessageFuture> ackIdWithMessageFutureToSend) {
     if (!ackIdWithMessageFutureToSend.isEmpty()) {
       Map<String, SettableApiFuture<Map<String, String>>> ackFutureMap = sendUnaryAcks(ackIdWithMessageFutureToSend);
+
+      if (ackFutureMap.isEmpty()) {
+        return;
+      }
       List<MessageDispatcher.AckWithMessageFuture> acksToResend = processAckFutures(ackIdWithMessageFutureToSend, ackFutureMap);
       sendAcksWithFutures(acksToResend);
     }
@@ -538,31 +513,17 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     Map<String, SettableApiFuture<Map<String, String>>> futureMap = new HashMap<>();
     for (List<MessageDispatcher.AckWithMessageFuture> ackIdWithMessageFutureInRequest : Lists.partition(acksToSend, MAX_PER_REQUEST_CHANGES)) {
       List<String> ackIdsInRequest = new ArrayList<>();
-      SettableApiFuture<Map<String, String>> responseFuture = SettableApiFuture.create();
-      for (MessageDispatcher.AckWithMessageFuture ackWithMessageFuture : ackIdWithMessageFutureInRequest) {
-        futureMap.put(ackWithMessageFuture.ackId, responseFuture);
-        ackIdsInRequest.add(ackWithMessageFuture.ackId);
+      ApiFutureCallback<Empty> loggingCallback;
+      if (enableExactlyOnceDelivery.get()) {
+        SettableApiFuture<Map<String, String>> responseFuture = SettableApiFuture.create();
+        for (MessageDispatcher.AckWithMessageFuture ackWithMessageFuture : ackIdWithMessageFutureInRequest) {
+          futureMap.put(ackWithMessageFuture.ackId, responseFuture);
+          ackIdsInRequest.add(ackWithMessageFuture.ackId);
+        }
+        loggingCallback = getLoggingCallback(responseFuture);
+      } else {
+        loggingCallback = getLoggingCallback();
       }
-      ApiFutureCallback<Empty> loggingCallback =
-          new ApiFutureCallback<Empty>() {
-            @Override
-            public void onSuccess(Empty empty) {
-              ackOperationsWaiter.incrementPendingCount(-1);
-              responseFuture.set(new HashMap<>());
-            }
-
-            @Override
-            public void onFailure(Throwable t) {
-              ackOperationsWaiter.incrementPendingCount(-1);
-              Map<String, String> metadataMap = getMetadataMapFromThrowable(t);
-              if (!metadataMap.isEmpty()) {
-                responseFuture.set(metadataMap);
-              }
-              Level level = isAlive() ? Level.WARNING : Level.FINER;
-              logger.log(level, "failed to send operations", t);
-            }
-          };
-
       ApiFuture<Empty> future =
               subscriberStub
                       .acknowledgeCallable()
