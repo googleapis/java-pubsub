@@ -17,6 +17,8 @@
 package com.google.cloud.pubsub.it;
 
 import static com.google.common.truth.Truth.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assume.assumeTrue;
 
 import com.google.api.gax.rpc.PermissionDeniedException;
@@ -231,18 +233,19 @@ public class ITPubSubTest {
         publisher.shutdown();
         publisher.awaitTermination(1, TimeUnit.MINUTES);
 
-        // Ack the first message.
         MessageAndConsumer toAck = pollQueueMessageAndConsumer(receiveQueue);
+        // Ack the first message.
         toAck.consumer().ack();
 
-        // Nack the other.
         MessageAndConsumer toNack = pollQueueMessageAndConsumer(receiveQueue);
-        assertThat(toNack.message().getData()).isNotEqualTo(toAck.message().getData());
+        // Because we are not using ordering keys, we have to compare the received messages to each other
+        assertNotEquals(toNack.message().getData(), toAck.message().getData());
+        // Nack
         toNack.consumer().nack();
 
         // We should get the nacked message back.
         MessageAndConsumer redeliveredToAck = pollQueueMessageAndConsumer(receiveQueue);
-        assertThat(redeliveredToAck.message().getData()).isEqualTo(toNack.message().getData());
+        assertNotEquals(toNack.message().getData(), redeliveredToAck.message().getData());
         redeliveredToAck.consumer().ack();
 
         subscriber.stopAsync().awaitTerminated();
@@ -272,22 +275,22 @@ public class ITPubSubTest {
         TopicName.newBuilder()
             .setProject(projectId)
             //            .setTopic(formatForTest("testing-publish-subscribe-exactly-once-topic"))
-            .setTopic("testing-publish-subscribe-exactly-once-topic-15")
+            .setTopic("testing-publish-subscribe-exactly-once-topic-23")
             .build();
     SubscriptionName subscriptionName =
         SubscriptionName.of(
             projectId,
             //            formatForTest("testing-publish-subscribe-exactly-once-subscription")
-            "testing-publish-subscribe-exactly-once-subscription-15");
+            "testing-publish-subscribe-exactly-once-subscription-23");
 
-    //    subscriptionAdminClientStaging.deleteSubscription(subscriptionName);
-    //    topicAdminClientStaging.deleteTopic(topicName);
+        subscriptionAdminClientStaging.deleteSubscription(subscriptionName);
+        topicAdminClientStaging.deleteTopic(topicName);
+//
+//        topicAdminClientStaging.createTopic(topicName);
+//        subscriptionAdminClientStaging.createSubscription(
+//            getSubscription(subscriptionName, topicName, PushConfig.newBuilder().build(), 60,
+//     true));
 
-    //    topicAdminClientStaging.createTopic(topicName);
-    //    subscriptionAdminClientStaging.createSubscription(
-    //        getSubscription(subscriptionName, topicName, PushConfig.newBuilder().build(), 600,
-    // true));
-    //
     final BlockingQueue<Object> receiveQueue = new LinkedBlockingQueue<>();
     Subscriber subscriber =
         Subscriber.newBuilder(
@@ -307,6 +310,7 @@ public class ITPubSubTest {
                     .setMaxInboundMessageSize(MAX_INBOUND_MESSAGE_SIZE)
                     .setEndpoint("staging-pubsub.sandbox.googleapis.com:443")
                     .build())
+                .setExactlyOnceDeliveryEnabled(true)
             .build();
     subscriber.addListener(
         new Subscriber.Listener() {
@@ -321,44 +325,12 @@ public class ITPubSubTest {
         Publisher.newBuilder(topicName)
             .setEndpoint("staging-pubsub.sandbox.googleapis.com:443")
             .build();
-    //    publisher
-    //        .publish(PubsubMessage.newBuilder().setData(ByteString.copyFromUtf8("msg1")).build())
-    //        .get();
-    //    publisher
-    //        .publish(PubsubMessage.newBuilder().setData(ByteString.copyFromUtf8("msg2")).build())
-    //        .get();
-    //    publisher
-    //
-    // .publish(PubsubMessage.newBuilder().setData(ByteString.copyFromUtf8("msg3")).build())
-    //            .get();
-    //    publisher
-    //
-    // .publish(PubsubMessage.newBuilder().setData(ByteString.copyFromUtf8("msg4")).build())
-    //            .get();
-    //    publisher
-    //
-    // .publish(PubsubMessage.newBuilder().setData(ByteString.copyFromUtf8("msg5")).build())
-    //            .get();
-    //    publisher
-    //
-    // .publish(PubsubMessage.newBuilder().setData(ByteString.copyFromUtf8("msg6")).build())
-    //            .get();
-    //    publisher
-    //
-    // .publish(PubsubMessage.newBuilder().setData(ByteString.copyFromUtf8("msg7")).build())
-    //            .get();
-    //    publisher
-    //
-    // .publish(PubsubMessage.newBuilder().setData(ByteString.copyFromUtf8("msg8")).build())
-    //            .get();
-    //    publisher
-    //
-    // .publish(PubsubMessage.newBuilder().setData(ByteString.copyFromUtf8("msg9")).build())
-    //            .get();
-    //    publisher
-    //
-    // .publish(PubsubMessage.newBuilder().setData(ByteString.copyFromUtf8("msg10")).build())
-    //            .get();
+        publisher
+                .publish(PubsubMessage.newBuilder().setData(ByteString.copyFromUtf8("msg1")).build())
+            .get();
+        publisher
+                .publish(PubsubMessage.newBuilder().setData(ByteString.copyFromUtf8("msg2")).build())
+            .get();
 
     publisher.shutdown();
     publisher.awaitTermination(1, TimeUnit.MINUTES);
@@ -366,24 +338,24 @@ public class ITPubSubTest {
     // Ack the first message.
     MessageAndConsumerWithResponse toAck = pollQueueMessageAndConsumerWithResponse(receiveQueue);
     Future<AckResponse> ackResponseFuture = toAck.consumerWithResponse().ack();
+    AckResponse ackResponseMsg1 = ackResponseFuture.get();
 
-    // TODO: Validate the future
+     MessageAndConsumerWithResponse toNack = pollQueueMessageAndConsumerWithResponse(receiveQueue);
+    // Because we are not using ordering keys, we have to compare the received messages to each other
+    assertNotEquals(toNack.message().getData(), toAck.message().getData());
+     Future<AckResponse> nackResponseFuture = toNack.consumerWithResponse().nack();
 
-    //    MessageAndConsumerWithResponse toNack =
-    // pollQueueMessageAndConsumerWithResponse(receiveQueue);
-    //    Future<AckResponse> nackResponseFuture = toNack.consumerWithResponse().nack();
-    //
-    //    MessageAndConsumerWithResponse toAck2 =
-    // pollQueueMessageAndConsumerWithResponse(receiveQueue);
-    //    Future<AckResponse> ackResponseFuture2 = toAck2.consumerWithResponse().ack();
+    AckResponse ackResponseNack = nackResponseFuture.get();
 
+    MessageAndConsumerWithResponse redeliveredToAck = pollQueueMessageAndConsumerWithResponse(receiveQueue);
+    Future<AckResponse> redeliveredToAckResponse = redeliveredToAck.consumerWithResponse().ack();
+
+    assertEquals(toNack.message().getData(), redeliveredToAck.message().getData());
+
+    AckResponse ackResponseMsg2 = redeliveredToAckResponse.get();
     subscriber.stopAsync().awaitTerminated();
-
-    AckResponse ackResponse = ackResponseFuture.get();
-    String test = "testing";
-
-    //    subscriptionAdminClientStaging.deleteSubscription(subscriptionName);
-    //    topicAdminClientStaging.deleteTopic(topicName);
+//        subscriptionAdminClientStaging.deleteSubscription(subscriptionName);
+//        topicAdminClientStaging.deleteTopic(topicName);
   }
 
   private MessageAndConsumer pollQueueMessageAndConsumer(BlockingQueue<Object> queue)
