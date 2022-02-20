@@ -475,13 +475,13 @@ public class PublisherStubSettings extends StubSettings<PublisherStubSettings> {
 
   /** Returns the default service endpoint. */
   public static String getDefaultEndpoint() {
-      return "staging-pubsub.sandbox.googleapis.com:443";
-//      return "pubsub.googleapis.com:443";
+    return "staging-pubsub.sandbox.googleapis.com:443";
+    //      return "pubsub.googleapis.com:443";
   }
 
   /** Returns the default mTLS service endpoint. */
   public static String getDefaultMtlsEndpoint() {
-      return "pubsub.mtls.googleapis.com:443";
+    return "pubsub.mtls.googleapis.com:443";
   }
 
   /** Returns the default service scopes. */

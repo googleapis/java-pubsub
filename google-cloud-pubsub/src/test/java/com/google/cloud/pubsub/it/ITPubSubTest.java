@@ -184,74 +184,73 @@ public class ITPubSubTest {
     topicAdminClient.deleteTopic(topicName);
   }
 
-      @Test
-      public void testPublishSubscribe() throws Exception {
-        TopicName topicName =
-            TopicName.newBuilder()
-                .setProject(projectId)
-                .setTopic(formatForTest("testing-publish-subscribe-topic"))
-                .build();
-        SubscriptionName subscriptionName =
-            SubscriptionName.of(projectId,
-   formatForTest("testing-publish-subscribe-subscription"));
+  @Test
+  public void testPublishSubscribe() throws Exception {
+    TopicName topicName =
+        TopicName.newBuilder()
+            .setProject(projectId)
+            .setTopic(formatForTest("testing-publish-subscribe-topic"))
+            .build();
+    SubscriptionName subscriptionName =
+        SubscriptionName.of(projectId, formatForTest("testing-publish-subscribe-subscription"));
 
-        topicAdminClient.createTopic(topicName);
+    topicAdminClient.createTopic(topicName);
 
-        subscriptionAdminClient.createSubscription(
-            getSubscription(subscriptionName, topicName, PushConfig.newBuilder().build(), 10,
-     false));
+    subscriptionAdminClient.createSubscription(
+        getSubscription(subscriptionName, topicName, PushConfig.newBuilder().build(), 10, false));
 
-        final BlockingQueue<Object> receiveQueue = new LinkedBlockingQueue<>();
-        Subscriber subscriber =
-            Subscriber.newBuilder(
-                    subscriptionName.toString(),
-                    new MessageReceiver() {
-                      @Override
-                      public void receiveMessage(
-                          final PubsubMessage message, final AckReplyConsumer consumer) {
-                        receiveQueue.offer(MessageAndConsumer.create(message, consumer));
-                      }
-                    })
-                    .setExactlyOnceDeliveryEnabled(true)
-                .build();
-        subscriber.addListener(
-            new Subscriber.Listener() {
-              public void failed(Subscriber.State from, Throwable failure) {
-                receiveQueue.offer(failure);
-              }
-            },
-            MoreExecutors.directExecutor());
-        subscriber.startAsync();
+    final BlockingQueue<Object> receiveQueue = new LinkedBlockingQueue<>();
+    Subscriber subscriber =
+        Subscriber.newBuilder(
+                subscriptionName.toString(),
+                new MessageReceiver() {
+                  @Override
+                  public void receiveMessage(
+                      final PubsubMessage message, final AckReplyConsumer consumer) {
+                    receiveQueue.offer(MessageAndConsumer.create(message, consumer));
+                  }
+                })
+            .setExactlyOnceDeliveryEnabled(true)
+            .build();
+    subscriber.addListener(
+        new Subscriber.Listener() {
+          public void failed(Subscriber.State from, Throwable failure) {
+            receiveQueue.offer(failure);
+          }
+        },
+        MoreExecutors.directExecutor());
+    subscriber.startAsync();
 
-        Publisher publisher = Publisher.newBuilder(topicName).build();
-        publisher
-            .publish(PubsubMessage.newBuilder().setData(ByteString.copyFromUtf8("msg1")).build())
-            .get();
-        publisher
-            .publish(PubsubMessage.newBuilder().setData(ByteString.copyFromUtf8("msg2")).build())
-            .get();
-        publisher.shutdown();
-        publisher.awaitTermination(1, TimeUnit.MINUTES);
+    Publisher publisher = Publisher.newBuilder(topicName).build();
+    publisher
+        .publish(PubsubMessage.newBuilder().setData(ByteString.copyFromUtf8("msg1")).build())
+        .get();
+    publisher
+        .publish(PubsubMessage.newBuilder().setData(ByteString.copyFromUtf8("msg2")).build())
+        .get();
+    publisher.shutdown();
+    publisher.awaitTermination(1, TimeUnit.MINUTES);
 
-        MessageAndConsumer toAck = pollQueueMessageAndConsumer(receiveQueue);
-        // Ack the first message.
-        toAck.consumer().ack();
+    MessageAndConsumer toAck = pollQueueMessageAndConsumer(receiveQueue);
+    // Ack the first message.
+    toAck.consumer().ack();
 
-        MessageAndConsumer toNack = pollQueueMessageAndConsumer(receiveQueue);
-        // Because we are not using ordering keys, we have to compare the received messages to each other
-        assertNotEquals(toNack.message().getData(), toAck.message().getData());
-        // Nack
-        toNack.consumer().nack();
+    MessageAndConsumer toNack = pollQueueMessageAndConsumer(receiveQueue);
+    // Because we are not using ordering keys, we have to compare the received messages to each
+    // other
+    assertNotEquals(toNack.message().getData(), toAck.message().getData());
+    // Nack
+    toNack.consumer().nack();
 
-        // We should get the nacked message back.
-        MessageAndConsumer redeliveredToAck = pollQueueMessageAndConsumer(receiveQueue);
-        assertNotEquals(toNack.message().getData(), redeliveredToAck.message().getData());
-        redeliveredToAck.consumer().ack();
+    // We should get the nacked message back.
+    MessageAndConsumer redeliveredToAck = pollQueueMessageAndConsumer(receiveQueue);
+    assertNotEquals(toNack.message().getData(), redeliveredToAck.message().getData());
+    redeliveredToAck.consumer().ack();
 
-        subscriber.stopAsync().awaitTerminated();
-        subscriptionAdminClient.deleteSubscription(subscriptionName);
-        topicAdminClient.deleteTopic(topicName);
-      }
+    subscriber.stopAsync().awaitTerminated();
+    subscriptionAdminClient.deleteSubscription(subscriptionName);
+    topicAdminClient.deleteTopic(topicName);
+  }
 
   private TopicAdminClient getTopicAdminClientStaging() throws IOException {
     return TopicAdminClient.create(
@@ -283,13 +282,13 @@ public class ITPubSubTest {
             //            formatForTest("testing-publish-subscribe-exactly-once-subscription")
             "testing-publish-subscribe-exactly-once-subscription-23");
 
-        subscriptionAdminClientStaging.deleteSubscription(subscriptionName);
-        topicAdminClientStaging.deleteTopic(topicName);
-//
-//        topicAdminClientStaging.createTopic(topicName);
-//        subscriptionAdminClientStaging.createSubscription(
-//            getSubscription(subscriptionName, topicName, PushConfig.newBuilder().build(), 60,
-//     true));
+    subscriptionAdminClientStaging.deleteSubscription(subscriptionName);
+    topicAdminClientStaging.deleteTopic(topicName);
+    //
+    //        topicAdminClientStaging.createTopic(topicName);
+    //        subscriptionAdminClientStaging.createSubscription(
+    //            getSubscription(subscriptionName, topicName, PushConfig.newBuilder().build(), 60,
+    //     true));
 
     final BlockingQueue<Object> receiveQueue = new LinkedBlockingQueue<>();
     Subscriber subscriber =
@@ -310,7 +309,7 @@ public class ITPubSubTest {
                     .setMaxInboundMessageSize(MAX_INBOUND_MESSAGE_SIZE)
                     .setEndpoint("staging-pubsub.sandbox.googleapis.com:443")
                     .build())
-                .setExactlyOnceDeliveryEnabled(true)
+            .setExactlyOnceDeliveryEnabled(true)
             .build();
     subscriber.addListener(
         new Subscriber.Listener() {
@@ -325,12 +324,12 @@ public class ITPubSubTest {
         Publisher.newBuilder(topicName)
             .setEndpoint("staging-pubsub.sandbox.googleapis.com:443")
             .build();
-        publisher
-                .publish(PubsubMessage.newBuilder().setData(ByteString.copyFromUtf8("msg1")).build())
-            .get();
-        publisher
-                .publish(PubsubMessage.newBuilder().setData(ByteString.copyFromUtf8("msg2")).build())
-            .get();
+    publisher
+        .publish(PubsubMessage.newBuilder().setData(ByteString.copyFromUtf8("msg1")).build())
+        .get();
+    publisher
+        .publish(PubsubMessage.newBuilder().setData(ByteString.copyFromUtf8("msg2")).build())
+        .get();
 
     publisher.shutdown();
     publisher.awaitTermination(1, TimeUnit.MINUTES);
@@ -340,22 +339,24 @@ public class ITPubSubTest {
     Future<AckResponse> ackResponseFuture = toAck.consumerWithResponse().ack();
     AckResponse ackResponseMsg1 = ackResponseFuture.get();
 
-     MessageAndConsumerWithResponse toNack = pollQueueMessageAndConsumerWithResponse(receiveQueue);
-    // Because we are not using ordering keys, we have to compare the received messages to each other
+    MessageAndConsumerWithResponse toNack = pollQueueMessageAndConsumerWithResponse(receiveQueue);
+    // Because we are not using ordering keys, we have to compare the received messages to each
+    // other
     assertNotEquals(toNack.message().getData(), toAck.message().getData());
-     Future<AckResponse> nackResponseFuture = toNack.consumerWithResponse().nack();
+    Future<AckResponse> nackResponseFuture = toNack.consumerWithResponse().nack();
 
     AckResponse ackResponseNack = nackResponseFuture.get();
 
-    MessageAndConsumerWithResponse redeliveredToAck = pollQueueMessageAndConsumerWithResponse(receiveQueue);
+    MessageAndConsumerWithResponse redeliveredToAck =
+        pollQueueMessageAndConsumerWithResponse(receiveQueue);
     Future<AckResponse> redeliveredToAckResponse = redeliveredToAck.consumerWithResponse().ack();
 
     assertEquals(toNack.message().getData(), redeliveredToAck.message().getData());
 
     AckResponse ackResponseMsg2 = redeliveredToAckResponse.get();
     subscriber.stopAsync().awaitTerminated();
-//        subscriptionAdminClientStaging.deleteSubscription(subscriptionName);
-//        topicAdminClientStaging.deleteTopic(topicName);
+    //        subscriptionAdminClientStaging.deleteSubscription(subscriptionName);
+    //        topicAdminClientStaging.deleteTopic(topicName);
   }
 
   private MessageAndConsumer pollQueueMessageAndConsumer(BlockingQueue<Object> queue)

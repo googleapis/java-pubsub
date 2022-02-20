@@ -28,12 +28,7 @@ import com.google.common.primitives.Ints;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.pubsub.v1.PubsubMessage;
 import com.google.pubsub.v1.ReceivedMessage;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -76,9 +71,10 @@ class MessageDispatcher {
   // Maps ID to "total expiration time". If it takes longer than this, stop extending.
   private final ConcurrentMap<String, AckHandler> pendingMessages = new ConcurrentHashMap<>();
 
-  private final LinkedBlockingQueue<AckWithMessageFuture> pendingAcks = new LinkedBlockingQueue<>();
-  private final LinkedBlockingQueue<ModackWithMessageFuture> pendingNacks = new LinkedBlockingQueue<>();
-  private final LinkedBlockingQueue<ModackWithMessageFuture> pendingReceipts = new LinkedBlockingQueue<>();
+  private final LinkedBlockingQueue<AckIdMessageFuture> pendingAcks = new LinkedBlockingQueue<>();
+  private final LinkedBlockingQueue<AckIdMessageFuture> pendingNacks = new LinkedBlockingQueue<>();
+  private final LinkedBlockingQueue<AckIdMessageFuture> pendingReceipts =
+      new LinkedBlockingQueue<>();
 
   // Start the deadline at the minimum ack deadline so messages which arrive before this is
   // updated will not have a long ack deadline.
@@ -91,61 +87,6 @@ class MessageDispatcher {
 
   // To keep track of number of seconds the receiver takes to process messages.
   private final Distribution ackLatencyDistribution;
-
-  /** Stores the data needed to asynchronously modify acknowledgement deadlines. */
-  static class PendingModifyAckDeadline {
-    final List<String> ackIds;
-    final int deadlineExtensionSeconds;
-
-    PendingModifyAckDeadline(int deadlineExtensionSeconds, String... ackIds) {
-      this(deadlineExtensionSeconds, Arrays.asList(ackIds));
-    }
-
-    PendingModifyAckDeadline(int deadlineExtensionSeconds, Collection<String> ackIds) {
-      this.ackIds = new ArrayList<String>(ackIds);
-      this.deadlineExtensionSeconds = deadlineExtensionSeconds;
-    }
-
-    @Override
-    public String toString() {
-      return String.format(
-          "PendingModifyAckDeadline{extension: %d sec, ackIds: %s}",
-          deadlineExtensionSeconds, ackIds);
-    }
-  }
-
-  static class AckWithMessageFuture {
-    final String ackId;
-    final SettableApiFuture<AckResponse> messageFuture;
-
-    AckWithMessageFuture(String ackId, SettableApiFuture<AckResponse> messageFuture) {
-      this.ackId = ackId;
-      this.messageFuture = messageFuture;
-    }
-
-    AckWithMessageFuture(String ackId) {
-      this.ackId = ackId;
-      this.messageFuture = null;
-    }
-  }
-
-  static class ModackWithMessageFuture {
-    final String ackId;
-    final int deadlineExtensionSeconds;
-    final SettableApiFuture<AckResponse> messageFuture;
-
-    ModackWithMessageFuture(String ackId, int deadlineExtensionSeconds, SettableApiFuture<AckResponse> messageFuture) {
-      this.ackId = ackId;
-      this.deadlineExtensionSeconds = deadlineExtensionSeconds;
-      this.messageFuture = messageFuture;
-    }
-
-    ModackWithMessageFuture(String ackId, int deadlineExtensionSeconds) {
-      this.ackId = ackId;
-      this.deadlineExtensionSeconds = deadlineExtensionSeconds;
-      this.messageFuture = null;
-    }
-  }
 
   /** Internal representation of a reply to a Pubsub message, to be sent back to the service. */
   public enum AckReply {
@@ -161,7 +102,11 @@ class MessageDispatcher {
     private final Instant totalExpiration;
     private final SettableApiFuture<AckResponse> messageFuture;
 
-    private AckHandler(String ackId, int outstandingBytes, Instant totalExpiration, SettableApiFuture<AckResponse> messageFuture) {
+    private AckHandler(
+        String ackId,
+        int outstandingBytes,
+        Instant totalExpiration,
+        SettableApiFuture<AckResponse> messageFuture) {
       this.ackId = ackId;
       this.outstandingBytes = outstandingBytes;
       this.receivedTimeMillis = clock.millisTime();
@@ -190,10 +135,11 @@ class MessageDispatcher {
     @Override
     public void onFailure(Throwable t) {
       logger.log(
-              Level.WARNING,
-              "MessageReceiver failed to process ack ID: " + ackId + ", the message will be nacked.",
-              t);
-      pendingNacks.add(new ModackWithMessageFuture(ackId, 0, this.messageFuture));
+          Level.WARNING,
+          "MessageReceiver failed to process ack ID: " + ackId + ", the message will be nacked.",
+          t);
+      this.messageFuture.set(AckResponse.OTHER);
+      pendingNacks.add(new AckIdMessageFuture(this.ackId, this.messageFuture));
       forget();
     }
 
@@ -201,15 +147,15 @@ class MessageDispatcher {
     public void onSuccess(AckReply reply) {
       switch (reply) {
         case ACK:
-          pendingAcks.add(new AckWithMessageFuture(this.ackId, this.messageFuture));
+          pendingAcks.add(new AckIdMessageFuture(this.ackId, this.messageFuture));
           // Record the latency rounded to the next closest integer.
           ackLatencyDistribution.record(
               Ints.saturatedCast(
                   (long) Math.ceil((clock.millisTime() - receivedTimeMillis) / 1000D)));
-          LinkedBlockingQueue<AckWithMessageFuture> destination = pendingAcks;
+          LinkedBlockingQueue<AckIdMessageFuture> destination = pendingAcks;
           break;
         case NACK:
-          pendingNacks.add(new ModackWithMessageFuture(this.ackId, 0, this.messageFuture));
+          pendingNacks.add(new AckIdMessageFuture(this.ackId, this.messageFuture));
           break;
         default:
           throw new IllegalArgumentException(String.format("AckReply: %s not supported", reply));
@@ -219,7 +165,9 @@ class MessageDispatcher {
   }
 
   interface AckProcessor {
-    public void sendAckOperations(List<MessageDispatcher.ModackWithMessageFuture> ackDeadlineExtensions, List<MessageDispatcher.AckWithMessageFuture> ackWithMessageFutures, List<MessageDispatcher.ModackWithMessageFuture> nackWithMessageFutures);
+    public void sendAckOperations(
+        List<ModackWithMessageFuture> modackWithMessageFutures,
+        List<AckIdMessageFuture> ackIdMessageFutures);
   }
 
   private MessageDispatcher(Builder builder) {
@@ -348,7 +296,12 @@ class MessageDispatcher {
       if (enableExactlyOnceDelivery.get()) {
         messageFuture = SettableApiFuture.create();
       }
-      AckHandler ackHandler = new AckHandler(message.getAckId(), message.getMessage().getSerializedSize(), totalExpiration, messageFuture);
+      AckHandler ackHandler =
+          new AckHandler(
+              message.getAckId(),
+              message.getMessage().getSerializedSize(),
+              totalExpiration,
+              messageFuture);
       if (pendingMessages.putIfAbsent(message.getAckId(), ackHandler) != null) {
         // putIfAbsent puts ackHandler if ackID isn't previously mapped, then return the
         // previously-mapped element.
@@ -361,7 +314,7 @@ class MessageDispatcher {
         continue;
       }
       outstandingBatch.add(new OutstandingMessage(message, ackHandler));
-      pendingReceipts.add(new ModackWithMessageFuture(message.getAckId(), getMessageDeadlineSeconds(), messageFuture));
+      pendingReceipts.add(new AckIdMessageFuture(message.getAckId(), messageFuture));
     }
 
     processBatch(outstandingBatch);
@@ -420,33 +373,33 @@ class MessageDispatcher {
                 // This is the message future that is propagated to the user
                 SettableApiFuture<AckResponse> messageFuture = ackHandler.getMessageFuture();
                 final AckReplyConsumerWithResponse ackReplyConsumerWithResponse =
-                        new AckReplyConsumerWithResponse() {
-                          @Override
-                          public Future<AckResponse> ack() {
-                            ackReplySettableApiFuture.set(AckReply.ACK);
-                            return messageFuture;
-                          }
+                    new AckReplyConsumerWithResponse() {
+                      @Override
+                      public Future<AckResponse> ack() {
+                        ackReplySettableApiFuture.set(AckReply.ACK);
+                        return messageFuture;
+                      }
 
-                          @Override
-                          public Future<AckResponse> nack() {
-                            ackReplySettableApiFuture.set(AckReply.NACK);
-                            return messageFuture;
-                          }
-                        };
+                      @Override
+                      public Future<AckResponse> nack() {
+                        ackReplySettableApiFuture.set(AckReply.NACK);
+                        return messageFuture;
+                      }
+                    };
                 receiverWithAckResponse.receiveMessage(message, ackReplyConsumerWithResponse);
               } else {
                 final AckReplyConsumer ackReplyConsumer =
-                        new AckReplyConsumer() {
-                          @Override
-                          public void ack() {
-                            ackReplySettableApiFuture.set(AckReply.ACK);
-                          }
+                    new AckReplyConsumer() {
+                      @Override
+                      public void ack() {
+                        ackReplySettableApiFuture.set(AckReply.ACK);
+                      }
 
-                          @Override
-                          public void nack() {
-                            ackReplySettableApiFuture.set(AckReply.NACK);
-                          }
-                        };
+                      @Override
+                      public void nack() {
+                        ackReplySettableApiFuture.set(AckReply.NACK);
+                      }
+                    };
                 receiver.receiveMessage(message, ackReplyConsumer);
               }
             } catch (Exception e) {
@@ -481,7 +434,9 @@ class MessageDispatcher {
   @InternalApi
   void extendDeadlines() {
     int extendSeconds = getMessageDeadlineSeconds();
-    List<ModackWithMessageFuture> modacks = new ArrayList<>();
+    int numAckIdToSend = 0;
+    Map<Integer, ModackWithMessageFuture> modackWithMessageFutureByExtensionTimeMap =
+        new HashMap<Integer, ModackWithMessageFuture>();
     Instant now = now();
     Instant extendTo = now.plusSeconds(extendSeconds);
 
@@ -489,7 +444,13 @@ class MessageDispatcher {
       String ackId = entry.getKey();
       Instant totalExpiration = entry.getValue().totalExpiration;
       if (totalExpiration.isAfter(extendTo)) {
-        modacks.add(new ModackWithMessageFuture(ackId, extendSeconds, entry.getValue().getMessageFuture()));
+        ModackWithMessageFuture modackWithMessageFuture =
+            modackWithMessageFutureByExtensionTimeMap.getOrDefault(
+                extendSeconds, new ModackWithMessageFuture(extendSeconds));
+        modackWithMessageFuture.addAckIdMessageFuture(
+            new AckIdMessageFuture(ackId, entry.getValue().getMessageFuture()));
+        modackWithMessageFutureByExtensionTimeMap.put(extendSeconds, modackWithMessageFuture);
+        numAckIdToSend++;
         continue;
       }
 
@@ -499,28 +460,42 @@ class MessageDispatcher {
       entry.getValue().forget();
       if (totalExpiration.isAfter(now)) {
         int sec = Math.max(1, (int) now.until(totalExpiration, ChronoUnit.SECONDS));
-        modacks.add(new ModackWithMessageFuture(ackId, sec, messageFuture));
+        ModackWithMessageFuture modackWithMessageFuture =
+            modackWithMessageFutureByExtensionTimeMap.getOrDefault(
+                sec, new ModackWithMessageFuture(sec));
+        modackWithMessageFuture.addAckIdMessageFuture(
+            new AckIdMessageFuture(ackId, entry.getValue().getMessageFuture()));
+        modackWithMessageFutureByExtensionTimeMap.put(sec, modackWithMessageFuture);
+        numAckIdToSend++;
       }
     }
-    logger.log(Level.FINER, "Sending {0} modacks", modacks.size());
-    ackProcessor.sendAckOperations(modacks, Collections.emptyList(), Collections.emptyList());
+    logger.log(Level.FINER, "Sending {0} modacks", numAckIdToSend);
+    ackProcessor.sendAckOperations(
+        new ArrayList<ModackWithMessageFuture>(modackWithMessageFutureByExtensionTimeMap.values()),
+        Collections.emptyList());
   }
 
   @InternalApi
   void processOutstandingAckOperations() {
-    List<AckWithMessageFuture> acksToSendWithFutures = new ArrayList<AckWithMessageFuture>();
+    List<AckIdMessageFuture> acksToSendWithFutures = new ArrayList<AckIdMessageFuture>();
     pendingAcks.drainTo(acksToSendWithFutures);
     logger.log(Level.FINER, "Sending {0} acks", acksToSendWithFutures.size());
 
-    List<ModackWithMessageFuture> nacksToSendWithFutures = new ArrayList<ModackWithMessageFuture>();
+    List<ModackWithMessageFuture> modackWithMessageFutures =
+        new ArrayList<ModackWithMessageFuture>();
+
+    // Nacks are modacks with an expiration of 0
+    List<AckIdMessageFuture> nacksToSendWithFutures = new ArrayList<AckIdMessageFuture>();
     pendingNacks.drainTo(nacksToSendWithFutures);
+    modackWithMessageFutures.add(new ModackWithMessageFuture(0, nacksToSendWithFutures));
     logger.log(Level.FINER, "Sending {0} nacks", nacksToSendWithFutures.size());
 
-    List<ModackWithMessageFuture> receiptsToSend = new ArrayList<ModackWithMessageFuture>();
-    pendingReceipts.drainTo(receiptsToSend);
-    logger.log(Level.FINER, "Sending {0} receipts", receiptsToSend.size());
+    List<AckIdMessageFuture> ackIdMessageFuturesReceipts = new ArrayList<AckIdMessageFuture>();
+    pendingReceipts.drainTo(ackIdMessageFuturesReceipts);
+    modackWithMessageFutures.add(new ModackWithMessageFuture(10, ackIdMessageFuturesReceipts));
+    logger.log(Level.FINER, "Sending {0} receipts", ackIdMessageFuturesReceipts.size());
 
-    ackProcessor.sendAckOperations(receiptsToSend, acksToSendWithFutures, nacksToSendWithFutures);
+    ackProcessor.sendAckOperations(modackWithMessageFutures, acksToSendWithFutures);
   }
 
   private Instant now() {
