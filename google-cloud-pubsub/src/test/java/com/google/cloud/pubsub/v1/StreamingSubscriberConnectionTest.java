@@ -39,6 +39,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
+import org.mockito.ArgumentMatcher;
 import org.threeten.bp.Duration;
 
 /** Tests for {@link StreamingSubscriberConnection}. */
@@ -118,9 +119,6 @@ public class StreamingSubscriberConnectionTest {
     verify(mockSubscriberStub, times(2)).modifyAckDeadlineCallable();
     verify(mockSubscriberStub, times(1)).acknowledgeCallable();
   }
-
-  @Test
-  public void testSendAckOperationsExactlyOnceEnabledNoMessageFutures() {}
 
   @Test
   public void testSendAckOperationsExactlyOnceEnabledMessageFuturesModacks() {
@@ -223,7 +221,10 @@ public class StreamingSubscriberConnectionTest {
         .thenReturn(
             ApiFutures.immediateFailedFuture(
                 getMockStatusException(errorInfoMetadataMapInitialRequest)));
-    when(mockSubscriberStub.modifyAckDeadlineCallable().futureCall(modifyAckDeadlineRequestRetry))
+    when(mockSubscriberStub
+            .modifyAckDeadlineCallable()
+            .futureCall(
+                argThat(new ModifyAckDeadlineRequestMatcher(modifyAckDeadlineRequestRetry))))
         .thenReturn(ApiFutures.immediateFuture(null));
 
     // Instantiate class and run operation(s)
@@ -331,7 +332,9 @@ public class StreamingSubscriberConnectionTest {
         .thenReturn(
             ApiFutures.immediateFailedFuture(
                 getMockStatusException(errorInfoMetadataMapInitialRequest)));
-    when(mockSubscriberStub.acknowledgeCallable().futureCall(acknowledgeRequestRetry))
+    when(mockSubscriberStub
+            .acknowledgeCallable()
+            .futureCall(argThat(new AcknowledgeRequestMatcher(acknowledgeRequestRetry))))
         .thenReturn(ApiFutures.immediateFuture(null));
 
     // Instantiate class and run operation(s)
@@ -344,7 +347,8 @@ public class StreamingSubscriberConnectionTest {
     // Assert expected behavior;
     verify(mockSubscriberStub.acknowledgeCallable(), times(1))
         .futureCall(acknowledgeRequestInitial);
-    verify(mockSubscriberStub.acknowledgeCallable(), times(1)).futureCall(acknowledgeRequestRetry);
+    verify(mockSubscriberStub.acknowledgeCallable(), times(1))
+        .futureCall(argThat(new AcknowledgeRequestMatcher(acknowledgeRequestRetry)));
     verify(mockSubscriberStub, never()).modifyAckDeadlineCallable();
 
     try {
@@ -355,6 +359,95 @@ public class StreamingSubscriberConnectionTest {
           AckResponse.SUCCESSFUL, messageFutureTransientFailureServiceUnavailableThenSuccess.get());
       assertEquals(
           AckResponse.SUCCESSFUL, messageFutureTransientFailureUnorderedAckIdThenSuccess.get());
+    } catch (Throwable t) {
+      // Just in case something went wrong when retrieving our futures
+      throw new AssertionError();
+    }
+  }
+
+  @Test
+  public void testSendAckOperationsExactlyOnceEnabledEnabledModackFailedCancelAckMessageFuture() {
+    // Setup
+
+    // The list(s) of ackIds allows us to mock the grpc response(s)
+    List<String> ackIdsModackRequest = new ArrayList<>();
+    List<String> ackIdsAckRequest = new ArrayList<>();
+
+    Map<String, String> errorInfoMetadataMapModackRequest = new HashMap<String, String>();
+
+    List<ModackWithMessageFuture> ackIdMessageFutureModackList =
+        new ArrayList<ModackWithMessageFuture>();
+    List<AckIdMessageFuture> ackIdMessageFutureAckList = new ArrayList<AckIdMessageFuture>();
+    ModackWithMessageFuture modackWithMessageFuture =
+        new ModackWithMessageFuture(MOCK_ACK_EXTENSION_DEFAULT);
+
+    // SUCCESS
+    SettableApiFuture<AckResponse> messageFutureSuccessExpected = SettableApiFuture.create();
+    AckIdMessageFuture ackIdMessageFutureSuccess =
+        new AckIdMessageFuture(MOCK_ACK_ID_NACK_SUCCESS, messageFutureSuccessExpected);
+    ackIdMessageFutureAckList.add(ackIdMessageFutureSuccess);
+    modackWithMessageFuture.addAckIdMessageFuture(ackIdMessageFutureSuccess);
+    ackIdsModackRequest.add(MOCK_ACK_ID_NACK_SUCCESS);
+    ackIdsAckRequest.add(MOCK_ACK_ID_NACK_SUCCESS);
+
+    // INVALID
+    SettableApiFuture<AckResponse> messageFutureInvalidExpected = SettableApiFuture.create();
+    AckIdMessageFuture ackIdMessageFutureInvalid =
+        new AckIdMessageFuture(MOCK_ACK_ID_INVALID, messageFutureInvalidExpected);
+    ackIdMessageFutureAckList.add(ackIdMessageFutureInvalid);
+    modackWithMessageFuture.addAckIdMessageFuture(ackIdMessageFutureInvalid);
+    errorInfoMetadataMapModackRequest.put(MOCK_ACK_ID_INVALID, PERMANENT_FAILURE_INVALID_ACK_ID);
+    ackIdsModackRequest.add(MOCK_ACK_ID_INVALID);
+
+    // OTHER
+    SettableApiFuture<AckResponse> messageFutureOtherExpected = SettableApiFuture.create();
+    AckIdMessageFuture ackIdMessageFutureOther =
+        new AckIdMessageFuture(MOCK_ACK_ID_OTHER, messageFutureOtherExpected);
+    ackIdMessageFutureAckList.add(ackIdMessageFutureOther);
+    modackWithMessageFuture.addAckIdMessageFuture(ackIdMessageFutureOther);
+    errorInfoMetadataMapModackRequest.put(MOCK_ACK_ID_OTHER, PERMANENT_FAILURE_OTHER);
+    ackIdsModackRequest.add(MOCK_ACK_ID_OTHER);
+
+    ackIdMessageFutureModackList.add(modackWithMessageFuture);
+
+    // Build our requests so we can set our mock responses
+    ModifyAckDeadlineRequest modifyAckDeadlineRequest =
+        ModifyAckDeadlineRequest.newBuilder()
+            .setSubscription(MOCK_SUBSCRIPTION_NAME)
+            .setAckDeadlineSeconds(MOCK_ACK_EXTENSION_DEFAULT)
+            .addAllAckIds(ackIdsModackRequest)
+            .build();
+
+    AcknowledgeRequest acknowledgeRequest =
+        AcknowledgeRequest.newBuilder()
+            .setSubscription(MOCK_SUBSCRIPTION_NAME)
+            .addAllAckIds(ackIdsAckRequest)
+            .build();
+
+    // Set mock grpc responses
+    when(mockSubscriberStub.modifyAckDeadlineCallable().futureCall(modifyAckDeadlineRequest))
+        .thenReturn(
+            ApiFutures.immediateFailedFuture(
+                getMockStatusException(errorInfoMetadataMapModackRequest)));
+    when(mockSubscriberStub.acknowledgeCallable().futureCall(acknowledgeRequest))
+        .thenReturn(ApiFutures.immediateFuture(null));
+
+    // Instantiate class and run operation(s)
+    StreamingSubscriberConnection streamingSubscriberConnection =
+        getStreamingSubscriberBuilderReceiver(mockSubscriberStub, true).build();
+
+    streamingSubscriberConnection.sendAckOperations(
+        ackIdMessageFutureModackList, ackIdMessageFutureAckList);
+
+    // Assert expected behavior;
+    verify(mockSubscriberStub.modifyAckDeadlineCallable(), times(1))
+        .futureCall(modifyAckDeadlineRequest);
+    verify(mockSubscriberStub.acknowledgeCallable(), times(1)).futureCall(acknowledgeRequest);
+
+    try {
+      assertEquals(AckResponse.SUCCESSFUL, messageFutureSuccessExpected.get());
+      assertEquals(AckResponse.INVALID, messageFutureInvalidExpected.get());
+      assertEquals(AckResponse.OTHER, messageFutureOtherExpected.get());
     } catch (Throwable t) {
       // Just in case something went wrong when retrieving our futures
       throw new AssertionError();
@@ -403,5 +496,40 @@ public class StreamingSubscriberConnectionTest {
             .addDetails(Any.pack(errorInfo))
             .build();
     return StatusProto.toStatusException(status);
+  }
+
+  // Custom ArgumentMatchers for mocking results
+  public class AcknowledgeRequestMatcher implements ArgumentMatcher<AcknowledgeRequest> {
+    private AcknowledgeRequest left;
+
+    AcknowledgeRequestMatcher(AcknowledgeRequest acknowledgeRequest) {
+      this.left = acknowledgeRequest;
+    }
+
+    @Override
+    public boolean matches(AcknowledgeRequest right) {
+      Set<String> leftAckIdSet = new HashSet<String>(left.getAckIdsList());
+      Set<String> rightAckIdSet = new HashSet<String>(right.getAckIdsList());
+      return left.getSubscription().equals(right.getSubscription())
+          && leftAckIdSet.equals(rightAckIdSet);
+    }
+  }
+
+  public class ModifyAckDeadlineRequestMatcher
+      implements ArgumentMatcher<ModifyAckDeadlineRequest> {
+    private ModifyAckDeadlineRequest left;
+
+    ModifyAckDeadlineRequestMatcher(ModifyAckDeadlineRequest modifyAckDeadlineRequest) {
+      this.left = modifyAckDeadlineRequest;
+    }
+
+    @Override
+    public boolean matches(ModifyAckDeadlineRequest right) {
+      Set<String> leftAckIdSet = new HashSet<String>(left.getAckIdsList());
+      Set<String> rightAckIdSet = new HashSet<String>(right.getAckIdsList());
+      return left.getSubscription().equals(right.getSubscription())
+          && left.getAckDeadlineSeconds() == right.getAckDeadlineSeconds()
+          && leftAckIdSet.equals(rightAckIdSet);
+    }
   }
 }

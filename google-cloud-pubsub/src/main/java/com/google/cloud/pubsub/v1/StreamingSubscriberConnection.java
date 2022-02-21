@@ -349,8 +349,26 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
       List<ModackWithMessageFuture> modackWithMessageFutures,
       List<AckIdMessageFuture> ackIdMessageFutures) {
     // Process modacks first
-    sendModacks(modackWithMessageFutures);
+    Set<String> failedAckIds = sendModacks(modackWithMessageFutures);
+
+    // Remove failed modacks from acks
+    ackIdMessageFutures.removeIf(
+        ackIdMessageFuture -> {
+          return failedAckIds.contains(ackIdMessageFuture.ackId);
+        });
+
     sendAcks(ackIdMessageFutures);
+  }
+
+  private class RetryModacksFailedModacks {
+    private List<ModackWithMessageFuture> retryModackWithMessageFutures;
+    private Set<String> failedAckIds;
+
+    RetryModacksFailedModacks(
+        List<ModackWithMessageFuture> retryModackWithMessageFutures, Set<String> failedAckIds) {
+      this.retryModackWithMessageFutures = retryModackWithMessageFutures;
+      this.failedAckIds = failedAckIds;
+    }
   }
 
   private Map<String, String> getMetadataMapFromThrowable(Throwable t) {
@@ -414,7 +432,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     };
   }
 
-  private void sendModacks(List<ModackWithMessageFuture> modacksToSend) {
+  private Set<String> sendModacks(List<ModackWithMessageFuture> modacksToSend) {
     // We want to send modacks (and retry failures),
     // then process the results - propagating permanent failures back to the client via the Message
     // future
@@ -426,12 +444,16 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
         ModackWithMessageFuture.partitionByAckId(modacksToSend, MAX_PER_REQUEST_CHANGES);
     Map<ModackWithMessageFuture, SettableApiFuture<Map<String, String>>> modAckFutureMap =
         sendUnaryModacks(modacksToSendPartitioned);
-    List<ModackWithMessageFuture> modacksToRetry = processModackFutures(modAckFutureMap);
+    RetryModacksFailedModacks retryModacksFailedModacks = processModackFutures(modAckFutureMap);
 
-    if (!modacksToRetry.isEmpty()) {
+    Set<String> failedAckIds = retryModacksFailedModacks.failedAckIds;
+
+    if (!retryModacksFailedModacks.retryModackWithMessageFutures.isEmpty()) {
       // TODO: Do we want to do some sort of backoff here?
-      sendModacks(modacksToRetry);
+      failedAckIds.addAll(sendModacks(retryModacksFailedModacks.retryModackWithMessageFutures));
     }
+
+    return failedAckIds;
   }
 
   private Map<ModackWithMessageFuture, SettableApiFuture<Map<String, String>>> sendUnaryModacks(
@@ -473,7 +495,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     return futureMap;
   }
 
-  private List<ModackWithMessageFuture> processModackFutures(
+  private RetryModacksFailedModacks processModackFutures(
       Map<ModackWithMessageFuture, SettableApiFuture<Map<String, String>>>
           modackWithMessageFutureMap) {
     Map<Integer, ModackWithMessageFuture> modacksToRetryMap =
@@ -533,7 +555,8 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
                 modackWithMessageFuture.ackIdMessageFutures);
           }
         });
-    return new ArrayList<ModackWithMessageFuture>(modacksToRetryMap.values());
+    return new RetryModacksFailedModacks(
+        new ArrayList<ModackWithMessageFuture>(modacksToRetryMap.values()), modackIdsFailed);
   }
 
   private void sendAcks(List<AckIdMessageFuture> ackIdWithMessageFutureToSend) {
