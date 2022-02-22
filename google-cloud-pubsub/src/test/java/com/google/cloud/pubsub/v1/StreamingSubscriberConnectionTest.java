@@ -498,7 +498,7 @@ public class StreamingSubscriberConnectionTest {
     return StatusProto.toStatusException(status);
   }
 
-  // Custom ArgumentMatchers for mocking results
+  // Custom ArgumentMatchers
   public class AcknowledgeRequestMatcher implements ArgumentMatcher<AcknowledgeRequest> {
     private AcknowledgeRequest left;
 
@@ -508,9 +508,9 @@ public class StreamingSubscriberConnectionTest {
 
     @Override
     public boolean matches(AcknowledgeRequest right) {
-      Set<String> leftAckIdSet = new HashSet<String>(left.getAckIdsList());
+      Set<String> leftAckIdSet = new HashSet<String>(this.left.getAckIdsList());
       Set<String> rightAckIdSet = new HashSet<String>(right.getAckIdsList());
-      return left.getSubscription().equals(right.getSubscription())
+      return this.left.getSubscription().equals(right.getSubscription())
           && leftAckIdSet.equals(rightAckIdSet);
     }
   }
@@ -525,10 +525,10 @@ public class StreamingSubscriberConnectionTest {
 
     @Override
     public boolean matches(ModifyAckDeadlineRequest right) {
-      Set<String> leftAckIdSet = new HashSet<String>(left.getAckIdsList());
+      Set<String> leftAckIdSet = new HashSet<String>(this.left.getAckIdsList());
       Set<String> rightAckIdSet = new HashSet<String>(right.getAckIdsList());
-      return left.getSubscription().equals(right.getSubscription())
-          && left.getAckDeadlineSeconds() == right.getAckDeadlineSeconds()
+      return this.left.getSubscription().equals(right.getSubscription())
+          && this.left.getAckDeadlineSeconds() == right.getAckDeadlineSeconds()
           && leftAckIdSet.equals(rightAckIdSet);
     }
   }

@@ -487,12 +487,17 @@ class MessageDispatcher {
     // Nacks are modacks with an expiration of 0
     List<AckIdMessageFuture> nacksToSendWithFutures = new ArrayList<AckIdMessageFuture>();
     pendingNacks.drainTo(nacksToSendWithFutures);
-    modackWithMessageFutures.add(new ModackWithMessageFuture(0, nacksToSendWithFutures));
+
+    if (!nacksToSendWithFutures.isEmpty()) {
+      modackWithMessageFutures.add(new ModackWithMessageFuture(0, nacksToSendWithFutures));
+    }
     logger.log(Level.FINER, "Sending {0} nacks", nacksToSendWithFutures.size());
 
     List<AckIdMessageFuture> ackIdMessageFuturesReceipts = new ArrayList<AckIdMessageFuture>();
     pendingReceipts.drainTo(ackIdMessageFuturesReceipts);
-    modackWithMessageFutures.add(new ModackWithMessageFuture(10, ackIdMessageFuturesReceipts));
+    if (!ackIdMessageFuturesReceipts.isEmpty()) {
+      modackWithMessageFutures.add(new ModackWithMessageFuture(this.getMessageDeadlineSeconds(), ackIdMessageFuturesReceipts));
+    }
     logger.log(Level.FINER, "Sending {0} receipts", ackIdMessageFuturesReceipts.size());
 
     ackProcessor.sendAckOperations(modackWithMessageFutures, acksToSendWithFutures);
