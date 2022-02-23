@@ -39,12 +39,23 @@ class ModackWithMessageFuture {
     this.ackIdMessageFutures = ackIdMessageFutures;
   }
 
-  public void addAckIdMessageFuture(AckIdMessageFuture ackIdMessageFuture) {
-    this.ackIdMessageFutures.add(ackIdMessageFuture);
+  public int getDeadlineExtensionSeconds() {
+    return deadlineExtensionSeconds;
   }
 
-  public void addAllAckIdMessageFuture(List<AckIdMessageFuture> ackIdMessageFutures) {
+  public List<AckIdMessageFuture> getAckIdMessageFutures() {
+    return ackIdMessageFutures;
+  }
+
+  public ModackWithMessageFuture addAckIdMessageFuture(AckIdMessageFuture ackIdMessageFuture) {
+    this.ackIdMessageFutures.add(ackIdMessageFuture);
+    return this;
+  }
+
+  public ModackWithMessageFuture addAllAckIdMessageFuture(
+      List<AckIdMessageFuture> ackIdMessageFutures) {
     this.ackIdMessageFutures.addAll(ackIdMessageFutures);
+    return this;
   }
 
   public List<ModackWithMessageFuture> partitionByAckId(int batchSize) {

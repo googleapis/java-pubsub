@@ -496,7 +496,9 @@ class MessageDispatcher {
     List<AckIdMessageFuture> ackIdMessageFuturesReceipts = new ArrayList<AckIdMessageFuture>();
     pendingReceipts.drainTo(ackIdMessageFuturesReceipts);
     if (!ackIdMessageFuturesReceipts.isEmpty()) {
-      modackWithMessageFutures.add(new ModackWithMessageFuture(this.getMessageDeadlineSeconds(), ackIdMessageFuturesReceipts));
+      modackWithMessageFutures.add(
+          new ModackWithMessageFuture(
+              this.getMessageDeadlineSeconds(), ackIdMessageFuturesReceipts));
     }
     logger.log(Level.FINER, "Sending {0} receipts", ackIdMessageFuturesReceipts.size());
 

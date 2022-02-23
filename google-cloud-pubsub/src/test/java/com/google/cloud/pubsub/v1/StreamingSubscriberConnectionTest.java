@@ -39,17 +39,16 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
-import org.mockito.ArgumentMatcher;
 import org.threeten.bp.Duration;
 
 /** Tests for {@link StreamingSubscriberConnection}. */
 public class StreamingSubscriberConnectionTest {
   @Rule public TestName testName = new TestName();
 
-  FakeClock mockClock;
-  FakeScheduledExecutorService systemExecutor;
-  FakeScheduledExecutorService executor;
-  SubscriberStub mockSubscriberStub;
+  private FakeClock mockClock;
+  private FakeScheduledExecutorService systemExecutor;
+  private FakeScheduledExecutorService executor;
+  private SubscriberStub mockSubscriberStub;
 
   private static final String MOCK_SUBSCRIPTION_NAME = "MOCK-SUBSCRIPTION";
   private static final String MOCK_ACK_ID_SUCCESS = "MOCK-ACK-ID-SUCCESS";
@@ -70,7 +69,7 @@ public class StreamingSubscriberConnectionTest {
       "TRANSIENT_FAILURE_SERVICE_UNAVAILABLE";
   private static final String PERMANENT_FAILURE_OTHER = "I_DO_NOT_MATCH_ANY_KNOWN_ERRORS";
 
-  Integer MOCK_ACK_EXTENSION_DEFAULT = 10;
+  private Integer MOCK_ACK_EXTENSION_DEFAULT = 10;
 
   @Before
   public void setUp() {
@@ -111,7 +110,7 @@ public class StreamingSubscriberConnectionTest {
 
     // Instantiate class and run operation(s)
     StreamingSubscriberConnection streamingSubscriberConnection =
-        getStreamingSubscriberBuilderReceiver(mockSubscriberStub, false).build();
+        getStreamingSubscriberReceiver(mockSubscriberStub, false);
     streamingSubscriberConnection.sendAckOperations(
         modackWithMessageFutureList, ackIdMessageFutureList);
 
@@ -224,12 +223,14 @@ public class StreamingSubscriberConnectionTest {
     when(mockSubscriberStub
             .modifyAckDeadlineCallable()
             .futureCall(
-                argThat(new ModifyAckDeadlineRequestMatcher(modifyAckDeadlineRequestRetry))))
+                argThat(
+                    new CustomArgumentMatchers.ModifyAckDeadlineRequestMatcher(
+                        modifyAckDeadlineRequestRetry))))
         .thenReturn(ApiFutures.immediateFuture(null));
 
     // Instantiate class and run operation(s)
     StreamingSubscriberConnection streamingSubscriberConnection =
-        getStreamingSubscriberBuilderReceiver(mockSubscriberStub, true).build();
+        getStreamingSubscriberReceiver(mockSubscriberStub, true);
 
     streamingSubscriberConnection.sendAckOperations(
         modackWithMessageFutureList, Collections.emptyList());
@@ -334,12 +335,14 @@ public class StreamingSubscriberConnectionTest {
                 getMockStatusException(errorInfoMetadataMapInitialRequest)));
     when(mockSubscriberStub
             .acknowledgeCallable()
-            .futureCall(argThat(new AcknowledgeRequestMatcher(acknowledgeRequestRetry))))
+            .futureCall(
+                argThat(
+                    new CustomArgumentMatchers.AcknowledgeRequestMatcher(acknowledgeRequestRetry))))
         .thenReturn(ApiFutures.immediateFuture(null));
 
     // Instantiate class and run operation(s)
     StreamingSubscriberConnection streamingSubscriberConnection =
-        getStreamingSubscriberBuilderReceiver(mockSubscriberStub, true).build();
+        getStreamingSubscriberReceiver(mockSubscriberStub, true);
 
     streamingSubscriberConnection.sendAckOperations(
         Collections.emptyList(), ackIdMessageFutureList);
@@ -348,7 +351,8 @@ public class StreamingSubscriberConnectionTest {
     verify(mockSubscriberStub.acknowledgeCallable(), times(1))
         .futureCall(acknowledgeRequestInitial);
     verify(mockSubscriberStub.acknowledgeCallable(), times(1))
-        .futureCall(argThat(new AcknowledgeRequestMatcher(acknowledgeRequestRetry)));
+        .futureCall(
+            argThat(new CustomArgumentMatchers.AcknowledgeRequestMatcher(acknowledgeRequestRetry)));
     verify(mockSubscriberStub, never()).modifyAckDeadlineCallable();
 
     try {
@@ -434,7 +438,7 @@ public class StreamingSubscriberConnectionTest {
 
     // Instantiate class and run operation(s)
     StreamingSubscriberConnection streamingSubscriberConnection =
-        getStreamingSubscriberBuilderReceiver(mockSubscriberStub, true).build();
+        getStreamingSubscriberReceiver(mockSubscriberStub, true);
 
     streamingSubscriberConnection.sendAckOperations(
         ackIdMessageFutureModackList, ackIdMessageFutureAckList);
@@ -454,7 +458,7 @@ public class StreamingSubscriberConnectionTest {
     }
   }
 
-  private StreamingSubscriberConnection.Builder getStreamingSubscriberBuilderReceiver(
+  private StreamingSubscriberConnection getStreamingSubscriberReceiver(
       SubscriberStub mockSubscriberStub, boolean setExactlyOnceDeliveryEnabled) {
     return StreamingSubscriberConnection.newBuilder(mock(MessageReceiver.class))
         .setSubscription(MOCK_SUBSCRIPTION_NAME)
@@ -468,11 +472,12 @@ public class StreamingSubscriberConnectionTest {
         .setExecutor(executor)
         .setSystemExecutor(systemExecutor)
         .setClock(mockClock)
-        .setExactlyOnceDeliveryEnabled(setExactlyOnceDeliveryEnabled);
+        .setExactlyOnceDeliveryEnabled(setExactlyOnceDeliveryEnabled)
+        .build();
   }
 
-  private StreamingSubscriberConnection.Builder
-      getStreamingSubscriberBuilderReceiverWithAckResponse(SubscriberStub mockSubscriberStub) {
+  private StreamingSubscriberConnection getStreamingSubscriberReceiverWithAckResponse(
+      SubscriberStub mockSubscriberStub) {
     return StreamingSubscriberConnection.newBuilder(mock(MessageReceiverWithAckResponse.class))
         .setSubscription(MOCK_SUBSCRIPTION_NAME)
         .setAckExpirationPadding(Duration.ofSeconds(5))
@@ -485,7 +490,8 @@ public class StreamingSubscriberConnectionTest {
         .setExecutor(executor)
         .setSystemExecutor(systemExecutor)
         .setClock(mockClock)
-        .setExactlyOnceDeliveryEnabled(true);
+        .setExactlyOnceDeliveryEnabled(true)
+        .build();
   }
 
   private StatusException getMockStatusException(Map<String, String> metadata) {
@@ -496,40 +502,5 @@ public class StreamingSubscriberConnectionTest {
             .addDetails(Any.pack(errorInfo))
             .build();
     return StatusProto.toStatusException(status);
-  }
-
-  // Custom ArgumentMatchers
-  public class AcknowledgeRequestMatcher implements ArgumentMatcher<AcknowledgeRequest> {
-    private AcknowledgeRequest left;
-
-    AcknowledgeRequestMatcher(AcknowledgeRequest acknowledgeRequest) {
-      this.left = acknowledgeRequest;
-    }
-
-    @Override
-    public boolean matches(AcknowledgeRequest right) {
-      Set<String> leftAckIdSet = new HashSet<String>(this.left.getAckIdsList());
-      Set<String> rightAckIdSet = new HashSet<String>(right.getAckIdsList());
-      return this.left.getSubscription().equals(right.getSubscription())
-          && leftAckIdSet.equals(rightAckIdSet);
-    }
-  }
-
-  public class ModifyAckDeadlineRequestMatcher
-      implements ArgumentMatcher<ModifyAckDeadlineRequest> {
-    private ModifyAckDeadlineRequest left;
-
-    ModifyAckDeadlineRequestMatcher(ModifyAckDeadlineRequest modifyAckDeadlineRequest) {
-      this.left = modifyAckDeadlineRequest;
-    }
-
-    @Override
-    public boolean matches(ModifyAckDeadlineRequest right) {
-      Set<String> leftAckIdSet = new HashSet<String>(this.left.getAckIdsList());
-      Set<String> rightAckIdSet = new HashSet<String>(right.getAckIdsList());
-      return this.left.getSubscription().equals(right.getSubscription())
-          && this.left.getAckDeadlineSeconds() == right.getAckDeadlineSeconds()
-          && leftAckIdSet.equals(rightAckIdSet);
-    }
   }
 }
