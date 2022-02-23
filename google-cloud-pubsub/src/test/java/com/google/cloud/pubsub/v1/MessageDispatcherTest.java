@@ -107,6 +107,14 @@ public class MessageDispatcherTest {
   }
 
   @Test
+  public void testSetupAndTeardown() {
+    MessageDispatcher messageDispatcher = getMessageDispatcher();
+
+    messageDispatcher.start();
+    messageDispatcher.stop();
+  }
+
+  @Test
   public void testReceiptMessageReceiver() {
     MessageReceiver mockMessageReceiver = mock(MessageReceiver.class);
     MessageDispatcher messageDispatcher = getMessageDispatcher(mockMessageReceiver);

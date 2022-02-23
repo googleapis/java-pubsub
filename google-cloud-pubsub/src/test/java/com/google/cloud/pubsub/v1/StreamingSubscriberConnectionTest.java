@@ -92,6 +92,17 @@ public class StreamingSubscriberConnectionTest {
   }
 
   @Test
+  public void testSetupAndTeardown() {
+    StreamingSubscriberConnection streamingSubscriberConnection =
+        getStreamingSubscriberConnection(false);
+
+    streamingSubscriberConnection.startAsync();
+    streamingSubscriberConnection.awaitRunning();
+    streamingSubscriberConnection.stopAsync();
+    streamingSubscriberConnection.awaitTerminated();
+  }
+
+  @Test
   public void testMaxDurationPerAckExtensionExactlyOnceNotEnabled() {
     StreamingSubscriberConnection.Builder builder;
     builder = StreamingSubscriberConnection.newBuilder(mock(MessageReceiverWithAckResponse.class));
