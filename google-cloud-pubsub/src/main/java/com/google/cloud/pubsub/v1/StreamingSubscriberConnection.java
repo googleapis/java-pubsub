@@ -16,7 +16,6 @@
 
 package com.google.cloud.pubsub.v1;
 
-import static com.google.cloud.pubsub.v1.Subscriber.DEFAULT_MAX_DURATION_PER_ACK_EXTENSION;
 import static com.google.common.util.concurrent.MoreExecutors.directExecutor;
 
 import com.google.api.core.AbstractApiService;
@@ -69,7 +68,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
   @InternalApi static final Duration MIN_STREAM_ACK_DEADLINE = Duration.ofSeconds(10);
 
   @InternalApi
-  static final Duration MIN_STREAM_ACK_DEADLINE_EXACTLY_ONCE_ENABLED = Duration.ofSeconds(60);
+  static final Duration STREAM_ACK_DEADLINE_DEFAULT_EXACTLY_ONCE_ENABLED = Duration.ofSeconds(60);
 
   private static final Duration INITIAL_CHANNEL_RECONNECT_BACKOFF = Duration.ofMillis(100);
   private static final Duration MAX_CHANNEL_RECONNECT_BACKOFF = Duration.ofSeconds(10);
@@ -79,7 +78,8 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
       "PERMANENT_FAILURE_INVALID_ACK_ID";
   private final String TRANSIENT_FAILURE_METADATA_PREFIX = "TRANSIENT_";
 
-  private final Duration streamAckDeadline;
+  private Duration streamAckDeadline;
+  private final boolean defaultStreamAckDeadline;
   private final SubscriberStub subscriberStub;
   private final int channelAffinity;
   private final String subscription;
@@ -109,21 +109,19 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
   private StreamingSubscriberConnection(Builder builder) {
     subscription = builder.subscription;
     systemExecutor = builder.systemExecutor;
-    if (builder.maxDurationPerAckExtension.compareTo(DEFAULT_MAX_DURATION_PER_ACK_EXTENSION) == 0) {
-      this.streamAckDeadline = DEFAULT_STREAM_ACK_DEADLINE;
-    } else if ((builder.exactlyOnceDeliveryEnabled == false)
-        && (builder.maxDurationPerAckExtension.compareTo(MIN_STREAM_ACK_DEADLINE) < 0)) {
-      this.streamAckDeadline = MIN_STREAM_ACK_DEADLINE;
-    } else if ((builder.exactlyOnceDeliveryEnabled)
-        && (builder.maxDurationPerAckExtension.compareTo(
-                MIN_STREAM_ACK_DEADLINE_EXACTLY_ONCE_ENABLED)
-            < 0)) {
-      this.streamAckDeadline = MIN_STREAM_ACK_DEADLINE_EXACTLY_ONCE_ENABLED;
-    } else if (builder.maxDurationPerAckExtension.compareTo(MAX_STREAM_ACK_DEADLINE) > 0) {
-      this.streamAckDeadline = MAX_STREAM_ACK_DEADLINE;
-    } else {
+
+    if (builder.maxDurationPerAckExtension != null) {
+      this.defaultStreamAckDeadline = false;
       this.streamAckDeadline = builder.maxDurationPerAckExtension;
+    } else {
+      this.defaultStreamAckDeadline = true;
+      if (builder.exactlyOnceDeliveryEnabled) {
+        this.streamAckDeadline = STREAM_ACK_DEADLINE_DEFAULT_EXACTLY_ONCE_ENABLED;
+      } else {
+        this.streamAckDeadline = DEFAULT_STREAM_ACK_DEADLINE;
+      }
     }
+
     subscriberStub = builder.subscriberStub;
     channelAffinity = builder.channelAffinity;
     enableExactlyOnceDelivery = new AtomicBoolean(builder.exactlyOnceDeliveryEnabled);
@@ -141,7 +139,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
             .setAckProcessor(this)
             .setAckExpirationPadding(builder.ackExpirationPadding)
             .setMaxAckExtensionPeriod(builder.maxAckExtensionPeriod)
-            .setMaxDurationPerAckExtension(builder.maxDurationPerAckExtension)
+            .setMaxDurationPerAckExtension(this.streamAckDeadline)
             .setAckLatencyDistribution(builder.ackLatencyDistribution)
             .setFlowController(builder.flowController)
             .setEnableExactlyOnceDelivery(enableExactlyOnceDelivery.get())
@@ -154,12 +152,16 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     useLegacyFlowControl = builder.useLegacyFlowControl;
   }
 
+  public Duration getStreamAckDeadline() {
+    return streamAckDeadline;
+  }
+
   @Override
   protected void doStart() {
     logger.config("Starting subscriber.");
     messageDispatcher.start();
     initialize();
-    notifyStarted();
+    //    notifyStarted();
   }
 
   @Override
@@ -212,7 +214,12 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
       if (enableExactlyOnceDelivery.get() != isExactlyOnceDeliveryEnabled) {
         enableExactlyOnceDelivery.set(isExactlyOnceDeliveryEnabled);
         messageDispatcher.setEnableExactlyOnceDelivery(isExactlyOnceDeliveryEnabled);
-        // TODO: ModAckDeadline changes
+
+        // Update modack extension defaults if applicable
+        if (defaultStreamAckDeadline) {
+          messageDispatcher.setMessageDeadlineSeconds(
+              Math.toIntExact(STREAM_ACK_DEADLINE_DEFAULT_EXACTLY_ONCE_ENABLED.getSeconds()));
+        }
       }
 
       messageDispatcher.processReceivedMessages(response.getReceivedMessagesList());
@@ -689,8 +696,26 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     }
 
     public Builder setMaxDurationPerAckExtension(Duration maxDurationPerAckExtension) {
-      this.maxDurationPerAckExtension = maxDurationPerAckExtension;
+      if (maxDurationPerAckExtension.compareTo(MIN_STREAM_ACK_DEADLINE) < 0) {
+        logger.log(
+            Level.WARNING,
+            "maxDurationPerAckExtension too small, should be >= {0} seconds",
+            MIN_STREAM_ACK_DEADLINE.getSeconds());
+        this.maxDurationPerAckExtension = MIN_STREAM_ACK_DEADLINE;
+      } else if (maxDurationPerAckExtension.compareTo(MAX_STREAM_ACK_DEADLINE) > 0) {
+        logger.log(
+            Level.WARNING,
+            "maxDurationPerAckExtension too large, should be <= {0} seconds",
+            MAX_STREAM_ACK_DEADLINE.getSeconds());
+        this.maxDurationPerAckExtension = MAX_STREAM_ACK_DEADLINE;
+      } else {
+        this.maxDurationPerAckExtension = maxDurationPerAckExtension;
+      }
       return this;
+    }
+
+    public Duration getMaxDurationPerAckExtension() {
+      return maxDurationPerAckExtension;
     }
 
     public Builder setAckLatencyDistribution(Distribution ackLatencyDistribution) {

@@ -69,7 +69,9 @@ public class StreamingSubscriberConnectionTest {
       "TRANSIENT_FAILURE_SERVICE_UNAVAILABLE";
   private static final String PERMANENT_FAILURE_OTHER = "I_DO_NOT_MATCH_ANY_KNOWN_ERRORS";
 
-  private Integer MOCK_ACK_EXTENSION_DEFAULT = 10;
+  private static Integer MOCK_ACK_EXTENSION_DEFAULT = 10;
+  private static Duration ACK_EXPIRATION_PADDING_DEFAULT = Duration.ofSeconds(10);
+  private static Duration MAX_DURATION_PER_ACK_EXTENSION_DEFAULT = Duration.ofSeconds(10);
 
   @Before
   public void setUp() {
@@ -87,6 +89,83 @@ public class StreamingSubscriberConnectionTest {
   public void testBuilderInvalidConfiguration() {
     StreamingSubscriberConnection.newBuilder(mock(MessageReceiverWithAckResponse.class))
         .setExactlyOnceDeliveryEnabled(false);
+  }
+
+  @Test
+  public void testMaxDurationPerAckExtensionExactlyOnceNotEnabled() {
+    StreamingSubscriberConnection.Builder builder;
+    builder = StreamingSubscriberConnection.newBuilder(mock(MessageReceiverWithAckResponse.class));
+
+    StreamingSubscriberConnection streamingSubscriberConnection;
+
+    // Default duration
+    streamingSubscriberConnection = builder.build();
+    assertEquals(
+        StreamingSubscriberConnection.DEFAULT_STREAM_ACK_DEADLINE,
+        streamingSubscriberConnection.getStreamAckDeadline());
+
+    // Valid custom duration
+    builder.setMaxDurationPerAckExtension(Duration.ofMinutes(1));
+    streamingSubscriberConnection = builder.build();
+    assertEquals(Duration.ofMinutes(1), streamingSubscriberConnection.getStreamAckDeadline());
+
+    // Set duration too small
+    builder.setMaxDurationPerAckExtension(Duration.ofSeconds(1));
+    streamingSubscriberConnection = builder.build();
+    assertEquals(
+        StreamingSubscriberConnection.MIN_STREAM_ACK_DEADLINE,
+        streamingSubscriberConnection.getStreamAckDeadline());
+
+    // Set duration too large
+    builder.setMaxDurationPerAckExtension(Duration.ofMinutes(60));
+    streamingSubscriberConnection = builder.build();
+    assertEquals(
+        StreamingSubscriberConnection.MAX_STREAM_ACK_DEADLINE,
+        streamingSubscriberConnection.getStreamAckDeadline());
+  }
+  //
+  //  @Test
+  //  public void testMaxDurationPerAckExtensionExactlyOnceEnabled() {
+  //    StreamingSubscriberConnection.Builder builder;
+  //    builder =
+  // StreamingSubscriberConnection.newBuilder(mock(MessageReceiver.class)).setExactlyOnceDeliveryEnabled(true);
+  //
+  //    StreamingSubscriberConnection streamingSubscriberConnection;
+  //
+  //    // Default duration
+  //    streamingSubscriberConnection = builder.build();
+  //    assertEquals(StreamingSubscriberConnection.STREAM_ACK_DEADLINE_DEFAULT_EXACTLY_ONCE_ENABLED,
+  // streamingSubscriberConnection.getStreamAckDeadline());
+  //  }
+
+  @Test
+  public void testStreamAckDurationExactlyOnceDisabledThenEnabled() {
+    // Setup mocks
+
+    // Check defaults
+    //    StreamingSubscriberConnection streamingSubscriberConnection =
+    // getStreamingSubscriberConnection(false);
+    //
+    // assertEquals(StreamingSubscriberConnection.STREAM_ACK_DEADLINE_DEFAULT_EXACTLY_ONCE_ENABLED,
+    // streamingSubscriberConnection.getStreamAckDeadline());
+
+    // Turn on streaming pull
+    //    streamingSubscriberConnection.doStart();
+
+    //    StreamingPullResponse streamingPullResponse = mock(StreamingPullResponse.class);
+    //    ClientStream<StreamingPullRequest> clientStreamMock = mock(ClientStream.class);
+    //
+    //    StreamingPullRequest streamingPullRequest = StreamingPullRequest.newBuilder()
+    //                    .setSubscription(MOCK_SUBSCRIPTION_NAME)
+    //                            .set
+    //
+    //    when(clientStreamMock.send(any(StreamingPullRequest.class))).thenReturn();
+    //
+    //    when(mockSubscriberStub.streamingPullCallable().splitCall(notNull(),
+    // notNull())).thenReturn(clientStreamMock);
+    //    when(mockSubscriberStub.streamingPullCallable()).thenReturn(bidiStreamingCallable);
+
+    //    assertEquals(true, true);
   }
 
   @Test
@@ -110,7 +189,7 @@ public class StreamingSubscriberConnectionTest {
 
     // Instantiate class and run operation(s)
     StreamingSubscriberConnection streamingSubscriberConnection =
-        getStreamingSubscriberReceiver(mockSubscriberStub, false);
+        getStreamingSubscriberConnection(false);
     streamingSubscriberConnection.sendAckOperations(
         modackWithMessageFutureList, ackIdMessageFutureList);
 
@@ -230,7 +309,7 @@ public class StreamingSubscriberConnectionTest {
 
     // Instantiate class and run operation(s)
     StreamingSubscriberConnection streamingSubscriberConnection =
-        getStreamingSubscriberReceiver(mockSubscriberStub, true);
+        getStreamingSubscriberConnection(true);
 
     streamingSubscriberConnection.sendAckOperations(
         modackWithMessageFutureList, Collections.emptyList());
@@ -342,7 +421,7 @@ public class StreamingSubscriberConnectionTest {
 
     // Instantiate class and run operation(s)
     StreamingSubscriberConnection streamingSubscriberConnection =
-        getStreamingSubscriberReceiver(mockSubscriberStub, true);
+        getStreamingSubscriberConnection(true);
 
     streamingSubscriberConnection.sendAckOperations(
         Collections.emptyList(), ackIdMessageFutureList);
@@ -438,7 +517,7 @@ public class StreamingSubscriberConnectionTest {
 
     // Instantiate class and run operation(s)
     StreamingSubscriberConnection streamingSubscriberConnection =
-        getStreamingSubscriberReceiver(mockSubscriberStub, true);
+        getStreamingSubscriberConnection(true);
 
     streamingSubscriberConnection.sendAckOperations(
         ackIdMessageFutureModackList, ackIdMessageFutureAckList);
@@ -458,30 +537,18 @@ public class StreamingSubscriberConnectionTest {
     }
   }
 
-  private StreamingSubscriberConnection getStreamingSubscriberReceiver(
-      SubscriberStub mockSubscriberStub, boolean setExactlyOnceDeliveryEnabled) {
-    return StreamingSubscriberConnection.newBuilder(mock(MessageReceiver.class))
-        .setSubscription(MOCK_SUBSCRIPTION_NAME)
-        .setAckExpirationPadding(Duration.ofSeconds(5))
-        .setMaxDurationPerAckExtension(Duration.ofSeconds(5))
-        .setAckLatencyDistribution(mock(Distribution.class))
-        .setSubscriberStub(mockSubscriberStub)
-        .setChannelAffinity(0)
-        .setFlowControlSettings(mock(FlowControlSettings.class))
-        .setFlowController(mock(FlowController.class))
-        .setExecutor(executor)
-        .setSystemExecutor(systemExecutor)
-        .setClock(mockClock)
-        .setExactlyOnceDeliveryEnabled(setExactlyOnceDeliveryEnabled)
-        .build();
+  private StreamingSubscriberConnection getStreamingSubscriberConnection(
+      boolean exactlyOnceDeliveryEnabled) {
+    return getStreamingSubscriberReceiverFromBuilder(
+        StreamingSubscriberConnection.newBuilder(mock(MessageReceiver.class)),
+        exactlyOnceDeliveryEnabled);
   }
 
-  private StreamingSubscriberConnection getStreamingSubscriberReceiverWithAckResponse(
-      SubscriberStub mockSubscriberStub) {
-    return StreamingSubscriberConnection.newBuilder(mock(MessageReceiverWithAckResponse.class))
+  private StreamingSubscriberConnection getStreamingSubscriberReceiverFromBuilder(
+      StreamingSubscriberConnection.Builder builder, boolean exactlyOnceDeliveryEnabled) {
+    return builder
         .setSubscription(MOCK_SUBSCRIPTION_NAME)
-        .setAckExpirationPadding(Duration.ofSeconds(5))
-        .setMaxDurationPerAckExtension(Duration.ofSeconds(5))
+        .setAckExpirationPadding(ACK_EXPIRATION_PADDING_DEFAULT)
         .setAckLatencyDistribution(mock(Distribution.class))
         .setSubscriberStub(mockSubscriberStub)
         .setChannelAffinity(0)
@@ -490,7 +557,7 @@ public class StreamingSubscriberConnectionTest {
         .setExecutor(executor)
         .setSystemExecutor(systemExecutor)
         .setClock(mockClock)
-        .setExactlyOnceDeliveryEnabled(true)
+        .setExactlyOnceDeliveryEnabled(exactlyOnceDeliveryEnabled)
         .build();
   }
 

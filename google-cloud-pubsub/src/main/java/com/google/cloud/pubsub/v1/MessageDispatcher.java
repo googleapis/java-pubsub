@@ -57,7 +57,7 @@ class MessageDispatcher {
 
   private final Duration ackExpirationPadding;
   private final Duration maxAckExtensionPeriod;
-  private final int maxSecondsPerAckExtension;
+  private int maxSecondsPerAckExtension;
   private MessageReceiver receiver;
   private MessageReceiverWithAckResponse receiverWithAckResponse;
   private final AckProcessor ackProcessor;
@@ -186,6 +186,11 @@ class MessageDispatcher {
     jobLock = new ReentrantLock();
     messagesWaiter = new Waiter();
     sequentialExecutor = new SequentialExecutorService.AutoExecutor(builder.executor);
+  }
+
+  public MessageDispatcher setMaxSecondsPerAckExtension(int maxSecondsPerAckExtension) {
+    this.maxSecondsPerAckExtension = maxSecondsPerAckExtension;
+    return this;
   }
 
   void start() {
