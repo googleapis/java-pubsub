@@ -109,6 +109,10 @@ class MessageDispatcher {
       this.totalExpiration = totalExpiration;
     }
 
+    public AckIdMessageFuture getAckIdMessageFuture() {
+      return ackIdMessageFuture;
+    }
+
     public SettableApiFuture<AckResponse> getMessageFuture() {
       return this.ackIdMessageFuture.getMessageFuture();
     }
@@ -448,11 +452,10 @@ class MessageDispatcher {
       Instant totalExpiration = entry.getValue().totalExpiration;
       if (totalExpiration.isAfter(extendTo)) {
         ModackWithMessageFuture modackWithMessageFuture =
-            modackWithMessageFutureByExtensionTimeMap.getOrDefault(
-                extendSeconds, new ModackWithMessageFuture(extendSeconds));
-        modackWithMessageFuture.addAckIdMessageFuture(
-            new AckIdMessageFuture(ackId, entry.getValue().getMessageFuture()));
-        modackWithMessageFutureByExtensionTimeMap.put(extendSeconds, modackWithMessageFuture);
+            modackWithMessageFutureByExtensionTimeMap.computeIfAbsent(
+                extendSeconds,
+                deadlineExtensionSeconds -> new ModackWithMessageFuture(deadlineExtensionSeconds));
+        modackWithMessageFuture.addAckIdMessageFuture(entry.getValue().getAckIdMessageFuture());
         numAckIdToSend++;
         continue;
       }
