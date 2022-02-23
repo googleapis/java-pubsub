@@ -96,31 +96,26 @@ class MessageDispatcher {
 
   /** Handles callbacks for acking/nacking messages from the {@link MessageReceiver}. */
   private class AckHandler implements ApiFutureCallback<AckReply> {
-    private final String ackId;
+    private final AckIdMessageFuture ackIdMessageFuture;
     private final int outstandingBytes;
     private final long receivedTimeMillis;
     private final Instant totalExpiration;
-    private final SettableApiFuture<AckResponse> messageFuture;
 
     private AckHandler(
-        String ackId,
-        int outstandingBytes,
-        Instant totalExpiration,
-        SettableApiFuture<AckResponse> messageFuture) {
-      this.ackId = ackId;
+        AckIdMessageFuture ackIdMessageFuture, int outstandingBytes, Instant totalExpiration) {
+      this.ackIdMessageFuture = ackIdMessageFuture;
       this.outstandingBytes = outstandingBytes;
       this.receivedTimeMillis = clock.millisTime();
       this.totalExpiration = totalExpiration;
-      this.messageFuture = messageFuture;
     }
 
     public SettableApiFuture<AckResponse> getMessageFuture() {
-      return messageFuture;
+      return this.ackIdMessageFuture.getMessageFuture();
     }
 
     /** Stop extending deadlines for this message and free flow control. */
     private void forget() {
-      if (pendingMessages.remove(ackId) == null) {
+      if (pendingMessages.remove(this.ackIdMessageFuture) == null) {
         /*
          * We're forgetting the message for the second time. Probably because we ran out of total
          * expiration, forget the message, then the user finishes working on the message, and forget
@@ -136,10 +131,12 @@ class MessageDispatcher {
     public void onFailure(Throwable t) {
       logger.log(
           Level.WARNING,
-          "MessageReceiver failed to process ack ID: " + ackId + ", the message will be nacked.",
+          "MessageReceiver failed to process ack ID: "
+              + this.ackIdMessageFuture.getAckId()
+              + ", the message will be nacked.",
           t);
-      this.messageFuture.set(AckResponse.OTHER);
-      pendingNacks.add(new AckIdMessageFuture(this.ackId, this.messageFuture));
+      this.ackIdMessageFuture.getMessageFuture().set(AckResponse.OTHER);
+      pendingNacks.add(this.ackIdMessageFuture);
       forget();
     }
 
@@ -147,7 +144,7 @@ class MessageDispatcher {
     public void onSuccess(AckReply reply) {
       switch (reply) {
         case ACK:
-          pendingAcks.add(new AckIdMessageFuture(this.ackId, this.messageFuture));
+          pendingAcks.add(this.ackIdMessageFuture);
           // Record the latency rounded to the next closest integer.
           ackLatencyDistribution.record(
               Ints.saturatedCast(
@@ -155,7 +152,7 @@ class MessageDispatcher {
           LinkedBlockingQueue<AckIdMessageFuture> destination = pendingAcks;
           break;
         case NACK:
-          pendingNacks.add(new AckIdMessageFuture(this.ackId, this.messageFuture));
+          pendingNacks.add(this.ackIdMessageFuture);
           break;
         default:
           throw new IllegalArgumentException(String.format("AckReply: %s not supported", reply));
@@ -301,12 +298,13 @@ class MessageDispatcher {
       if (enableExactlyOnceDelivery.get()) {
         messageFuture = SettableApiFuture.create();
       }
+
+      AckIdMessageFuture ackIdMessageFuture =
+          new AckIdMessageFuture(message.getAckId(), messageFuture);
+
       AckHandler ackHandler =
           new AckHandler(
-              message.getAckId(),
-              message.getMessage().getSerializedSize(),
-              totalExpiration,
-              messageFuture);
+              ackIdMessageFuture, message.getMessage().getSerializedSize(), totalExpiration);
       if (pendingMessages.putIfAbsent(message.getAckId(), ackHandler) != null) {
         // putIfAbsent puts ackHandler if ackID isn't previously mapped, then return the
         // previously-mapped element.
@@ -319,7 +317,7 @@ class MessageDispatcher {
         continue;
       }
       outstandingBatch.add(new OutstandingMessage(message, ackHandler));
-      pendingReceipts.add(new AckIdMessageFuture(message.getAckId(), messageFuture));
+      pendingReceipts.add(ackIdMessageFuture);
     }
 
     processBatch(outstandingBatch);

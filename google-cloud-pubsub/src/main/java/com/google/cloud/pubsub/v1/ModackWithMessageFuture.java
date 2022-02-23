@@ -20,8 +20,8 @@ import com.google.common.collect.Lists;
 import java.util.*;
 
 class ModackWithMessageFuture {
-  final int deadlineExtensionSeconds;
-  List<AckIdMessageFuture> ackIdMessageFutures;
+  private final int deadlineExtensionSeconds;
+  private List<AckIdMessageFuture> ackIdMessageFutures;
 
   ModackWithMessageFuture(int deadlineExtensionSeconds) {
     this.deadlineExtensionSeconds = deadlineExtensionSeconds;

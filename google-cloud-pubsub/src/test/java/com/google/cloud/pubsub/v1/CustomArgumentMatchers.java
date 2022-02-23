@@ -103,7 +103,7 @@ public class CustomArgumentMatchers {
       Iterator<AckIdMessageFuture> iteratorRight = right.iterator();
 
       while (iteratorLeft.hasNext() && iteratorRight.hasNext()) {
-        if (iteratorLeft.next().ackId != iteratorRight.next().ackId) {
+        if (iteratorLeft.next().getAckId() != iteratorRight.next().getAckId()) {
           return false;
         }
       }

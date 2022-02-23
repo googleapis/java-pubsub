@@ -123,50 +123,6 @@ public class StreamingSubscriberConnectionTest {
         StreamingSubscriberConnection.MAX_STREAM_ACK_DEADLINE,
         streamingSubscriberConnection.getStreamAckDeadline());
   }
-  //
-  //  @Test
-  //  public void testMaxDurationPerAckExtensionExactlyOnceEnabled() {
-  //    StreamingSubscriberConnection.Builder builder;
-  //    builder =
-  // StreamingSubscriberConnection.newBuilder(mock(MessageReceiver.class)).setExactlyOnceDeliveryEnabled(true);
-  //
-  //    StreamingSubscriberConnection streamingSubscriberConnection;
-  //
-  //    // Default duration
-  //    streamingSubscriberConnection = builder.build();
-  //    assertEquals(StreamingSubscriberConnection.STREAM_ACK_DEADLINE_DEFAULT_EXACTLY_ONCE_ENABLED,
-  // streamingSubscriberConnection.getStreamAckDeadline());
-  //  }
-
-  @Test
-  public void testStreamAckDurationExactlyOnceDisabledThenEnabled() {
-    // Setup mocks
-
-    // Check defaults
-    //    StreamingSubscriberConnection streamingSubscriberConnection =
-    // getStreamingSubscriberConnection(false);
-    //
-    // assertEquals(StreamingSubscriberConnection.STREAM_ACK_DEADLINE_DEFAULT_EXACTLY_ONCE_ENABLED,
-    // streamingSubscriberConnection.getStreamAckDeadline());
-
-    // Turn on streaming pull
-    //    streamingSubscriberConnection.doStart();
-
-    //    StreamingPullResponse streamingPullResponse = mock(StreamingPullResponse.class);
-    //    ClientStream<StreamingPullRequest> clientStreamMock = mock(ClientStream.class);
-    //
-    //    StreamingPullRequest streamingPullRequest = StreamingPullRequest.newBuilder()
-    //                    .setSubscription(MOCK_SUBSCRIPTION_NAME)
-    //                            .set
-    //
-    //    when(clientStreamMock.send(any(StreamingPullRequest.class))).thenReturn();
-    //
-    //    when(mockSubscriberStub.streamingPullCallable().splitCall(notNull(),
-    // notNull())).thenReturn(clientStreamMock);
-    //    when(mockSubscriberStub.streamingPullCallable()).thenReturn(bidiStreamingCallable);
-
-    //    assertEquals(true, true);
-  }
 
   @Test
   public void testSendAckOperationsExactlyOnceDisabledNoMessageFutures() {

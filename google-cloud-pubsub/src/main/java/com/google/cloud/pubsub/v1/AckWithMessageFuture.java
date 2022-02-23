@@ -19,8 +19,8 @@ package com.google.cloud.pubsub.v1;
 import com.google.api.core.SettableApiFuture;
 
 class AckIdMessageFuture {
-  final String ackId;
-  final SettableApiFuture<AckResponse> messageFuture;
+  private final String ackId;
+  private final SettableApiFuture<AckResponse> messageFuture;
 
   AckIdMessageFuture(String ackId, SettableApiFuture<AckResponse> messageFuture) {
     this.ackId = ackId;
