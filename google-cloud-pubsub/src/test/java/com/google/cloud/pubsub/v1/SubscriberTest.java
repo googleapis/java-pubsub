@@ -87,11 +87,6 @@ public class SubscriberTest {
   }
 
   @Test
-  public void testBuilderInvalidConfiguration() {
-    assertEquals(true, true);
-  }
-
-  @Test
   public void testDeliveryAttemptHelper() {
     Integer deliveryAttempt = 3;
     PubsubMessage message =
