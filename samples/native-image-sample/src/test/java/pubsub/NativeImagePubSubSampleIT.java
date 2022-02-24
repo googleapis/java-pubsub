@@ -16,7 +16,6 @@
 
 package pubsub;
 
-
 import static com.google.common.truth.Truth.assertThat;
 
 import com.google.cloud.ServiceOptions;
