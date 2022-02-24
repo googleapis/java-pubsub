@@ -33,18 +33,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-/**
- * Sample methods for Publishing messages to a topic in Pub/Sub.
- */
+/** Sample methods for Publishing messages to a topic in Pub/Sub. */
 public class PublishOperations {
 
-  static void publishMessage(String projectId, String topicId)
-      throws Exception {
+  static void publishMessage(String projectId, String topicId) throws Exception {
 
-    Publisher publisher =
-        Publisher
-            .newBuilder(TopicName.of(projectId, topicId))
-            .build();
+    Publisher publisher = Publisher.newBuilder(TopicName.of(projectId, topicId)).build();
 
     try {
       String message = "Pub/Sub Native Image Test published message at timestamp: " + Instant.now();
@@ -62,8 +56,7 @@ public class PublishOperations {
     }
   }
 
-  static void publishWithCustomAttributes(
-      String projectId, String topicId) throws Exception {
+  static void publishWithCustomAttributes(String projectId, String topicId) throws Exception {
 
     TopicName topicName = TopicName.of(projectId, topicId);
     Publisher publisher = Publisher.newBuilder(topicName).build();
@@ -113,8 +106,7 @@ public class PublishOperations {
     }
   }
 
-  static void publishWithErrorHandler(
-      String projectId, String topicId) throws IOException {
+  static void publishWithErrorHandler(String projectId, String topicId) throws IOException {
 
     TopicName topicName = TopicName.of(projectId, topicId);
     Publisher publisher = null;
