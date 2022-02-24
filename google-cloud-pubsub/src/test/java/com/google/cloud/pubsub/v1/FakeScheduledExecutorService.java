@@ -48,7 +48,7 @@ public class FakeScheduledExecutorService extends AbstractExecutorService
   private final FakeClock clock = new FakeClock();
   private final Deque<Duration> expectedWorkQueue = new LinkedList<>();
 
-  public ApiClock getClock() {
+  public FakeClock getClock() {
     return clock;
   }
 

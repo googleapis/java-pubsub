@@ -72,6 +72,8 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
 
   private static final Duration INITIAL_CHANNEL_RECONNECT_BACKOFF = Duration.ofMillis(100);
   private static final Duration MAX_CHANNEL_RECONNECT_BACKOFF = Duration.ofSeconds(10);
+  private static final Duration INITIAL_ACK_OPERATIONS_RECONNECT_BACKOFF = Duration.ofMillis(100);
+  private static final Duration MAX_ACK_OPERATIONS_RECONNECT_BACKOFF = Duration.ofSeconds(10);
   private static final int MAX_PER_REQUEST_CHANGES = 1000;
 
   private final String PERMANENT_FAILURE_INVALID_ACK_ID_METADATA =
@@ -93,6 +95,8 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
 
   private final AtomicLong channelReconnectBackoffMillis =
       new AtomicLong(INITIAL_CHANNEL_RECONNECT_BACKOFF.toMillis());
+  private final AtomicLong ackOperationsReconnectBackoffMillis =
+          new AtomicLong(INITIAL_ACK_OPERATIONS_RECONNECT_BACKOFF.toMillis());
   private final Waiter ackOperationsWaiter = new Waiter();
   private final ApiClock clock;
 
@@ -376,6 +380,14 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
       this.retryModackWithMessageFutures = retryModackWithMessageFutures;
       this.failedAckIds = failedAckIds;
     }
+
+    public List<ModackWithMessageFuture> getRetryModackWithMessageFutures() {
+      return retryModackWithMessageFutures;
+    }
+
+    public Set<String> getFailedAckIds() {
+      return failedAckIds;
+    }
   }
 
   private Map<String, String> getMetadataMapFromThrowable(Throwable t) {
@@ -453,10 +465,24 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
         sendUnaryModacks(modacksToSendPartitioned);
     RetryModacksFailedModacks retryModacksFailedModacks = processModackFutures(modAckFutureMap);
 
-    Set<String> failedAckIds = retryModacksFailedModacks.failedAckIds;
+    Set<String> failedAckIds = retryModacksFailedModacks.getFailedAckIds();
 
-    if (!retryModacksFailedModacks.retryModackWithMessageFutures.isEmpty()) {
-      failedAckIds.addAll(sendModacks(retryModacksFailedModacks.retryModackWithMessageFutures));
+    if (!retryModacksFailedModacks.getRetryModackWithMessageFutures().isEmpty()) {
+      // Retry with exponential backoff
+      long backoffMillis = ackOperationsReconnectBackoffMillis.get();
+      long newBackoffMillis =
+              Math.min(backoffMillis * 2, MAX_ACK_OPERATIONS_RECONNECT_BACKOFF.toMillis());
+      ackOperationsReconnectBackoffMillis.set(newBackoffMillis);
+
+      systemExecutor.schedule(
+              new Runnable() {
+                @Override
+                public void run() {
+                    failedAckIds.addAll(sendModacks(retryModacksFailedModacks.getRetryModackWithMessageFutures()));
+                }
+              },
+              backoffMillis,
+              TimeUnit.MILLISECONDS);
     }
 
     return failedAckIds;
@@ -577,8 +603,21 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     List<AckIdMessageFuture> acksToResend = processAckFutures(ackFutureMap);
 
     if (!acksToResend.isEmpty()) {
-      // TODO: Do we want to use exponential backoff here?
-      sendAcks(acksToResend);
+      // Retry with exponential backoff
+      long backoffMillis = ackOperationsReconnectBackoffMillis.get();
+      long newBackoffMillis =
+              Math.min(backoffMillis * 2, MAX_ACK_OPERATIONS_RECONNECT_BACKOFF.toMillis());
+      ackOperationsReconnectBackoffMillis.set(newBackoffMillis);
+
+      systemExecutor.schedule(
+              new Runnable() {
+                @Override
+                public void run() {
+                  sendAcks(acksToResend);
+                }
+              },
+              backoffMillis,
+              TimeUnit.MILLISECONDS);
     }
   }
 

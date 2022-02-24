@@ -34,6 +34,8 @@ import com.google.rpc.Status;
 import io.grpc.StatusException;
 import io.grpc.protobuf.StatusProto;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -45,9 +47,9 @@ import org.threeten.bp.Duration;
 public class StreamingSubscriberConnectionTest {
   @Rule public TestName testName = new TestName();
 
-  private FakeClock mockClock;
   private FakeScheduledExecutorService systemExecutor;
   private FakeScheduledExecutorService executor;
+  private FakeClock clock;
   private SubscriberStub mockSubscriberStub;
 
   private static final String MOCK_SUBSCRIPTION_NAME = "MOCK-SUBSCRIPTION";
@@ -75,8 +77,8 @@ public class StreamingSubscriberConnectionTest {
 
   @Before
   public void setUp() {
-    mockClock = new FakeClock();
     systemExecutor = new FakeScheduledExecutorService();
+    clock = systemExecutor.getClock();
     mockSubscriberStub = mock(SubscriberStub.class, RETURNS_DEEP_STUBS);
   }
 
@@ -281,6 +283,9 @@ public class StreamingSubscriberConnectionTest {
     streamingSubscriberConnection.sendAckOperations(
         modackWithMessageFutureList, Collections.emptyList());
 
+    // Backoff
+    systemExecutor.advanceTime(Duration.ofMillis(200));
+
     // Assert expected behavior
     verify(mockSubscriberStub.modifyAckDeadlineCallable(), times(1))
         .futureCall(modifyAckDeadlineRequestNack);
@@ -392,6 +397,9 @@ public class StreamingSubscriberConnectionTest {
 
     streamingSubscriberConnection.sendAckOperations(
         Collections.emptyList(), ackIdMessageFutureList);
+
+    // Backoff
+    systemExecutor.advanceTime(Duration.ofMillis(200));
 
     // Assert expected behavior;
     verify(mockSubscriberStub.acknowledgeCallable(), times(1))
@@ -523,7 +531,7 @@ public class StreamingSubscriberConnectionTest {
         .setFlowController(mock(FlowController.class))
         .setExecutor(executor)
         .setSystemExecutor(systemExecutor)
-        .setClock(mockClock)
+        .setClock(clock)
         .setExactlyOnceDeliveryEnabled(exactlyOnceDeliveryEnabled)
         .build();
   }
