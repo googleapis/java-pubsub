@@ -52,6 +52,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import utilities.PublishOperations;
 
 /** Pub/Sub sample application compiled with Native Image. */
 public class NativeImagePubSubSample {

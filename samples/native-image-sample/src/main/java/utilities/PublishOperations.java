@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package pubsub;
+package utilities;
 
 import com.google.api.core.ApiFuture;
 import com.google.api.core.ApiFutureCallback;
@@ -36,7 +36,7 @@ import java.util.concurrent.ExecutionException;
 /** Sample methods for Publishing messages to a topic in Pub/Sub. */
 public class PublishOperations {
 
-  static void publishMessage(String projectId, String topicId) throws Exception {
+  public static void publishMessage(String projectId, String topicId) throws Exception {
 
     Publisher publisher = Publisher.newBuilder(TopicName.of(projectId, topicId)).build();
 
@@ -56,7 +56,7 @@ public class PublishOperations {
     }
   }
 
-  static void publishWithCustomAttributes(String projectId, String topicId) throws Exception {
+  public static void publishWithCustomAttributes(String projectId, String topicId) throws Exception {
 
     TopicName topicName = TopicName.of(projectId, topicId);
     Publisher publisher = Publisher.newBuilder(topicName).build();
@@ -79,7 +79,7 @@ public class PublishOperations {
     }
   }
 
-  static void publishWithBatchSettings(String projectId, String topicId)
+  public static void publishWithBatchSettings(String projectId, String topicId)
       throws IOException, ExecutionException, InterruptedException {
 
     TopicName topicName = TopicName.of(projectId, topicId);
@@ -106,7 +106,7 @@ public class PublishOperations {
     }
   }
 
-  static void publishWithErrorHandler(String projectId, String topicId) throws IOException {
+  public static void publishWithErrorHandler(String projectId, String topicId) throws IOException {
 
     TopicName topicName = TopicName.of(projectId, topicId);
     Publisher publisher = null;
