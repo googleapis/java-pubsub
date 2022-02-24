@@ -56,7 +56,8 @@ public class PublishOperations {
     }
   }
 
-  public static void publishWithCustomAttributes(String projectId, String topicId) throws Exception {
+  public static void publishWithCustomAttributes(String projectId, String topicId)
+      throws Exception {
 
     TopicName topicName = TopicName.of(projectId, topicId);
     Publisher publisher = Publisher.newBuilder(topicName).build();
