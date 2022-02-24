@@ -47,7 +47,22 @@ public class SubscribeWithExactlyOnceConsumerWithResponseExample {
                     System.out.println("Id: " + message.getMessageId());
                     System.out.println("Data: " + message.getData().toStringUtf8());
                     Future<AckResponse> ackResponseFuture = consumerWithResponse.ack();
-                    System.out.println("Response: " + ackResponseFuture.get());
+
+                    // Retreive the completed future
+                    AckResponse ackResponse = ackResponseFuture.get();
+
+                    // Parse the response
+                    switch (ackResponse) {
+                        case AckResponse.SUCCESSFUL:
+                            System.out.println("Message successfully acked");
+                            break;
+                        case AckResponse.INVALID:
+                        case AckResponse.OTHER:
+                            System.out.println("Message failed to acked with response: {0}", ackResponse);
+                            break;
+                        default:
+                            break;
+                    }
                 };
 
         Subscriber subscriber = null;
