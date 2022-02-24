@@ -16,10 +16,6 @@
 
 package com.google.cloud.pubsub.v1;
 
-import static com.google.cloud.pubsub.v1.StreamingSubscriberConnection.DEFAULT_STREAM_ACK_DEADLINE;
-import static com.google.cloud.pubsub.v1.StreamingSubscriberConnection.MAX_STREAM_ACK_DEADLINE;
-import static com.google.cloud.pubsub.v1.StreamingSubscriberConnection.MIN_STREAM_ACK_DEADLINE;
-import static com.google.cloud.pubsub.v1.Subscriber.DEFAULT_MAX_DURATION_PER_ACK_EXTENSION;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -246,7 +242,7 @@ public class SubscriberTest {
     assertEquals(
         expectedChannelCount, fakeSubscriberServiceImpl.waitForOpenedStreams(expectedChannelCount));
     assertEquals(
-        MIN_STREAM_ACK_DEADLINE.getSeconds(),
+        Subscriber.MIN_ACK_DEADLINE_SECONDS,
         fakeSubscriberServiceImpl.getLastSeenRequest().getStreamAckDeadlineSeconds());
 
     subscriber.stopAsync().awaitTerminated();
@@ -260,7 +256,7 @@ public class SubscriberTest {
     assertEquals(
         expectedChannelCount, fakeSubscriberServiceImpl.waitForOpenedStreams(expectedChannelCount));
     assertEquals(
-        MAX_STREAM_ACK_DEADLINE.getSeconds(),
+        Subscriber.MAX_ACK_DEADLINE_SECONDS,
         fakeSubscriberServiceImpl.getLastSeenRequest().getStreamAckDeadlineSeconds());
 
     subscriber.stopAsync().awaitTerminated();
@@ -280,15 +276,22 @@ public class SubscriberTest {
     subscriber.stopAsync().awaitTerminated();
 
     // maxDurationPerAckExtension is unset.
-    maxDurationPerAckExtension = (int) DEFAULT_MAX_DURATION_PER_ACK_EXTENSION.getSeconds();
-    subscriber =
-        startSubscriber(
-            getTestSubscriberBuilder(testReceiver)
-                .setMaxDurationPerAckExtension(Duration.ofSeconds(maxDurationPerAckExtension)));
+    subscriber = startSubscriber(getTestSubscriberBuilder(testReceiver));
     assertEquals(
         expectedChannelCount, fakeSubscriberServiceImpl.waitForOpenedStreams(expectedChannelCount));
     assertEquals(
-        DEFAULT_STREAM_ACK_DEADLINE.getSeconds(),
+        Subscriber.STREAM_ACK_DEADLINE_DEFAULT_SECONDS,
+        fakeSubscriberServiceImpl.getLastSeenRequest().getStreamAckDeadlineSeconds());
+
+    subscriber.stopAsync().awaitTerminated();
+
+    // maxDurationPerAckExtension is unset with exactly once enabled
+    subscriber =
+        startSubscriber(getTestSubscriberBuilder(testReceiver).setExactlyOnceDeliveryEnabled(true));
+    assertEquals(
+        expectedChannelCount, fakeSubscriberServiceImpl.waitForOpenedStreams(expectedChannelCount));
+    assertEquals(
+        Subscriber.STREAM_ACK_DEADLINE_DEFAULT_EXACTLY_ONCE_SECONDS,
         fakeSubscriberServiceImpl.getLastSeenRequest().getStreamAckDeadlineSeconds());
 
     subscriber.stopAsync().awaitTerminated();
@@ -339,7 +342,6 @@ public class SubscriberTest {
         .setCredentialsProvider(NoCredentialsProvider.create())
         .setClock(fakeExecutor.getClock())
         .setParallelPullCount(1)
-        .setMaxDurationPerAckExtension(Duration.ofSeconds(5))
         .setFlowControlSettings(
             FlowControlSettings.newBuilder().setMaxOutstandingElementCount(1000L).build());
   }

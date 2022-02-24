@@ -57,7 +57,7 @@ class MessageDispatcher {
 
   private final Duration ackExpirationPadding;
   private final Duration maxAckExtensionPeriod;
-  private int maxSecondsPerAckExtension;
+  private int streamAckDeadlineSeconds;
   private MessageReceiver receiver;
   private MessageReceiverWithAckResponse receiverWithAckResponse;
   private final AckProcessor ackProcessor;
@@ -176,7 +176,7 @@ class MessageDispatcher {
     systemExecutor = builder.systemExecutor;
     ackExpirationPadding = builder.ackExpirationPadding;
     maxAckExtensionPeriod = builder.maxAckExtensionPeriod;
-    maxSecondsPerAckExtension = Math.toIntExact(builder.maxDurationPerAckExtension.getSeconds());
+    streamAckDeadlineSeconds = builder.streamAckDeadlineSeconds;
     receiver = builder.receiver;
     receiverWithAckResponse = builder.receiverWithAckResponse;
     ackProcessor = builder.ackProcessor;
@@ -189,8 +189,8 @@ class MessageDispatcher {
     sequentialExecutor = new SequentialExecutorService.AutoExecutor(builder.executor);
   }
 
-  public MessageDispatcher setMaxSecondsPerAckExtension(int maxSecondsPerAckExtension) {
-    this.maxSecondsPerAckExtension = maxSecondsPerAckExtension;
+  public MessageDispatcher setStreamAckDeadlineSeconds(Integer streamAckDeadlineSeconds) {
+    this.streamAckDeadlineSeconds = streamAckDeadlineSeconds;
     return this;
   }
 
@@ -426,14 +426,8 @@ class MessageDispatcher {
   int computeDeadlineSeconds() {
     int sec = ackLatencyDistribution.getPercentile(PERCENTILE_FOR_ACK_DEADLINE_UPDATES);
 
-    if ((maxSecondsPerAckExtension > 0) && (sec > maxSecondsPerAckExtension)) {
-      sec = maxSecondsPerAckExtension;
-    }
-    // Use Ints.constrainToRange when we get guava 21.
-    if (sec < Subscriber.MIN_ACK_DEADLINE_SECONDS) {
-      sec = Subscriber.MIN_ACK_DEADLINE_SECONDS;
-    } else if (sec > Subscriber.MAX_ACK_DEADLINE_SECONDS) {
-      sec = Subscriber.MAX_ACK_DEADLINE_SECONDS;
+    if ((streamAckDeadlineSeconds > 0) && (sec > streamAckDeadlineSeconds)) {
+      sec = streamAckDeadlineSeconds;
     }
     return sec;
   }
@@ -523,7 +517,7 @@ class MessageDispatcher {
     private AckProcessor ackProcessor;
     private Duration ackExpirationPadding;
     private Duration maxAckExtensionPeriod;
-    private Duration maxDurationPerAckExtension;
+    private Integer streamAckDeadlineSeconds;
     private Distribution ackLatencyDistribution;
     private FlowController flowController;
     private boolean enableExactlyOnceDelivery;
@@ -555,8 +549,8 @@ class MessageDispatcher {
       return this;
     }
 
-    public Builder setMaxDurationPerAckExtension(Duration maxDurationPerAckExtension) {
-      this.maxDurationPerAckExtension = maxDurationPerAckExtension;
+    public Builder setStreamAckDeadlineSeconds(Integer streamAckDeadlineSeconds) {
+      this.streamAckDeadlineSeconds = streamAckDeadlineSeconds;
       return this;
     }
 

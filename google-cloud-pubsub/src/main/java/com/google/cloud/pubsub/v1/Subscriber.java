@@ -89,13 +89,14 @@ import org.threeten.bp.Duration;
  * details.
  */
 public class Subscriber extends AbstractApiService implements SubscriberInterface {
-  @InternalApi static final Duration DEFAULT_MAX_DURATION_PER_ACK_EXTENSION = Duration.ofMillis(0);
   private static final int THREADS_PER_CHANNEL = 5;
   private static final int MAX_INBOUND_MESSAGE_SIZE =
       20 * 1024 * 1024; // 20MB API maximum message size.
   @InternalApi static final int MAX_ACK_DEADLINE_SECONDS = 600;
   @InternalApi static final int MIN_ACK_DEADLINE_SECONDS = 10;
-  private static final Duration ACK_EXPIRATION_PADDING = Duration.ofSeconds(5);
+  @InternalApi static final int STREAM_ACK_DEADLINE_DEFAULT_SECONDS = 10;
+  @InternalApi static final int STREAM_ACK_DEADLINE_DEFAULT_EXACTLY_ONCE_SECONDS = 60;
+  @InternalApi static final Duration ACK_EXPIRATION_PADDING_DEFAULT = Duration.ofSeconds(5);
 
   private static final Logger logger = Logger.getLogger(Subscriber.class.getName());
 
@@ -349,9 +350,9 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
         StreamingSubscriberConnection streamingSubscriberConnection =
             streamingSubscriberConnectionBuilder
                 .setSubscription(subscription)
-                .setAckExpirationPadding(ACK_EXPIRATION_PADDING)
+                .setAckExpirationPadding(ACK_EXPIRATION_PADDING_DEFAULT)
                 .setMaxAckExtensionPeriod(maxAckExtensionPeriod)
-                .setMaxDurationPerAckExtension(maxDurationPerAckExtension)
+                .setMaxPerAckExtensionDuration(maxDurationPerAckExtension)
                 .setAckLatencyDistribution(ackLatencyDistribution)
                 .setSubscriberStub(subscriberStub)
                 .setChannelAffinity(i)
@@ -448,8 +449,7 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
     private MessageReceiverWithAckResponse receiverWithAckResponse;
 
     private Duration maxAckExtensionPeriod = DEFAULT_MAX_ACK_EXTENSION_PERIOD;
-    private Duration maxDurationPerAckExtension = DEFAULT_MAX_DURATION_PER_ACK_EXTENSION;
-
+    private Duration maxDurationPerAckExtension;
     private boolean useLegacyFlowControl = false;
     private FlowControlSettings flowControlSettings = DEFAULT_FLOW_CONTROL_SETTINGS;
 

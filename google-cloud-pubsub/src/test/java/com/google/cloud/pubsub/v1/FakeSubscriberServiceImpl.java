@@ -49,7 +49,7 @@ class FakeSubscriberServiceImpl extends SubscriberImplBase {
   private final AtomicBoolean subscriptionInitialized = new AtomicBoolean(false);
   private String subscription = "";
   private final AtomicInteger messageAckDeadline =
-      new AtomicInteger(Subscriber.MIN_ACK_DEADLINE_SECONDS);
+      new AtomicInteger(Subscriber.STREAM_ACK_DEADLINE_DEFAULT_SECONDS);
   private final AtomicInteger getSubscriptionCalled = new AtomicInteger();
   private StreamingPullRequest lastSeenRequest;
   private final List<Stream> openedStreams = new ArrayList<>();
@@ -253,6 +253,17 @@ class FakeSubscriberServiceImpl extends SubscriberImplBase {
       waitForOpenedStreams(1);
       Stream stream = openedStreams.get(getAndAdvanceCurrentStream());
       stream.responseObserver.onError(error);
+      closeStream(stream);
+    }
+  }
+
+  public void sendResponse(StreamingPullResponse streamingPullResponse)
+      throws InterruptedException {
+    waitForRegistedSubscription();
+    synchronized (openedStreams) {
+      waitForOpenedStreams(1);
+      Stream stream = openedStreams.get(getAndAdvanceCurrentStream());
+      stream.responseObserver.onNext(streamingPullResponse);
       closeStream(stream);
     }
   }

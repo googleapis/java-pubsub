@@ -46,6 +46,8 @@ public class MessageDispatcherTest {
   private static final int MAX_SECONDS_PER_ACK_EXTENSION = 60;
   private static final int MIN_ACK_DEADLINE_SECONDS = 10;
   private static final Duration MAX_ACK_EXTENSION_PERIOD = Duration.ofMinutes(60);
+  private static final Duration ACK_EXPIRATION_PADDING_DEFAULT =
+      Subscriber.ACK_EXPIRATION_PADDING_DEFAULT;
 
   private MessageDispatcher.AckProcessor mockAckProcessor;
   private FakeClock clock;
@@ -375,9 +377,9 @@ public class MessageDispatcherTest {
     MessageDispatcher messageDispatcher =
         builder
             .setAckProcessor(mockAckProcessor)
-            .setAckExpirationPadding(Duration.ofSeconds(5))
+            .setAckExpirationPadding(ACK_EXPIRATION_PADDING_DEFAULT)
             .setMaxAckExtensionPeriod(MAX_ACK_EXTENSION_PERIOD)
-            .setMaxDurationPerAckExtension(Duration.ofSeconds(MAX_SECONDS_PER_ACK_EXTENSION))
+            .setStreamAckDeadlineSeconds(MAX_SECONDS_PER_ACK_EXTENSION)
             .setAckLatencyDistribution(mock(Distribution.class))
             .setFlowController(mock(FlowController.class))
             .setExecutor(MoreExecutors.directExecutor())

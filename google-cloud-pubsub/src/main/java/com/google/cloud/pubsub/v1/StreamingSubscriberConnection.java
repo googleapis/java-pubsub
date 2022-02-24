@@ -23,7 +23,6 @@ import com.google.api.core.ApiClock;
 import com.google.api.core.ApiFuture;
 import com.google.api.core.ApiFutureCallback;
 import com.google.api.core.ApiFutures;
-import com.google.api.core.InternalApi;
 import com.google.api.core.SettableApiFuture;
 import com.google.api.gax.batching.FlowControlSettings;
 import com.google.api.gax.batching.FlowController;
@@ -50,6 +49,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -63,13 +63,6 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
   private static final Logger logger =
       Logger.getLogger(StreamingSubscriberConnection.class.getName());
 
-  @InternalApi static final Duration DEFAULT_STREAM_ACK_DEADLINE = Duration.ofSeconds(60);
-  @InternalApi static final Duration MAX_STREAM_ACK_DEADLINE = Duration.ofSeconds(600);
-  @InternalApi static final Duration MIN_STREAM_ACK_DEADLINE = Duration.ofSeconds(10);
-
-  @InternalApi
-  static final Duration STREAM_ACK_DEADLINE_DEFAULT_EXACTLY_ONCE_ENABLED = Duration.ofSeconds(60);
-
   private static final Duration INITIAL_CHANNEL_RECONNECT_BACKOFF = Duration.ofMillis(100);
   private static final Duration MAX_CHANNEL_RECONNECT_BACKOFF = Duration.ofSeconds(10);
   private static final Duration INITIAL_ACK_OPERATIONS_RECONNECT_BACKOFF = Duration.ofMillis(100);
@@ -80,7 +73,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
       "PERMANENT_FAILURE_INVALID_ACK_ID";
   private final String TRANSIENT_FAILURE_METADATA_PREFIX = "TRANSIENT_";
 
-  private Duration streamAckDeadline;
+  private AtomicInteger streamAckDeadlineSeconds = new AtomicInteger();
   private final boolean defaultStreamAckDeadline;
   private final SubscriberStub subscriberStub;
   private final int channelAffinity;
@@ -96,7 +89,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
   private final AtomicLong channelReconnectBackoffMillis =
       new AtomicLong(INITIAL_CHANNEL_RECONNECT_BACKOFF.toMillis());
   private final AtomicLong ackOperationsReconnectBackoffMillis =
-          new AtomicLong(INITIAL_ACK_OPERATIONS_RECONNECT_BACKOFF.toMillis());
+      new AtomicLong(INITIAL_ACK_OPERATIONS_RECONNECT_BACKOFF.toMillis());
   private final Waiter ackOperationsWaiter = new Waiter();
   private final ApiClock clock;
 
@@ -113,16 +106,16 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
   private StreamingSubscriberConnection(Builder builder) {
     subscription = builder.subscription;
     systemExecutor = builder.systemExecutor;
+    this.defaultStreamAckDeadline = builder.defaultStreamAckDeadline;
 
-    if (builder.maxDurationPerAckExtension != null) {
-      this.defaultStreamAckDeadline = false;
-      this.streamAckDeadline = builder.maxDurationPerAckExtension;
+    if (builder.maxPerAckExtensionSeconds != null) {
+      this.streamAckDeadlineSeconds.set(builder.maxPerAckExtensionSeconds);
     } else {
-      this.defaultStreamAckDeadline = true;
       if (builder.exactlyOnceDeliveryEnabled) {
-        this.streamAckDeadline = STREAM_ACK_DEADLINE_DEFAULT_EXACTLY_ONCE_ENABLED;
+        this.streamAckDeadlineSeconds.set(
+            Subscriber.STREAM_ACK_DEADLINE_DEFAULT_EXACTLY_ONCE_SECONDS);
       } else {
-        this.streamAckDeadline = DEFAULT_STREAM_ACK_DEADLINE;
+        this.streamAckDeadlineSeconds.set(Subscriber.STREAM_ACK_DEADLINE_DEFAULT_SECONDS);
       }
     }
 
@@ -143,7 +136,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
             .setAckProcessor(this)
             .setAckExpirationPadding(builder.ackExpirationPadding)
             .setMaxAckExtensionPeriod(builder.maxAckExtensionPeriod)
-            .setMaxDurationPerAckExtension(this.streamAckDeadline)
+            .setStreamAckDeadlineSeconds(this.streamAckDeadlineSeconds.get())
             .setAckLatencyDistribution(builder.ackLatencyDistribution)
             .setFlowController(builder.flowController)
             .setEnableExactlyOnceDelivery(enableExactlyOnceDelivery.get())
@@ -156,8 +149,8 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     useLegacyFlowControl = builder.useLegacyFlowControl;
   }
 
-  public Duration getStreamAckDeadline() {
-    return streamAckDeadline;
+  public Integer getStreamAckDeadlineSeconds() {
+    return streamAckDeadlineSeconds.get();
   }
 
   @Override
@@ -213,6 +206,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     @Override
     public void onResponse(StreamingPullResponse response) {
       channelReconnectBackoffMillis.set(INITIAL_CHANNEL_RECONNECT_BACKOFF.toMillis());
+
       boolean isExactlyOnceDeliveryEnabled =
           response.getSubscriptionProperties().getExactlyOnceDeliveryEnabled();
       if (enableExactlyOnceDelivery.get() != isExactlyOnceDeliveryEnabled) {
@@ -221,8 +215,16 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
 
         // Update modack extension defaults if applicable
         if (defaultStreamAckDeadline) {
-          messageDispatcher.setMessageDeadlineSeconds(
-              Math.toIntExact(STREAM_ACK_DEADLINE_DEFAULT_EXACTLY_ONCE_ENABLED.getSeconds()));
+          if (isExactlyOnceDeliveryEnabled) {
+            messageDispatcher.setMessageDeadlineSeconds(
+                Subscriber.STREAM_ACK_DEADLINE_DEFAULT_EXACTLY_ONCE_SECONDS);
+            streamAckDeadlineSeconds.set(
+                Subscriber.STREAM_ACK_DEADLINE_DEFAULT_EXACTLY_ONCE_SECONDS);
+          } else {
+            messageDispatcher.setMessageDeadlineSeconds(
+                Subscriber.STREAM_ACK_DEADLINE_DEFAULT_SECONDS);
+            streamAckDeadlineSeconds.set(Subscriber.STREAM_ACK_DEADLINE_DEFAULT_SECONDS);
+          }
         }
       }
 
@@ -272,7 +274,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     initClientStream.send(
         StreamingPullRequest.newBuilder()
             .setSubscription(subscription)
-            .setStreamAckDeadlineSeconds((int) streamAckDeadline.getSeconds())
+            .setStreamAckDeadlineSeconds(streamAckDeadlineSeconds.get())
             .setClientId(clientId)
             .setMaxOutstandingMessages(
                 this.useLegacyFlowControl
@@ -471,18 +473,19 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
       // Retry with exponential backoff
       long backoffMillis = ackOperationsReconnectBackoffMillis.get();
       long newBackoffMillis =
-              Math.min(backoffMillis * 2, MAX_ACK_OPERATIONS_RECONNECT_BACKOFF.toMillis());
+          Math.min(backoffMillis * 2, MAX_ACK_OPERATIONS_RECONNECT_BACKOFF.toMillis());
       ackOperationsReconnectBackoffMillis.set(newBackoffMillis);
 
       systemExecutor.schedule(
-              new Runnable() {
-                @Override
-                public void run() {
-                    failedAckIds.addAll(sendModacks(retryModacksFailedModacks.getRetryModackWithMessageFutures()));
-                }
-              },
-              backoffMillis,
-              TimeUnit.MILLISECONDS);
+          new Runnable() {
+            @Override
+            public void run() {
+              failedAckIds.addAll(
+                  sendModacks(retryModacksFailedModacks.getRetryModackWithMessageFutures()));
+            }
+          },
+          backoffMillis,
+          TimeUnit.MILLISECONDS);
     }
 
     return failedAckIds;
@@ -606,18 +609,18 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
       // Retry with exponential backoff
       long backoffMillis = ackOperationsReconnectBackoffMillis.get();
       long newBackoffMillis =
-              Math.min(backoffMillis * 2, MAX_ACK_OPERATIONS_RECONNECT_BACKOFF.toMillis());
+          Math.min(backoffMillis * 2, MAX_ACK_OPERATIONS_RECONNECT_BACKOFF.toMillis());
       ackOperationsReconnectBackoffMillis.set(newBackoffMillis);
 
       systemExecutor.schedule(
-              new Runnable() {
-                @Override
-                public void run() {
-                  sendAcks(acksToResend);
-                }
-              },
-              backoffMillis,
-              TimeUnit.MILLISECONDS);
+          new Runnable() {
+            @Override
+            public void run() {
+              sendAcks(acksToResend);
+            }
+          },
+          backoffMillis,
+          TimeUnit.MILLISECONDS);
     }
   }
 
@@ -704,7 +707,9 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     private String subscription;
     private Duration ackExpirationPadding;
     private Duration maxAckExtensionPeriod;
-    private Duration maxDurationPerAckExtension;
+    private Integer maxPerAckExtensionSeconds;
+    private boolean defaultStreamAckDeadline = true;
+
     private Distribution ackLatencyDistribution;
     private SubscriberStub subscriberStub;
     private int channelAffinity;
@@ -739,27 +744,35 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
       return this;
     }
 
-    public Builder setMaxDurationPerAckExtension(Duration maxDurationPerAckExtension) {
-      if (maxDurationPerAckExtension.compareTo(MIN_STREAM_ACK_DEADLINE) < 0) {
+    public Builder setMaxPerAckExtensionDuration(Duration maxPerAckExtension) {
+      if (maxPerAckExtension == null) {
+        // If not set, the StreamingSubscriberConnection constructor will set the defaults
+        // appropriately
+        return this;
+      }
+      int maxPerAckExtensionSeconds = Math.toIntExact(maxPerAckExtension.getSeconds());
+
+      if (maxPerAckExtensionSeconds < Subscriber.MIN_ACK_DEADLINE_SECONDS) {
         logger.log(
             Level.WARNING,
             "maxDurationPerAckExtension too small, should be >= {0} seconds",
-            MIN_STREAM_ACK_DEADLINE.getSeconds());
-        this.maxDurationPerAckExtension = MIN_STREAM_ACK_DEADLINE;
-      } else if (maxDurationPerAckExtension.compareTo(MAX_STREAM_ACK_DEADLINE) > 0) {
+            Subscriber.MIN_ACK_DEADLINE_SECONDS);
+        this.maxPerAckExtensionSeconds = Subscriber.MIN_ACK_DEADLINE_SECONDS;
+      } else if (maxPerAckExtensionSeconds > Subscriber.MAX_ACK_DEADLINE_SECONDS) {
         logger.log(
             Level.WARNING,
             "maxDurationPerAckExtension too large, should be <= {0} seconds",
-            MAX_STREAM_ACK_DEADLINE.getSeconds());
-        this.maxDurationPerAckExtension = MAX_STREAM_ACK_DEADLINE;
+            Subscriber.MAX_ACK_DEADLINE_SECONDS);
+        this.maxPerAckExtensionSeconds = Subscriber.MAX_ACK_DEADLINE_SECONDS;
       } else {
-        this.maxDurationPerAckExtension = maxDurationPerAckExtension;
+        this.maxPerAckExtensionSeconds = maxPerAckExtensionSeconds;
+        this.defaultStreamAckDeadline = false;
       }
       return this;
     }
 
-    public Duration getMaxDurationPerAckExtension() {
-      return maxDurationPerAckExtension;
+    public Integer getMaxPerAckExtensionSeconds() {
+      return maxPerAckExtensionSeconds;
     }
 
     public Builder setAckLatencyDistribution(Distribution ackLatencyDistribution) {

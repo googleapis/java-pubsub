@@ -16,7 +16,6 @@
 
 package com.google.cloud.pubsub.v1;
 
-import com.google.api.core.ApiClock;
 import com.google.common.primitives.Ints;
 import com.google.common.util.concurrent.SettableFuture;
 import java.util.ArrayList;

@@ -34,8 +34,6 @@ import com.google.rpc.Status;
 import io.grpc.StatusException;
 import io.grpc.protobuf.StatusProto;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -71,9 +69,9 @@ public class StreamingSubscriberConnectionTest {
       "TRANSIENT_FAILURE_SERVICE_UNAVAILABLE";
   private static final String PERMANENT_FAILURE_OTHER = "I_DO_NOT_MATCH_ANY_KNOWN_ERRORS";
 
-  private static Integer MOCK_ACK_EXTENSION_DEFAULT = 10;
+  private static int MOCK_ACK_EXTENSION_DEFAULT = 10;
   private static Duration ACK_EXPIRATION_PADDING_DEFAULT = Duration.ofSeconds(10);
-  private static Duration MAX_DURATION_PER_ACK_EXTENSION_DEFAULT = Duration.ofSeconds(10);
+  private static int MAX_DURATION_PER_ACK_EXTENSION_DEFAULT_SECONDS = 10;
 
   @Before
   public void setUp() {
@@ -114,27 +112,27 @@ public class StreamingSubscriberConnectionTest {
     // Default duration
     streamingSubscriberConnection = builder.build();
     assertEquals(
-        StreamingSubscriberConnection.DEFAULT_STREAM_ACK_DEADLINE,
-        streamingSubscriberConnection.getStreamAckDeadline());
+        (Integer) Subscriber.STREAM_ACK_DEADLINE_DEFAULT_SECONDS,
+        streamingSubscriberConnection.getStreamAckDeadlineSeconds());
 
     // Valid custom duration
-    builder.setMaxDurationPerAckExtension(Duration.ofMinutes(1));
+    builder.setMaxPerAckExtensionDuration(Duration.ofSeconds(60));
     streamingSubscriberConnection = builder.build();
-    assertEquals(Duration.ofMinutes(1), streamingSubscriberConnection.getStreamAckDeadline());
+    assertEquals((Integer) 60, streamingSubscriberConnection.getStreamAckDeadlineSeconds());
 
     // Set duration too small
-    builder.setMaxDurationPerAckExtension(Duration.ofSeconds(1));
+    builder.setMaxPerAckExtensionDuration(Duration.ofSeconds(1));
     streamingSubscriberConnection = builder.build();
     assertEquals(
-        StreamingSubscriberConnection.MIN_STREAM_ACK_DEADLINE,
-        streamingSubscriberConnection.getStreamAckDeadline());
+        (Integer) Subscriber.MIN_ACK_DEADLINE_SECONDS,
+        streamingSubscriberConnection.getStreamAckDeadlineSeconds());
 
     // Set duration too large
-    builder.setMaxDurationPerAckExtension(Duration.ofMinutes(60));
+    builder.setMaxPerAckExtensionDuration(Duration.ofHours(1));
     streamingSubscriberConnection = builder.build();
     assertEquals(
-        StreamingSubscriberConnection.MAX_STREAM_ACK_DEADLINE,
-        streamingSubscriberConnection.getStreamAckDeadline());
+        (Integer) Subscriber.MAX_ACK_DEADLINE_SECONDS,
+        streamingSubscriberConnection.getStreamAckDeadlineSeconds());
   }
 
   @Test
