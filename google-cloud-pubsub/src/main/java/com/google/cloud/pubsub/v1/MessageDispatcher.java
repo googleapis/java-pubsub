@@ -64,6 +64,8 @@ class MessageDispatcher {
 
   private MessageReceiver receiver;
   private MessageReceiverWithAckResponse receiverWithAckResponse;
+  private AckReplyConsumerWithResponse ackReplyConsumerWithResponse;
+
   private final AckProcessor ackProcessor;
 
   private final FlowController flowController;
@@ -120,7 +122,7 @@ class MessageDispatcher {
 
     /** Stop extending deadlines for this message and free flow control. */
     private void forget() {
-      if (pendingMessages.remove(this.ackIdMessageFuture) == null) {
+      if (pendingMessages.remove(this.ackIdMessageFuture.getAckId()) == null) {
         /*
          * We're forgetting the message for the second time. Probably because we ran out of total
          * expiration, forget the message, then the user finishes working on the message, and forget
@@ -191,6 +193,9 @@ class MessageDispatcher {
 
     receiver = builder.receiver;
     receiverWithAckResponse = builder.receiverWithAckResponse;
+
+    ackReplyConsumerWithResponse = builder.ackReplyConsumerWithResponse;
+
     ackProcessor = builder.ackProcessor;
     flowController = builder.flowController;
     enableExactlyOnceDelivery = new AtomicBoolean(builder.enableExactlyOnceDelivery);
@@ -347,7 +352,8 @@ class MessageDispatcher {
     List<OutstandingMessage> outstandingBatch = new ArrayList<>(messages.size());
     for (ReceivedMessage message : messages) {
       SettableApiFuture<AckResponse> messageFuture = null;
-      if (enableExactlyOnceDelivery.get()) {
+
+      if (receiverWithAckResponse != null) {
         messageFuture = SettableApiFuture.create();
       }
 
@@ -573,6 +579,7 @@ class MessageDispatcher {
   public static final class Builder {
     private MessageReceiver receiver;
     private MessageReceiverWithAckResponse receiverWithAckResponse;
+    private AckReplyConsumerWithResponse ackReplyConsumerWithResponse;
 
     private AckProcessor ackProcessor;
     private Duration ackExpirationPadding;
@@ -596,6 +603,12 @@ class MessageDispatcher {
 
     Builder(MessageReceiverWithAckResponse receiverWithAckResponse) {
       this.receiverWithAckResponse = receiverWithAckResponse;
+    }
+
+    public Builder setAckReplyConsumerWithResponse(
+        AckReplyConsumerWithResponse ackReplyConsumerWithResponse) {
+      this.ackReplyConsumerWithResponse = ackReplyConsumerWithResponse;
+      return this;
     }
 
     public Builder setAckProcessor(AckProcessor ackProcessor) {

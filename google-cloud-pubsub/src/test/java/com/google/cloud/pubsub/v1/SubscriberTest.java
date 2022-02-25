@@ -38,9 +38,7 @@ import io.grpc.Status;
 import io.grpc.StatusException;
 import io.grpc.inprocess.InProcessChannelBuilder;
 import io.grpc.inprocess.InProcessServerBuilder;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -321,14 +319,122 @@ public class SubscriberTest {
         Subscriber.Builder.DEFAULT_FLOW_CONTROL_SETTINGS.getMaxOutstandingElementCount());
   }
 
+  @Test
+  public void testPermissionDeniedFailureResponsePermissionDenied() {
+    int expectedChannelCount = 1;
+    MessageReceiverWithAckResponse messageReceiverWithAckResponse =
+        new MessageReceiverWithAckResponse() {
+          @Override
+          public void receiveMessage(
+              final PubsubMessage message,
+              final AckReplyConsumerWithResponse consumerWithResponse) {
+            Future<AckResponse> future = consumerWithResponse.ack();
+            try {
+              assertEquals(AckResponse.PERMISSION_DENIED, future.get());
+            } catch (Throwable t) {
+              // Something went wrong
+              throw new AssertionError();
+            }
+          }
+        };
+
+    Subscriber subscriber =
+        startSubscriber(
+            getTestSubscriberBuilder(messageReceiverWithAckResponse)
+                .setSystemExecutorProvider(
+                    InstantiatingExecutorProvider.newBuilder().setExecutorThreadCount(10).build()));
+
+    try {
+      // Send an unrecoverable error
+      fakeSubscriberServiceImpl.sendError(new StatusException(Status.PERMISSION_DENIED));
+      assertEquals(1, fakeSubscriberServiceImpl.waitForClosedStreams(1));
+
+      subscriber.stopAsync().awaitTerminated();
+    } catch (Throwable t) {
+      throw new AssertionError();
+    }
+  }
+
+  @Test
+  public void testPermissionDeniedFailureResponsePermissionFailedPrecondition() {
+    int expectedChannelCount = 1;
+    MessageReceiverWithAckResponse messageReceiverWithAckResponse =
+        new MessageReceiverWithAckResponse() {
+          @Override
+          public void receiveMessage(
+              final PubsubMessage message,
+              final AckReplyConsumerWithResponse consumerWithResponse) {
+            Future<AckResponse> future = consumerWithResponse.ack();
+            try {
+              assertEquals(AckResponse.FAILED_PRECONDITION, future.get());
+            } catch (Throwable t) {
+              // Something went wrong
+              throw new AssertionError();
+            }
+          }
+        };
+
+    Subscriber subscriber =
+        startSubscriber(
+            getTestSubscriberBuilder(messageReceiverWithAckResponse)
+                .setSystemExecutorProvider(
+                    InstantiatingExecutorProvider.newBuilder().setExecutorThreadCount(10).build()));
+
+    try {
+      // Send an unrecoverable error
+      fakeSubscriberServiceImpl.sendError(new StatusException(Status.FAILED_PRECONDITION));
+      assertEquals(1, fakeSubscriberServiceImpl.waitForClosedStreams(1));
+
+      subscriber.stopAsync().awaitTerminated();
+    } catch (Throwable t) {
+      throw new AssertionError();
+    }
+  }
+
+  @Test
+  public void testPermissionDeniedFailureResponsePermissionOther() {
+    int expectedChannelCount = 1;
+    MessageReceiverWithAckResponse messageReceiverWithAckResponse =
+        new MessageReceiverWithAckResponse() {
+          @Override
+          public void receiveMessage(
+              final PubsubMessage message,
+              final AckReplyConsumerWithResponse consumerWithResponse) {
+            Future<AckResponse> future = consumerWithResponse.ack();
+            try {
+              assertEquals(AckResponse.OTHER, future.get());
+            } catch (Throwable t) {
+              // Something went wrong
+              throw new AssertionError();
+            }
+          }
+        };
+
+    Subscriber subscriber =
+        startSubscriber(
+            getTestSubscriberBuilder(messageReceiverWithAckResponse)
+                .setSystemExecutorProvider(
+                    InstantiatingExecutorProvider.newBuilder().setExecutorThreadCount(10).build()));
+
+    try {
+      // Send an unrecoverable error - "OTHER"
+      fakeSubscriberServiceImpl.sendError(new StatusException(Status.INVALID_ARGUMENT));
+      assertEquals(1, fakeSubscriberServiceImpl.waitForClosedStreams(1));
+
+      subscriber.stopAsync().awaitTerminated();
+    } catch (Throwable t) {
+      throw new AssertionError();
+    }
+  }
+
   private Subscriber startSubscriber(Builder testSubscriberBuilder) {
     Subscriber subscriber = testSubscriberBuilder.build();
     subscriber.startAsync().awaitRunning();
     return subscriber;
   }
 
-  private Builder getTestSubscriberBuilder(MessageReceiver receiver) {
-    return Subscriber.newBuilder(TEST_SUBSCRIPTION, receiver)
+  private Builder getTestSubscriberBuilder(MessageReceiver messageReceiver) {
+    return Subscriber.newBuilder(TEST_SUBSCRIPTION, messageReceiver)
         .setExecutorProvider(FixedExecutorProvider.create(fakeExecutor))
         .setSystemExecutorProvider(FixedExecutorProvider.create(fakeExecutor))
         .setChannelProvider(
@@ -336,6 +442,21 @@ public class SubscriberTest {
         .setCredentialsProvider(NoCredentialsProvider.create())
         .setClock(fakeExecutor.getClock())
         .setParallelPullCount(1)
+        .setFlowControlSettings(
+            FlowControlSettings.newBuilder().setMaxOutstandingElementCount(1000L).build());
+  }
+
+  private Builder getTestSubscriberBuilder(
+      MessageReceiverWithAckResponse messageReceiverWithAckResponse) {
+    return Subscriber.newBuilder(TEST_SUBSCRIPTION, messageReceiverWithAckResponse)
+        .setExecutorProvider(FixedExecutorProvider.create(fakeExecutor))
+        .setSystemExecutorProvider(FixedExecutorProvider.create(fakeExecutor))
+        .setChannelProvider(
+            FixedTransportChannelProvider.create(GrpcTransportChannel.create(testChannel)))
+        .setCredentialsProvider(NoCredentialsProvider.create())
+        .setClock(fakeExecutor.getClock())
+        .setParallelPullCount(1)
+        .setExactlyOnceDeliveryEnabled(true)
         .setFlowControlSettings(
             FlowControlSettings.newBuilder().setMaxOutstandingElementCount(1000L).build());
   }

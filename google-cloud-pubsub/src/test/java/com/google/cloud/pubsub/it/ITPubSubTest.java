@@ -252,6 +252,83 @@ public class ITPubSubTest {
   }
 
   @Test
+  public void testPublishSubscribeMessageFutures() throws Exception {
+    TopicName topicName =
+        TopicName.newBuilder()
+            .setProject(projectId)
+            .setTopic(formatForTest("testing-publish-subscribe-message-futures"))
+            .build();
+    SubscriptionName subscriptionName =
+        SubscriptionName.of(projectId, formatForTest("testing-publish-subscribe-message-futures"));
+
+    topicAdminClient.createTopic(topicName);
+    subscriptionAdminClient.createSubscription(
+        getSubscription(subscriptionName, topicName, PushConfig.newBuilder().build(), 10, false));
+
+    final BlockingQueue<Object> receiveQueue = new LinkedBlockingQueue<>();
+    Subscriber subscriber =
+        Subscriber.newBuilder(
+                subscriptionName.toString(),
+                new MessageReceiverWithAckResponse() {
+                  @Override
+                  public void receiveMessage(
+                      final PubsubMessage message,
+                      final AckReplyConsumerWithResponse consumerWithResponse) {
+                    receiveQueue.offer(
+                        MessageAndConsumerWithResponse.create(message, consumerWithResponse));
+                  }
+                })
+            .setChannelProvider(
+                SubscriptionAdminSettings.defaultGrpcTransportProviderBuilder()
+                    .setMaxInboundMessageSize(MAX_INBOUND_MESSAGE_SIZE)
+                    .build())
+            .setExactlyOnceDeliveryEnabled(false)
+            .build();
+    subscriber.addListener(
+        new Subscriber.Listener() {
+          public void failed(Subscriber.State from, Throwable failure) {
+            receiveQueue.offer(failure);
+          }
+        },
+        MoreExecutors.directExecutor());
+    subscriber.startAsync();
+
+    Publisher publisher = Publisher.newBuilder(topicName).build();
+    publisher
+        .publish(PubsubMessage.newBuilder().setData(ByteString.copyFromUtf8("msg1")).build())
+        .get();
+    publisher
+        .publish(PubsubMessage.newBuilder().setData(ByteString.copyFromUtf8("msg2")).build())
+        .get();
+
+    publisher.shutdown();
+    publisher.awaitTermination(1, TimeUnit.MINUTES);
+
+    // Ack the first message.
+    MessageAndConsumerWithResponse toAck = pollQueueMessageAndConsumerWithResponse(receiveQueue);
+    Future<AckResponse> ackResponseFuture = toAck.consumerWithResponse().ack();
+    assertEquals(AckResponse.SUCCESSFUL, ackResponseFuture.get());
+
+    MessageAndConsumerWithResponse toNack = pollQueueMessageAndConsumerWithResponse(receiveQueue);
+    //  Because we are not using ordering keys, we have to compare the received messages to each
+    // other
+    assertNotEquals(toNack.message().getData(), toAck.message().getData());
+    Future<AckResponse> nackResponseFuture = toNack.consumerWithResponse().nack();
+    assertEquals(AckResponse.SUCCESSFUL, nackResponseFuture.get());
+
+    MessageAndConsumerWithResponse redeliveredToAck =
+        pollQueueMessageAndConsumerWithResponse(receiveQueue);
+    Future<AckResponse> redeliveredToAckResponse = redeliveredToAck.consumerWithResponse().ack();
+
+    assertEquals(toNack.message().getData(), redeliveredToAck.message().getData());
+    assertEquals(AckResponse.SUCCESSFUL, redeliveredToAckResponse.get());
+
+    subscriber.stopAsync().awaitTerminated();
+    subscriptionAdminClient.deleteSubscription(subscriptionName);
+    topicAdminClient.deleteTopic(topicName);
+  }
+
+  @Test
   public void testPublishSubscribeExactlyOnce() throws Exception {
     TopicName topicName =
         TopicName.newBuilder()
@@ -283,7 +360,7 @@ public class ITPubSubTest {
                 SubscriptionAdminSettings.defaultGrpcTransportProviderBuilder()
                     .setMaxInboundMessageSize(MAX_INBOUND_MESSAGE_SIZE)
                     .build())
-            .setExactlyOnceDeliveryEnabled(true)
+            .setExactlyOnceDeliveryEnabled(false)
             .build();
     subscriber.addListener(
         new Subscriber.Listener() {

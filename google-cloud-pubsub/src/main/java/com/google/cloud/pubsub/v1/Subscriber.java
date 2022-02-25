@@ -580,8 +580,8 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
      * <p>Will update the minDurationPerAckExtension if a user-provided value is not set
      */
     public Builder setExactlyOnceDeliveryEnabled(boolean exactlyOnceDeliveryEnabled) {
-      // If exactlyOnceDeliveryIsEnabled we want to update the default minAckDeadlineExtension if a
-      // default value is used
+      // If exactlyOnceDeliveryIsEnabled we want to update the default minAckDeadlineExtension if
+      // applicable
       if (exactlyOnceDeliveryEnabled && this.minDurationPerAckExtensionDefaultUsed) {
         this.minDurationPerAckExtension = DEFAULT_MIN_ACK_DEADLINE_EXTENSION_EXACTLY_ONCE;
       }

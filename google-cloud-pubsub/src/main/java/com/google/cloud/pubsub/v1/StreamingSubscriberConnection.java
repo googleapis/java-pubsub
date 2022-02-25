@@ -32,20 +32,17 @@ import com.google.api.gax.grpc.GrpcStatusCode;
 import com.google.api.gax.rpc.*;
 import com.google.cloud.pubsub.v1.MessageDispatcher.AckProcessor;
 import com.google.cloud.pubsub.v1.stub.SubscriberStub;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.protobuf.Any;
 import com.google.protobuf.Empty;
-import com.google.pubsub.v1.AcknowledgeRequest;
-import com.google.pubsub.v1.ModifyAckDeadlineRequest;
-import com.google.pubsub.v1.StreamingPullRequest;
-import com.google.pubsub.v1.StreamingPullResponse;
+import com.google.pubsub.v1.*;
 import com.google.rpc.ErrorInfo;
 import io.grpc.Status;
 import io.grpc.protobuf.StatusProto;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -91,6 +88,8 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
   private final boolean useLegacyFlowControl;
 
   private AtomicBoolean enableExactlyOnceDelivery;
+
+  private final MessageReceiverWithAckResponse receiverWithAckResponse;
 
   private final AtomicLong channelReconnectBackoffMillis =
       new AtomicLong(INITIAL_CHANNEL_RECONNECT_BACKOFF.toMillis());
@@ -149,6 +148,8 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     channelAffinity = builder.channelAffinity;
     enableExactlyOnceDelivery = new AtomicBoolean(builder.exactlyOnceDeliveryEnabled);
     clock = builder.clock;
+
+    receiverWithAckResponse = builder.receiverWithAckResponse;
 
     MessageDispatcher.Builder messageDispatcherBuilder;
     if (builder.receiver != null) {
@@ -262,6 +263,44 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
 
     @Override
     public void onError(Throwable t) {
+      // This acts as a "short-circuit" to return a failure to the user without going through the
+      // normal message processing flow
+      if (receiverWithAckResponse != null) {
+        final SettableApiFuture<AckResponse> future = SettableApiFuture.create();
+        if (!(t instanceof ApiException)) {
+          future.set(AckResponse.OTHER);
+        }
+
+        ApiException apiException = (ApiException) t;
+        switch (apiException.getStatusCode().getCode()) {
+          case FAILED_PRECONDITION:
+            future.set(AckResponse.FAILED_PRECONDITION);
+            break;
+          case PERMISSION_DENIED:
+            future.set(AckResponse.PERMISSION_DENIED);
+            break;
+          default:
+            future.set(AckResponse.OTHER);
+        }
+
+        AckReplyConsumerWithResponse ackReplyConsumerWithResponse =
+            new AckReplyConsumerWithResponse() {
+              @Override
+              public Future<AckResponse> ack() {
+                return future;
+              }
+
+              @Override
+              public Future<AckResponse> nack() {
+                return future;
+              }
+            };
+
+        receiverWithAckResponse.receiveMessage(
+            PubsubMessage.getDefaultInstance(), ackReplyConsumerWithResponse);
+      }
+
+      // Set our error future last
       errorFuture.setException(t);
     }
 
@@ -274,8 +313,11 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
 
   private void initialize() {
     final SettableApiFuture<Void> errorFuture = SettableApiFuture.create();
+    //    final SettableApiFuture<AckResponse> messageFuture = SettableApiFuture.create();
+
     final ResponseObserver<StreamingPullResponse> responseObserver =
         new StreamingPullResponseObserver(errorFuture);
+
     ClientStream<StreamingPullRequest> initClientStream =
         subscriberStub
             .streamingPullCallable()
@@ -329,6 +371,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
 
           @Override
           public void onFailure(Throwable cause) {
+
             if (!isAlive()) {
               // we don't care about subscription failures when we're no longer running.
               logger.log(Level.FINE, "pull failure after service no longer running", cause);
@@ -519,8 +562,8 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
         ackIdsInRequest.add(ackIdMessageFuture.getAckId());
       }
 
-      if (enableExactlyOnceDelivery.get()) {
-        // If enableExactlyOnceDelivery is true:
+      if (receiverWithAckResponse != null) {
+        // If receiverWithAckResponse is true:
         // 1) make a response future
         // 2) add it to our future map
         // 3) add it to the logging callback
@@ -648,8 +691,8 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
         Lists.partition(ackIdMessageFutureListToSend, MAX_PER_REQUEST_CHANGES)) {
       List<String> ackIdsInRequest = new ArrayList<>();
       ApiFutureCallback<Empty> loggingCallback;
-      if (enableExactlyOnceDelivery.get()) {
-        // If enableExactlyOnceDelivery is true:
+      if (receiverWithAckResponse != null) {
+        // If receiverWithAckResponse is true:
         // 1) make a response future
         // 2) add it to our map
         // 3) add it to the logging callback
@@ -814,10 +857,6 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     }
 
     public Builder setExactlyOnceDeliveryEnabled(boolean exactlyOnceDeliveryEnabled) {
-      // If the receiverWithAckResponse has been set, we must have exactlyOnceDelivery enabled
-      Preconditions.checkArgument(
-          (this.receiverWithAckResponse == null)
-              || ((this.receiverWithAckResponse != null) && (exactlyOnceDeliveryEnabled)));
       this.exactlyOnceDeliveryEnabled = exactlyOnceDeliveryEnabled;
       return this;
     }

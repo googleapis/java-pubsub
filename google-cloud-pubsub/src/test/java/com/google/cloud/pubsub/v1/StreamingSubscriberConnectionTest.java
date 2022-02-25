@@ -85,12 +85,6 @@ public class StreamingSubscriberConnectionTest {
     systemExecutor.shutdown();
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void testBuilderInvalidConfiguration() {
-    StreamingSubscriberConnection.newBuilder(mock(MessageReceiverWithAckResponse.class))
-        .setExactlyOnceDeliveryEnabled(false);
-  }
-
   @Test
   public void testSetupAndTeardown() {
     StreamingSubscriberConnection streamingSubscriberConnection =
