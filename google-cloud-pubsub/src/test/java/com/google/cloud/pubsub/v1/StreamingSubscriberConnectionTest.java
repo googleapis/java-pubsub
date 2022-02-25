@@ -103,39 +103,6 @@ public class StreamingSubscriberConnectionTest {
   }
 
   @Test
-  public void testMaxDurationPerAckExtensionExactlyOnceNotEnabled() {
-    StreamingSubscriberConnection.Builder builder;
-    builder = StreamingSubscriberConnection.newBuilder(mock(MessageReceiverWithAckResponse.class));
-
-    StreamingSubscriberConnection streamingSubscriberConnection;
-
-    // Default duration
-    streamingSubscriberConnection = builder.build();
-    assertEquals(
-        (Integer) Subscriber.STREAM_ACK_DEADLINE_DEFAULT_SECONDS,
-        streamingSubscriberConnection.getStreamAckDeadlineSeconds());
-
-    // Valid custom duration
-    builder.setMaxPerAckExtensionDuration(Duration.ofSeconds(60));
-    streamingSubscriberConnection = builder.build();
-    assertEquals((Integer) 60, streamingSubscriberConnection.getStreamAckDeadlineSeconds());
-
-    // Set duration too small
-    builder.setMaxPerAckExtensionDuration(Duration.ofSeconds(1));
-    streamingSubscriberConnection = builder.build();
-    assertEquals(
-        (Integer) Subscriber.MIN_ACK_DEADLINE_SECONDS,
-        streamingSubscriberConnection.getStreamAckDeadlineSeconds());
-
-    // Set duration too large
-    builder.setMaxPerAckExtensionDuration(Duration.ofHours(1));
-    streamingSubscriberConnection = builder.build();
-    assertEquals(
-        (Integer) Subscriber.MAX_ACK_DEADLINE_SECONDS,
-        streamingSubscriberConnection.getStreamAckDeadlineSeconds());
-  }
-
-  @Test
   public void testSendAckOperationsExactlyOnceDisabledNoMessageFutures() {
     // Setup mocks
     List<ModackWithMessageFuture> modackWithMessageFutureList =
@@ -530,6 +497,10 @@ public class StreamingSubscriberConnectionTest {
         .setExecutor(executor)
         .setSystemExecutor(systemExecutor)
         .setClock(clock)
+        .setMinDurationPerAckExtension(Subscriber.DEFAULT_MIN_ACK_DEADLINE_EXTENSION)
+        .setMinDurationPerAckExtensionDefaultUsed(true)
+        .setMaxDurationPerAckExtension(Subscriber.DEFAULT_MAX_ACK_DEADLINE_EXTENSION)
+        .setMaxDurationPerAckExtensionDefaultUsed(true)
         .setExactlyOnceDeliveryEnabled(exactlyOnceDeliveryEnabled)
         .build();
   }

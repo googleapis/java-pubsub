@@ -17,8 +17,7 @@
 package com.google.cloud.pubsub.v1;
 
 import static com.google.common.truth.Truth.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import com.google.api.gax.batching.FlowController;
@@ -359,6 +358,97 @@ public class MessageDispatcherTest {
         .sendAckOperations(eq(Collections.emptyList()), eq(Collections.emptyList()));
   }
 
+  @Test
+  public void testAckExtensionDefaults() {
+    MessageDispatcher messageDispatcher;
+    // ExactlyOnceDeliveryEnabled is turned off, using defaults, then on
+    messageDispatcher =
+        MessageDispatcher.newBuilder(mock(MessageReceiver.class))
+            .setMinDurationPerAckExtension(Subscriber.DEFAULT_MIN_ACK_DEADLINE_EXTENSION)
+            .setMinDurationPerAckExtensionDefaultUsed(true)
+            .setMaxDurationPerAckExtension(Subscriber.DEFAULT_MAX_ACK_DEADLINE_EXTENSION)
+            .setMaxDurationPerAckExtensionDefaultUsed(true)
+            .build();
+
+    assertEquals(
+        Math.toIntExact(Subscriber.DEFAULT_MIN_ACK_DEADLINE_EXTENSION.getSeconds()),
+        messageDispatcher.getMinDurationPerAckExtensionSeconds());
+    assertEquals(
+        Math.toIntExact(Subscriber.DEFAULT_MAX_ACK_DEADLINE_EXTENSION.getSeconds()),
+        messageDispatcher.getMaxDurationPerAckExtensionSeconds());
+
+    messageDispatcher.setEnableExactlyOnceDelivery(true);
+
+    // Should change min deadline
+    assertEquals(
+        Math.toIntExact(Subscriber.DEFAULT_MIN_ACK_DEADLINE_EXTENSION_EXACTLY_ONCE.getSeconds()),
+        messageDispatcher.getMinDurationPerAckExtensionSeconds());
+
+    // ExactlyOnceDeliveryEnabled is turned on, using defaults, then off
+    messageDispatcher =
+        MessageDispatcher.newBuilder(mock(MessageReceiver.class))
+            .setEnableExactlyOnceDelivery(true)
+            .setMinDurationPerAckExtension(
+                Subscriber.DEFAULT_MIN_ACK_DEADLINE_EXTENSION_EXACTLY_ONCE)
+            .setMinDurationPerAckExtensionDefaultUsed(true)
+            .setMaxDurationPerAckExtension(Subscriber.DEFAULT_MIN_ACK_DEADLINE_EXTENSION)
+            .setMaxDurationPerAckExtensionDefaultUsed(true)
+            .build();
+
+    assertEquals(
+        Math.toIntExact(Subscriber.DEFAULT_MIN_ACK_DEADLINE_EXTENSION_EXACTLY_ONCE.getSeconds()),
+        messageDispatcher.getMinDurationPerAckExtensionSeconds());
+    assertEquals(
+        Math.toIntExact(Subscriber.DEFAULT_MAX_ACK_DEADLINE_EXTENSION.getSeconds()),
+        messageDispatcher.getMaxDurationPerAckExtensionSeconds());
+
+    messageDispatcher.setEnableExactlyOnceDelivery(false);
+
+    // Should change min deadline
+    assertEquals(
+        Math.toIntExact(Subscriber.DEFAULT_MIN_ACK_DEADLINE_EXTENSION_EXACTLY_ONCE.getSeconds()),
+        messageDispatcher.getMinDurationPerAckExtensionSeconds());
+
+    // ExactlyOnceDeliveryEnabled is turned off, using custom min and max, then on
+    int customMinSeconds = 5;
+    int customMaxSeconds = 30;
+    messageDispatcher =
+        MessageDispatcher.newBuilder(mock(MessageReceiver.class))
+            .setMinDurationPerAckExtension(Duration.ofSeconds(customMinSeconds))
+            .setMinDurationPerAckExtensionDefaultUsed(false)
+            .setMaxDurationPerAckExtension(Duration.ofSeconds(customMaxSeconds))
+            .setMaxDurationPerAckExtensionDefaultUsed(false)
+            .build();
+
+    assertEquals(customMinSeconds, messageDispatcher.getMinDurationPerAckExtensionSeconds());
+    assertEquals(customMaxSeconds, messageDispatcher.getMaxDurationPerAckExtensionSeconds());
+
+    messageDispatcher.setEnableExactlyOnceDelivery(true);
+
+    // no changes should occur
+    assertEquals(customMinSeconds, messageDispatcher.getMinDurationPerAckExtensionSeconds());
+
+    // ExactlyOnceDeliveryEnabled is turned off, using custom max, then on
+    customMaxSeconds = 30;
+    messageDispatcher =
+        MessageDispatcher.newBuilder(mock(MessageReceiver.class))
+            .setMinDurationPerAckExtension(Subscriber.DEFAULT_MIN_ACK_DEADLINE_EXTENSION)
+            .setMinDurationPerAckExtensionDefaultUsed(true)
+            .setMaxDurationPerAckExtension(Duration.ofSeconds(customMaxSeconds))
+            .setMaxDurationPerAckExtensionDefaultUsed(false)
+            .build();
+
+    assertEquals(
+        Math.toIntExact(Subscriber.DEFAULT_MIN_ACK_DEADLINE_EXTENSION.getSeconds()),
+        messageDispatcher.getMinDurationPerAckExtensionSeconds());
+    assertEquals(customMaxSeconds, messageDispatcher.getMaxDurationPerAckExtensionSeconds());
+
+    messageDispatcher.setEnableExactlyOnceDelivery(true);
+
+    // min should be updated to the custom max
+    assertEquals(customMaxSeconds, messageDispatcher.getMinDurationPerAckExtensionSeconds());
+  }
+
   private MessageDispatcher getMessageDispatcher() {
     return getMessageDispatcher(mock(MessageReceiver.class));
   }
@@ -379,7 +469,10 @@ public class MessageDispatcherTest {
             .setAckProcessor(mockAckProcessor)
             .setAckExpirationPadding(ACK_EXPIRATION_PADDING_DEFAULT)
             .setMaxAckExtensionPeriod(MAX_ACK_EXTENSION_PERIOD)
-            .setStreamAckDeadlineSeconds(MAX_SECONDS_PER_ACK_EXTENSION)
+            .setMinDurationPerAckExtension(Subscriber.DEFAULT_MIN_ACK_DEADLINE_EXTENSION)
+            .setMinDurationPerAckExtensionDefaultUsed(true)
+            .setMaxDurationPerAckExtension(Subscriber.DEFAULT_MAX_ACK_DEADLINE_EXTENSION)
+            .setMaxDurationPerAckExtensionDefaultUsed(true)
             .setAckLatencyDistribution(mock(Distribution.class))
             .setFlowController(mock(FlowController.class))
             .setExecutor(MoreExecutors.directExecutor())

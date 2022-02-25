@@ -92,10 +92,23 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
   private static final int THREADS_PER_CHANNEL = 5;
   private static final int MAX_INBOUND_MESSAGE_SIZE =
       20 * 1024 * 1024; // 20MB API maximum message size.
-  @InternalApi static final int MAX_ACK_DEADLINE_SECONDS = 600;
-  @InternalApi static final int MIN_ACK_DEADLINE_SECONDS = 10;
-  @InternalApi static final int STREAM_ACK_DEADLINE_DEFAULT_SECONDS = 10;
-  @InternalApi static final int STREAM_ACK_DEADLINE_DEFAULT_EXACTLY_ONCE_SECONDS = 60;
+
+  @InternalApi static final Duration DEFAULT_MAX_ACK_EXTENSION_PERIOD = Duration.ofMinutes(60);
+
+  @InternalApi
+  static final Duration DEFAULT_MIN_ACK_DEADLINE_EXTENSION_EXACTLY_ONCE = Duration.ofMinutes(1);
+
+  @InternalApi static final Duration DEFAULT_MIN_ACK_DEADLINE_EXTENSION = Duration.ofMinutes(0);
+  @InternalApi static final Duration DEFAULT_MAX_ACK_DEADLINE_EXTENSION = Duration.ofSeconds(0);
+
+  @InternalApi static final Duration MIN_STREAM_ACK_DEADLINE = Duration.ofSeconds(10);
+  @InternalApi static final Duration MAX_STREAM_ACK_DEADLINE = Duration.ofSeconds(600);
+
+  @InternalApi static final Duration STREAM_ACK_DEADLINE_DEFAULT = Duration.ofSeconds(60);
+
+  @InternalApi
+  static final Duration STREAM_ACK_DEADLINE_EXACTLY_ONCE_DEFAULT = Duration.ofSeconds(60);
+
   @InternalApi static final Duration ACK_EXPIRATION_PADDING_DEFAULT = Duration.ofSeconds(5);
 
   private static final Logger logger = Logger.getLogger(Subscriber.class.getName());
@@ -105,13 +118,17 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
   private final boolean useLegacyFlowControl;
   private final Duration maxAckExtensionPeriod;
   private final Duration maxDurationPerAckExtension;
+  private final boolean maxDurationPerAckExtensionDefaultUsed;
+  private final Duration minDurationPerAckExtension;
+  private final boolean minDurationPerAckExtensionDefaultUsed;
+
   // The ExecutorProvider used to generate executors for processing messages.
   private final ExecutorProvider executorProvider;
   // An instantiation of the SystemExecutorProvider used for processing acks
   // and other system actions.
   @Nullable private final ScheduledExecutorService alarmsExecutor;
   private final Distribution ackLatencyDistribution =
-      new Distribution(MAX_ACK_DEADLINE_SECONDS + 1);
+      new Distribution(Math.toIntExact(MAX_STREAM_ACK_DEADLINE.getSeconds()) + 1);
 
   private SubscriberStub subscriberStub;
   private final SubscriberStubSettings subStubSettings;
@@ -134,6 +151,10 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
 
     maxAckExtensionPeriod = builder.maxAckExtensionPeriod;
     maxDurationPerAckExtension = builder.maxDurationPerAckExtension;
+    maxDurationPerAckExtensionDefaultUsed = builder.maxDurationPerAckExtensionDefaultUsed;
+    minDurationPerAckExtension = builder.minDurationPerAckExtension;
+    minDurationPerAckExtensionDefaultUsed = builder.minDurationPerAckExtensionDefaultUsed;
+
     clock = builder.clock.isPresent() ? builder.clock.get() : CurrentMillisClock.getDefaultClock();
 
     flowController =
@@ -181,7 +202,7 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
     // We regularly look up the distribution for a good subscription deadline.
     // So we seed the distribution with the minimum value to start with.
     // Distribution is percentile-based, so this value will eventually lose importance.
-    ackLatencyDistribution.record(MIN_ACK_DEADLINE_SECONDS);
+    ackLatencyDistribution.record(Math.toIntExact(MIN_STREAM_ACK_DEADLINE.getSeconds()));
   }
 
   /**
@@ -352,7 +373,10 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
                 .setSubscription(subscription)
                 .setAckExpirationPadding(ACK_EXPIRATION_PADDING_DEFAULT)
                 .setMaxAckExtensionPeriod(maxAckExtensionPeriod)
-                .setMaxPerAckExtensionDuration(maxDurationPerAckExtension)
+                .setMinDurationPerAckExtension(minDurationPerAckExtension)
+                .setMinDurationPerAckExtensionDefaultUsed(minDurationPerAckExtensionDefaultUsed)
+                .setMaxDurationPerAckExtension(maxDurationPerAckExtension)
+                .setMaxDurationPerAckExtensionDefaultUsed(maxDurationPerAckExtensionDefaultUsed)
                 .setAckLatencyDistribution(ackLatencyDistribution)
                 .setSubscriberStub(subscriberStub)
                 .setChannelAffinity(i)
@@ -431,7 +455,6 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
 
   /** Builder of {@link Subscriber Subscribers}. */
   public static final class Builder {
-    private static final Duration DEFAULT_MAX_ACK_EXTENSION_PERIOD = Duration.ofMinutes(60);
     static final FlowControlSettings DEFAULT_FLOW_CONTROL_SETTINGS =
         FlowControlSettings.newBuilder()
             .setMaxOutstandingElementCount(1000L)
@@ -449,7 +472,11 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
     private MessageReceiverWithAckResponse receiverWithAckResponse;
 
     private Duration maxAckExtensionPeriod = DEFAULT_MAX_ACK_EXTENSION_PERIOD;
-    private Duration maxDurationPerAckExtension;
+    private Duration minDurationPerAckExtension = DEFAULT_MIN_ACK_DEADLINE_EXTENSION;
+    private boolean minDurationPerAckExtensionDefaultUsed = true;
+    private Duration maxDurationPerAckExtension = DEFAULT_MAX_ACK_DEADLINE_EXTENSION;
+    private boolean maxDurationPerAckExtensionDefaultUsed = true;
+
     private boolean useLegacyFlowControl = false;
     private FlowControlSettings flowControlSettings = DEFAULT_FLOW_CONTROL_SETTINGS;
 
@@ -547,7 +574,18 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
       return this;
     }
 
+    /**
+     * Enables/Disabled ExactlyOnceDelivery
+     *
+     * <p>Will update the minDurationPerAckExtension if a user-provided value is not set
+     */
     public Builder setExactlyOnceDeliveryEnabled(boolean exactlyOnceDeliveryEnabled) {
+      // If exactlyOnceDeliveryIsEnabled we want to update the default minAckDeadlineExtension if a
+      // default value is used
+      if (exactlyOnceDeliveryEnabled && this.minDurationPerAckExtensionDefaultUsed) {
+        this.minDurationPerAckExtension = DEFAULT_MIN_ACK_DEADLINE_EXTENSION_EXACTLY_ONCE;
+      }
+
       this.exactlyOnceDeliveryEnabled = exactlyOnceDeliveryEnabled;
       return this;
     }
@@ -578,8 +616,37 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
      * <p>MaxDurationPerAckExtension configuration can be disabled by specifying a zero duration.
      */
     public Builder setMaxDurationPerAckExtension(Duration maxDurationPerAckExtension) {
-      Preconditions.checkArgument(maxDurationPerAckExtension.toMillis() >= 0);
+      // If a non-default min is set, make sure min is less than max
+      Preconditions.checkArgument(
+          maxDurationPerAckExtension.toMillis() >= 0
+              && (this.minDurationPerAckExtensionDefaultUsed
+                  || (this.minDurationPerAckExtension.toMillis()
+                      < maxDurationPerAckExtension.toMillis())));
       this.maxDurationPerAckExtension = maxDurationPerAckExtension;
+      this.maxDurationPerAckExtensionDefaultUsed = false;
+      return this;
+    }
+
+    /**
+     * Set the lower bound for a single mod ack extention period.
+     *
+     * <p>The ack deadline will continue to be extended by up to this duration until
+     * MinAckExtensionPeriod is reached. Setting MinDurationPerAckExtension bounds the minimum
+     * amount of time before a mesage re-delivery in the event the Subscriber fails to extend the
+     * deadline.
+     *
+     * <p>MinDurationPerAckExtension configuration can be disabled by specifying a zero duration.
+     */
+    public Builder setMinDurationPerAckExtension(Duration minDurationPerAckExtension) {
+      // If a non-default max is set, make sure min is less than max
+      Preconditions.checkArgument(
+          maxDurationPerAckExtension.toMillis() >= 0
+              && (this.maxDurationPerAckExtensionDefaultUsed
+                  || (minDurationPerAckExtension.toMillis()
+                      < this.maxDurationPerAckExtension.toMillis())));
+
+      this.minDurationPerAckExtension = minDurationPerAckExtension;
+      this.minDurationPerAckExtensionDefaultUsed = false;
       return this;
     }
 

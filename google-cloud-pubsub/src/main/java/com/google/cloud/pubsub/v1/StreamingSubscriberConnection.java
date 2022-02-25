@@ -73,8 +73,14 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
       "PERMANENT_FAILURE_INVALID_ACK_ID";
   private final String TRANSIENT_FAILURE_METADATA_PREFIX = "TRANSIENT_";
 
+  private Duration maxAckExtensionPeriod;
+  private Duration minDurationPerAckExtension;
+  private boolean minDurationPerAckExtensionDefaultUsed;
+  private Duration maxDurationPerAckExtension;
+  private boolean maxDurationPerAckExtensionDefaultUsed;
+
   private AtomicInteger streamAckDeadlineSeconds = new AtomicInteger();
-  private final boolean defaultStreamAckDeadline;
+
   private final SubscriberStub subscriberStub;
   private final int channelAffinity;
   private final String subscription;
@@ -106,18 +112,38 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
   private StreamingSubscriberConnection(Builder builder) {
     subscription = builder.subscription;
     systemExecutor = builder.systemExecutor;
-    this.defaultStreamAckDeadline = builder.defaultStreamAckDeadline;
 
-    if (builder.maxPerAckExtensionSeconds != null) {
-      this.streamAckDeadlineSeconds.set(builder.maxPerAckExtensionSeconds);
-    } else {
+    // We need to set the default stream ack deadline on the initial request, this will be
+    // updated by modack requests in the message dispatcher
+    if (builder.maxDurationPerAckExtensionDefaultUsed) {
+      // If the default is used, check if exactly once is enabled and set appropriately
       if (builder.exactlyOnceDeliveryEnabled) {
-        this.streamAckDeadlineSeconds.set(
-            Subscriber.STREAM_ACK_DEADLINE_DEFAULT_EXACTLY_ONCE_SECONDS);
+        streamAckDeadlineSeconds.set(
+            Math.toIntExact(Subscriber.STREAM_ACK_DEADLINE_EXACTLY_ONCE_DEFAULT.getSeconds()));
       } else {
-        this.streamAckDeadlineSeconds.set(Subscriber.STREAM_ACK_DEADLINE_DEFAULT_SECONDS);
+        streamAckDeadlineSeconds.set(
+            Math.toIntExact(Subscriber.STREAM_ACK_DEADLINE_DEFAULT.getSeconds()));
       }
+    } else if (builder.maxDurationPerAckExtension.compareTo(Subscriber.MIN_STREAM_ACK_DEADLINE)
+        < 0) {
+      // We will not be able to extend more than the default minimum
+      streamAckDeadlineSeconds.set(
+          Math.toIntExact(Subscriber.MIN_STREAM_ACK_DEADLINE.getSeconds()));
+    } else if (builder.maxDurationPerAckExtension.compareTo(Subscriber.MAX_STREAM_ACK_DEADLINE)
+        > 0) {
+      // Will not be able to extend past the max
+      streamAckDeadlineSeconds.set(
+          Math.toIntExact(Subscriber.MAX_STREAM_ACK_DEADLINE.getSeconds()));
+    } else {
+      streamAckDeadlineSeconds.set(
+          Math.toIntExact(builder.maxDurationPerAckExtension.getSeconds()));
     }
+
+    // These need to be stored to reference if enableExactlyOnceDelivery changes
+    minDurationPerAckExtension = builder.minDurationPerAckExtension;
+    minDurationPerAckExtensionDefaultUsed = builder.minDurationPerAckExtensionDefaultUsed;
+    maxDurationPerAckExtension = builder.maxDurationPerAckExtension;
+    maxDurationPerAckExtensionDefaultUsed = builder.maxDurationPerAckExtensionDefaultUsed;
 
     subscriberStub = builder.subscriberStub;
     channelAffinity = builder.channelAffinity;
@@ -136,7 +162,10 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
             .setAckProcessor(this)
             .setAckExpirationPadding(builder.ackExpirationPadding)
             .setMaxAckExtensionPeriod(builder.maxAckExtensionPeriod)
-            .setStreamAckDeadlineSeconds(this.streamAckDeadlineSeconds.get())
+            .setMinDurationPerAckExtension(builder.minDurationPerAckExtension)
+            .setMinDurationPerAckExtensionDefaultUsed(builder.minDurationPerAckExtensionDefaultUsed)
+            .setMaxDurationPerAckExtension(builder.maxDurationPerAckExtension)
+            .setMaxDurationPerAckExtensionDefaultUsed(builder.maxDurationPerAckExtensionDefaultUsed)
             .setAckLatencyDistribution(builder.ackLatencyDistribution)
             .setFlowController(builder.flowController)
             .setEnableExactlyOnceDelivery(enableExactlyOnceDelivery.get())
@@ -212,20 +241,6 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
       if (enableExactlyOnceDelivery.get() != isExactlyOnceDeliveryEnabled) {
         enableExactlyOnceDelivery.set(isExactlyOnceDeliveryEnabled);
         messageDispatcher.setEnableExactlyOnceDelivery(isExactlyOnceDeliveryEnabled);
-
-        // Update modack extension defaults if applicable
-        if (defaultStreamAckDeadline) {
-          if (isExactlyOnceDeliveryEnabled) {
-            messageDispatcher.setMessageDeadlineSeconds(
-                Subscriber.STREAM_ACK_DEADLINE_DEFAULT_EXACTLY_ONCE_SECONDS);
-            streamAckDeadlineSeconds.set(
-                Subscriber.STREAM_ACK_DEADLINE_DEFAULT_EXACTLY_ONCE_SECONDS);
-          } else {
-            messageDispatcher.setMessageDeadlineSeconds(
-                Subscriber.STREAM_ACK_DEADLINE_DEFAULT_SECONDS);
-            streamAckDeadlineSeconds.set(Subscriber.STREAM_ACK_DEADLINE_DEFAULT_SECONDS);
-          }
-        }
       }
 
       messageDispatcher.processReceivedMessages(response.getReceivedMessagesList());
@@ -707,8 +722,10 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     private String subscription;
     private Duration ackExpirationPadding;
     private Duration maxAckExtensionPeriod;
-    private Integer maxPerAckExtensionSeconds;
-    private boolean defaultStreamAckDeadline = true;
+    private Duration minDurationPerAckExtension;
+    private boolean minDurationPerAckExtensionDefaultUsed;
+    private Duration maxDurationPerAckExtension;
+    private boolean maxDurationPerAckExtensionDefaultUsed;
 
     private Distribution ackLatencyDistribution;
     private SubscriberStub subscriberStub;
@@ -744,35 +761,26 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
       return this;
     }
 
-    public Builder setMaxPerAckExtensionDuration(Duration maxPerAckExtension) {
-      if (maxPerAckExtension == null) {
-        // If not set, the StreamingSubscriberConnection constructor will set the defaults
-        // appropriately
-        return this;
-      }
-      int maxPerAckExtensionSeconds = Math.toIntExact(maxPerAckExtension.getSeconds());
-
-      if (maxPerAckExtensionSeconds < Subscriber.MIN_ACK_DEADLINE_SECONDS) {
-        logger.log(
-            Level.WARNING,
-            "maxDurationPerAckExtension too small, should be >= {0} seconds",
-            Subscriber.MIN_ACK_DEADLINE_SECONDS);
-        this.maxPerAckExtensionSeconds = Subscriber.MIN_ACK_DEADLINE_SECONDS;
-      } else if (maxPerAckExtensionSeconds > Subscriber.MAX_ACK_DEADLINE_SECONDS) {
-        logger.log(
-            Level.WARNING,
-            "maxDurationPerAckExtension too large, should be <= {0} seconds",
-            Subscriber.MAX_ACK_DEADLINE_SECONDS);
-        this.maxPerAckExtensionSeconds = Subscriber.MAX_ACK_DEADLINE_SECONDS;
-      } else {
-        this.maxPerAckExtensionSeconds = maxPerAckExtensionSeconds;
-        this.defaultStreamAckDeadline = false;
-      }
+    public Builder setMinDurationPerAckExtension(Duration minDurationPerAckExtension) {
+      this.minDurationPerAckExtension = minDurationPerAckExtension;
       return this;
     }
 
-    public Integer getMaxPerAckExtensionSeconds() {
-      return maxPerAckExtensionSeconds;
+    public Builder setMinDurationPerAckExtensionDefaultUsed(
+        boolean minDurationPerAckExtensionDefaultUsed) {
+      this.minDurationPerAckExtensionDefaultUsed = minDurationPerAckExtensionDefaultUsed;
+      return this;
+    }
+
+    public Builder setMaxDurationPerAckExtension(Duration maxDurationPerAckExtension) {
+      this.maxDurationPerAckExtension = maxDurationPerAckExtension;
+      return this;
+    }
+
+    public Builder setMaxDurationPerAckExtensionDefaultUsed(
+        boolean maxDurationPerAckExtensionDefaultUsed) {
+      this.maxDurationPerAckExtensionDefaultUsed = maxDurationPerAckExtensionDefaultUsed;
+      return this;
     }
 
     public Builder setAckLatencyDistribution(Distribution ackLatencyDistribution) {

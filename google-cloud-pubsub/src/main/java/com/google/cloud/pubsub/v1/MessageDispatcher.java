@@ -57,7 +57,11 @@ class MessageDispatcher {
 
   private final Duration ackExpirationPadding;
   private final Duration maxAckExtensionPeriod;
-  private int streamAckDeadlineSeconds;
+  private int minDurationPerAckExtensionSeconds;
+  private final boolean minDurationPerAckExtensionDefaultUsed;
+  private int maxDurationPerAckExtensionSeconds;
+  private final boolean maxDurationPerAckExtensionDefaultUsed;
+
   private MessageReceiver receiver;
   private MessageReceiverWithAckResponse receiverWithAckResponse;
   private final AckProcessor ackProcessor;
@@ -76,10 +80,7 @@ class MessageDispatcher {
   private final LinkedBlockingQueue<AckIdMessageFuture> pendingReceipts =
       new LinkedBlockingQueue<>();
 
-  // Start the deadline at the minimum ack deadline so messages which arrive before this is
-  // updated will not have a long ack deadline.
-  private final AtomicInteger messageDeadlineSeconds =
-      new AtomicInteger(Subscriber.MIN_ACK_DEADLINE_SECONDS);
+  private final AtomicInteger messageDeadlineSeconds = new AtomicInteger();
   private final AtomicBoolean extendDeadline = new AtomicBoolean(true);
   private final Lock jobLock;
   private ScheduledFuture<?> backgroundJob;
@@ -176,7 +177,18 @@ class MessageDispatcher {
     systemExecutor = builder.systemExecutor;
     ackExpirationPadding = builder.ackExpirationPadding;
     maxAckExtensionPeriod = builder.maxAckExtensionPeriod;
-    streamAckDeadlineSeconds = builder.streamAckDeadlineSeconds;
+
+    minDurationPerAckExtensionSeconds =
+        Math.toIntExact(builder.minDurationPerAckExtension.getSeconds());
+    minDurationPerAckExtensionDefaultUsed = builder.minDurationPerAckExtensionDefaultUsed;
+    maxDurationPerAckExtensionSeconds =
+        Math.toIntExact(builder.maxDurationPerAckExtension.getSeconds());
+    maxDurationPerAckExtensionDefaultUsed = builder.maxDurationPerAckExtensionDefaultUsed;
+
+    // Start the deadline at the minimum ack deadline so messages which arrive before this is
+    // updated will not have a long ack deadline.
+    messageDeadlineSeconds.set(minDurationPerAckExtensionSeconds);
+
     receiver = builder.receiver;
     receiverWithAckResponse = builder.receiverWithAckResponse;
     ackProcessor = builder.ackProcessor;
@@ -189,9 +201,16 @@ class MessageDispatcher {
     sequentialExecutor = new SequentialExecutorService.AutoExecutor(builder.executor);
   }
 
-  public MessageDispatcher setStreamAckDeadlineSeconds(Integer streamAckDeadlineSeconds) {
-    this.streamAckDeadlineSeconds = streamAckDeadlineSeconds;
-    return this;
+  public int getMaxDurationPerAckExtensionSeconds() {
+    return maxDurationPerAckExtensionSeconds;
+  }
+
+  public int getMinDurationPerAckExtensionSeconds() {
+    return minDurationPerAckExtensionSeconds;
+  }
+
+  public boolean getEnableExactlyOnceDelivery() {
+    return enableExactlyOnceDelivery.get();
   }
 
   void start() {
@@ -281,6 +300,35 @@ class MessageDispatcher {
 
   @InternalApi
   void setEnableExactlyOnceDelivery(boolean enableExactlyOnceDelivery) {
+    // Sanity check that we are changing the enableExactlyOnceDelivery state and that we are using
+    // the default min
+    if (enableExactlyOnceDelivery == this.enableExactlyOnceDelivery.get()
+        || !minDurationPerAckExtensionDefaultUsed) {
+      return;
+    }
+
+    // We just need to update the minDurationPerAckExtensionSeconds as the
+    // maxDurationPerAckExtensionSeconds does not change
+    int possibleNewMinAckDeadlineExtensionSeconds;
+
+    if (enableExactlyOnceDelivery) {
+      possibleNewMinAckDeadlineExtensionSeconds =
+          Math.toIntExact(Subscriber.DEFAULT_MIN_ACK_DEADLINE_EXTENSION_EXACTLY_ONCE.getSeconds());
+    } else {
+      possibleNewMinAckDeadlineExtensionSeconds =
+          Math.toIntExact(Subscriber.DEFAULT_MIN_ACK_DEADLINE_EXTENSION_EXACTLY_ONCE.getSeconds());
+    }
+
+    // If we are not using the default maxDurationAckExtension, check if the
+    // minAckDeadlineExtensionExactlyOnce
+    // needs to be bounded by the set max
+    if (!maxDurationPerAckExtensionDefaultUsed
+        && (possibleNewMinAckDeadlineExtensionSeconds > maxDurationPerAckExtensionSeconds)) {
+      minDurationPerAckExtensionSeconds = maxDurationPerAckExtensionSeconds;
+    } else {
+      minDurationPerAckExtensionSeconds = possibleNewMinAckDeadlineExtensionSeconds;
+    }
+
     this.enableExactlyOnceDelivery.set(enableExactlyOnceDelivery);
   }
 
@@ -424,12 +472,24 @@ class MessageDispatcher {
   /** Compute the ideal deadline, set subsequent modacks to this deadline, and return it. */
   @InternalApi
   int computeDeadlineSeconds() {
-    int sec = ackLatencyDistribution.getPercentile(PERCENTILE_FOR_ACK_DEADLINE_UPDATES);
+    int deadlineSeconds = ackLatencyDistribution.getPercentile(PERCENTILE_FOR_ACK_DEADLINE_UPDATES);
 
-    if ((streamAckDeadlineSeconds > 0) && (sec > streamAckDeadlineSeconds)) {
-      sec = streamAckDeadlineSeconds;
+    // Bound deadlineSeconds by extensions
+    if (!maxDurationPerAckExtensionDefaultUsed
+        && (deadlineSeconds > maxDurationPerAckExtensionSeconds)) {
+      deadlineSeconds = maxDurationPerAckExtensionSeconds;
+    } else if (deadlineSeconds < minDurationPerAckExtensionSeconds) {
+      deadlineSeconds = minDurationPerAckExtensionSeconds;
     }
-    return sec;
+
+    // Bound deadlineSeconds by hard limits in subscriber
+    if (deadlineSeconds < Subscriber.MIN_STREAM_ACK_DEADLINE.getSeconds()) {
+      deadlineSeconds = Math.toIntExact(Subscriber.MIN_STREAM_ACK_DEADLINE.getSeconds());
+    } else if (deadlineSeconds > Subscriber.MAX_STREAM_ACK_DEADLINE.getSeconds()) {
+      deadlineSeconds = Math.toIntExact(Subscriber.MAX_STREAM_ACK_DEADLINE.getSeconds());
+    }
+
+    return deadlineSeconds;
   }
 
   @InternalApi
@@ -517,7 +577,11 @@ class MessageDispatcher {
     private AckProcessor ackProcessor;
     private Duration ackExpirationPadding;
     private Duration maxAckExtensionPeriod;
-    private Integer streamAckDeadlineSeconds;
+    private Duration minDurationPerAckExtension;
+    private boolean minDurationPerAckExtensionDefaultUsed;
+    private Duration maxDurationPerAckExtension;
+    private boolean maxDurationPerAckExtensionDefaultUsed;
+
     private Distribution ackLatencyDistribution;
     private FlowController flowController;
     private boolean enableExactlyOnceDelivery;
@@ -549,8 +613,25 @@ class MessageDispatcher {
       return this;
     }
 
-    public Builder setStreamAckDeadlineSeconds(Integer streamAckDeadlineSeconds) {
-      this.streamAckDeadlineSeconds = streamAckDeadlineSeconds;
+    public Builder setMinDurationPerAckExtension(Duration minDurationPerAckExtension) {
+      this.minDurationPerAckExtension = minDurationPerAckExtension;
+      return this;
+    }
+
+    public Builder setMinDurationPerAckExtensionDefaultUsed(
+        boolean minDurationPerAckExtensionDefaultUsed) {
+      this.minDurationPerAckExtensionDefaultUsed = minDurationPerAckExtensionDefaultUsed;
+      return this;
+    }
+
+    public Builder setMaxDurationPerAckExtension(Duration maxDurationPerAckExtension) {
+      this.maxDurationPerAckExtension = maxDurationPerAckExtension;
+      return this;
+    }
+
+    public Builder setMaxDurationPerAckExtensionDefaultUsed(
+        boolean maxDurationPerAckExtensionDefaultUsed) {
+      this.maxDurationPerAckExtensionDefaultUsed = maxDurationPerAckExtensionDefaultUsed;
       return this;
     }
 

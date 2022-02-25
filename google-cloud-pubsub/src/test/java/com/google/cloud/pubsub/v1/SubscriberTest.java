@@ -237,7 +237,7 @@ public class SubscriberTest {
     assertEquals(
         expectedChannelCount, fakeSubscriberServiceImpl.waitForOpenedStreams(expectedChannelCount));
     assertEquals(
-        Subscriber.MIN_ACK_DEADLINE_SECONDS,
+        Math.toIntExact(Subscriber.MIN_STREAM_ACK_DEADLINE.getSeconds()),
         fakeSubscriberServiceImpl.getLastSeenRequest().getStreamAckDeadlineSeconds());
 
     subscriber.stopAsync().awaitTerminated();
@@ -251,7 +251,7 @@ public class SubscriberTest {
     assertEquals(
         expectedChannelCount, fakeSubscriberServiceImpl.waitForOpenedStreams(expectedChannelCount));
     assertEquals(
-        Subscriber.MAX_ACK_DEADLINE_SECONDS,
+        Math.toIntExact(Subscriber.MAX_STREAM_ACK_DEADLINE.getSeconds()),
         fakeSubscriberServiceImpl.getLastSeenRequest().getStreamAckDeadlineSeconds());
 
     subscriber.stopAsync().awaitTerminated();
@@ -275,7 +275,7 @@ public class SubscriberTest {
     assertEquals(
         expectedChannelCount, fakeSubscriberServiceImpl.waitForOpenedStreams(expectedChannelCount));
     assertEquals(
-        Subscriber.STREAM_ACK_DEADLINE_DEFAULT_SECONDS,
+        Math.toIntExact(Subscriber.STREAM_ACK_DEADLINE_DEFAULT.getSeconds()),
         fakeSubscriberServiceImpl.getLastSeenRequest().getStreamAckDeadlineSeconds());
 
     subscriber.stopAsync().awaitTerminated();
@@ -286,9 +286,8 @@ public class SubscriberTest {
     assertEquals(
         expectedChannelCount, fakeSubscriberServiceImpl.waitForOpenedStreams(expectedChannelCount));
     assertEquals(
-        Subscriber.STREAM_ACK_DEADLINE_DEFAULT_EXACTLY_ONCE_SECONDS,
+        Math.toIntExact(Subscriber.STREAM_ACK_DEADLINE_EXACTLY_ONCE_DEFAULT.getSeconds()),
         fakeSubscriberServiceImpl.getLastSeenRequest().getStreamAckDeadlineSeconds());
-
     subscriber.stopAsync().awaitTerminated();
   }
 
