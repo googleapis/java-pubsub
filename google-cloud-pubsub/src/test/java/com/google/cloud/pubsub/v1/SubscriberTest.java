@@ -320,7 +320,7 @@ public class SubscriberTest {
   }
 
   @Test
-  public void testPermissionDeniedFailureResponsePermissionDenied() {
+  public void testPermissionDeniedFailureResponsePermissionDenied() throws Exception {
     int expectedChannelCount = 1;
     MessageReceiverWithAckResponse messageReceiverWithAckResponse =
         new MessageReceiverWithAckResponse() {
@@ -348,7 +348,6 @@ public class SubscriberTest {
       // Send an unrecoverable error
       fakeSubscriberServiceImpl.sendError(new StatusException(Status.PERMISSION_DENIED));
       assertEquals(1, fakeSubscriberServiceImpl.waitForClosedStreams(1));
-
       subscriber.stopAsync().awaitTerminated();
     } catch (Throwable t) {
       throw new AssertionError();
@@ -356,7 +355,7 @@ public class SubscriberTest {
   }
 
   @Test
-  public void testPermissionDeniedFailureResponsePermissionFailedPrecondition() {
+  public void testPermissionDeniedFailureResponsePermissionFailedPrecondition() throws Exception {
     int expectedChannelCount = 1;
     MessageReceiverWithAckResponse messageReceiverWithAckResponse =
         new MessageReceiverWithAckResponse() {
@@ -384,7 +383,6 @@ public class SubscriberTest {
       // Send an unrecoverable error
       fakeSubscriberServiceImpl.sendError(new StatusException(Status.FAILED_PRECONDITION));
       assertEquals(1, fakeSubscriberServiceImpl.waitForClosedStreams(1));
-
       subscriber.stopAsync().awaitTerminated();
     } catch (Throwable t) {
       throw new AssertionError();
@@ -392,7 +390,7 @@ public class SubscriberTest {
   }
 
   @Test
-  public void testPermissionDeniedFailureResponsePermissionOther() {
+  public void testPermissionDeniedFailureResponsePermissionOther() throws Exception {
     int expectedChannelCount = 1;
     MessageReceiverWithAckResponse messageReceiverWithAckResponse =
         new MessageReceiverWithAckResponse() {
@@ -420,7 +418,6 @@ public class SubscriberTest {
       // Send an unrecoverable error - "OTHER"
       fakeSubscriberServiceImpl.sendError(new StatusException(Status.INVALID_ARGUMENT));
       assertEquals(1, fakeSubscriberServiceImpl.waitForClosedStreams(1));
-
       subscriber.stopAsync().awaitTerminated();
     } catch (Throwable t) {
       throw new AssertionError();
