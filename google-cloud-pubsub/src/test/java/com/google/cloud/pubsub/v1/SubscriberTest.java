@@ -344,14 +344,10 @@ public class SubscriberTest {
                 .setSystemExecutorProvider(
                     InstantiatingExecutorProvider.newBuilder().setExecutorThreadCount(10).build()));
 
-    try {
-      // Send an unrecoverable error
-      fakeSubscriberServiceImpl.sendError(new StatusException(Status.PERMISSION_DENIED));
-      assertEquals(1, fakeSubscriberServiceImpl.waitForClosedStreams(1));
-      subscriber.stopAsync().awaitTerminated();
-    } catch (Throwable t) {
-      throw new AssertionError();
-    }
+    // Send an unrecoverable error
+    fakeSubscriberServiceImpl.sendError(new StatusException(Status.PERMISSION_DENIED));
+    assertEquals(1, fakeSubscriberServiceImpl.waitForClosedStreams(1));
+    subscriber.stopAsync().awaitTerminated();
   }
 
   @Test
@@ -379,14 +375,10 @@ public class SubscriberTest {
                 .setSystemExecutorProvider(
                     InstantiatingExecutorProvider.newBuilder().setExecutorThreadCount(10).build()));
 
-    try {
-      // Send an unrecoverable error
-      fakeSubscriberServiceImpl.sendError(new StatusException(Status.FAILED_PRECONDITION));
-      assertEquals(1, fakeSubscriberServiceImpl.waitForClosedStreams(1));
-      subscriber.stopAsync().awaitTerminated();
-    } catch (Throwable t) {
-      throw new AssertionError();
-    }
+    // Send an unrecoverable error
+    fakeSubscriberServiceImpl.sendError(new StatusException(Status.FAILED_PRECONDITION));
+    assertEquals(1, fakeSubscriberServiceImpl.waitForClosedStreams(1));
+    subscriber.stopAsync().awaitTerminated();
   }
 
   @Test
@@ -414,14 +406,10 @@ public class SubscriberTest {
                 .setSystemExecutorProvider(
                     InstantiatingExecutorProvider.newBuilder().setExecutorThreadCount(10).build()));
 
-    try {
-      // Send an unrecoverable error - "OTHER"
-      fakeSubscriberServiceImpl.sendError(new StatusException(Status.INVALID_ARGUMENT));
-      assertEquals(1, fakeSubscriberServiceImpl.waitForClosedStreams(1));
-      subscriber.stopAsync().awaitTerminated();
-    } catch (Throwable t) {
-      throw new AssertionError();
-    }
+    // Send an unrecoverable error - "OTHER"
+    fakeSubscriberServiceImpl.sendError(new StatusException(Status.INVALID_ARGUMENT));
+    assertEquals(1, fakeSubscriberServiceImpl.waitForClosedStreams(1));
+    subscriber.stopAsync().awaitTerminated();
   }
 
   private Subscriber startSubscriber(Builder testSubscriberBuilder) {
