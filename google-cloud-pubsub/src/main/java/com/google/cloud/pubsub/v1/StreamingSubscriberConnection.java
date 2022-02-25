@@ -562,8 +562,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
         ackIdsInRequest.add(ackIdMessageFuture.getAckId());
       }
 
-      if (receiverWithAckResponse != null) {
-        // If receiverWithAckResponse is true:
+      if (receiverWithAckResponse != null || enableExactlyOnceDelivery.get()) {
         // 1) make a response future
         // 2) add it to our future map
         // 3) add it to the logging callback
@@ -691,8 +690,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
         Lists.partition(ackIdMessageFutureListToSend, MAX_PER_REQUEST_CHANGES)) {
       List<String> ackIdsInRequest = new ArrayList<>();
       ApiFutureCallback<Empty> loggingCallback;
-      if (receiverWithAckResponse != null) {
-        // If receiverWithAckResponse is true:
+      if (receiverWithAckResponse != null || enableExactlyOnceDelivery.get()) {
         // 1) make a response future
         // 2) add it to our map
         // 3) add it to the logging callback
