@@ -421,24 +421,91 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
       List<ModackWithMessageFuture> modackWithMessageFutures,
       List<AckIdMessageFuture> ackIdMessageFutures) {
     // Process modacks first
-    Set<String> failedAckIds = sendModacks(modackWithMessageFutures);
+    RetryModacksFailedModacks retryModacksFailedModacks = sendModacks(modackWithMessageFutures);
 
-    // Remove failed modacks from acks
+    // Remove permanent failures from acks
     ackIdMessageFutures.removeIf(
         ackIdMessageFuture -> {
-          return failedAckIds.contains(ackIdMessageFuture.getAckId());
+          return retryModacksFailedModacks
+              .getFailedAckIds()
+              .contains(ackIdMessageFuture.getAckId());
         });
 
-    sendAcks(ackIdMessageFutures);
+    // Split ackId list if retries are needed
+    List<AckIdMessageFuture> ackIdMessageFutureRetries = new ArrayList<AckIdMessageFuture>();
+
+    ackIdMessageFutures.removeIf(
+        ackIdMessageFuture -> {
+          if (retryModacksFailedModacks.getRetryAckIds().contains(ackIdMessageFuture.getAckId())) {
+            ackIdMessageFutureRetries.add(ackIdMessageFuture);
+            return true;
+          }
+          return false;
+        });
+
+    if (retryModacksFailedModacks.getRetryModackWithMessageFutures().isEmpty()) {
+      if (!modackWithMessageFutures.isEmpty()) {
+        // If we do not have any retries, reset the backoff
+        ackOperationsReconnectBackoffMillis.set(
+            INITIAL_ACK_OPERATIONS_RECONNECT_BACKOFF.toMillis());
+      }
+    } else {
+      // Retry with exponential backoff
+      long backoffMillis = ackOperationsReconnectBackoffMillis.get();
+      long newBackoffMillis =
+          Math.min(backoffMillis * 2, MAX_ACK_OPERATIONS_RECONNECT_BACKOFF.toMillis());
+      ackOperationsReconnectBackoffMillis.set(newBackoffMillis);
+
+      systemExecutor.schedule(
+          new Runnable() {
+            @Override
+            public void run() {
+              sendAckOperations(
+                  retryModacksFailedModacks.getRetryModackWithMessageFutures(),
+                  ackIdMessageFutureRetries);
+            }
+          },
+          backoffMillis,
+          TimeUnit.MILLISECONDS);
+    }
+
+    List<AckIdMessageFuture> acksToResend = sendAcks(ackIdMessageFutures);
+
+    if (acksToResend.isEmpty()) {
+      if (!ackIdMessageFutures.isEmpty()) {
+        ackOperationsReconnectBackoffMillis.set(
+            INITIAL_ACK_OPERATIONS_RECONNECT_BACKOFF.toMillis());
+      }
+    } else {
+      // Retry with exponential backoff
+      long backoffMillis = ackOperationsReconnectBackoffMillis.get();
+      long newBackoffMillis =
+          Math.min(backoffMillis * 2, MAX_ACK_OPERATIONS_RECONNECT_BACKOFF.toMillis());
+      ackOperationsReconnectBackoffMillis.set(newBackoffMillis);
+
+      systemExecutor.schedule(
+          new Runnable() {
+            @Override
+            public void run() {
+              sendAckOperations(Collections.emptyList(), acksToResend);
+            }
+          },
+          backoffMillis,
+          TimeUnit.MILLISECONDS);
+    }
   }
 
   private class RetryModacksFailedModacks {
     private List<ModackWithMessageFuture> retryModackWithMessageFutures;
+    private Set<String> retryAckIds;
     private Set<String> failedAckIds;
 
     RetryModacksFailedModacks(
-        List<ModackWithMessageFuture> retryModackWithMessageFutures, Set<String> failedAckIds) {
+        List<ModackWithMessageFuture> retryModackWithMessageFutures,
+        Set<String> retryAckIds,
+        Set<String> failedAckIds) {
       this.retryModackWithMessageFutures = retryModackWithMessageFutures;
+      this.retryAckIds = retryAckIds;
       this.failedAckIds = failedAckIds;
     }
 
@@ -448,6 +515,10 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
 
     public Set<String> getFailedAckIds() {
       return failedAckIds;
+    }
+
+    public Set<String> getRetryAckIds() {
+      return retryAckIds;
     }
   }
 
@@ -501,42 +572,16 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     };
   }
 
-  private Set<String> sendModacks(List<ModackWithMessageFuture> modacksToSend) {
-    // We want to send modacks (and retry failures),
-    // then process the results - propagating permanent failures back to the client via the Message
-    // future
-
+  private RetryModacksFailedModacks sendModacks(List<ModackWithMessageFuture> modacksToSend) {
+    // We want to send modacks (and retry failures), then process the results - propagating
+    // permanent failures back to the client via the Message future
     // Split our modacks (if needed) so we have the correct batch size per request - we do this here
-    // so we
-    // easily keep track of the requests in our map
+    // so we can easily keep track of the requests in our map
     List<ModackWithMessageFuture> modacksToSendPartitioned =
         ModackWithMessageFuture.partitionByAckId(modacksToSend, MAX_PER_REQUEST_CHANGES);
     Map<ModackWithMessageFuture, SettableApiFuture<Map<String, String>>> modAckFutureMap =
         sendUnaryModacks(modacksToSendPartitioned);
-    RetryModacksFailedModacks retryModacksFailedModacks = processModackFutures(modAckFutureMap);
-
-    Set<String> failedAckIds = retryModacksFailedModacks.getFailedAckIds();
-
-    if (!retryModacksFailedModacks.getRetryModackWithMessageFutures().isEmpty()) {
-      // Retry with exponential backoff
-      long backoffMillis = ackOperationsReconnectBackoffMillis.get();
-      long newBackoffMillis =
-          Math.min(backoffMillis * 2, MAX_ACK_OPERATIONS_RECONNECT_BACKOFF.toMillis());
-      ackOperationsReconnectBackoffMillis.set(newBackoffMillis);
-
-      systemExecutor.schedule(
-          new Runnable() {
-            @Override
-            public void run() {
-              failedAckIds.addAll(
-                  sendModacks(retryModacksFailedModacks.getRetryModackWithMessageFutures()));
-            }
-          },
-          backoffMillis,
-          TimeUnit.MILLISECONDS);
-    }
-
-    return failedAckIds;
+    return processModackFutures(modAckFutureMap);
   }
 
   private Map<ModackWithMessageFuture, SettableApiFuture<Map<String, String>>> sendUnaryModacks(
@@ -584,6 +629,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     Map<Integer, ModackWithMessageFuture> modacksToRetryMap =
         new HashMap<Integer, ModackWithMessageFuture>();
     Set<String> modackIdsFailed = new HashSet<String>();
+    Set<String> modackIdsRetry = new HashSet<String>();
     modackWithMessageFutureMap.forEach(
         (modackWithMessageFuture, settableApiFuture) -> {
           try {
@@ -604,6 +650,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
                                   deadlineExtensionSeconds ->
                                       new ModackWithMessageFuture(deadlineExtensionSeconds));
                           modacksToRetryMapEntry.addAckIdMessageFuture(ackIdMessageFuture);
+                          modackIdsRetry.add(ackIdMessageFuture.getAckId());
                         } else if (errorMessage.startsWith(
                             PERMANENT_FAILURE_INVALID_ACK_ID_METADATA)) {
                           logger.log(
@@ -644,31 +691,15 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
           }
         });
     return new RetryModacksFailedModacks(
-        new ArrayList<ModackWithMessageFuture>(modacksToRetryMap.values()), modackIdsFailed);
+        new ArrayList<ModackWithMessageFuture>(modacksToRetryMap.values()),
+        modackIdsRetry,
+        modackIdsFailed);
   }
 
-  private void sendAcks(List<AckIdMessageFuture> ackIdWithMessageFutureToSend) {
+  private List<AckIdMessageFuture> sendAcks(List<AckIdMessageFuture> ackIdWithMessageFutureToSend) {
     Map<AckIdMessageFuture, SettableApiFuture<Map<String, String>>> ackFutureMap =
         sendUnaryAcks(ackIdWithMessageFutureToSend);
-    List<AckIdMessageFuture> acksToResend = processAckFutures(ackFutureMap);
-
-    if (!acksToResend.isEmpty()) {
-      // Retry with exponential backoff
-      long backoffMillis = ackOperationsReconnectBackoffMillis.get();
-      long newBackoffMillis =
-          Math.min(backoffMillis * 2, MAX_ACK_OPERATIONS_RECONNECT_BACKOFF.toMillis());
-      ackOperationsReconnectBackoffMillis.set(newBackoffMillis);
-
-      systemExecutor.schedule(
-          new Runnable() {
-            @Override
-            public void run() {
-              sendAcks(acksToResend);
-            }
-          },
-          backoffMillis,
-          TimeUnit.MILLISECONDS);
-    }
+    return processAckFutures(ackFutureMap);
   }
 
   private Map<AckIdMessageFuture, SettableApiFuture<Map<String, String>>> sendUnaryAcks(

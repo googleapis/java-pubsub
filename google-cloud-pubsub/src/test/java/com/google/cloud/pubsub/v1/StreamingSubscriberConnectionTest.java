@@ -39,6 +39,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
+import org.mockito.InOrder;
 import org.threeten.bp.Duration;
 
 /** Tests for {@link StreamingSubscriberConnection}. */
@@ -52,6 +53,7 @@ public class StreamingSubscriberConnectionTest {
 
   private static final String MOCK_SUBSCRIPTION_NAME = "MOCK-SUBSCRIPTION";
   private static final String MOCK_ACK_ID_SUCCESS = "MOCK-ACK-ID-SUCCESS";
+  private static final String MOCK_ACK_ID_SUCCESS_2 = "MOCK-ACK-ID-SUCCESS-2";
   private static final String MOCK_ACK_ID_NACK_SUCCESS = "MOCK-ACK-ID-NACK-SUCCESS";
   // Successful modacks should not return a message
   private static final String MOCK_ACK_ID_SUCCESS_NO_MESSAGE = "MOCK-ACK-ID-SUCCESS-NO-MESSAGE";
@@ -401,11 +403,11 @@ public class StreamingSubscriberConnectionTest {
     // SUCCESS
     SettableApiFuture<AckResponse> messageFutureSuccessExpected = SettableApiFuture.create();
     AckIdMessageFuture ackIdMessageFutureSuccess =
-        new AckIdMessageFuture(MOCK_ACK_ID_NACK_SUCCESS, messageFutureSuccessExpected);
+        new AckIdMessageFuture(MOCK_ACK_ID_SUCCESS, messageFutureSuccessExpected);
     ackIdMessageFutureAckList.add(ackIdMessageFutureSuccess);
     modackWithMessageFuture.addAckIdMessageFuture(ackIdMessageFutureSuccess);
-    ackIdsModackRequest.add(MOCK_ACK_ID_NACK_SUCCESS);
-    ackIdsAckRequest.add(MOCK_ACK_ID_NACK_SUCCESS);
+    ackIdsModackRequest.add(MOCK_ACK_ID_SUCCESS);
+    ackIdsAckRequest.add(MOCK_ACK_ID_SUCCESS);
 
     // INVALID
     SettableApiFuture<AckResponse> messageFutureInvalidExpected = SettableApiFuture.create();
@@ -465,6 +467,125 @@ public class StreamingSubscriberConnectionTest {
       assertEquals(AckResponse.SUCCESSFUL, messageFutureSuccessExpected.get());
       assertEquals(AckResponse.INVALID, messageFutureInvalidExpected.get());
       assertEquals(AckResponse.OTHER, messageFutureOtherExpected.get());
+    } catch (Throwable t) {
+      // Just in case something went wrong when retrieving our futures
+      throw new AssertionError();
+    }
+  }
+
+  @Test
+  public void testSendAckOperationsExactlyOnceEnabledEnabledModackTransientFailureMessageFuture() {
+    // Setup
+
+    // The list(s) of ackIds allows us to mock the grpc response(s)
+    List<String> ackIdsModackRequest = new ArrayList<>();
+    List<String> ackIdsModackRequestRetry = new ArrayList<>();
+    List<String> ackIdsAckRequest = new ArrayList<>();
+    List<String> ackIdsAckRequestSecondCall = new ArrayList<>();
+
+    Map<String, String> errorInfoMetadataMapModackRequest = new HashMap<String, String>();
+
+    List<ModackWithMessageFuture> ackIdMessageFutureModackList =
+        new ArrayList<ModackWithMessageFuture>();
+    List<AckIdMessageFuture> ackIdMessageFutureAckList = new ArrayList<AckIdMessageFuture>();
+    ModackWithMessageFuture modackWithMessageFuture =
+        new ModackWithMessageFuture(MOCK_ACK_EXTENSION_DEFAULT);
+
+    // SUCCESS
+    SettableApiFuture<AckResponse> messageFutureSuccessExpected = SettableApiFuture.create();
+    AckIdMessageFuture ackIdMessageFutureSuccess =
+        new AckIdMessageFuture(MOCK_ACK_ID_SUCCESS, messageFutureSuccessExpected);
+    ackIdMessageFutureAckList.add(ackIdMessageFutureSuccess);
+    modackWithMessageFuture.addAckIdMessageFuture(ackIdMessageFutureSuccess);
+    ackIdsModackRequest.add(MOCK_ACK_ID_SUCCESS);
+    ackIdsAckRequest.add(MOCK_ACK_ID_SUCCESS);
+
+    // SUCCESS - after transient modack failure
+    SettableApiFuture<AckResponse> messageFutureSuccessExpectedAfterTransientModackFailure =
+        SettableApiFuture.create();
+    AckIdMessageFuture ackIdMessageFutureSuccess2 =
+        new AckIdMessageFuture(
+            MOCK_ACK_ID_SUCCESS_2, messageFutureSuccessExpectedAfterTransientModackFailure);
+    ackIdMessageFutureAckList.add(ackIdMessageFutureSuccess2);
+    modackWithMessageFuture.addAckIdMessageFuture(ackIdMessageFutureSuccess2);
+    errorInfoMetadataMapModackRequest.put(
+        MOCK_ACK_ID_SUCCESS_2, TRANSIENT_FAILURE_SERVICE_UNAVAILABLE);
+    ackIdsModackRequest.add(MOCK_ACK_ID_SUCCESS_2);
+    ackIdsModackRequestRetry.add(MOCK_ACK_ID_SUCCESS_2);
+    ackIdsAckRequestSecondCall.add(MOCK_ACK_ID_SUCCESS_2);
+
+    ackIdMessageFutureModackList.add(modackWithMessageFuture);
+
+    // Build our requests so we can set our mock responses
+    ModifyAckDeadlineRequest modifyAckDeadlineRequest =
+        ModifyAckDeadlineRequest.newBuilder()
+            .setSubscription(MOCK_SUBSCRIPTION_NAME)
+            .setAckDeadlineSeconds(MOCK_ACK_EXTENSION_DEFAULT)
+            .addAllAckIds(ackIdsModackRequest)
+            .build();
+
+    ModifyAckDeadlineRequest modifyAckDeadlineRequestRetry =
+        ModifyAckDeadlineRequest.newBuilder()
+            .setSubscription(MOCK_SUBSCRIPTION_NAME)
+            .setAckDeadlineSeconds(MOCK_ACK_EXTENSION_DEFAULT)
+            .addAllAckIds(ackIdsModackRequestRetry)
+            .build();
+
+    AcknowledgeRequest acknowledgeRequest =
+        AcknowledgeRequest.newBuilder()
+            .setSubscription(MOCK_SUBSCRIPTION_NAME)
+            .addAllAckIds(ackIdsAckRequest)
+            .build();
+
+    AcknowledgeRequest acknowledgeRequestSecondCall =
+        AcknowledgeRequest.newBuilder()
+            .setSubscription(MOCK_SUBSCRIPTION_NAME)
+            .addAllAckIds(ackIdsAckRequestSecondCall)
+            .build();
+
+    // Set mock grpc responses
+    when(mockSubscriberStub.modifyAckDeadlineCallable().futureCall(modifyAckDeadlineRequest))
+        .thenReturn(
+            ApiFutures.immediateFailedFuture(
+                getMockStatusException(errorInfoMetadataMapModackRequest)));
+    when(mockSubscriberStub.modifyAckDeadlineCallable().futureCall(modifyAckDeadlineRequestRetry))
+        .thenReturn(ApiFutures.immediateFuture(null));
+    when(mockSubscriberStub.acknowledgeCallable().futureCall(acknowledgeRequest))
+        .thenReturn(ApiFutures.immediateFuture(null));
+    when(mockSubscriberStub.acknowledgeCallable().futureCall(acknowledgeRequestSecondCall))
+        .thenReturn(ApiFutures.immediateFuture(null));
+
+    // Instantiate class and run operation(s)
+    StreamingSubscriberConnection streamingSubscriberConnection =
+        getStreamingSubscriberConnection(true);
+
+    streamingSubscriberConnection.sendAckOperations(
+        ackIdMessageFutureModackList, ackIdMessageFutureAckList);
+
+    // Backoff
+    systemExecutor.advanceTime(Duration.ofMillis(200));
+
+    // Assert expected behavior - these should be ordered (enforced by backoff of retries)
+    InOrder order =
+        inOrder(
+            mockSubscriberStub.modifyAckDeadlineCallable(),
+            mockSubscriberStub.acknowledgeCallable());
+
+    order
+        .verify(mockSubscriberStub.modifyAckDeadlineCallable())
+        .futureCall(modifyAckDeadlineRequest);
+    order.verify(mockSubscriberStub.acknowledgeCallable(), times(1)).futureCall(acknowledgeRequest);
+    order
+        .verify(mockSubscriberStub.modifyAckDeadlineCallable(), times(1))
+        .futureCall(modifyAckDeadlineRequestRetry);
+    order
+        .verify(mockSubscriberStub.acknowledgeCallable(), times(1))
+        .futureCall(acknowledgeRequestSecondCall);
+
+    try {
+      assertEquals(AckResponse.SUCCESSFUL, messageFutureSuccessExpected.get());
+      assertEquals(
+          AckResponse.SUCCESSFUL, messageFutureSuccessExpectedAfterTransientModackFailure.get());
     } catch (Throwable t) {
       // Just in case something went wrong when retrieving our futures
       throw new AssertionError();
