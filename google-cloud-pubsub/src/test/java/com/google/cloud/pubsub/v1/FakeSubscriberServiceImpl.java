@@ -257,17 +257,6 @@ class FakeSubscriberServiceImpl extends SubscriberImplBase {
     }
   }
 
-  public void sendResponse(StreamingPullResponse streamingPullResponse)
-      throws InterruptedException {
-    waitForRegistedSubscription();
-    synchronized (openedStreams) {
-      waitForOpenedStreams(1);
-      Stream stream = openedStreams.get(getAndAdvanceCurrentStream());
-      stream.responseObserver.onNext(streamingPullResponse);
-      closeStream(stream);
-    }
-  }
-
   public String waitForRegistedSubscription() throws InterruptedException {
     synchronized (subscriptionInitialized) {
       while (!subscriptionInitialized.get()) {

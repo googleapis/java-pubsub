@@ -64,7 +64,6 @@ class MessageDispatcher {
 
   private MessageReceiver receiver;
   private MessageReceiverWithAckResponse receiverWithAckResponse;
-  private AckReplyConsumerWithResponse ackReplyConsumerWithResponse;
 
   private final AckProcessor ackProcessor;
 
@@ -194,8 +193,6 @@ class MessageDispatcher {
     receiver = builder.receiver;
     receiverWithAckResponse = builder.receiverWithAckResponse;
 
-    ackReplyConsumerWithResponse = builder.ackReplyConsumerWithResponse;
-
     ackProcessor = builder.ackProcessor;
     flowController = builder.flowController;
     enableExactlyOnceDelivery = new AtomicBoolean(builder.enableExactlyOnceDelivery);
@@ -321,7 +318,7 @@ class MessageDispatcher {
           Math.toIntExact(Subscriber.DEFAULT_MIN_ACK_DEADLINE_EXTENSION_EXACTLY_ONCE.getSeconds());
     } else {
       possibleNewMinAckDeadlineExtensionSeconds =
-          Math.toIntExact(Subscriber.DEFAULT_MIN_ACK_DEADLINE_EXTENSION_EXACTLY_ONCE.getSeconds());
+          Math.toIntExact(Subscriber.DEFAULT_MAX_ACK_DEADLINE_EXTENSION.getSeconds());
     }
 
     // If we are not using the default maxDurationAckExtension, check if the
@@ -351,14 +348,10 @@ class MessageDispatcher {
     Instant totalExpiration = now().plus(maxAckExtensionPeriod);
     List<OutstandingMessage> outstandingBatch = new ArrayList<>(messages.size());
     for (ReceivedMessage message : messages) {
-      SettableApiFuture<AckResponse> messageFuture = null;
-
-      if (receiverWithAckResponse != null) {
-        messageFuture = SettableApiFuture.create();
-      }
-
       AckIdMessageFuture ackIdMessageFuture =
-          new AckIdMessageFuture(message.getAckId(), messageFuture);
+          (receiverWithAckResponse == null)
+              ? new AckIdMessageFuture(message.getAckId())
+              : new AckIdMessageFuture(message.getAckId(), SettableApiFuture.create());
 
       AckHandler ackHandler =
           new AckHandler(
@@ -579,7 +572,6 @@ class MessageDispatcher {
   public static final class Builder {
     private MessageReceiver receiver;
     private MessageReceiverWithAckResponse receiverWithAckResponse;
-    private AckReplyConsumerWithResponse ackReplyConsumerWithResponse;
 
     private AckProcessor ackProcessor;
     private Duration ackExpirationPadding;
@@ -603,12 +595,6 @@ class MessageDispatcher {
 
     Builder(MessageReceiverWithAckResponse receiverWithAckResponse) {
       this.receiverWithAckResponse = receiverWithAckResponse;
-    }
-
-    public Builder setAckReplyConsumerWithResponse(
-        AckReplyConsumerWithResponse ackReplyConsumerWithResponse) {
-      this.ackReplyConsumerWithResponse = ackReplyConsumerWithResponse;
-      return this;
     }
 
     public Builder setAckProcessor(AckProcessor ackProcessor) {

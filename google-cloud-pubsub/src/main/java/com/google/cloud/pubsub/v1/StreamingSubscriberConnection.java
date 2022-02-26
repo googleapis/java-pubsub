@@ -209,6 +209,45 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     ackOperationsWaiter.waitComplete();
   }
 
+  private void sendFailureFuture(Throwable t) {
+    // This acts as a "short-circuit" to return a failure to the user without going through the
+    // normal message processing flow
+    if (receiverWithAckResponse != null) {
+      final SettableApiFuture<AckResponse> future = SettableApiFuture.create();
+      if (!(t instanceof ApiException)) {
+        future.set(AckResponse.OTHER);
+      }
+
+      ApiException apiException = (ApiException) t;
+      switch (apiException.getStatusCode().getCode()) {
+        case FAILED_PRECONDITION:
+          future.set(AckResponse.FAILED_PRECONDITION);
+          break;
+        case PERMISSION_DENIED:
+          future.set(AckResponse.PERMISSION_DENIED);
+          break;
+        default:
+          future.set(AckResponse.OTHER);
+      }
+
+      AckReplyConsumerWithResponse ackReplyConsumerWithResponse =
+          new AckReplyConsumerWithResponse() {
+            @Override
+            public Future<AckResponse> ack() {
+              return future;
+            }
+
+            @Override
+            public Future<AckResponse> nack() {
+              return future;
+            }
+          };
+
+      receiverWithAckResponse.receiveMessage(
+          PubsubMessage.getDefaultInstance(), ackReplyConsumerWithResponse);
+    }
+  }
+
   private class StreamingPullResponseObserver implements ResponseObserver<StreamingPullResponse> {
 
     final SettableApiFuture<Void> errorFuture;
@@ -263,44 +302,6 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
 
     @Override
     public void onError(Throwable t) {
-      // This acts as a "short-circuit" to return a failure to the user without going through the
-      // normal message processing flow
-      if (receiverWithAckResponse != null) {
-        final SettableApiFuture<AckResponse> future = SettableApiFuture.create();
-        if (!(t instanceof ApiException)) {
-          future.set(AckResponse.OTHER);
-        }
-
-        ApiException apiException = (ApiException) t;
-        switch (apiException.getStatusCode().getCode()) {
-          case FAILED_PRECONDITION:
-            future.set(AckResponse.FAILED_PRECONDITION);
-            break;
-          case PERMISSION_DENIED:
-            future.set(AckResponse.PERMISSION_DENIED);
-            break;
-          default:
-            future.set(AckResponse.OTHER);
-        }
-
-        AckReplyConsumerWithResponse ackReplyConsumerWithResponse =
-            new AckReplyConsumerWithResponse() {
-              @Override
-              public Future<AckResponse> ack() {
-                return future;
-              }
-
-              @Override
-              public Future<AckResponse> nack() {
-                return future;
-              }
-            };
-
-        receiverWithAckResponse.receiveMessage(
-            PubsubMessage.getDefaultInstance(), ackReplyConsumerWithResponse);
-      }
-
-      // Set our error future last
       errorFuture.setException(t);
     }
 
@@ -313,7 +314,6 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
 
   private void initialize() {
     final SettableApiFuture<Void> errorFuture = SettableApiFuture.create();
-    //    final SettableApiFuture<AckResponse> messageFuture = SettableApiFuture.create();
 
     final ResponseObserver<StreamingPullResponse> responseObserver =
         new StreamingPullResponseObserver(errorFuture);
@@ -378,6 +378,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
               return;
             }
             if (!StatusUtil.isRetryable(cause)) {
+              sendFailureFuture(cause);
               ApiException gaxException =
                   ApiExceptionFactory.createException(
                       cause, GrpcStatusCode.of(Status.fromThrowable(cause).getCode()), false);
@@ -474,37 +475,26 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
   }
 
   private ApiFutureCallback<Empty> getLoggingCallback(
-      SettableApiFuture<Map<String, String>> responseFuture) {
+      Optional<SettableApiFuture<Map<String, String>>> responseFuture) {
     return new ApiFutureCallback<Empty>() {
       @Override
       public void onSuccess(Empty empty) {
         ackOperationsWaiter.incrementPendingCount(-1);
-        responseFuture.set(new HashMap<>());
-      }
-
-      @Override
-      public void onFailure(Throwable t) {
-        ackOperationsWaiter.incrementPendingCount(-1);
-        Map<String, String> metadataMap = getMetadataMapFromThrowable(t);
-        if (!metadataMap.isEmpty()) {
-          responseFuture.set(metadataMap);
+        if (responseFuture.isPresent()) {
+          responseFuture.get().set(new HashMap<>());
         }
-        Level level = isAlive() ? Level.WARNING : Level.FINER;
-        logger.log(level, "failed to send operations", t);
-      }
-    };
-  }
-
-  private ApiFutureCallback<Empty> getLoggingCallback() {
-    return new ApiFutureCallback<Empty>() {
-      @Override
-      public void onSuccess(Empty empty) {
-        ackOperationsWaiter.incrementPendingCount(-1);
       }
 
       @Override
       public void onFailure(Throwable t) {
         ackOperationsWaiter.incrementPendingCount(-1);
+        if (responseFuture.isPresent()) {
+          Map<String, String> metadataMap = getMetadataMapFromThrowable(t);
+          if (!metadataMap.isEmpty()) {
+            responseFuture.get().set(metadataMap);
+          }
+        }
+
         Level level = isAlive() ? Level.WARNING : Level.FINER;
         logger.log(level, "failed to send operations", t);
       }
@@ -556,22 +546,22 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
         new HashMap<ModackWithMessageFuture, SettableApiFuture<Map<String, String>>>();
     for (ModackWithMessageFuture modackWithMessageFuture : modackWithMessageFutures) {
       List<String> ackIdsInRequest = new ArrayList<String>();
-      ApiFutureCallback<Empty> loggingCallback;
+
       for (AckIdMessageFuture ackIdMessageFuture :
           modackWithMessageFuture.getAckIdMessageFutures()) {
         ackIdsInRequest.add(ackIdMessageFuture.getAckId());
       }
 
+      SettableApiFuture<Map<String, String>> responseFuture = null;
       if (receiverWithAckResponse != null || enableExactlyOnceDelivery.get()) {
         // 1) make a response future
         // 2) add it to our future map
         // 3) add it to the logging callback
-        SettableApiFuture<Map<String, String>> responseFuture = SettableApiFuture.create();
+        responseFuture = SettableApiFuture.create();
         futureMap.put(modackWithMessageFuture, responseFuture);
-        loggingCallback = getLoggingCallback(responseFuture);
-      } else {
-        loggingCallback = getLoggingCallback();
       }
+      ApiFutureCallback<Empty> loggingCallback =
+          getLoggingCallback(Optional.ofNullable(responseFuture));
       ApiFuture<Empty> future =
           subscriberStub
               .modifyAckDeadlineCallable()
@@ -689,25 +679,25 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     for (List<AckIdMessageFuture> ackIdWithMessageFutureInRequest :
         Lists.partition(ackIdMessageFutureListToSend, MAX_PER_REQUEST_CHANGES)) {
       List<String> ackIdsInRequest = new ArrayList<>();
-      ApiFutureCallback<Empty> loggingCallback;
+      SettableApiFuture<Map<String, String>> responseFuture = null;
       if (receiverWithAckResponse != null || enableExactlyOnceDelivery.get()) {
         // 1) make a response future
         // 2) add it to our map
         // 3) add it to the logging callback
         // 4) populate the ackIds for the request
-        SettableApiFuture<Map<String, String>> responseFuture = SettableApiFuture.create();
+        responseFuture = SettableApiFuture.create();
         for (AckIdMessageFuture ackIdMessageFuture : ackIdWithMessageFutureInRequest) {
           futureMap.put(ackIdMessageFuture, responseFuture);
           ackIdsInRequest.add(ackIdMessageFuture.getAckId());
         }
-        loggingCallback = getLoggingCallback(responseFuture);
       } else {
         // else, we just need to populate the ackIds for the request
         for (AckIdMessageFuture ackIdMessageFuture : ackIdWithMessageFutureInRequest) {
           ackIdsInRequest.add(ackIdMessageFuture.getAckId());
         }
-        loggingCallback = getLoggingCallback();
       }
+      ApiFutureCallback<Empty> loggingCallback =
+          getLoggingCallback(Optional.ofNullable(responseFuture));
       ApiFuture<Empty> future =
           subscriberStub
               .acknowledgeCallable()

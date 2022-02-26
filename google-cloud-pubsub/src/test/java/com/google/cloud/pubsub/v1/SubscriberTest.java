@@ -16,8 +16,7 @@
 
 package com.google.cloud.pubsub.v1;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import com.google.api.gax.batching.FlowControlSettings;
 import com.google.api.gax.core.ExecutorProvider;
@@ -282,6 +281,20 @@ public class SubscriberTest {
       AckResponse ackResponse = consumersWithResponse.take().ack().get();
       assertEquals(AckResponse.OTHER, ackResponse);
     }
+  }
+
+  @Test
+  public void testRetryableFailure() throws Exception {
+    Subscriber subscriber =
+        startSubscriber(
+            getTestSubscriberBuilder(messageReceiverWithAckResponse)
+                .setSystemExecutorProvider(
+                    InstantiatingExecutorProvider.newBuilder().setExecutorThreadCount(10).build()));
+    fakeSubscriberServiceImpl.sendError(new StatusException(Status.DEADLINE_EXCEEDED));
+    subscriber.stopAsync().awaitTerminated();
+
+    // There should not be a response set as it is a retry
+    assertTrue(consumersWithResponse.isEmpty());
   }
 
   @Test
