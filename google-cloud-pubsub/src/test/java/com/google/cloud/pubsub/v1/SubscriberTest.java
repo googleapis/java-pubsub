@@ -26,9 +26,7 @@ import com.google.api.gax.core.InstantiatingExecutorProvider;
 import com.google.api.gax.core.NoCredentialsProvider;
 import com.google.api.gax.grpc.GrpcStatusCode;
 import com.google.api.gax.grpc.GrpcTransportChannel;
-import com.google.api.gax.rpc.ApiException;
-import com.google.api.gax.rpc.FixedTransportChannelProvider;
-import com.google.api.gax.rpc.StatusCode;
+import com.google.api.gax.rpc.*;
 import com.google.cloud.pubsub.v1.Subscriber.Builder;
 import com.google.pubsub.v1.ProjectSubscriptionName;
 import com.google.pubsub.v1.PubsubMessage;
@@ -335,15 +333,12 @@ public class SubscriberTest {
   @Test
   public void testFailurePermissionDenied() throws Exception {
     Subscriber subscriber =
-        startSubscriber(
-            getTestSubscriberBuilder(messageReceiverWithAckResponse)
-                .setSystemExecutorProvider(
-                    InstantiatingExecutorProvider.newBuilder().setExecutorThreadCount(10).build()));
-
+        startSubscriber(getTestSubscriberBuilder(messageReceiverWithAckResponse));
     fakeSubscriberServiceImpl.sendError(new StatusException(Status.PERMISSION_DENIED));
 
     try {
       subscriber.stopAsync().awaitTerminated();
+    } catch (PermissionDeniedException e) {
     } finally {
       AckResponse ackResponse = consumersWithResponse.take().ack().get();
       assertEquals(AckResponse.PERMISSION_DENIED, ackResponse);
@@ -353,15 +348,12 @@ public class SubscriberTest {
   @Test
   public void testFailureFailedPrecondition() throws Exception {
     Subscriber subscriber =
-        startSubscriber(
-            getTestSubscriberBuilder(messageReceiverWithAckResponse)
-                .setSystemExecutorProvider(
-                    InstantiatingExecutorProvider.newBuilder().setExecutorThreadCount(10).build()));
-
+        startSubscriber(getTestSubscriberBuilder(messageReceiverWithAckResponse));
     fakeSubscriberServiceImpl.sendError(new StatusException(Status.FAILED_PRECONDITION));
 
     try {
       subscriber.stopAsync().awaitTerminated();
+    } catch (FailedPreconditionException e) {
     } finally {
       AckResponse ackResponse = consumersWithResponse.take().ack().get();
       assertEquals(AckResponse.FAILED_PRECONDITION, ackResponse);
@@ -371,15 +363,12 @@ public class SubscriberTest {
   @Test
   public void testFailureResponsePermissionOther() throws Exception {
     Subscriber subscriber =
-        startSubscriber(
-            getTestSubscriberBuilder(messageReceiverWithAckResponse)
-                .setSystemExecutorProvider(
-                    InstantiatingExecutorProvider.newBuilder().setExecutorThreadCount(10).build()));
-
+        startSubscriber(getTestSubscriberBuilder(messageReceiverWithAckResponse));
     fakeSubscriberServiceImpl.sendError(new StatusException(Status.INVALID_ARGUMENT));
 
     try {
       subscriber.stopAsync().awaitTerminated();
+    } catch (InvalidArgumentException e) {
     } finally {
       AckResponse ackResponse = consumersWithResponse.take().ack().get();
       assertEquals(AckResponse.OTHER, ackResponse);
