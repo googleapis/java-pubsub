@@ -233,6 +233,57 @@ public class SubscriberTest {
     }
   }
 
+  @Test(expected = IllegalStateException.class)
+  public void testFailurePermissionDenied() throws Exception {
+    Subscriber subscriber =
+        startSubscriber(
+            getTestSubscriberBuilder(messageReceiverWithAckResponse)
+                .setSystemExecutorProvider(
+                    InstantiatingExecutorProvider.newBuilder().setExecutorThreadCount(10).build()));
+    fakeSubscriberServiceImpl.sendError(new StatusException(Status.PERMISSION_DENIED));
+
+    try {
+      subscriber.awaitTerminated();
+    } finally {
+      AckResponse ackResponse = consumersWithResponse.take().ack().get();
+      assertEquals(AckResponse.PERMISSION_DENIED, ackResponse);
+    }
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void testFailureFailedPrecondition() throws Exception {
+    Subscriber subscriber =
+        startSubscriber(
+            getTestSubscriberBuilder(messageReceiverWithAckResponse)
+                .setSystemExecutorProvider(
+                    InstantiatingExecutorProvider.newBuilder().setExecutorThreadCount(10).build()));
+    fakeSubscriberServiceImpl.sendError(new StatusException(Status.FAILED_PRECONDITION));
+
+    try {
+      subscriber.awaitTerminated();
+    } finally {
+      AckResponse ackResponse = consumersWithResponse.take().ack().get();
+      assertEquals(AckResponse.FAILED_PRECONDITION, ackResponse);
+    }
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void testFailureResponsePermissionOther() throws Exception {
+    Subscriber subscriber =
+        startSubscriber(
+            getTestSubscriberBuilder(messageReceiverWithAckResponse)
+                .setSystemExecutorProvider(
+                    InstantiatingExecutorProvider.newBuilder().setExecutorThreadCount(10).build()));
+    fakeSubscriberServiceImpl.sendError(new StatusException(Status.INVALID_ARGUMENT));
+
+    try {
+      subscriber.awaitTerminated();
+    } finally {
+      AckResponse ackResponse = consumersWithResponse.take().ack().get();
+      assertEquals(AckResponse.OTHER, ackResponse);
+    }
+  }
+
   @Test
   public void testStreamAckDeadlineIsSetCorrectly() throws Exception {
     int expectedChannelCount = 1;
@@ -328,51 +379,6 @@ public class SubscriberTest {
     assertEquals(
         subscriber.getFlowControlSettings().getMaxOutstandingElementCount(),
         Subscriber.Builder.DEFAULT_FLOW_CONTROL_SETTINGS.getMaxOutstandingElementCount());
-  }
-
-  @Test
-  public void testFailurePermissionDenied() throws Exception {
-    Subscriber subscriber =
-        startSubscriber(getTestSubscriberBuilder(messageReceiverWithAckResponse));
-    fakeSubscriberServiceImpl.sendError(new StatusException(Status.PERMISSION_DENIED));
-
-    try {
-      subscriber.stopAsync().awaitTerminated();
-    } catch (PermissionDeniedException e) {
-    } finally {
-      AckResponse ackResponse = consumersWithResponse.take().ack().get();
-      assertEquals(AckResponse.PERMISSION_DENIED, ackResponse);
-    }
-  }
-
-  @Test
-  public void testFailureFailedPrecondition() throws Exception {
-    Subscriber subscriber =
-        startSubscriber(getTestSubscriberBuilder(messageReceiverWithAckResponse));
-    fakeSubscriberServiceImpl.sendError(new StatusException(Status.FAILED_PRECONDITION));
-
-    try {
-      subscriber.stopAsync().awaitTerminated();
-    } catch (FailedPreconditionException e) {
-    } finally {
-      AckResponse ackResponse = consumersWithResponse.take().ack().get();
-      assertEquals(AckResponse.FAILED_PRECONDITION, ackResponse);
-    }
-  }
-
-  @Test
-  public void testFailureResponsePermissionOther() throws Exception {
-    Subscriber subscriber =
-        startSubscriber(getTestSubscriberBuilder(messageReceiverWithAckResponse));
-    fakeSubscriberServiceImpl.sendError(new StatusException(Status.INVALID_ARGUMENT));
-
-    try {
-      subscriber.stopAsync().awaitTerminated();
-    } catch (InvalidArgumentException e) {
-    } finally {
-      AckResponse ackResponse = consumersWithResponse.take().ack().get();
-      assertEquals(AckResponse.OTHER, ackResponse);
-    }
   }
 
   private Subscriber startSubscriber(Builder testSubscriberBuilder) {
