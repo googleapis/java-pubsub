@@ -141,7 +141,7 @@ class MessageDispatcher {
               + this.ackIdMessageFuture.getAckId()
               + ", the message will be nacked.",
           t);
-      this.ackIdMessageFuture.getMessageFuture().set(AckResponse.OTHER);
+      this.ackIdMessageFuture.setAckResponse(AckResponse.OTHER);
       pendingNacks.add(this.ackIdMessageFuture);
       forget();
     }

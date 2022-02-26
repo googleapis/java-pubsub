@@ -406,7 +406,7 @@ public class MessageDispatcherTest {
 
     // Should change min deadline
     assertEquals(
-        Math.toIntExact(Subscriber.DEFAULT_MIN_ACK_DEADLINE_EXTENSION_EXACTLY_ONCE.getSeconds()),
+        Math.toIntExact(Subscriber.DEFAULT_MIN_ACK_DEADLINE_EXTENSION.getSeconds()),
         messageDispatcher.getMinDurationPerAckExtensionSeconds());
 
     // ExactlyOnceDeliveryEnabled is turned off, using custom min and max, then on

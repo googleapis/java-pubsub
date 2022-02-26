@@ -610,14 +610,14 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
                               Level.WARNING,
                               "Permanent error invalid ack id message, will not resend",
                               errorMessage);
-                          ackIdMessageFuture.getMessageFuture().set(AckResponse.INVALID);
+                          ackIdMessageFuture.setAckResponse(AckResponse.INVALID);
                           modackIdsFailed.add(ackIdMessageFuture.getAckId());
                         } else {
                           logger.log(
                               Level.WARNING,
                               "Unknown error message, will not resend",
                               errorMessage);
-                          ackIdMessageFuture.getMessageFuture().set(AckResponse.OTHER);
+                          ackIdMessageFuture.setAckResponse(AckResponse.OTHER);
                           modackIdsFailed.add(ackIdMessageFuture.getAckId());
                         }
                         // Check if nack - we only propagate success to the message if this is a
@@ -627,7 +627,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
                         if (ackIdMessageFuture.getMessageFuture().isDone()) {
                           modackIdsFailed.add(ackIdMessageFuture.getAckId());
                         } else {
-                          ackIdMessageFuture.getMessageFuture().set(AckResponse.SUCCESSFUL);
+                          ackIdMessageFuture.setAckResponse(AckResponse.SUCCESSFUL);
                         }
                       }
                     });
@@ -730,13 +730,13 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
                 retryAckIdsWithMessageFuture.add(ackIdMessageFuture);
               } else if (errorMessage.startsWith(PERMANENT_FAILURE_INVALID_ACK_ID_METADATA)) {
                 logger.log(Level.WARNING, "Permanent error message, will not resend", errorMessage);
-                ackIdMessageFuture.getMessageFuture().set(AckResponse.INVALID);
+                ackIdMessageFuture.setAckResponse(AckResponse.INVALID);
               } else {
                 logger.log(Level.WARNING, "Unknown error message, will not resend", errorMessage);
-                ackIdMessageFuture.getMessageFuture().set(AckResponse.OTHER);
+                ackIdMessageFuture.setAckResponse(AckResponse.OTHER);
               }
             } else {
-              ackIdMessageFuture.getMessageFuture().set(AckResponse.SUCCESSFUL);
+              ackIdMessageFuture.setAckResponse(AckResponse.SUCCESSFUL);
             }
           } catch (Throwable t) {
             logger.log(Level.WARNING, "Failed to retrieve future. resending ackIds", t);

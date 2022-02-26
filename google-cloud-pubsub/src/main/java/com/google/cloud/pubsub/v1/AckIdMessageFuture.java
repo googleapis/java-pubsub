@@ -39,4 +39,10 @@ class AckIdMessageFuture {
   public SettableApiFuture<AckResponse> getMessageFuture() {
     return messageFuture;
   }
+
+  public void setAckResponse(AckResponse ackResponse) {
+    if (this.messageFuture != null) {
+      this.messageFuture.set(ackResponse);
+    }
+  }
 }
