@@ -38,7 +38,8 @@ public class CreateSubscriptionWithExactlyOnceDelivery {
     try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
 
       ProjectTopicName topicName = ProjectTopicName.of(projectId, topicId);
-      ProjectSubscriptionName subscriptionName = ProjectSubscriptionName.of(projectId, subscriptionId);
+      ProjectSubscriptionName subscriptionName =
+          ProjectSubscriptionName.of(projectId, subscriptionId);
 
       Subscription subscription =
           subscriptionAdminClient.createSubscription(
@@ -49,7 +50,9 @@ public class CreateSubscriptionWithExactlyOnceDelivery {
                   .setEnableExactlyOnceDelivery(true)
                   .build());
 
-      System.out.println("Created a subscription with exactly once delivery enabled: " + subscription.getAllFields());
+      System.out.println(
+          "Created a subscription with exactly once delivery enabled: "
+              + subscription.getAllFields());
     }
   }
 }
