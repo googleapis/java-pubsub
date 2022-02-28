@@ -113,7 +113,7 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
 
   private static final Logger logger = Logger.getLogger(Subscriber.class.getName());
 
-  private final String subscription;
+  private final String subscriptionName;
   private final FlowControlSettings flowControlSettings;
   private final boolean useLegacyFlowControl;
   private final Duration maxAckExtensionPeriod;
@@ -147,7 +147,7 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
     receiverWithAckResponse = builder.receiverWithAckResponse;
     flowControlSettings = builder.flowControlSettings;
     useLegacyFlowControl = builder.useLegacyFlowControl;
-    subscription = builder.subscription;
+    subscriptionName = builder.subscription;
 
     maxAckExtensionPeriod = builder.maxAckExtensionPeriod;
     maxDurationPerAckExtension = builder.maxDurationPerAckExtension;
@@ -246,7 +246,7 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
 
   /** Subscription which the subscriber is subscribed to. */
   public String getSubscriptionNameString() {
-    return subscription;
+    return subscriptionName;
   }
 
   /** The flow control settings the Subscriber is configured with. */
@@ -317,8 +317,6 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
                 try {
                   startStreamingConnections();
                   notifyStarted();
-                } catch (IllegalStateException t) {
-                  notifyFailed(t);
                 } catch (Throwable t) {
                   notifyFailed(t);
                 }
@@ -370,7 +368,7 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
 
         StreamingSubscriberConnection streamingSubscriberConnection =
             streamingSubscriberConnectionBuilder
-                .setSubscription(subscription)
+                .setSubscription(subscriptionName)
                 .setAckExpirationPadding(ACK_EXPIRATION_PADDING_DEFAULT)
                 .setMaxAckExtensionPeriod(maxAckExtensionPeriod)
                 .setMinDurationPerAckExtension(minDurationPerAckExtension)
