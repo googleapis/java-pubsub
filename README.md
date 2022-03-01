@@ -43,7 +43,7 @@ If you are using Maven without BOM, add this to your dependencies:
 <dependency>
   <groupId>com.google.cloud</groupId>
   <artifactId>google-cloud-pubsub</artifactId>
-  <version>1.115.1</version>
+  <version>1.115.5</version>
 </dependency>
 
 ```
@@ -58,13 +58,13 @@ implementation 'com.google.cloud:google-cloud-pubsub'
 If you are using Gradle without BOM, add this to your dependencies
 
 ```Groovy
-implementation 'com.google.cloud:google-cloud-pubsub:1.115.2'
+implementation 'com.google.cloud:google-cloud-pubsub:1.115.5'
 ```
 
 If you are using SBT, add this to your dependencies
 
 ```Scala
-libraryDependencies += "com.google.cloud" % "google-cloud-pubsub" % "1.115.2"
+libraryDependencies += "com.google.cloud" % "google-cloud-pubsub" % "1.115.5"
 ```
 
 ## Authentication
