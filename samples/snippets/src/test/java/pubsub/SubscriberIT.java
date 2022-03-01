@@ -206,7 +206,8 @@ public class SubscriberIT {
 
     publishSomeMessages(10);
     bout.reset();
-    SubscribeWithExactlyOnceConsumerWithResponseExample.subscribeWithExactlyOnceConsumerWithResponseExample(projectId, subscriptionId);
+    SubscribeWithExactlyOnceConsumerWithResponseExample
+        .subscribeWithExactlyOnceConsumerWithResponseExample(projectId, subscriptionId);
     for (int i = 0; i < 10; i++) {
       assertThat(bout.toString()).contains("Id: " + i + " SUCCESS");
     }

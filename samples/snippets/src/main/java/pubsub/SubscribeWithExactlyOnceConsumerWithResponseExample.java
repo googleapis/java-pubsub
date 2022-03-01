@@ -18,8 +18,6 @@ package pubsub;
 
 // [START pubsub_subscriber_exactly_once]
 
-import com.google.cloud.pubsub.v1.AckReplyConsumer;
-import com.google.cloud.pubsub.v1.MessageReceiver;
 import com.google.cloud.pubsub.v1.Subscriber;
 import com.google.pubsub.v1.ProjectSubscriptionName;
 import com.google.pubsub.v1.PubsubMessage;
@@ -36,27 +34,29 @@ public class SubscribeWithExactlyOnceConsumerWithResponseExample {
     subscribeWithExactlyOnceConsumerWithResponseExample(projectId, topicId, subscriptionId);
   }
 
-  public static void subscribeWithExactlyOnceConsumerWithResponseExample(String projectId, String topicId, String subscriptionId) {
+  public static void subscribeWithExactlyOnceConsumerWithResponseExample(
+      String projectId, String topicId, String subscriptionId) {
     // For subscriptions with exactly once enabled, the AckResponse will:
     // return confirmed SUCCESS OR
     // permanent failures
     // For subscriptions without exactly once enabled the AckResponse will:
     // return SUCCESS for messages sent OR
     // permanent failures
-    ProjectSubscriptionName subscriptionName = ProjectSubscriptionName.of(projectId, subscriptionId);
+    ProjectSubscriptionName subscriptionName =
+        ProjectSubscriptionName.of(projectId, subscriptionId);
 
     // Instantiate an asynchronous message receiver.
     MessageReceiverWithAckResponse receiverWithResponse =
-            (PubsubMessage message, AckReplyConsumerWithResponse consumerWithResponse) -> {
-      // Handle incoming message, then ack the received message, and receive the response
+        (PubsubMessage message, AckReplyConsumerWithResponse consumerWithResponse) -> {
+          // Handle incoming message, then ack the received message, and receive the response
 
-      Future<AckResponse> ackResponseFuture = consumerWithResponse.ack();
+          Future<AckResponse> ackResponseFuture = consumerWithResponse.ack();
 
-      // Retreive the completed future
-      AckResponse ackResponse = ackResponseFuture.get();
+          // Retreive the completed future
+          AckResponse ackResponse = ackResponseFuture.get();
 
-      System.out.println("Id: " + message.getMessageId() + " " + ackResponse);
-  };
+          System.out.println("Id: " + message.getMessageId() + " " + ackResponse);
+        };
 
     Subscriber subscriber = null;
     try {
