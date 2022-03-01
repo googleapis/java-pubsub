@@ -31,14 +31,24 @@ public class SubscribeWithExactlyOnceConsumerWithResponseExample {
     public static void main(String... args) throws Exception {
         // TODO(developer): Replace these variables before running the sample.
         String projectId = "your-project-id";
+        String topicId = "your-topic-id";
         String subscriptionId = "your-subscription-id";
 
-        subscribeWithExactlyOnceConsumerWithResponseExample(projectId, subscriptionId);
+        subscribeWithExactlyOnceConsumerWithResponseExample(projectId, topicId, subscriptionId);
     }
 
-    public static void subscribeWithExactlyOnceConsumerWithResponseExample(String projectId, String subscriptionId) {
+    public static void subscribeWithExactlyOnceConsumerWithResponseExample(
+            String projectId, String topicId, String subscriptionId) {
         ProjectSubscriptionName subscriptionName =
                 ProjectSubscriptionName.of(projectId, subscriptionId);
+
+        // Create a subscription with exactly once delivery enabled
+        try {
+          CreateSubscriptionWithExactlyOnceDelivery.createSubscriptionWithExactlyOnceDeliveryExample(
+                  projectId, topicId, subscriptionId);
+        } catch (IOException e) {
+          // Handle exception
+        }
 
         // Instantiate an asynchronous message receiver.
         MessageReceiverWithAckResponse receiverWithResponse =
@@ -67,9 +77,7 @@ public class SubscribeWithExactlyOnceConsumerWithResponseExample {
 
         Subscriber subscriber = null;
         try {
-            subscriber = Subscriber.newBuilder(subscriptionName, receiverWithResponse)
-                    .setExactlyOnceDeliveryEnabled(true)
-                    .build();
+            subscriber = Subscriber.newBuilder(subscriptionName, receiverWithResponse).build();
             // Start the subscriber.
             subscriber.startAsync().awaitRunning();
             System.out.printf("Listening for messages on %s:\n", subscriptionName.toString());
