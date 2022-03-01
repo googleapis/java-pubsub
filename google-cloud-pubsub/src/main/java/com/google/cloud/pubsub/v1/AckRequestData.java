@@ -28,16 +28,8 @@ public class AckRequestData {
     this.ackId = builder.ackId;
     this.exactlyOnceDeliveryEnabled = builder.isExactlyOnceEnabled;
     this.shouldSetMessageFutureOnSuccess = builder.shouldSetMessageFutureOnSuccess;
-
-    if (this.shouldSetMessageFutureOnSuccess) {
-      if (builder.messageFuture != null) {
-        this.messageFuture = builder.messageFuture;
-      } else {
-        this.messageFuture = SettableApiFuture.create();
-      }
-    } else {
-      this.messageFuture = null;
-    }
+    this.messageFuture =
+        builder.messageFuture == null ? SettableApiFuture.create() : builder.messageFuture;
   }
 
   public String getAckId() {
@@ -53,7 +45,8 @@ public class AckRequestData {
   }
 
   public void setAckResponse(AckResponse ackResponse) {
-    if (this.shouldSetMessageFutureOnSuccess && !this.messageFuture.isDone()) {
+    if (!this.messageFuture.isDone()
+        && (ackResponse != AckResponse.SUCCESSFUL || this.shouldSetMessageFutureOnSuccess)) {
       this.messageFuture.set(ackResponse);
     }
   }

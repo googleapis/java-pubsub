@@ -152,7 +152,7 @@ public class StreamingSubscriberConnectionTest {
                 .build());
     modackRequestDataList.add(modackRequestDataSuccess);
 
-    // SUCCESS
+    // SUCCESS - no message
     SettableApiFuture<AckResponse> messageFutureNotDoneExpected = SettableApiFuture.create();
     modackRequestDataDefault.addAckIdMessageFuture(
         AckRequestData.newBuilder(MOCK_ACK_ID_SUCCESS_NO_MESSAGE)
@@ -262,7 +262,7 @@ public class StreamingSubscriberConnectionTest {
     streamingSubscriberConnection.sendModackOperations(modackRequestDataList);
 
     // Backoff
-    systemExecutor.advanceTime(Duration.ofMillis(200));
+    systemExecutor.advanceTime(Duration.ofSeconds(200));
 
     // Assert expected behavior
     verify(mockSubscriberStub.modifyAckDeadlineCallable(), times(1))
@@ -450,9 +450,7 @@ public class StreamingSubscriberConnectionTest {
     ModackRequestData modackRequestData = new ModackRequestData(0, nackRequestDataList);
 
     StreamingSubscriberConnection streamingSubscriberConnection =
-        getStreamingSubscriberReceiverFromBuilder(
-            StreamingSubscriberConnection.newBuilder(mock(MessageReceiverWithAckResponse.class)),
-            true);
+        getStreamingSubscriberConnection(true);
 
     streamingSubscriberConnection.sendAckOperations(ackRequestDataList);
     streamingSubscriberConnection.sendModackOperations(
@@ -481,7 +479,7 @@ public class StreamingSubscriberConnectionTest {
   private StreamingSubscriberConnection getStreamingSubscriberConnection(
       boolean exactlyOnceDeliveryEnabled) {
     return getStreamingSubscriberReceiverFromBuilder(
-        StreamingSubscriberConnection.newBuilder(mock(MessageReceiver.class)),
+        StreamingSubscriberConnection.newBuilder(mock(MessageReceiverWithAckResponse.class)),
         exactlyOnceDeliveryEnabled);
   }
 

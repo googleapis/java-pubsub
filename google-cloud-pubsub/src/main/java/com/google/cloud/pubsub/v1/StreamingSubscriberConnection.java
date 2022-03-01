@@ -535,39 +535,41 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
         ackOperationsWaiter.incrementPendingCount(-1);
         Map<String, String> metadataMap = getMetadataMapFromThrowable(t);
         List<AckRequestData> ackRequestDataArrayRetryList = new ArrayList<AckRequestData>();
-        for (AckRequestData ackRequestData : ackRequestDataList) {
-          String ackId = ackRequestData.getAckId();
-          if (metadataMap.containsKey(ackId)) {
-            // An error occured
-            String errorMessage = metadataMap.get(ackId);
-            // Make sure the message has not already been handled
-            if ((ackRequestData.getMessageFuture() != null) && !ackRequestData.getMessageFuture().isDone()) {
-              logger.log(
-                  Level.WARNING,
-                  "Message has already been handled, dropping response",
-                  errorMessage);
-            } else if (errorMessage.startsWith(TRANSIENT_FAILURE_METADATA_PREFIX)) {
-              // Retry all "TRANSIENT_*" error messages - do not set message future
-              logger.log(Level.WARNING, "Transient error message, will resend", errorMessage);
-              ackRequestDataArrayRetryList.add(ackRequestData);
-            } else if (errorMessage.equals(PERMANENT_FAILURE_INVALID_ACK_ID_METADATA)) {
-              // Permanent failure, send
-              logger.log(
-                  Level.WARNING,
-                  "Permanent error invalid ack id message, will not resend",
-                  errorMessage);
-              ackRequestData.setAckResponse(AckResponse.INVALID);
-            } else {
-              logger.log(Level.WARNING, "Unknown error message, will not resend", errorMessage);
-              ackRequestData.setAckResponse(AckResponse.OTHER);
-            }
-          } else if (ackRequestData.shouldSetMessageFutureOnSuccess()) {
-            ackRequestData.setAckResponse(AckResponse.SUCCESSFUL);
-          }
+        ackRequestDataList.forEach(
+            ackRequestData -> {
+              String ackId = ackRequestData.getAckId();
+              if (metadataMap.containsKey(ackId)) {
+                // An error occured
+                String errorMessage = metadataMap.get(ackId);
+                // Make sure the message has not already been handled
+                if ((ackRequestData.getMessageFuture() != null)
+                    && ackRequestData.getMessageFuture().isDone()) {
+                  logger.log(
+                      Level.WARNING,
+                      "Message has already been handled, dropping response",
+                      errorMessage);
+                } else if (errorMessage.startsWith(TRANSIENT_FAILURE_METADATA_PREFIX)) {
+                  // Retry all "TRANSIENT_*" error messages - do not set message future
+                  logger.log(Level.WARNING, "Transient error message, will resend", errorMessage);
+                  ackRequestDataArrayRetryList.add(ackRequestData);
+                } else if (errorMessage.equals(PERMANENT_FAILURE_INVALID_ACK_ID_METADATA)) {
+                  // Permanent failure, send
+                  logger.log(
+                      Level.WARNING,
+                      "Permanent error invalid ack id message, will not resend",
+                      errorMessage);
+                  ackRequestData.setAckResponse(AckResponse.INVALID);
+                } else {
+                  logger.log(Level.WARNING, "Unknown error message, will not resend", errorMessage);
+                  ackRequestData.setAckResponse(AckResponse.OTHER);
+                }
+              } else if (ackRequestData.shouldSetMessageFutureOnSuccess()) {
+                ackRequestData.setAckResponse(AckResponse.SUCCESSFUL);
+              }
 
-          // Remove from our pending
-          pendingRequests.remove(ackRequestData);
-        }
+              // Remove from our pending
+              pendingRequests.remove(ackRequestData);
+            });
 
         // Handle retries
         if (!ackRequestDataArrayRetryList.isEmpty()) {
@@ -589,7 +591,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
                   }
                 }
               },
-              newBackoffMillis,
+              currentBackoffMillis,
               TimeUnit.MILLISECONDS);
         }
 
