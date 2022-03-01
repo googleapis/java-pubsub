@@ -45,14 +45,20 @@ public class AckRequestData {
   }
 
   public void setAckResponse(AckResponse ackResponse) {
-    if (!this.messageFuture.isDone()
-        && (ackResponse != AckResponse.SUCCESSFUL || this.shouldSetMessageFutureOnSuccess)) {
+    // Sets the ack response if allowed
+    if ((this.messageFuture != null)
+        && !this.messageFuture.isDone()
+        && ((ackResponse != AckResponse.SUCCESSFUL) || this.shouldSetMessageFutureOnSuccess)) {
       this.messageFuture.set(ackResponse);
     }
   }
 
   public boolean shouldSetMessageFutureOnSuccess() {
     return shouldSetMessageFutureOnSuccess;
+  }
+
+  public boolean hasMessageFuture() {
+    return this.messageFuture != null;
   }
 
   public static Builder newBuilder(String ackId) {

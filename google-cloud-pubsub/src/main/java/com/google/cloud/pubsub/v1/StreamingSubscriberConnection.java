@@ -428,8 +428,8 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
       List<String> ackIdsInRequest = new ArrayList<>();
       for (AckRequestData ackRequestData : ackRequestDataInRequestList) {
         ackIdsInRequest.add(ackRequestData.getAckId());
-        if (ackRequestData.shouldSetMessageFutureOnSuccess()) {
-          // Add to our pending requests
+        if (ackRequestData.hasMessageFuture()) {
+          // Add to our pending requests if we care about the response
           pendingRequests.add(ackRequestData);
         }
       }
@@ -459,9 +459,8 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
       List<String> ackIdsInRequest = new ArrayList<>();
       for (AckRequestData ackRequestData : modackRequestData.getAckIdMessageFutures()) {
         ackIdsInRequest.add(ackRequestData.getAckId());
-
-        if (ackRequestData.shouldSetMessageFutureOnSuccess()) {
-          // Add to our pending requests
+        if (ackRequestData.hasMessageFuture()) {
+          // Add to our pending requests if we care about the response
           pendingRequests.add(ackRequestData);
         }
       }
@@ -520,12 +519,10 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
       public void onSuccess(Empty empty) {
         ackOperationsWaiter.incrementPendingCount(-1);
         for (AckRequestData ackRequestData : ackRequestDataList) {
-          if (ackRequestData.shouldSetMessageFutureOnSuccess()) {
-            // This will check if a response is needed, and if it has already been set
-            ackRequestData.setAckResponse(AckResponse.SUCCESSFUL);
-            // Remove from our pending operations
-            pendingRequests.remove(ackRequestData);
-          }
+          // This will check if a response is needed, and if it has already been set
+          ackRequestData.setAckResponse(AckResponse.SUCCESSFUL);
+          // Remove from our pending operations
+          pendingRequests.remove(ackRequestData);
         }
       }
 

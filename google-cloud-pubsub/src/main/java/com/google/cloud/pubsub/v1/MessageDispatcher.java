@@ -64,7 +64,6 @@ class MessageDispatcher {
 
   private MessageReceiver receiver;
   private MessageReceiverWithAckResponse receiverWithAckResponse;
-  private AtomicBoolean shouldSetMessageFuture;
 
   private final AckProcessor ackProcessor;
 
@@ -111,7 +110,7 @@ class MessageDispatcher {
       this.totalExpiration = totalExpiration;
     }
 
-    public AckRequestData getAckIdMessageFuture() {
+    public AckRequestData getAckRequestData() {
       return ackRequestData;
     }
 
@@ -196,7 +195,6 @@ class MessageDispatcher {
     ackProcessor = builder.ackProcessor;
     flowController = builder.flowController;
     enableExactlyOnceDelivery = new AtomicBoolean(builder.enableExactlyOnceDelivery);
-    shouldSetMessageFuture = new AtomicBoolean(builder.receiverWithAckResponse != null);
     ackLatencyDistribution = builder.ackLatencyDistribution;
     clock = builder.clock;
     jobLock = new ReentrantLock();
@@ -217,7 +215,7 @@ class MessageDispatcher {
   }
 
   public boolean getShouldSetMessageFuture() {
-    return shouldSetMessageFuture.get();
+    return receiverWithAckResponse != null;
   }
 
   void start() {
@@ -512,7 +510,7 @@ class MessageDispatcher {
             modackWithMessageFutureByExtensionTimeMap.computeIfAbsent(
                 extendSeconds,
                 deadlineExtensionSeconds -> new ModackRequestData(deadlineExtensionSeconds));
-        modackRequestData.addAckIdMessageFuture(entry.getValue().getAckIdMessageFuture());
+        modackRequestData.addAckIdMessageFuture(entry.getValue().getAckRequestData());
         numAckIdToSend++;
         continue;
       }
@@ -524,14 +522,9 @@ class MessageDispatcher {
       if (totalExpiration.isAfter(now)) {
         int sec = Math.max(1, (int) now.until(totalExpiration, ChronoUnit.SECONDS));
         ModackRequestData modackRequestData =
-            modackWithMessageFutureByExtensionTimeMap.getOrDefault(sec, new ModackRequestData(sec));
-        modackRequestData.addAckIdMessageFuture(
-            AckRequestData.newBuilder(ackId)
-                .setMessageFuture(entry.getValue().getMessageFuture())
-                .setShouldSetMessageFutureOnSuccess(getShouldSetMessageFuture())
-                .setExactlyOnceEnabled(getEnableExactlyOnceDelivery())
-                .build());
-        modackWithMessageFutureByExtensionTimeMap.put(sec, modackRequestData);
+            modackWithMessageFutureByExtensionTimeMap.computeIfAbsent(
+                sec, extensionSeconds -> new ModackRequestData(extensionSeconds));
+        modackRequestData.addAckIdMessageFuture(entry.getValue().getAckRequestData());
         numAckIdToSend++;
       }
     }
