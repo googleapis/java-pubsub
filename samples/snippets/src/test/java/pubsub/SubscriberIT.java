@@ -203,5 +203,12 @@ public class SubscriberIT {
         () ->
             SubscribeSyncWithLeaseExample.subscribeSyncWithLeaseExample(
                 projectId, subscriptionId, 10));
+
+    publishSomeMessages(10);
+    bout.reset();
+    SubscribeWithExactlyOnceConsumerWithResponseExample.subscribeWithExactlyOnceConsumerWithResponseExample(projectId, subscriptionId);
+    for (int i = 0; i < 10; i++) {
+      assertThat(bout.toString()).contains("Id: " + i + " SUCCESS");
+    }
   }
 }
