@@ -34,42 +34,42 @@ public class SubscribeWithExactlyOnceConsumerWithResponseExample {
     String subscriptionId = "your-subscription-id";
 
     subscribeWithExactlyOnceConsumerWithResponseExample(projectId, topicId, subscriptionId);
+  }
+
+  public static void subscribeWithExactlyOnceConsumerWithResponseExample(String projectId, String topicId, String subscriptionId) {
+    // For subscriptions with exactly once enabled, the AckResponse will:
+    // return confirmed SUCCESS OR
+    // permanent failures
+    // For subscriptions without exactly once enabled the AckResponse will:
+    // return SUCCESS for messages sent OR
+    // permanent failures
+    ProjectSubscriptionName subscriptionName = ProjectSubscriptionName.of(projectId, subscriptionId);
+
+    // Instantiate an asynchronous message receiver.
+    MessageReceiverWithAckResponse receiverWithResponse =
+            (PubsubMessage message, AckReplyConsumerWithResponse consumerWithResponse) -> {
+      // Handle incoming message, then ack the received message, and receive the response
+
+      Future<AckResponse> ackResponseFuture = consumerWithResponse.ack();
+
+      // Retreive the completed future
+      AckResponse ackResponse = ackResponseFuture.get();
+
+      System.out.println("Id: " + message.getMessageId() + " " + ackResponse);
+  };
+
+    Subscriber subscriber = null;
+    try {
+      subscriber = Subscriber.newBuilder(subscriptionName, receiverWithResponse).build();
+      // Start the subscriber.
+      subscriber.startAsync().awaitRunning();
+      System.out.printf("Listening for messages on %s:\n", subscriptionName.toString());
+      // Allow the subscriber to run for 30s unless an unrecoverable error occurs.
+      subscriber.awaitTerminated(30, TimeUnit.SECONDS);
+    } catch (TimeoutException timeoutException) {
+      // Shut down the subscriber after 30s. Stop receiving messages.
+      subscriber.stopAsync();
     }
-
-    public static void subscribeWithExactlyOnceConsumerWithResponseExample(String projectId, String topicId, String subscriptionId) {
-      // For subscriptions with exactly once enabled, the AckResponse will:
-      // return confirmed SUCCESS OR
-      // permanent failures
-      // For subscriptions without exactly once enabled the AckResponse will:
-      // return SUCCESS for messages sent OR
-      // permanent failures
-      ProjectSubscriptionName subscriptionName = ProjectSubscriptionName.of(projectId, subscriptionId);
-
-      // Instantiate an asynchronous message receiver.
-      MessageReceiverWithAckResponse receiverWithResponse =
-              (PubsubMessage message, AckReplyConsumerWithResponse consumerWithResponse) -> {
-        // Handle incoming message, then ack the received message, and receive the response
-
-        Future<AckResponse> ackResponseFuture = consumerWithResponse.ack();
-
-        // Retreive the completed future
-        AckResponse ackResponse = ackResponseFuture.get();
-
-        System.out.println("Id: " + message.getMessageId() + " " + ackResponse);
-    };
-
-      Subscriber subscriber = null;
-      try {
-        subscriber = Subscriber.newBuilder(subscriptionName, receiverWithResponse).build();
-        // Start the subscriber.
-        subscriber.startAsync().awaitRunning();
-        System.out.printf("Listening for messages on %s:\n", subscriptionName.toString());
-        // Allow the subscriber to run for 30s unless an unrecoverable error occurs.
-        subscriber.awaitTerminated(30, TimeUnit.SECONDS);
-      } catch (TimeoutException timeoutException) {
-        // Shut down the subscriber after 30s. Stop receiving messages.
-        subscriber.stopAsync();
-      }
-    }
+  }
 }
 // [END pubsub_subscriber_exactly_once]
