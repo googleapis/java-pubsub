@@ -243,7 +243,7 @@ public class ITPubSubTest {
 
     // We should get the nacked message back.
     MessageAndConsumer redeliveredToAck = pollQueueMessageAndConsumer(receiveQueue);
-    assertNotEquals(toNack.message().getData(), redeliveredToAck.message().getData());
+    assertEquals(toNack.message().getData(), redeliveredToAck.message().getData());
     redeliveredToAck.consumer().ack();
 
     subscriber.stopAsync().awaitTerminated();

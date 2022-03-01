@@ -57,38 +57,37 @@ public class CustomArgumentMatchers {
     }
   }
 
-  public static class AckIdMessageFutureMatcher implements ArgumentMatcher<AckIdMessageFuture> {
-    private AckIdMessageFuture left;
+  public static class AckRequestDataMatcher implements ArgumentMatcher<AckRequestData> {
+    private AckRequestData left;
 
-    private static Comparator<AckIdMessageFuture> comparator =
-        new Comparator<AckIdMessageFuture>() {
+    private static Comparator<AckRequestData> comparator =
+        new Comparator<AckRequestData>() {
 
           @Override
-          public int compare(AckIdMessageFuture ackIdMessageFuture, AckIdMessageFuture t1) {
-            return ackIdMessageFuture.getAckId().compareTo(t1.getAckId());
+          public int compare(AckRequestData ackRequestData, AckRequestData t1) {
+            return ackRequestData.getAckId().compareTo(t1.getAckId());
           }
         };
 
-    AckIdMessageFutureMatcher(AckIdMessageFuture left) {
+    AckRequestDataMatcher(AckRequestData left) {
       this.left = left;
     }
 
     @Override
-    public boolean matches(AckIdMessageFuture right) {
+    public boolean matches(AckRequestData right) {
       return this.left.getAckId() == right.getAckId();
     }
   }
 
-  public static class AckIdMessageFutureListMatcher
-      implements ArgumentMatcher<List<AckIdMessageFuture>> {
-    private List<AckIdMessageFuture> left;
+  public static class AckRequestDataListMatcher implements ArgumentMatcher<List<AckRequestData>> {
+    private List<AckRequestData> left;
 
-    AckIdMessageFutureListMatcher(List<AckIdMessageFuture> ackIdMessageFutureList) {
-      this.left = ackIdMessageFutureList;
+    AckRequestDataListMatcher(List<AckRequestData> ackRequestDataList) {
+      this.left = ackRequestDataList;
     }
 
     @Override
-    public boolean matches(List<AckIdMessageFuture> right) {
+    public boolean matches(List<AckRequestData> right) {
       // We only really care about the ackIds, the futures will be mocked
       if (this.left.size() != right.size()) {
         return false;
@@ -96,11 +95,11 @@ public class CustomArgumentMatchers {
 
       // We just want to compare the ackIds not the futures and do not care about order (or
       // duplicates)
-      this.left.sort(AckIdMessageFutureMatcher.comparator);
-      right.sort(AckIdMessageFutureMatcher.comparator);
+      this.left.sort(AckRequestDataMatcher.comparator);
+      right.sort(AckRequestDataMatcher.comparator);
 
-      Iterator<AckIdMessageFuture> iteratorLeft = this.left.iterator();
-      Iterator<AckIdMessageFuture> iteratorRight = right.iterator();
+      Iterator<AckRequestData> iteratorLeft = this.left.iterator();
+      Iterator<AckRequestData> iteratorRight = right.iterator();
 
       while (iteratorLeft.hasNext() && iteratorRight.hasNext()) {
         if (iteratorLeft.next().getAckId() != iteratorRight.next().getAckId()) {
@@ -111,15 +110,14 @@ public class CustomArgumentMatchers {
     }
   }
 
-  public static class ModackWithMessageFutureMatcher
-      implements ArgumentMatcher<ModackWithMessageFuture> {
-    private ModackWithMessageFuture left;
+  public static class ModackRequestDataMatcher implements ArgumentMatcher<ModackRequestData> {
+    private ModackRequestData left;
 
-    private static Comparator<ModackWithMessageFuture> comparator =
-        new Comparator<ModackWithMessageFuture>() {
+    private static Comparator<ModackRequestData> comparator =
+        new Comparator<ModackRequestData>() {
 
           @Override
-          public int compare(ModackWithMessageFuture left, ModackWithMessageFuture right) {
+          public int compare(ModackRequestData left, ModackRequestData right) {
             // Compare deadline extensions first
             int deadlineExtensionDifference =
                 left.getDeadlineExtensionSeconds() - right.getDeadlineExtensionSeconds();
@@ -128,14 +126,14 @@ public class CustomArgumentMatchers {
             }
 
             // Then sort and compare ackIds
-            List<AckIdMessageFuture> ackIdMessageFutureListLeft = left.getAckIdMessageFutures();
-            List<AckIdMessageFuture> ackIdMessageFutureListRight = right.getAckIdMessageFutures();
+            List<AckRequestData> ackRequestDataListLeft = left.getAckIdMessageFutures();
+            List<AckRequestData> ackRequestDataListRight = right.getAckIdMessageFutures();
 
-            ackIdMessageFutureListLeft.sort(AckIdMessageFutureMatcher.comparator);
-            ackIdMessageFutureListRight.sort(AckIdMessageFutureMatcher.comparator);
+            ackRequestDataListLeft.sort(AckRequestDataMatcher.comparator);
+            ackRequestDataListRight.sort(AckRequestDataMatcher.comparator);
 
-            Iterator<AckIdMessageFuture> iteratorLeft = ackIdMessageFutureListLeft.iterator();
-            Iterator<AckIdMessageFuture> iteratorRight = ackIdMessageFutureListRight.iterator();
+            Iterator<AckRequestData> iteratorLeft = ackRequestDataListLeft.iterator();
+            Iterator<AckRequestData> iteratorRight = ackRequestDataListRight.iterator();
             int compareAcks;
 
             while (iteratorLeft.hasNext() && iteratorRight.hasNext()) {
@@ -159,47 +157,47 @@ public class CustomArgumentMatchers {
           }
         };
 
-    ModackWithMessageFutureMatcher(ModackWithMessageFuture left) {
+    ModackRequestDataMatcher(ModackRequestData left) {
       this.left = left;
     }
 
     @Override
-    public boolean matches(ModackWithMessageFuture right) {
-      return ModackWithMessageFutureMatcher.comparator.compare(this.left, right) == 0;
+    public boolean matches(ModackRequestData right) {
+      return ModackRequestDataMatcher.comparator.compare(this.left, right) == 0;
     }
   }
 
-  public static class ModackWithMessageFutureListMatcher
-      implements ArgumentMatcher<List<ModackWithMessageFuture>> {
-    private List<ModackWithMessageFuture> left;
+  public static class ModackRequestDataListMatcher
+      implements ArgumentMatcher<List<ModackRequestData>> {
+    private List<ModackRequestData> left;
 
-    ModackWithMessageFutureListMatcher(List<ModackWithMessageFuture> modackWithMessageFutureList) {
-      this.left = modackWithMessageFutureList;
+    ModackRequestDataListMatcher(List<ModackRequestData> modackRequestDataList) {
+      this.left = modackRequestDataList;
     }
 
     @Override
-    public boolean matches(List<ModackWithMessageFuture> right) {
+    public boolean matches(List<ModackRequestData> right) {
       // First check size
       if (this.left.size() != right.size()) {
         return false;
       }
 
       // Sort first
-      this.left.sort(ModackWithMessageFutureMatcher.comparator);
-      right.sort(ModackWithMessageFutureMatcher.comparator);
+      this.left.sort(ModackRequestDataMatcher.comparator);
+      right.sort(ModackRequestDataMatcher.comparator);
 
-      Iterator<ModackWithMessageFuture> iteratorLeft = this.left.iterator();
-      Iterator<ModackWithMessageFuture> iteratorRight = right.iterator();
+      Iterator<ModackRequestData> iteratorLeft = this.left.iterator();
+      Iterator<ModackRequestData> iteratorRight = right.iterator();
 
-      ModackWithMessageFuture modackWithMessageFutureLeft;
-      ModackWithMessageFuture modackWithMessageFutureRight;
+      ModackRequestData modackRequestDataLeft;
+      ModackRequestData modackRequestDataRight;
 
       while (iteratorLeft.hasNext() && iteratorRight.hasNext()) {
 
-        ModackWithMessageFutureMatcher modackWithMessageFutureMatcher =
-            new ModackWithMessageFutureMatcher(iteratorLeft.next());
+        ModackRequestDataMatcher modackRequestDataMatcher =
+            new ModackRequestDataMatcher(iteratorLeft.next());
 
-        if (!modackWithMessageFutureMatcher.matches(iteratorRight.next())) {
+        if (!modackRequestDataMatcher.matches(iteratorRight.next())) {
           return false;
         }
       }

@@ -123,18 +123,15 @@ public class MessageDispatcherTest {
     messageDispatcher.processOutstandingAckOperations();
 
     // Assert expected behavior
-    List<ModackWithMessageFuture> modackWithMessageFutureList =
-        new ArrayList<ModackWithMessageFuture>();
-    modackWithMessageFutureList.add(
-        new ModackWithMessageFuture(
-            MIN_ACK_DEADLINE_SECONDS, new AckIdMessageFuture(TEST_MESSAGE.getAckId())));
+    List<ModackRequestData> modackRequestDataList = new ArrayList<ModackRequestData>();
+    modackRequestDataList.add(
+        new ModackRequestData(
+            MIN_ACK_DEADLINE_SECONDS, AckRequestData.newBuilder(TEST_MESSAGE.getAckId()).build()));
 
     verify(mockAckProcessor, times(1))
-        .sendAckOperations(
+        .sendModackOperations(
             argThat(
-                new CustomArgumentMatchers.ModackWithMessageFutureListMatcher(
-                    modackWithMessageFutureList)),
-            eq(Collections.emptyList()));
+                new CustomArgumentMatchers.ModackRequestDataListMatcher(modackRequestDataList)));
     verify(mockMessageReceiver, never())
         .receiveMessage(eq(TEST_MESSAGE.getMessage()), any(AckReplyConsumer.class));
   }
@@ -148,18 +145,15 @@ public class MessageDispatcherTest {
     messageDispatcher.processOutstandingAckOperations();
 
     // Assert expected behavior
-    List<ModackWithMessageFuture> modackWithMessageFutureList =
-        new ArrayList<ModackWithMessageFuture>();
-    modackWithMessageFutureList.add(
-        new ModackWithMessageFuture(
-            MIN_ACK_DEADLINE_SECONDS, new AckIdMessageFuture(TEST_MESSAGE.getAckId())));
+    List<ModackRequestData> modackRequestDataList = new ArrayList<ModackRequestData>();
+    modackRequestDataList.add(
+        new ModackRequestData(
+            MIN_ACK_DEADLINE_SECONDS, AckRequestData.newBuilder(TEST_MESSAGE.getAckId()).build()));
 
     verify(mockAckProcessor, times(1))
-        .sendAckOperations(
+        .sendModackOperations(
             argThat(
-                new CustomArgumentMatchers.ModackWithMessageFutureListMatcher(
-                    modackWithMessageFutureList)),
-            eq(Collections.emptyList()));
+                new CustomArgumentMatchers.ModackRequestDataListMatcher(modackRequestDataList)));
     verify(mockMessageReceiverWithAckResponse, never())
         .receiveMessage(eq(TEST_MESSAGE.getMessage()), any(AckReplyConsumerWithResponse.class));
   }
@@ -180,22 +174,20 @@ public class MessageDispatcherTest {
     messageDispatcher.processOutstandingAckOperations();
 
     // Assert expected behavior
-    List<AckIdMessageFuture> ackIdMessageFutureList = new ArrayList<AckIdMessageFuture>();
-    AckIdMessageFuture ackIdMessageFuture = new AckIdMessageFuture(TEST_MESSAGE.getAckId());
-    ackIdMessageFutureList.add(ackIdMessageFuture);
+    List<AckRequestData> ackRequestDataList = new ArrayList<AckRequestData>();
+    AckRequestData ackRequestData = AckRequestData.newBuilder(TEST_MESSAGE.getAckId()).build();
+    ackRequestDataList.add(ackRequestData);
 
-    List<ModackWithMessageFuture> modackWithMessageFutureList =
-        new ArrayList<ModackWithMessageFuture>();
-    modackWithMessageFutureList.add(
-        new ModackWithMessageFuture(MIN_ACK_DEADLINE_SECONDS, ackIdMessageFuture));
+    List<ModackRequestData> modackRequestDataList = new ArrayList<ModackRequestData>();
+    modackRequestDataList.add(new ModackRequestData(MIN_ACK_DEADLINE_SECONDS, ackRequestData));
 
     verify(mockAckProcessor, times(1))
+        .sendModackOperations(
+            argThat(
+                new CustomArgumentMatchers.ModackRequestDataListMatcher(modackRequestDataList)));
+    verify(mockAckProcessor, times(1))
         .sendAckOperations(
-            argThat(
-                new CustomArgumentMatchers.ModackWithMessageFutureListMatcher(
-                    modackWithMessageFutureList)),
-            argThat(
-                new CustomArgumentMatchers.AckIdMessageFutureListMatcher(ackIdMessageFutureList)));
+            argThat(new CustomArgumentMatchers.AckRequestDataListMatcher(ackRequestDataList)));
   }
 
   @Test
@@ -215,22 +207,20 @@ public class MessageDispatcherTest {
     messageDispatcher.processOutstandingAckOperations();
 
     // Assert expected behavior
-    List<AckIdMessageFuture> ackIdMessageFutureList = new ArrayList<AckIdMessageFuture>();
-    AckIdMessageFuture ackIdMessageFuture = new AckIdMessageFuture(TEST_MESSAGE.getAckId());
-    ackIdMessageFutureList.add(ackIdMessageFuture);
+    List<AckRequestData> ackRequestDataList = new ArrayList<AckRequestData>();
+    AckRequestData ackRequestData = AckRequestData.newBuilder(TEST_MESSAGE.getAckId()).build();
+    ackRequestDataList.add(ackRequestData);
 
-    List<ModackWithMessageFuture> modackWithMessageFutureList =
-        new ArrayList<ModackWithMessageFuture>();
-    modackWithMessageFutureList.add(
-        new ModackWithMessageFuture(MIN_ACK_DEADLINE_SECONDS, ackIdMessageFuture));
+    List<ModackRequestData> modackRequestDataList = new ArrayList<ModackRequestData>();
+    modackRequestDataList.add(new ModackRequestData(MIN_ACK_DEADLINE_SECONDS, ackRequestData));
 
     verify(mockAckProcessor, times(1))
+        .sendModackOperations(
+            argThat(
+                new CustomArgumentMatchers.ModackRequestDataListMatcher(modackRequestDataList)));
+    verify(mockAckProcessor, times(1))
         .sendAckOperations(
-            argThat(
-                new CustomArgumentMatchers.ModackWithMessageFutureListMatcher(
-                    modackWithMessageFutureList)),
-            argThat(
-                new CustomArgumentMatchers.AckIdMessageFutureListMatcher(ackIdMessageFutureList)));
+            argThat(new CustomArgumentMatchers.AckRequestDataListMatcher(ackRequestDataList)));
   }
 
   @Test
@@ -248,19 +238,15 @@ public class MessageDispatcherTest {
     messageDispatcher.processOutstandingAckOperations();
 
     // Assert expected behavior
-    AckIdMessageFuture ackIdMessageFuture = new AckIdMessageFuture(TEST_MESSAGE.getAckId());
-    List<ModackWithMessageFuture> modackWithMessageFutureList =
-        new ArrayList<ModackWithMessageFuture>();
-    modackWithMessageFutureList.add(new ModackWithMessageFuture(0, ackIdMessageFuture));
-    modackWithMessageFutureList.add(
-        new ModackWithMessageFuture(MIN_ACK_DEADLINE_SECONDS, ackIdMessageFuture));
+    AckRequestData ackRequestData = AckRequestData.newBuilder(TEST_MESSAGE.getAckId()).build();
+    List<ModackRequestData> modackRequestDataList = new ArrayList<ModackRequestData>();
+    modackRequestDataList.add(new ModackRequestData(0, ackRequestData));
+    modackRequestDataList.add(new ModackRequestData(MIN_ACK_DEADLINE_SECONDS, ackRequestData));
 
     verify(mockAckProcessor, times(1))
-        .sendAckOperations(
+        .sendModackOperations(
             argThat(
-                new CustomArgumentMatchers.ModackWithMessageFutureListMatcher(
-                    modackWithMessageFutureList)),
-            eq(Collections.emptyList()));
+                new CustomArgumentMatchers.ModackRequestDataListMatcher(modackRequestDataList)));
   }
 
   @Test
@@ -279,19 +265,15 @@ public class MessageDispatcherTest {
     messageDispatcher.processOutstandingAckOperations();
 
     // Assert expected behavior
-    AckIdMessageFuture ackIdMessageFuture = new AckIdMessageFuture(TEST_MESSAGE.getAckId());
-    List<ModackWithMessageFuture> modackWithMessageFutureList =
-        new ArrayList<ModackWithMessageFuture>();
-    modackWithMessageFutureList.add(new ModackWithMessageFuture(0, ackIdMessageFuture));
-    modackWithMessageFutureList.add(
-        new ModackWithMessageFuture(MIN_ACK_DEADLINE_SECONDS, ackIdMessageFuture));
+    AckRequestData ackRequestData = AckRequestData.newBuilder(TEST_MESSAGE.getAckId()).build();
+    List<ModackRequestData> modackRequestDataList = new ArrayList<ModackRequestData>();
+    modackRequestDataList.add(new ModackRequestData(0, ackRequestData));
+    modackRequestDataList.add(new ModackRequestData(MIN_ACK_DEADLINE_SECONDS, ackRequestData));
 
     verify(mockAckProcessor, times(1))
-        .sendAckOperations(
+        .sendModackOperations(
             argThat(
-                new CustomArgumentMatchers.ModackWithMessageFutureListMatcher(
-                    modackWithMessageFutureList)),
-            eq(Collections.emptyList()));
+                new CustomArgumentMatchers.ModackRequestDataListMatcher(modackRequestDataList)));
   }
 
   @Test
@@ -301,22 +283,18 @@ public class MessageDispatcherTest {
     messageDispatcher.extendDeadlines();
 
     // Assert expected behavior
-    List<AckIdMessageFuture> ackIdMessageFutureList = new ArrayList<AckIdMessageFuture>();
+    List<AckRequestData> ackRequestDataList = new ArrayList<AckRequestData>();
 
-    AckIdMessageFuture ackIdMessageFuture = new AckIdMessageFuture(TEST_MESSAGE.getAckId());
-    ackIdMessageFutureList.add(ackIdMessageFuture);
+    AckRequestData ackRequestData = AckRequestData.newBuilder(TEST_MESSAGE.getAckId()).build();
+    ackRequestDataList.add(ackRequestData);
 
-    List<ModackWithMessageFuture> modackWithMessageFutureList =
-        new ArrayList<ModackWithMessageFuture>();
-    modackWithMessageFutureList.add(
-        new ModackWithMessageFuture(MIN_ACK_DEADLINE_SECONDS, ackIdMessageFuture));
+    List<ModackRequestData> modackRequestDataList = new ArrayList<ModackRequestData>();
+    modackRequestDataList.add(new ModackRequestData(MIN_ACK_DEADLINE_SECONDS, ackRequestData));
 
     verify(mockAckProcessor, times(1))
-        .sendAckOperations(
+        .sendModackOperations(
             argThat(
-                new CustomArgumentMatchers.ModackWithMessageFutureListMatcher(
-                    modackWithMessageFutureList)),
-            eq(Collections.emptyList()));
+                new CustomArgumentMatchers.ModackRequestDataListMatcher(modackRequestDataList)));
   }
 
   @Test
@@ -329,19 +307,16 @@ public class MessageDispatcherTest {
     messageDispatcher.extendDeadlines();
 
     // Assert expected behavior
-    List<AckIdMessageFuture> ackIdMessageFutureList = new ArrayList<AckIdMessageFuture>();
-    AckIdMessageFuture ackIdMessageFuture = new AckIdMessageFuture(TEST_MESSAGE.getAckId());
-    ackIdMessageFutureList.add(ackIdMessageFuture);
-    List<ModackWithMessageFuture> modackWithMessageFutureList =
-        new ArrayList<ModackWithMessageFuture>();
-    modackWithMessageFutureList.add(new ModackWithMessageFuture(secondsLeft, ackIdMessageFuture));
+    List<AckRequestData> ackRequestDataList = new ArrayList<AckRequestData>();
+    AckRequestData ackRequestData = AckRequestData.newBuilder(TEST_MESSAGE.getAckId()).build();
+    ackRequestDataList.add(ackRequestData);
+    List<ModackRequestData> modackRequestDataList = new ArrayList<ModackRequestData>();
+    modackRequestDataList.add(new ModackRequestData(secondsLeft, ackRequestData));
 
     verify(mockAckProcessor, times(1))
-        .sendAckOperations(
+        .sendModackOperations(
             argThat(
-                new CustomArgumentMatchers.ModackWithMessageFutureListMatcher(
-                    modackWithMessageFutureList)),
-            eq(Collections.emptyList()));
+                new CustomArgumentMatchers.ModackRequestDataListMatcher(modackRequestDataList)));
   }
 
   @Test
@@ -354,8 +329,8 @@ public class MessageDispatcherTest {
     messageDispatcher.extendDeadlines();
 
     // Assert expected behavior
-    verify(mockAckProcessor, times(1))
-        .sendAckOperations(eq(Collections.emptyList()), eq(Collections.emptyList()));
+    verify(mockAckProcessor, times(0)).sendAckOperations(eq(Collections.emptyList()));
+    verify(mockAckProcessor, times(0)).sendModackOperations(eq(Collections.emptyList()));
   }
 
   @Test
