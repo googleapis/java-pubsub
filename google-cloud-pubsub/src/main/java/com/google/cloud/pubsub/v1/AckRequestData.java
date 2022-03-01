@@ -20,15 +20,24 @@ import com.google.api.core.SettableApiFuture;
 
 public class AckRequestData {
   private final String ackId;
-  private final SettableApiFuture<AckResponse> messageFuture;
   private final boolean exactlyOnceDeliveryEnabled;
   private final boolean shouldSetMessageFutureOnSuccess;
+  private final SettableApiFuture<AckResponse> messageFuture;
 
   protected AckRequestData(Builder builder) {
     this.ackId = builder.ackId;
-    this.messageFuture = builder.messageFuture;
     this.exactlyOnceDeliveryEnabled = builder.isExactlyOnceEnabled;
     this.shouldSetMessageFutureOnSuccess = builder.shouldSetMessageFutureOnSuccess;
+
+    if (this.shouldSetMessageFutureOnSuccess) {
+      if (builder.messageFuture != null) {
+        this.messageFuture = builder.messageFuture;
+      } else {
+        this.messageFuture = SettableApiFuture.create();
+      }
+    } else {
+      this.messageFuture = null;
+    }
   }
 
   public String getAckId() {
@@ -44,12 +53,12 @@ public class AckRequestData {
   }
 
   public void setAckResponse(AckResponse ackResponse) {
-    if (this.exactlyOnceDeliveryEnabled && !this.messageFuture.isDone()) {
+    if (this.shouldSetMessageFutureOnSuccess && !this.messageFuture.isDone()) {
       this.messageFuture.set(ackResponse);
     }
   }
 
-  public boolean isShouldSetMessageFutureOnSuccess() {
+  public boolean shouldSetMessageFutureOnSuccess() {
     return shouldSetMessageFutureOnSuccess;
   }
 

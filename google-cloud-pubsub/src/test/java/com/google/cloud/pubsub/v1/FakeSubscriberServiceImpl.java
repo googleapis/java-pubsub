@@ -17,11 +17,17 @@
 package com.google.cloud.pubsub.v1;
 
 import com.google.api.client.util.Preconditions;
-import com.google.protobuf.ByteString;
 import com.google.protobuf.Empty;
-import com.google.pubsub.v1.*;
+import com.google.pubsub.v1.AcknowledgeRequest;
+import com.google.pubsub.v1.GetSubscriptionRequest;
+import com.google.pubsub.v1.ModifyAckDeadlineRequest;
 import com.google.pubsub.v1.PublisherGrpc.PublisherImplBase;
+import com.google.pubsub.v1.PullRequest;
+import com.google.pubsub.v1.PullResponse;
+import com.google.pubsub.v1.StreamingPullRequest;
+import com.google.pubsub.v1.StreamingPullResponse;
 import com.google.pubsub.v1.SubscriberGrpc.SubscriberImplBase;
+import com.google.pubsub.v1.Subscription;
 import io.grpc.Status;
 import io.grpc.Status.Code;
 import io.grpc.StatusException;
@@ -106,19 +112,6 @@ class FakeSubscriberServiceImpl extends SubscriberImplBase {
         Stream stream, StreamObserver<StreamingPullResponse> responseObserver) {
       this.stream = stream;
       this.responseObserver = responseObserver;
-    }
-
-    public void setNextResponse() {
-      responseObserver.onNext(
-          StreamingPullResponse.newBuilder()
-              .setReceivedMessages(
-                  0,
-                  ReceivedMessage.newBuilder()
-                      .setMessage(
-                          PubsubMessage.newBuilder()
-                              .setData(ByteString.copyFromUtf8("msg1"))
-                              .build()))
-              .build());
     }
 
     @Override

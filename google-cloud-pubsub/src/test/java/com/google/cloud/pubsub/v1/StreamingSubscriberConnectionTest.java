@@ -34,6 +34,7 @@ import com.google.rpc.Status;
 import io.grpc.StatusException;
 import io.grpc.protobuf.StatusProto;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -413,6 +414,68 @@ public class StreamingSubscriberConnectionTest {
       // Just in case something went wrong when retrieving our futures
       throw new AssertionError();
     }
+  }
+
+  @Test
+  public void testSetFailureResponseOutstandingMessages() {
+    // Setup
+
+    List<AckRequestData> ackRequestDataList = new ArrayList<AckRequestData>();
+    List<AckRequestData> nackRequestDataList = new ArrayList<AckRequestData>();
+    List<SettableApiFuture<AckResponse>> futureList =
+        new ArrayList<SettableApiFuture<AckResponse>>();
+
+    // Create some acks
+    for (int i = 0; i < 5; i++) {
+      SettableApiFuture<AckResponse> future = SettableApiFuture.create();
+      futureList.add(future);
+      ackRequestDataList.add(
+          AckRequestData.newBuilder("ACK-ID-" + i)
+              .setMessageFuture(future)
+              .setShouldSetMessageFutureOnSuccess(true)
+              .build());
+    }
+
+    // Create some nacks
+    for (int i = 5; i < 10; i++) {
+      SettableApiFuture<AckResponse> future = SettableApiFuture.create();
+      futureList.add(future);
+      nackRequestDataList.add(
+          AckRequestData.newBuilder("ACK-ID-" + i)
+              .setMessageFuture(future)
+              .setShouldSetMessageFutureOnSuccess(true)
+              .build());
+    }
+
+    ModackRequestData modackRequestData = new ModackRequestData(0, nackRequestDataList);
+
+    StreamingSubscriberConnection streamingSubscriberConnection =
+        getStreamingSubscriberReceiverFromBuilder(
+            StreamingSubscriberConnection.newBuilder(mock(MessageReceiverWithAckResponse.class)),
+            true);
+
+    streamingSubscriberConnection.sendAckOperations(ackRequestDataList);
+    streamingSubscriberConnection.sendModackOperations(
+        Collections.singletonList(modackRequestData));
+
+    // Assert pending status
+    futureList.forEach(
+        ackResponseSettableApiFuture -> {
+          assertFalse(ackResponseSettableApiFuture.isDone());
+        });
+
+    // Set
+    streamingSubscriberConnection.setResponseOutstandingMessages(AckResponse.PERMISSION_DENIED);
+
+    // Assert futures
+
+    futureList.forEach(
+        ackResponseSettableApiFuture -> {
+          try {
+            assertEquals(ackResponseSettableApiFuture.get(), AckResponse.PERMISSION_DENIED);
+          } catch (InterruptedException | ExecutionException e) {
+          }
+        });
   }
 
   private StreamingSubscriberConnection getStreamingSubscriberConnection(

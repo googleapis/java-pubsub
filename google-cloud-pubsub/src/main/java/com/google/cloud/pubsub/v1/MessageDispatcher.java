@@ -64,7 +64,7 @@ class MessageDispatcher {
 
   private MessageReceiver receiver;
   private MessageReceiverWithAckResponse receiverWithAckResponse;
-  private AtomicBoolean setShouldSetMessageFuture;
+  private AtomicBoolean shouldSetMessageFuture;
 
   private final AckProcessor ackProcessor;
 
@@ -196,7 +196,7 @@ class MessageDispatcher {
     ackProcessor = builder.ackProcessor;
     flowController = builder.flowController;
     enableExactlyOnceDelivery = new AtomicBoolean(builder.enableExactlyOnceDelivery);
-    setShouldSetMessageFuture = new AtomicBoolean(builder.receiverWithAckResponse != null);
+    shouldSetMessageFuture = new AtomicBoolean(builder.receiverWithAckResponse != null);
     ackLatencyDistribution = builder.ackLatencyDistribution;
     clock = builder.clock;
     jobLock = new ReentrantLock();
@@ -216,8 +216,8 @@ class MessageDispatcher {
     return enableExactlyOnceDelivery.get();
   }
 
-  public boolean getSetShouldSetMessageFuture() {
-    return setShouldSetMessageFuture.get();
+  public boolean getShouldSetMessageFuture() {
+    return shouldSetMessageFuture.get();
   }
 
   void start() {
@@ -262,7 +262,7 @@ class MessageDispatcher {
                               newDeadlineSec - ackExpirationPadding.getSeconds(),
                               TimeUnit.SECONDS);
                     }
-                    processOutstandingAckOperations();
+                    processOutstandingOperations();
                   } catch (Throwable t) {
                     // Catch everything so that one run failing doesn't prevent subsequent runs.
                     logger.log(Level.WARNING, "failed to run periodic job", t);
@@ -292,7 +292,7 @@ class MessageDispatcher {
     } finally {
       jobLock.unlock();
     }
-    processOutstandingAckOperations();
+    processOutstandingOperations();
   }
 
   @InternalApi
@@ -356,7 +356,7 @@ class MessageDispatcher {
       AckRequestData ackRequestData =
           AckRequestData.newBuilder(message.getAckId())
               .setExactlyOnceEnabled(getEnableExactlyOnceDelivery())
-              .setShouldSetMessageFutureOnSuccess(getSetShouldSetMessageFuture())
+              .setShouldSetMessageFutureOnSuccess(getShouldSetMessageFuture())
               .build();
       AckHandler ackHandler =
           new AckHandler(ackRequestData, message.getMessage().getSerializedSize(), totalExpiration);
@@ -427,7 +427,7 @@ class MessageDispatcher {
                 ackHandler.forget();
                 return;
               }
-              if (receiverWithAckResponse != null) {
+              if (getShouldSetMessageFuture()) {
                 // This is the message future that is propagated to the user
                 SettableApiFuture<AckResponse> messageFuture = ackHandler.getMessageFuture();
                 final AckReplyConsumerWithResponse ackReplyConsumerWithResponse =
@@ -528,7 +528,7 @@ class MessageDispatcher {
         modackRequestData.addAckIdMessageFuture(
             AckRequestData.newBuilder(ackId)
                 .setMessageFuture(entry.getValue().getMessageFuture())
-                .setShouldSetMessageFutureOnSuccess(getSetShouldSetMessageFuture())
+                .setShouldSetMessageFutureOnSuccess(getShouldSetMessageFuture())
                 .setExactlyOnceEnabled(getEnableExactlyOnceDelivery())
                 .build());
         modackWithMessageFutureByExtensionTimeMap.put(sec, modackRequestData);
@@ -544,31 +544,31 @@ class MessageDispatcher {
   }
 
   @InternalApi
-  void processOutstandingAckOperations() {
-    List<AckRequestData> acksToSendWithFutures = new ArrayList<AckRequestData>();
-    pendingAcks.drainTo(acksToSendWithFutures);
-    logger.log(Level.FINER, "Sending {0} acks", acksToSendWithFutures.size());
+  void processOutstandingOperations() {
+    List<AckRequestData> ackRequestDataList = new ArrayList<AckRequestData>();
+    pendingAcks.drainTo(ackRequestDataList);
+    logger.log(Level.FINER, "Sending {0} acks", ackRequestDataList.size());
 
-    ackProcessor.sendAckOperations(acksToSendWithFutures);
+    ackProcessor.sendAckOperations(ackRequestDataList);
 
     List<ModackRequestData> modackRequestData = new ArrayList<ModackRequestData>();
 
     // Nacks are modacks with an expiration of 0
-    List<AckRequestData> nacksToSendWithFutures = new ArrayList<AckRequestData>();
-    pendingNacks.drainTo(nacksToSendWithFutures);
+    List<AckRequestData> nackRequestDataList = new ArrayList<AckRequestData>();
+    pendingNacks.drainTo(nackRequestDataList);
 
-    if (!nacksToSendWithFutures.isEmpty()) {
-      modackRequestData.add(new ModackRequestData(0, nacksToSendWithFutures));
+    if (!nackRequestDataList.isEmpty()) {
+      modackRequestData.add(new ModackRequestData(0, nackRequestDataList));
     }
-    logger.log(Level.FINER, "Sending {0} nacks", nacksToSendWithFutures.size());
+    logger.log(Level.FINER, "Sending {0} nacks", nackRequestDataList.size());
 
-    List<AckRequestData> ackIdMessageFuturesReceipts = new ArrayList<AckRequestData>();
-    pendingReceipts.drainTo(ackIdMessageFuturesReceipts);
-    if (!ackIdMessageFuturesReceipts.isEmpty()) {
+    List<AckRequestData> ackRequestDataReceipts = new ArrayList<AckRequestData>();
+    pendingReceipts.drainTo(ackRequestDataReceipts);
+    if (!ackRequestDataReceipts.isEmpty()) {
       modackRequestData.add(
-          new ModackRequestData(this.getMessageDeadlineSeconds(), ackIdMessageFuturesReceipts));
+          new ModackRequestData(this.getMessageDeadlineSeconds(), ackRequestDataReceipts));
     }
-    logger.log(Level.FINER, "Sending {0} receipts", ackIdMessageFuturesReceipts.size());
+    logger.log(Level.FINER, "Sending {0} receipts", ackRequestDataReceipts.size());
 
     ackProcessor.sendModackOperations(modackRequestData);
   }

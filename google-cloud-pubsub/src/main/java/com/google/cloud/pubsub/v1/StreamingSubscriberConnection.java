@@ -18,12 +18,7 @@ package com.google.cloud.pubsub.v1;
 
 import static com.google.common.util.concurrent.MoreExecutors.directExecutor;
 
-import com.google.api.core.AbstractApiService;
-import com.google.api.core.ApiClock;
-import com.google.api.core.ApiFuture;
-import com.google.api.core.ApiFutureCallback;
-import com.google.api.core.ApiFutures;
-import com.google.api.core.SettableApiFuture;
+import com.google.api.core.*;
 import com.google.api.gax.batching.FlowControlSettings;
 import com.google.api.gax.batching.FlowController;
 import com.google.api.gax.core.Distribution;
@@ -41,7 +36,7 @@ import com.google.rpc.ErrorInfo;
 import io.grpc.Status;
 import io.grpc.protobuf.StatusProto;
 import java.util.*;
-import java.util.concurrent.Future;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -91,6 +86,9 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
   private AtomicBoolean enableExactlyOnceDelivery;
 
   private final MessageReceiverWithAckResponse receiverWithAckResponse;
+
+  // Keeps track of requests without closed futures
+  private final Set<AckRequestData> pendingRequests = ConcurrentHashMap.newKeySet();
 
   private final AtomicLong channelReconnectBackoffMillis =
       new AtomicLong(INITIAL_CHANNEL_RECONNECT_BACKOFF.toMillis());
@@ -206,45 +204,6 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
   private void runShutdown() {
     messageDispatcher.stop();
     ackOperationsWaiter.waitComplete();
-  }
-
-  private void sendFailureFuture(Throwable t) {
-    // This acts as a "short-circuit" to return a failure to the user without going through the
-    // normal message processing flow
-    if (receiverWithAckResponse != null) {
-      final SettableApiFuture<AckResponse> future = SettableApiFuture.create();
-      if (!(t instanceof ApiException)) {
-        future.set(AckResponse.OTHER);
-      }
-
-      ApiException apiException = (ApiException) t;
-      switch (apiException.getStatusCode().getCode()) {
-        case FAILED_PRECONDITION:
-          future.set(AckResponse.FAILED_PRECONDITION);
-          break;
-        case PERMISSION_DENIED:
-          future.set(AckResponse.PERMISSION_DENIED);
-          break;
-        default:
-          future.set(AckResponse.OTHER);
-      }
-
-      AckReplyConsumerWithResponse ackReplyConsumerWithResponse =
-          new AckReplyConsumerWithResponse() {
-            @Override
-            public Future<AckResponse> ack() {
-              return future;
-            }
-
-            @Override
-            public Future<AckResponse> nack() {
-              return future;
-            }
-          };
-
-      receiverWithAckResponse.receiveMessage(
-          PubsubMessage.getDefaultInstance(), ackReplyConsumerWithResponse);
-    }
   }
 
   private class StreamingPullResponseObserver implements ResponseObserver<StreamingPullResponse> {
@@ -376,11 +335,11 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
               return;
             }
             if (!StatusUtil.isRetryable(cause)) {
-              sendFailureFuture(cause);
               ApiException gaxException =
                   ApiExceptionFactory.createException(
                       cause, GrpcStatusCode.of(Status.fromThrowable(cause).getCode()), false);
               logger.log(Level.SEVERE, "terminated streaming with exception", gaxException);
+              setFailureFutureOutstandingMessages(cause);
               runShutdown();
               notifyFailed(gaxException);
               return;
@@ -414,6 +373,43 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     return state == State.RUNNING || state == State.STARTING;
   }
 
+  public void setResponseOutstandingMessages(AckResponse ackResponse) {
+    // We will close the futures with ackResponse - if there are multiple references to the same
+    // future they will
+    // be handled appropriately
+    logger.log(
+        Level.WARNING, "Setting response: {0} on outstanding messages", pendingRequests.size());
+    for (AckRequestData ackRequestData : pendingRequests) {
+      ackRequestData.setAckResponse(ackResponse);
+    }
+
+    // Clear our pending requests
+    pendingRequests.clear();
+  }
+
+  private void setFailureFutureOutstandingMessages(Throwable t) {
+    if (receiverWithAckResponse != null) {
+      AckResponse ackResponse;
+      if (!(t instanceof ApiException)) {
+        ackResponse = AckResponse.OTHER;
+      }
+
+      ApiException apiException = (ApiException) t;
+      switch (apiException.getStatusCode().getCode()) {
+        case FAILED_PRECONDITION:
+          ackResponse = AckResponse.FAILED_PRECONDITION;
+          break;
+        case PERMISSION_DENIED:
+          ackResponse = AckResponse.PERMISSION_DENIED;
+          break;
+        default:
+          ackResponse = AckResponse.OTHER;
+      }
+
+      setResponseOutstandingMessages(ackResponse);
+    }
+  }
+
   @Override
   public void sendAckOperations(List<AckRequestData> ackRequestDataList) {
     sendAckOperations(ackRequestDataList, INITIAL_ACK_OPERATIONS_RECONNECT_BACKOFF_MILLIS);
@@ -432,10 +428,14 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
       List<String> ackIdsInRequest = new ArrayList<>();
       for (AckRequestData ackRequestData : ackRequestDataInRequestList) {
         ackIdsInRequest.add(ackRequestData.getAckId());
+        if (ackRequestData.shouldSetMessageFutureOnSuccess()) {
+          // Add to our pending requests
+          pendingRequests.add(ackRequestData);
+        }
       }
       ApiFutureCallback<Empty> callback =
           getCallback(ackRequestDataInRequestList, 0, true, currentBackoffMillis);
-      ApiFuture<Empty> modackFuture =
+      ApiFuture<Empty> ackFuture =
           subscriberStub
               .acknowledgeCallable()
               .futureCall(
@@ -443,7 +443,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
                       .setSubscription(subscription)
                       .addAllAckIds(ackIdsInRequest)
                       .build());
-      ApiFutures.addCallback(modackFuture, callback, directExecutor());
+      ApiFutures.addCallback(ackFuture, callback, directExecutor());
       pendingOperations++;
     }
     ackOperationsWaiter.incrementPendingCount(pendingOperations);
@@ -459,6 +459,11 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
       List<String> ackIdsInRequest = new ArrayList<>();
       for (AckRequestData ackRequestData : modackRequestData.getAckIdMessageFutures()) {
         ackIdsInRequest.add(ackRequestData.getAckId());
+
+        if (ackRequestData.shouldSetMessageFutureOnSuccess()) {
+          // Add to our pending requests
+          pendingRequests.add(ackRequestData);
+        }
       }
       ApiFutureCallback<Empty> callback =
           getCallback(
@@ -515,15 +520,18 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
       public void onSuccess(Empty empty) {
         ackOperationsWaiter.incrementPendingCount(-1);
         for (AckRequestData ackRequestData : ackRequestDataList) {
-          if (ackRequestData.isShouldSetMessageFutureOnSuccess()) {
+          if (ackRequestData.shouldSetMessageFutureOnSuccess()) {
             // This will check if a response is needed, and if it has already been set
             ackRequestData.setAckResponse(AckResponse.SUCCESSFUL);
+            // Remove from our pending operations
+            pendingRequests.remove(ackRequestData);
           }
         }
       }
 
       @Override
       public void onFailure(Throwable t) {
+        // Remove from our pending operations
         ackOperationsWaiter.incrementPendingCount(-1);
         Map<String, String> metadataMap = getMetadataMapFromThrowable(t);
         List<AckRequestData> ackRequestDataArrayRetryList = new ArrayList<AckRequestData>();
@@ -533,7 +541,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
             // An error occured
             String errorMessage = metadataMap.get(ackId);
             // Make sure the message has not already been handled
-            if (ackRequestData.getMessageFuture().isDone()) {
+            if ((ackRequestData.getMessageFuture() != null) && !ackRequestData.getMessageFuture().isDone()) {
               logger.log(
                   Level.WARNING,
                   "Message has already been handled, dropping response",
@@ -553,9 +561,12 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
               logger.log(Level.WARNING, "Unknown error message, will not resend", errorMessage);
               ackRequestData.setAckResponse(AckResponse.OTHER);
             }
-          } else if (ackRequestData.isShouldSetMessageFutureOnSuccess()) {
+          } else if (ackRequestData.shouldSetMessageFutureOnSuccess()) {
             ackRequestData.setAckResponse(AckResponse.SUCCESSFUL);
           }
+
+          // Remove from our pending
+          pendingRequests.remove(ackRequestData);
         }
 
         // Handle retries

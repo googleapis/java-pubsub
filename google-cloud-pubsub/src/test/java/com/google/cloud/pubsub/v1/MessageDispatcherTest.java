@@ -120,7 +120,7 @@ public class MessageDispatcherTest {
     MessageReceiver mockMessageReceiver = mock(MessageReceiver.class);
     MessageDispatcher messageDispatcher = getMessageDispatcher(mockMessageReceiver);
     messageDispatcher.processReceivedMessages(Collections.singletonList(TEST_MESSAGE));
-    messageDispatcher.processOutstandingAckOperations();
+    messageDispatcher.processOutstandingOperations();
 
     // Assert expected behavior
     List<ModackRequestData> modackRequestDataList = new ArrayList<ModackRequestData>();
@@ -142,7 +142,7 @@ public class MessageDispatcherTest {
         mock(MessageReceiverWithAckResponse.class);
     MessageDispatcher messageDispatcher = getMessageDispatcher(mockMessageReceiverWithAckResponse);
     messageDispatcher.processReceivedMessages(Collections.singletonList(TEST_MESSAGE));
-    messageDispatcher.processOutstandingAckOperations();
+    messageDispatcher.processOutstandingOperations();
 
     // Assert expected behavior
     List<ModackRequestData> modackRequestDataList = new ArrayList<ModackRequestData>();
@@ -171,7 +171,7 @@ public class MessageDispatcherTest {
       throw new AssertionError();
     }
 
-    messageDispatcher.processOutstandingAckOperations();
+    messageDispatcher.processOutstandingOperations();
 
     // Assert expected behavior
     List<AckRequestData> ackRequestDataList = new ArrayList<AckRequestData>();
@@ -204,7 +204,7 @@ public class MessageDispatcherTest {
       throw new AssertionError();
     }
 
-    messageDispatcher.processOutstandingAckOperations();
+    messageDispatcher.processOutstandingOperations();
 
     // Assert expected behavior
     List<AckRequestData> ackRequestDataList = new ArrayList<AckRequestData>();
@@ -235,7 +235,7 @@ public class MessageDispatcherTest {
       throw new AssertionError();
     }
 
-    messageDispatcher.processOutstandingAckOperations();
+    messageDispatcher.processOutstandingOperations();
 
     // Assert expected behavior
     AckRequestData ackRequestData = AckRequestData.newBuilder(TEST_MESSAGE.getAckId()).build();
@@ -262,7 +262,7 @@ public class MessageDispatcherTest {
       throw new AssertionError();
     }
 
-    messageDispatcher.processOutstandingAckOperations();
+    messageDispatcher.processOutstandingOperations();
 
     // Assert expected behavior
     AckRequestData ackRequestData = AckRequestData.newBuilder(TEST_MESSAGE.getAckId()).build();
