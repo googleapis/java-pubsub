@@ -17,7 +17,6 @@
 package pubsub;
 
 // [START pubsub_subscriber_exactly_once]
-// [START pubsub_create_subscription_with_exactly_once_delivery]
 
 import com.google.cloud.pubsub.v1.AckReplyConsumer;
 import com.google.cloud.pubsub.v1.MessageReceiver;
@@ -90,4 +89,3 @@ public class SubscribeWithExactlyOnceConsumerWithResponseExample {
     }
 }
 // [END pubsub_subscriber_exactly_once]
-// [END pubsub_create_subscription_with_exactly_once_delivery]
