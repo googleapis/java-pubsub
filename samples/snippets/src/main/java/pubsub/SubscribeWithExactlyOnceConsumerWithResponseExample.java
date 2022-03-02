@@ -39,23 +39,23 @@ public class SubscribeWithExactlyOnceConsumerWithResponseExample {
     ProjectSubscriptionName subscriptionName =
         ProjectSubscriptionName.of(projectId, subscriptionId);
 
-    // Instantiate an asynchronous message receiver.
+    // Instantiate an asynchronous message receiver using `AckReplyConsumerWithResponse`
+    // instead of `AckReplyConsumer` to get a future that tracks the result of the ack call.
+    // When exactly once delivery is enabled on the subscription, the message is guaranteed
+    // to not be delivered again if the ack future succeeds.
     MessageReceiverWithAckResponse receiverWithResponse =
         (PubsubMessage message, AckReplyConsumerWithResponse consumerWithResponse) -> {
-          // Use `AckReplyConsumerWithResponse` instead of `AckReplyConsumer` to get a future that
-          // tracks the result of the ack call
-
           // Handle incoming message, then ack the received message, and receive the response.
           Future<AckResponse> ackResponseFuture = consumerWithResponse.ack();
 
           try {
-            // Retrieve the completed future
+            // Retrieve the completed future.
             AckResponse ackResponse = ackResponseFuture.get();
-            // For subscriptions with exactly once enabled, the AckResponse will:
-            // return success OR permanent failures
-            // For subscriptions without exactly once enabled the AckResponse will:
-            // return success for messages ack/nack'd OR permanent failures
-
+            
+            // For subscriptions with exactly once enabled, the AckResponse will
+            // return success OR permanent failures.
+            // For subscriptions without exactly once enabled the AckResponse will
+            // return success for messages ack/nack'd OR permanent failures.
             switch (ackResponse) {
               case SUCCESSFUL:
                 System.out.println("Message successfully acked: " + message.getMessageId());
@@ -85,7 +85,6 @@ public class SubscribeWithExactlyOnceConsumerWithResponseExample {
                 break;
             }
           } catch (InterruptedException | ExecutionException e) {
-            // Something went wrong when retrieving the future.
             System.out.println(
                 "MessageId: " + message.getMessageId() + " failed when retrieving future");
           }
