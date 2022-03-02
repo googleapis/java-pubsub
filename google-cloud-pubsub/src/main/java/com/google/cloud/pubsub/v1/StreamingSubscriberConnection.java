@@ -518,13 +518,17 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
       boolean isModack,
       long currentBackoffMillis) {
     // This callback handles retries, and sets message futures
+
+    // Check if ack or nack
+    boolean setResponseOnSuccess = (!isModack || (deadlineExtensionSeconds == 0)) ? true : false;
+
     return new ApiFutureCallback<Empty>() {
       @Override
       public void onSuccess(Empty empty) {
         ackOperationsWaiter.incrementPendingCount(-1);
         for (AckRequestData ackRequestData : ackRequestDataList) {
           // This will check if a response is needed, and if it has already been set
-          ackRequestData.setResponse(AckResponse.SUCCESSFUL, isModack);
+          ackRequestData.setResponse(AckResponse.SUCCESSFUL, setResponseOnSuccess);
           // Remove from our pending operations
           pendingRequests.remove(ackRequestData);
         }
@@ -552,15 +556,14 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
                       Level.WARNING,
                       "Permanent error invalid ack id message, will not resend",
                       errorMessage);
-                  ackRequestData.setResponse(AckResponse.INVALID, false);
+                  ackRequestData.setResponse(AckResponse.INVALID, setResponseOnSuccess);
                 } else {
                   logger.log(Level.WARNING, "Unknown error message, will not resend", errorMessage);
-                  ackRequestData.setResponse(AckResponse.OTHER, false);
+                  ackRequestData.setResponse(AckResponse.OTHER, setResponseOnSuccess);
                 }
               } else {
-                ackRequestData.setResponse(AckResponse.SUCCESSFUL, false);
+                ackRequestData.setResponse(AckResponse.SUCCESSFUL, setResponseOnSuccess);
               }
-
               // Remove from our pending
               pendingRequests.remove(ackRequestData);
             });

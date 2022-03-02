@@ -44,7 +44,7 @@ public class AckRequestData {
     if (this.messageFuture.isPresent() && !this.messageFuture.get().isDone()) {
       switch (ackResponse) {
         case SUCCESSFUL:
-          if (!setResponseOnSuccess) {
+          if (setResponseOnSuccess) {
             this.messageFuture.get().set(ackResponse);
           }
           break;
