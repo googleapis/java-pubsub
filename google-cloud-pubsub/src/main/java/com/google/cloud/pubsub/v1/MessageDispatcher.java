@@ -114,8 +114,8 @@ class MessageDispatcher {
       return ackRequestData;
     }
 
-    public SettableApiFuture<AckResponse> getMessageFuture() {
-      return this.ackRequestData.getMessageFuture();
+    public SettableApiFuture<AckResponse> getMessageFutureIfExists() {
+      return this.ackRequestData.getMessageFutureIfExists();
     }
 
     /** Stop extending deadlines for this message and free flow control. */
@@ -140,7 +140,7 @@ class MessageDispatcher {
               + this.ackRequestData.getAckId()
               + ", the message will be nacked.",
           t);
-      this.ackRequestData.setAckResponse(AckResponse.OTHER);
+      this.ackRequestData.setResponse(AckResponse.OTHER);
       pendingNacks.add(this.ackRequestData);
       forget();
     }
@@ -154,7 +154,6 @@ class MessageDispatcher {
           ackLatencyDistribution.record(
               Ints.saturatedCast(
                   (long) Math.ceil((clock.millisTime() - receivedTimeMillis) / 1000D)));
-          LinkedBlockingQueue<AckRequestData> destination = pendingAcks;
           break;
         case NACK:
           pendingNacks.add(this.ackRequestData);
@@ -214,7 +213,7 @@ class MessageDispatcher {
     return enableExactlyOnceDelivery.get();
   }
 
-  public boolean getShouldSetMessageFuture() {
+  public boolean shouldSetMessageFuture() {
     return receiverWithAckResponse != null;
   }
 
@@ -351,11 +350,11 @@ class MessageDispatcher {
     Instant totalExpiration = now().plus(maxAckExtensionPeriod);
     List<OutstandingMessage> outstandingBatch = new ArrayList<>(messages.size());
     for (ReceivedMessage message : messages) {
-      AckRequestData ackRequestData =
-          AckRequestData.newBuilder(message.getAckId())
-              .setExactlyOnceEnabled(getEnableExactlyOnceDelivery())
-              .setShouldSetMessageFutureOnSuccess(getShouldSetMessageFuture())
-              .build();
+      AckRequestData.Builder builder = AckRequestData.newBuilder(message.getAckId());
+      if (shouldSetMessageFuture()) {
+        builder.setMessageFuture(SettableApiFuture.create());
+      }
+      AckRequestData ackRequestData = builder.build();
       AckHandler ackHandler =
           new AckHandler(ackRequestData, message.getMessage().getSerializedSize(), totalExpiration);
       if (pendingMessages.putIfAbsent(message.getAckId(), ackHandler) != null) {
@@ -370,6 +369,7 @@ class MessageDispatcher {
         continue;
       }
       outstandingBatch.add(new OutstandingMessage(message, ackHandler));
+      ackRequestData.setIsModack(true);
       pendingReceipts.add(ackRequestData);
     }
 
@@ -425,9 +425,10 @@ class MessageDispatcher {
                 ackHandler.forget();
                 return;
               }
-              if (getShouldSetMessageFuture()) {
+              if (shouldSetMessageFuture()) {
                 // This is the message future that is propagated to the user
-                SettableApiFuture<AckResponse> messageFuture = ackHandler.getMessageFuture();
+                SettableApiFuture<AckResponse> messageFuture =
+                    ackHandler.getMessageFutureIfExists();
                 final AckReplyConsumerWithResponse ackReplyConsumerWithResponse =
                     new AckReplyConsumerWithResponse() {
                       @Override
@@ -517,7 +518,6 @@ class MessageDispatcher {
 
       // forget removes from pendingMessages; this is OK, concurrent maps can
       // handle concurrent iterations and modifications.
-      SettableApiFuture<AckResponse> messageFuture = entry.getValue().getMessageFuture();
       entry.getValue().forget();
       if (totalExpiration.isAfter(now)) {
         int sec = Math.max(1, (int) now.until(totalExpiration, ChronoUnit.SECONDS));

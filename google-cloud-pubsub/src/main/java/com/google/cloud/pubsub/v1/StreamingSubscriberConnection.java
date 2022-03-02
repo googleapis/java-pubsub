@@ -180,6 +180,10 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     return streamAckDeadlineSeconds.get();
   }
 
+  public boolean shouldSetMessageFuture() {
+    return receiverWithAckResponse != null;
+  }
+
   @Override
   protected void doStart() {
     logger.config("Starting subscriber.");
@@ -375,12 +379,11 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
 
   public void setResponseOutstandingMessages(AckResponse ackResponse) {
     // We will close the futures with ackResponse - if there are multiple references to the same
-    // future they will
-    // be handled appropriately
+    // future they will be handled appropriately
     logger.log(
         Level.WARNING, "Setting response: {0} on outstanding messages", pendingRequests.size());
     for (AckRequestData ackRequestData : pendingRequests) {
-      ackRequestData.setAckResponse(ackResponse);
+      ackRequestData.setResponse(ackResponse);
     }
 
     // Clear our pending requests
@@ -388,7 +391,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
   }
 
   private void setFailureFutureOutstandingMessages(Throwable t) {
-    if (receiverWithAckResponse != null) {
+    if (shouldSetMessageFuture()) {
       AckResponse ackResponse;
       if (!(t instanceof ApiException)) {
         ackResponse = AckResponse.OTHER;
@@ -520,7 +523,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
         ackOperationsWaiter.incrementPendingCount(-1);
         for (AckRequestData ackRequestData : ackRequestDataList) {
           // This will check if a response is needed, and if it has already been set
-          ackRequestData.setAckResponse(AckResponse.SUCCESSFUL);
+          ackRequestData.setResponse(AckResponse.SUCCESSFUL);
           // Remove from our pending operations
           pendingRequests.remove(ackRequestData);
         }
@@ -538,14 +541,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
               if (metadataMap.containsKey(ackId)) {
                 // An error occured
                 String errorMessage = metadataMap.get(ackId);
-                // Make sure the message has not already been handled
-                if ((ackRequestData.getMessageFuture() != null)
-                    && ackRequestData.getMessageFuture().isDone()) {
-                  logger.log(
-                      Level.WARNING,
-                      "Message has already been handled, dropping response",
-                      errorMessage);
-                } else if (errorMessage.startsWith(TRANSIENT_FAILURE_METADATA_PREFIX)) {
+                if (errorMessage.startsWith(TRANSIENT_FAILURE_METADATA_PREFIX)) {
                   // Retry all "TRANSIENT_*" error messages - do not set message future
                   logger.log(Level.WARNING, "Transient error message, will resend", errorMessage);
                   ackRequestDataArrayRetryList.add(ackRequestData);
@@ -555,13 +551,13 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
                       Level.WARNING,
                       "Permanent error invalid ack id message, will not resend",
                       errorMessage);
-                  ackRequestData.setAckResponse(AckResponse.INVALID);
+                  ackRequestData.setResponse(AckResponse.INVALID);
                 } else {
                   logger.log(Level.WARNING, "Unknown error message, will not resend", errorMessage);
-                  ackRequestData.setAckResponse(AckResponse.OTHER);
+                  ackRequestData.setResponse(AckResponse.OTHER);
                 }
-              } else if (ackRequestData.shouldSetMessageFutureOnSuccess()) {
-                ackRequestData.setAckResponse(AckResponse.SUCCESSFUL);
+              } else {
+                ackRequestData.setResponse(AckResponse.SUCCESSFUL);
               }
 
               // Remove from our pending

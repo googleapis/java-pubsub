@@ -17,48 +17,58 @@
 package com.google.cloud.pubsub.v1;
 
 import com.google.api.core.SettableApiFuture;
+import java.util.Optional;
 
 public class AckRequestData {
   private final String ackId;
-  private final boolean exactlyOnceDeliveryEnabled;
-  private final boolean shouldSetMessageFutureOnSuccess;
-  private final SettableApiFuture<AckResponse> messageFuture;
+  private boolean isModack;
+  private final Optional<SettableApiFuture<AckResponse>> messageFuture;
 
   protected AckRequestData(Builder builder) {
     this.ackId = builder.ackId;
-    this.exactlyOnceDeliveryEnabled = builder.isExactlyOnceEnabled;
-    this.shouldSetMessageFutureOnSuccess = builder.shouldSetMessageFutureOnSuccess;
-    this.messageFuture =
-        builder.messageFuture == null ? SettableApiFuture.create() : builder.messageFuture;
+    this.isModack = builder.isModack;
+    this.messageFuture = Optional.ofNullable(builder.messageFuture);
   }
 
   public String getAckId() {
     return ackId;
   }
 
-  public SettableApiFuture<AckResponse> getMessageFuture() {
-    return messageFuture;
-  }
-
-  public boolean isExactlyOnceDeliveryEnabled() {
-    return exactlyOnceDeliveryEnabled;
-  }
-
-  public void setAckResponse(AckResponse ackResponse) {
-    // Sets the ack response if allowed
-    if ((this.messageFuture != null)
-        && !this.messageFuture.isDone()
-        && ((ackResponse != AckResponse.SUCCESSFUL) || this.shouldSetMessageFutureOnSuccess)) {
-      this.messageFuture.set(ackResponse);
+  public SettableApiFuture<AckResponse> getMessageFutureIfExists() {
+    if (this.messageFuture.isPresent()) {
+      return messageFuture.get();
     }
+
+    return null;
   }
 
-  public boolean shouldSetMessageFutureOnSuccess() {
-    return shouldSetMessageFutureOnSuccess;
+  public AckRequestData setResponse(AckResponse ackResponse) {
+    if (this.messageFuture.isPresent() && !this.messageFuture.get().isDone()) {
+      switch (ackResponse) {
+        case SUCCESSFUL:
+          if (!this.isModack) {
+            this.messageFuture.get().set(ackResponse);
+          }
+          break;
+        case INVALID:
+        case OTHER:
+        case PERMISSION_DENIED:
+        case FAILED_PRECONDITION:
+          // Non-succesful messages will get set for both acks, nacks, and modacks
+          this.messageFuture.get().set(ackResponse);
+          break;
+      }
+    }
+    return this;
   }
 
   public boolean hasMessageFuture() {
-    return this.messageFuture != null;
+    return this.messageFuture.isPresent();
+  }
+
+  public AckRequestData setIsModack(boolean isModack) {
+    this.isModack = isModack;
+    return this;
   }
 
   public static Builder newBuilder(String ackId) {
@@ -69,8 +79,7 @@ public class AckRequestData {
   protected static final class Builder {
     private final String ackId;
     private SettableApiFuture<AckResponse> messageFuture = null;
-    private boolean isExactlyOnceEnabled = false;
-    private boolean shouldSetMessageFutureOnSuccess = false;
+    private boolean isModack = false;
 
     protected Builder(String ackId) {
       this.ackId = ackId;
@@ -81,13 +90,8 @@ public class AckRequestData {
       return this;
     }
 
-    public Builder setExactlyOnceEnabled(boolean exactlyOnceEnabled) {
-      isExactlyOnceEnabled = exactlyOnceEnabled;
-      return this;
-    }
-
-    public Builder setShouldSetMessageFutureOnSuccess(boolean shouldSetMessageFutureOnSuccess) {
-      this.shouldSetMessageFutureOnSuccess = shouldSetMessageFutureOnSuccess;
+    public Builder setIsModack(boolean isModack) {
+      this.isModack = isModack;
       return this;
     }
 

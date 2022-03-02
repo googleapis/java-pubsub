@@ -147,8 +147,6 @@ public class StreamingSubscriberConnectionTest {
             0,
             AckRequestData.newBuilder(MOCK_ACK_ID_NACK_SUCCESS)
                 .setMessageFuture(messageFutureSuccessExpected)
-                .setExactlyOnceEnabled(true)
-                .setShouldSetMessageFutureOnSuccess(true)
                 .build());
     modackRequestDataList.add(modackRequestDataSuccess);
 
@@ -157,8 +155,7 @@ public class StreamingSubscriberConnectionTest {
     modackRequestDataDefault.addAckIdMessageFuture(
         AckRequestData.newBuilder(MOCK_ACK_ID_SUCCESS_NO_MESSAGE)
             .setMessageFuture(messageFutureNotDoneExpected)
-            .setExactlyOnceEnabled(true)
-            .setShouldSetMessageFutureOnSuccess(false)
+            .setIsModack(true)
             .build());
     ackIdsInitialRequest.add(MOCK_ACK_ID_SUCCESS_NO_MESSAGE);
 
@@ -167,8 +164,7 @@ public class StreamingSubscriberConnectionTest {
     modackRequestDataDefault.addAckIdMessageFuture(
         AckRequestData.newBuilder(MOCK_ACK_ID_INVALID)
             .setMessageFuture(messageFutureInvalidExpected)
-            .setExactlyOnceEnabled(true)
-            .setShouldSetMessageFutureOnSuccess(false)
+            .setIsModack(true)
             .build());
     errorInfoMetadataMapInitialRequest.put(MOCK_ACK_ID_INVALID, PERMANENT_FAILURE_INVALID_ACK_ID);
     ackIdsInitialRequest.add(MOCK_ACK_ID_INVALID);
@@ -178,8 +174,7 @@ public class StreamingSubscriberConnectionTest {
     modackRequestDataDefault.addAckIdMessageFuture(
         AckRequestData.newBuilder(MOCK_ACK_ID_OTHER)
             .setMessageFuture(messageFutureOtherExpected)
-            .setExactlyOnceEnabled(true)
-            .setShouldSetMessageFutureOnSuccess(false)
+            .setIsModack(true)
             .build());
     errorInfoMetadataMapInitialRequest.put(MOCK_ACK_ID_OTHER, PERMANENT_FAILURE_OTHER);
     ackIdsInitialRequest.add(MOCK_ACK_ID_OTHER);
@@ -191,8 +186,7 @@ public class StreamingSubscriberConnectionTest {
     modackRequestDataDefault.addAckIdMessageFuture(
         AckRequestData.newBuilder(MOCK_ACK_ID_TRANSIENT_FAILURE_SERVICE_UNAVAILABLE_THEN_SUCCESS)
             .setMessageFuture(messageFutureTransientFailureServiceUnavailableThenSuccess)
-            .setExactlyOnceEnabled(true)
-            .setShouldSetMessageFutureOnSuccess(false)
+            .setIsModack(true)
             .build());
     errorInfoMetadataMapInitialRequest.put(
         MOCK_ACK_ID_TRANSIENT_FAILURE_SERVICE_UNAVAILABLE_THEN_SUCCESS,
@@ -207,8 +201,7 @@ public class StreamingSubscriberConnectionTest {
     modackRequestDataDefault.addAckIdMessageFuture(
         AckRequestData.newBuilder(MOCK_ACK_ID_TRANSIENT_FAILURE_UNORDERED_ACK_ID_THEN_SUCCESS)
             .setMessageFuture(messageFutureTransientFailureUnorderedAckIdThenSuccess)
-            .setExactlyOnceEnabled(true)
-            .setShouldSetMessageFutureOnSuccess(false)
+            .setIsModack(true)
             .build());
     errorInfoMetadataMapInitialRequest.put(
         MOCK_ACK_ID_TRANSIENT_FAILURE_UNORDERED_ACK_ID_THEN_SUCCESS,
@@ -279,8 +272,8 @@ public class StreamingSubscriberConnectionTest {
       assertEquals(AckResponse.OTHER, messageFutureOtherExpected.get());
       assertFalse(messageFutureTransientFailureServiceUnavailableThenSuccess.isDone());
       assertFalse(messageFutureTransientFailureUnorderedAckIdThenSuccess.isDone());
-    } catch (Throwable t) {
-      // Just in case something went wrong when retrieving our futures
+    } catch (InterruptedException | ExecutionException e) {
+      // In case something goes wrong retrieving the futures
       throw new AssertionError();
     }
   }
@@ -301,8 +294,6 @@ public class StreamingSubscriberConnectionTest {
     ackRequestDataList.add(
         AckRequestData.newBuilder(MOCK_ACK_ID_SUCCESS)
             .setMessageFuture(messageFutureSuccessExpected)
-            .setExactlyOnceEnabled(true)
-            .setShouldSetMessageFutureOnSuccess(true)
             .build());
     ackIdsInitialRequest.add(MOCK_ACK_ID_SUCCESS);
 
@@ -311,8 +302,6 @@ public class StreamingSubscriberConnectionTest {
     ackRequestDataList.add(
         AckRequestData.newBuilder(MOCK_ACK_ID_INVALID)
             .setMessageFuture(messageFutureInvalidExpected)
-            .setExactlyOnceEnabled(true)
-            .setShouldSetMessageFutureOnSuccess(true)
             .build());
     errorInfoMetadataMapInitialRequest.put(MOCK_ACK_ID_INVALID, PERMANENT_FAILURE_INVALID_ACK_ID);
     ackIdsInitialRequest.add(MOCK_ACK_ID_INVALID);
@@ -322,8 +311,6 @@ public class StreamingSubscriberConnectionTest {
     ackRequestDataList.add(
         AckRequestData.newBuilder(MOCK_ACK_ID_OTHER)
             .setMessageFuture(messageFutureOtherExpected)
-            .setExactlyOnceEnabled(true)
-            .setShouldSetMessageFutureOnSuccess(true)
             .build());
     errorInfoMetadataMapInitialRequest.put(MOCK_ACK_ID_OTHER, PERMANENT_FAILURE_OTHER);
     ackIdsInitialRequest.add(MOCK_ACK_ID_OTHER);
@@ -335,8 +322,6 @@ public class StreamingSubscriberConnectionTest {
     ackRequestDataList.add(
         AckRequestData.newBuilder(MOCK_ACK_ID_TRANSIENT_FAILURE_SERVICE_UNAVAILABLE_THEN_SUCCESS)
             .setMessageFuture(messageFutureTransientFailureServiceUnavailableThenSuccess)
-            .setExactlyOnceEnabled(true)
-            .setShouldSetMessageFutureOnSuccess(true)
             .build());
     errorInfoMetadataMapInitialRequest.put(
         MOCK_ACK_ID_TRANSIENT_FAILURE_SERVICE_UNAVAILABLE_THEN_SUCCESS,
@@ -351,8 +336,6 @@ public class StreamingSubscriberConnectionTest {
     ackRequestDataList.add(
         AckRequestData.newBuilder(MOCK_ACK_ID_TRANSIENT_FAILURE_UNORDERED_ACK_ID_THEN_SUCCESS)
             .setMessageFuture(messageFutureTransientFailureUnorderedAckIdThenSuccess)
-            .setExactlyOnceEnabled(true)
-            .setShouldSetMessageFutureOnSuccess(true)
             .build());
     errorInfoMetadataMapInitialRequest.put(
         MOCK_ACK_ID_TRANSIENT_FAILURE_UNORDERED_ACK_ID_THEN_SUCCESS,
@@ -410,8 +393,8 @@ public class StreamingSubscriberConnectionTest {
           AckResponse.SUCCESSFUL, messageFutureTransientFailureServiceUnavailableThenSuccess.get());
       assertEquals(
           AckResponse.SUCCESSFUL, messageFutureTransientFailureUnorderedAckIdThenSuccess.get());
-    } catch (Throwable t) {
-      // Just in case something went wrong when retrieving our futures
+    } catch (InterruptedException | ExecutionException e) {
+      // In case something goes wrong retrieving the futures
       throw new AssertionError();
     }
   }
@@ -430,10 +413,7 @@ public class StreamingSubscriberConnectionTest {
       SettableApiFuture<AckResponse> future = SettableApiFuture.create();
       futureList.add(future);
       ackRequestDataList.add(
-          AckRequestData.newBuilder("ACK-ID-" + i)
-              .setMessageFuture(future)
-              .setShouldSetMessageFutureOnSuccess(true)
-              .build());
+          AckRequestData.newBuilder("ACK-ID-" + i).setMessageFuture(future).build());
     }
 
     // Create some nacks
@@ -441,10 +421,7 @@ public class StreamingSubscriberConnectionTest {
       SettableApiFuture<AckResponse> future = SettableApiFuture.create();
       futureList.add(future);
       nackRequestDataList.add(
-          AckRequestData.newBuilder("ACK-ID-" + i)
-              .setMessageFuture(future)
-              .setShouldSetMessageFutureOnSuccess(true)
-              .build());
+          AckRequestData.newBuilder("ACK-ID-" + i).setMessageFuture(future).build());
     }
 
     ModackRequestData modackRequestData = new ModackRequestData(0, nackRequestDataList);
@@ -472,6 +449,8 @@ public class StreamingSubscriberConnectionTest {
           try {
             assertEquals(ackResponseSettableApiFuture.get(), AckResponse.PERMISSION_DENIED);
           } catch (InterruptedException | ExecutionException e) {
+            // In case something goes wrong retrieving the futures
+            throw new AssertionError();
           }
         });
   }
