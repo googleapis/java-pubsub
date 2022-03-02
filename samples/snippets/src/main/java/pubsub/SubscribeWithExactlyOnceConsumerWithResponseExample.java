@@ -55,34 +55,42 @@ public class SubscribeWithExactlyOnceConsumerWithResponseExample {
 
             switch (ackResponse) {
               case SUCCESSFUL:
-                System.out.println("Message Id: " +  message.getMessageId() + " successfully acked");
+                System.out.println("Message successfully acked: " + message.getMessageId());
                 break;
               case INVALID:
-                System.out.println("Message Id: " + message.getMessageId() + " failed to ack with a response of Invalid");
+                System.out.println(
+                    "Message failed to ack with a response of Invalid. Id: "
+                        + message.getMessageId()
+                        + " ");
                 break;
               case PERMISSION_DENIED:
-                System.out.println("Message Id: " + message.getMessageId() + " failed to ack with a response of Permission Denied");
+                System.out.println(
+                    "Message failed to ack with a response of Permission Denied. Id: "
+                        + message.getMessageId());
                 break;
               case FAILED_PRECONDITION:
-                System.out.println("Message Id: " + message.getMessageId() + " failed to ack with a response of Failed Precondition");
+                System.out.println(
+                    "Message failed to ack with a response of Failed Precondition. Id: "
+                        + message.getMessageId());
                 break;
               case OTHER:
-                System.out.println("MessageId: " + message.getMessageId() + " failed to ack with a response of Other");
+                System.out.println(
+                    "Message failed to ack with a response of Other. Id: "
+                        + message.getMessageId());
                 break;
               default:
                 break;
             }
           } catch (InterruptedException | ExecutionException e) {
             // Something went wrong retrieving the future
-            System.out.println("MessageId: " +  message.getMessageId() + " failed when retrieving future");
+            System.out.println(
+                "MessageId: " + message.getMessageId() + " failed when retrieving future");
           }
         };
 
     Subscriber subscriber = null;
     try {
-      subscriber =
-          Subscriber.newBuilder(subscriptionName, receiverWithResponse)
-              .build();
+      subscriber = Subscriber.newBuilder(subscriptionName, receiverWithResponse).build();
       // Start the subscriber.
       subscriber.startAsync().awaitRunning();
       System.out.printf("Listening for messages on %s:\n", subscriptionName.toString());
