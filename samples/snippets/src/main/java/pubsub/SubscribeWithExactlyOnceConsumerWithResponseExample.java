@@ -52,7 +52,21 @@ public class SubscribeWithExactlyOnceConsumerWithResponseExample {
           try {
             // Retrieve the completed future
             AckResponse ackResponse = ackResponseFuture.get();
-            System.out.println("Id: " + message.getMessageId() + " " + ackResponse);
+
+            switch (ackResponse) {
+              case SUCCESSFUL:
+                System.out.println("Successful MessageId: " + message.getMessageId());
+                break;
+              case INVALID:
+                System.out.println("Invalid MessageId: " + message.getMessageId());
+                break;
+              case PERMISSION_DENIED:
+                System.out.println("Permission denied. MessageId: " + message.getMessageId());
+              case FAILED_PRECONDITION:
+                System.out.println("Failed precondition. MessageId: " + message.getMessageId());
+              case OTHER:
+                System.out.println("Unknown error. MessageId: " + message.getMessageId());
+            }
           } catch (InterruptedException | ExecutionException e) {
             // Something went wrong retrieving the future
             System.out.println("Failed to retrieve future for Id: " + message.getMessageId());
@@ -61,7 +75,10 @@ public class SubscribeWithExactlyOnceConsumerWithResponseExample {
 
     Subscriber subscriber = null;
     try {
-      subscriber = Subscriber.newBuilder(subscriptionName, receiverWithResponse).build();
+      subscriber =
+          Subscriber.newBuilder(subscriptionName, receiverWithResponse)
+              .setMinDurationPerAckExtension(Duration.ofSeconds(60))
+              .build();
       // Start the subscriber.
       subscriber.startAsync().awaitRunning();
       System.out.printf("Listening for messages on %s:\n", subscriptionName.toString());
