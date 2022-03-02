@@ -36,22 +36,25 @@ public class SubscribeWithExactlyOnceConsumerWithResponseExample {
 
   public static void subscribeWithExactlyOnceConsumerWithResponseExample(
       String projectId, String topicId, String subscriptionId) {
-    // For subscriptions with exactly once enabled, the AckResponse will:
-    // return success OR permanent failures
-    // For subscriptions without exactly once enabled the AckResponse will:
-    // return success for messages ack/nack'd OR permanent failures
     ProjectSubscriptionName subscriptionName =
         ProjectSubscriptionName.of(projectId, subscriptionId);
 
     // Instantiate an asynchronous message receiver.
     MessageReceiverWithAckResponse receiverWithResponse =
         (PubsubMessage message, AckReplyConsumerWithResponse consumerWithResponse) -> {
-          // Handle incoming message, then ack the received message, and receive the response
+          // Use `AckReplyConsumerWithResponse` instead of `AckReplyConsumer` to get a future that
+          // tracks the result of the ack call
+
+          // Handle incoming message, then ack the received message, and receive the response.
           Future<AckResponse> ackResponseFuture = consumerWithResponse.ack();
 
           try {
             // Retrieve the completed future
             AckResponse ackResponse = ackResponseFuture.get();
+            // For subscriptions with exactly once enabled, the AckResponse will:
+            // return success OR permanent failures
+            // For subscriptions without exactly once enabled the AckResponse will:
+            // return success for messages ack/nack'd OR permanent failures
 
             switch (ackResponse) {
               case SUCCESSFUL:
@@ -82,7 +85,7 @@ public class SubscribeWithExactlyOnceConsumerWithResponseExample {
                 break;
             }
           } catch (InterruptedException | ExecutionException e) {
-            // Something went wrong retrieving the future
+            // Something went wrong when retrieving the future.
             System.out.println(
                 "MessageId: " + message.getMessageId() + " failed when retrieving future");
           }
