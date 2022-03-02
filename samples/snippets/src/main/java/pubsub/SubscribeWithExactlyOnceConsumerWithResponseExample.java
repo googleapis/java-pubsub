@@ -66,6 +66,8 @@ public class SubscribeWithExactlyOnceConsumerWithResponseExample {
                 System.out.println("Failed precondition. MessageId: " + message.getMessageId());
               case OTHER:
                 System.out.println("Unknown error. MessageId: " + message.getMessageId());
+              default:
+                break;
             }
           } catch (InterruptedException | ExecutionException e) {
             // Something went wrong retrieving the future
