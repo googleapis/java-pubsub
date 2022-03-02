@@ -91,6 +91,8 @@ import org.threeten.bp.Duration;
 public class Publisher implements PublisherInterface {
   private static final Logger logger = Logger.getLogger(Publisher.class.getName());
 
+  private static final String GZIP_COMPRESSION = "gzip";
+
   private final String topicName;
 
   private final BatchingSettings batchingSettings;
@@ -446,7 +448,7 @@ public class Publisher implements PublisherInterface {
   private ApiFuture<PublishResponse> publishCall(OutstandingBatch outstandingBatch) {
     if (enableCompression && outstandingBatch.batchSizeBytes >= compressionBytesThreshold) {
       GrpcCallContext context = GrpcCallContext.createDefault();
-      context = context.withCallOptions(CallOptions.DEFAULT.withCompression("gzip"));
+      context = context.withCallOptions(CallOptions.DEFAULT.withCompression(GZIP_COMPRESSION));
       return publisherStub
           .publishCallable()
           .futureCall(
