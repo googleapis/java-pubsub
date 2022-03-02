@@ -187,7 +187,7 @@ class MessageDispatcher {
 
     // Start the deadline at the minimum ack deadline so messages which arrive before this is
     // updated will not have a long ack deadline.
-    messageDeadlineSeconds.set(minDurationPerAckExtensionSeconds);
+    messageDeadlineSeconds.set(Math.toIntExact(Subscriber.MIN_STREAM_ACK_DEADLINE.getSeconds()));
 
     receiver = builder.receiver;
     receiverWithAckResponse = builder.receiverWithAckResponse;
