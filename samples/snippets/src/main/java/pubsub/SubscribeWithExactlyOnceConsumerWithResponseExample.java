@@ -37,11 +37,9 @@ public class SubscribeWithExactlyOnceConsumerWithResponseExample {
   public static void subscribeWithExactlyOnceConsumerWithResponseExample(
       String projectId, String topicId, String subscriptionId) {
     // For subscriptions with exactly once enabled, the AckResponse will:
-    // return confirmed SUCCESS OR
-    // permanent failures
+    // return success OR permanent failures
     // For subscriptions without exactly once enabled the AckResponse will:
-    // return SUCCESS for messages sent OR
-    // permanent failures
+    // return success for messages ack/nack'd OR permanent failures
     ProjectSubscriptionName subscriptionName =
         ProjectSubscriptionName.of(projectId, subscriptionId);
 
@@ -49,13 +47,16 @@ public class SubscribeWithExactlyOnceConsumerWithResponseExample {
     MessageReceiverWithAckResponse receiverWithResponse =
         (PubsubMessage message, AckReplyConsumerWithResponse consumerWithResponse) -> {
           // Handle incoming message, then ack the received message, and receive the response
-
           Future<AckResponse> ackResponseFuture = consumerWithResponse.ack();
 
-          // Retreive the completed future
-          AckResponse ackResponse = ackResponseFuture.get();
-
-          System.out.println("Id: " + message.getMessageId() + " " + ackResponse);
+          try {
+            // Retrieve the completed future
+            AckResponse ackResponse = ackResponseFuture.get();
+            System.out.println("Id: " + message.getMessageId() + " " + ackResponse);
+          } catch (InterruptedException | ExecutionException e) {
+            // Something went wrong retrieving the future
+            System.out.println("Failed to retrieve future for Id: " + message.getMessageId());
+          }
         };
 
     Subscriber subscriber = null;
