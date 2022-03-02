@@ -31,6 +31,7 @@ import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.protobuf.Any;
 import com.google.protobuf.Empty;
+import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.pubsub.v1.*;
 import com.google.rpc.ErrorInfo;
 import io.grpc.Status;
@@ -39,7 +40,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -75,8 +75,6 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
 
   private final FlowControlSettings flowControlSettings;
   private final boolean useLegacyFlowControl;
-
-  private AtomicBoolean enableExactlyOnceDelivery;
 
   // Keeps track of requests without closed futures
   private final Set<AckRequestData> pendingRequests = ConcurrentHashMap.newKeySet();
@@ -122,7 +120,6 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
 
     subscriberStub = builder.subscriberStub;
     channelAffinity = builder.channelAffinity;
-    enableExactlyOnceDelivery = new AtomicBoolean(builder.exactlyOnceDeliveryEnabled);
 
     MessageDispatcher.Builder messageDispatcherBuilder;
     if (builder.receiver != null) {
@@ -142,7 +139,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
             .setMaxDurationPerAckExtensionDefaultUsed(builder.maxDurationPerAckExtensionDefaultUsed)
             .setAckLatencyDistribution(builder.ackLatencyDistribution)
             .setFlowController(builder.flowController)
-            .setEnableExactlyOnceDelivery(enableExactlyOnceDelivery.get())
+            .setEnableExactlyOnceDelivery(builder.exactlyOnceDeliveryEnabled)
             .setExecutor(builder.executor)
             .setSystemExecutor(builder.systemExecutor)
             .setApiClock(builder.clock)
@@ -205,14 +202,8 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     @Override
     public void onResponse(StreamingPullResponse response) {
       channelReconnectBackoffMillis.set(INITIAL_CHANNEL_RECONNECT_BACKOFF.toMillis());
-
-      boolean isExactlyOnceDeliveryEnabled =
-          response.getSubscriptionProperties().getExactlyOnceDeliveryEnabled();
-      if (enableExactlyOnceDelivery.get() != isExactlyOnceDeliveryEnabled) {
-        enableExactlyOnceDelivery.set(isExactlyOnceDeliveryEnabled);
-        messageDispatcher.setEnableExactlyOnceDelivery(isExactlyOnceDeliveryEnabled);
-      }
-
+      messageDispatcher.setEnableExactlyOnceDelivery(
+          response.getSubscriptionProperties().getExactlyOnceDeliveryEnabled());
       messageDispatcher.processReceivedMessages(response.getReceivedMessagesList());
 
       // Only request more if we're not shutdown.
@@ -311,8 +302,8 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
                   ApiExceptionFactory.createException(
                       cause, GrpcStatusCode.of(Status.fromThrowable(cause).getCode()), false);
               logger.log(Level.SEVERE, "terminated streaming with exception", gaxException);
-              setFailureFutureOutstandingMessages(cause);
               runShutdown();
+              setFailureFutureOutstandingMessages(cause);
               notifyFailed(gaxException);
               return;
             }
@@ -455,7 +446,8 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     ackOperationsWaiter.incrementPendingCount(pendingOperations);
   }
 
-  private Map<String, String> getMetadataMapFromThrowable(Throwable t) {
+  private Map<String, String> getMetadataMapFromThrowable(Throwable t)
+      throws InvalidProtocolBufferException {
     // This converts a Throwable (from a "OK" grpc response) to a map of metadata
     // will be of the format:
     // {
@@ -467,11 +459,8 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     if (status != null) {
       for (Any any : status.getDetailsList()) {
         if (any.is(ErrorInfo.class)) {
-          try {
-            ErrorInfo errorInfo = any.unpack(ErrorInfo.class);
-            metadataMap = errorInfo.getMetadataMap();
-          } catch (Throwable throwable) {
-          }
+          ErrorInfo errorInfo = any.unpack(ErrorInfo.class);
+          metadataMap = errorInfo.getMetadataMap();
         }
       }
     }
@@ -504,35 +493,43 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
       public void onFailure(Throwable t) {
         // Remove from our pending operations
         ackOperationsWaiter.incrementPendingCount(-1);
-        Map<String, String> metadataMap = getMetadataMapFromThrowable(t);
-        List<AckRequestData> ackRequestDataArrayRetryList = new ArrayList<AckRequestData>();
-        ackRequestDataList.forEach(
-            ackRequestData -> {
-              String ackId = ackRequestData.getAckId();
-              if (metadataMap.containsKey(ackId)) {
-                // An error occured
-                String errorMessage = metadataMap.get(ackId);
-                if (errorMessage.startsWith(TRANSIENT_FAILURE_METADATA_PREFIX)) {
-                  // Retry all "TRANSIENT_*" error messages - do not set message future
-                  logger.log(Level.WARNING, "Transient error message, will resend", errorMessage);
-                  ackRequestDataArrayRetryList.add(ackRequestData);
-                } else if (errorMessage.equals(PERMANENT_FAILURE_INVALID_ACK_ID_METADATA)) {
-                  // Permanent failure, send
-                  logger.log(
-                      Level.WARNING,
-                      "Permanent error invalid ack id message, will not resend",
-                      errorMessage);
-                  ackRequestData.setResponse(AckResponse.INVALID, setResponseOnSuccess);
+        List<AckRequestData> ackRequestDataArrayRetryList = new ArrayList<>();
+        try {
+          Map<String, String> metadataMap = getMetadataMapFromThrowable(t);
+          ackRequestDataList.forEach(
+              ackRequestData -> {
+                String ackId = ackRequestData.getAckId();
+                if (metadataMap.containsKey(ackId)) {
+                  // An error occured
+                  String errorMessage = metadataMap.get(ackId);
+                  if (errorMessage.startsWith(TRANSIENT_FAILURE_METADATA_PREFIX)) {
+                    // Retry all "TRANSIENT_*" error messages - do not set message future
+                    logger.log(Level.WARNING, "Transient error message, will resend", errorMessage);
+                    ackRequestDataArrayRetryList.add(ackRequestData);
+                  } else if (errorMessage.equals(PERMANENT_FAILURE_INVALID_ACK_ID_METADATA)) {
+                    // Permanent failure, send
+                    logger.log(
+                        Level.WARNING,
+                        "Permanent error invalid ack id message, will not resend",
+                        errorMessage);
+                    ackRequestData.setResponse(AckResponse.INVALID, setResponseOnSuccess);
+                  } else {
+                    logger.log(
+                        Level.WARNING, "Unknown error message, will not resend", errorMessage);
+                    ackRequestData.setResponse(AckResponse.OTHER, setResponseOnSuccess);
+                  }
                 } else {
-                  logger.log(Level.WARNING, "Unknown error message, will not resend", errorMessage);
-                  ackRequestData.setResponse(AckResponse.OTHER, setResponseOnSuccess);
+                  ackRequestData.setResponse(AckResponse.SUCCESSFUL, setResponseOnSuccess);
                 }
-              } else {
-                ackRequestData.setResponse(AckResponse.SUCCESSFUL, setResponseOnSuccess);
-              }
-              // Remove from our pending
-              pendingRequests.remove(ackRequestData);
-            });
+                // Remove from our pending
+                pendingRequests.remove(ackRequestData);
+              });
+        } catch (InvalidProtocolBufferException e) {
+          // If we fail to parse out the errorInfo, we should retry all
+          logger.log(
+              Level.WARNING, "Exception occurred when parsing throwable {0} for errorInfo", t);
+          ackRequestDataArrayRetryList.addAll(ackRequestDataArrayRetryList);
+        }
 
         // Handle retries
         if (!ackRequestDataArrayRetryList.isEmpty()) {

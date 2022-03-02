@@ -639,7 +639,7 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
     public Builder setMinDurationPerAckExtension(Duration minDurationPerAckExtension) {
       // If a non-default max is set, make sure min is less than max
       Preconditions.checkArgument(
-          maxDurationPerAckExtension.toMillis() >= 0
+          minDurationPerAckExtension.toMillis() >= 0
               && (this.maxDurationPerAckExtensionDefaultUsed
                   || (minDurationPerAckExtension.toMillis()
                       < this.maxDurationPerAckExtension.toMillis())));

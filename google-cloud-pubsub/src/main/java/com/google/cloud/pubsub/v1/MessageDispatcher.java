@@ -293,8 +293,7 @@ class MessageDispatcher {
 
   @InternalApi
   void setEnableExactlyOnceDelivery(boolean enableExactlyOnceDelivery) {
-    // Sanity check that we are changing the enableExactlyOnceDelivery state and that we are using
-    // the default min
+    // Sanity check that we are changing the enableExactlyOnceDelivery state
     if (enableExactlyOnceDelivery == this.enableExactlyOnceDelivery.get()) {
       return;
     }
@@ -316,7 +315,7 @@ class MessageDispatcher {
               Subscriber.DEFAULT_MIN_ACK_DEADLINE_EXTENSION_EXACTLY_ONCE_DELIVERY.getSeconds());
     } else {
       possibleNewMinAckDeadlineExtensionSeconds =
-          Math.toIntExact(Subscriber.DEFAULT_MAX_ACK_DEADLINE_EXTENSION.getSeconds());
+          Math.toIntExact(Subscriber.DEFAULT_MIN_ACK_DEADLINE_EXTENSION.getSeconds());
     }
 
     // If we are not using the default maxDurationAckExtension, check if the
@@ -530,12 +529,6 @@ class MessageDispatcher {
 
   @InternalApi
   void processOutstandingOperations() {
-    List<AckRequestData> ackRequestDataList = new ArrayList<AckRequestData>();
-    pendingAcks.drainTo(ackRequestDataList);
-    logger.log(Level.FINER, "Sending {0} acks", ackRequestDataList.size());
-
-    ackProcessor.sendAckOperations(ackRequestDataList);
-
     List<ModackRequestData> modackRequestData = new ArrayList<ModackRequestData>();
 
     // Nacks are modacks with an expiration of 0
@@ -556,6 +549,12 @@ class MessageDispatcher {
     logger.log(Level.FINER, "Sending {0} receipts", ackRequestDataReceipts.size());
 
     ackProcessor.sendModackOperations(modackRequestData);
+
+    List<AckRequestData> ackRequestDataList = new ArrayList<AckRequestData>();
+    pendingAcks.drainTo(ackRequestDataList);
+    logger.log(Level.FINER, "Sending {0} acks", ackRequestDataList.size());
+
+    ackProcessor.sendAckOperations(ackRequestDataList);
   }
 
   private Instant now() {

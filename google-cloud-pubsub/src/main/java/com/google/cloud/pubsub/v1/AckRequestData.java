@@ -68,7 +68,6 @@ public class AckRequestData {
   protected static final class Builder {
     private final String ackId;
     private Optional<SettableApiFuture<AckResponse>> messageFuture = Optional.empty();
-    private boolean isModack = false;
 
     protected Builder(String ackId) {
       this.ackId = ackId;
