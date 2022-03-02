@@ -56,7 +56,6 @@ public class ITPubSubTest {
   private static TopicAdminClient topicAdminClient;
   private static SubscriptionAdminClient subscriptionAdminClient;
   private static String projectId;
-  private static String endPoint = "us-east1-pubsub.googleapis.com:443";
   private static final boolean IS_VPC_TEST =
       System.getenv("GOOGLE_CLOUD_TESTS_IN_VPCSC") != null
           && System.getenv("GOOGLE_CLOUD_TESTS_IN_VPCSC").equalsIgnoreCase("true");
@@ -91,11 +90,9 @@ public class ITPubSubTest {
 
   @BeforeClass
   public static void setupClass() throws Exception {
-    topicAdminClient =
-        TopicAdminClient.create(TopicAdminSettings.newBuilder().setEndpoint(endPoint).build());
+    topicAdminClient = TopicAdminClient.create(TopicAdminSettings.newBuilder().build());
     subscriptionAdminClient =
-        SubscriptionAdminClient.create(
-            SubscriptionAdminSettings.newBuilder().setEndpoint(endPoint).build());
+        SubscriptionAdminClient.create(SubscriptionAdminSettings.newBuilder().build());
     projectId = ServiceOptions.getDefaultProjectId();
   }
 
@@ -216,7 +213,6 @@ public class ITPubSubTest {
                     receiveQueue.offer(MessageAndConsumer.create(message, consumer));
                   }
                 })
-            .setEndpoint(endPoint)
             .build();
     subscriber.addListener(
         new Subscriber.Listener() {
@@ -227,7 +223,7 @@ public class ITPubSubTest {
         MoreExecutors.directExecutor());
     subscriber.startAsync();
 
-    Publisher publisher = Publisher.newBuilder(topicName).setEndpoint(endPoint).build();
+    Publisher publisher = Publisher.newBuilder(topicName).build();
     publisher
         .publish(PubsubMessage.newBuilder().setData(ByteString.copyFromUtf8("msg1")).build())
         .get();
@@ -437,7 +433,6 @@ public class ITPubSubTest {
                     receiveQueue.offer(MessageAndConsumer.create(message, consumer));
                   }
                 })
-            .setEndpoint(endPoint)
             .build();
     subscriber.addListener(
         new Subscriber.Listener() {
@@ -448,8 +443,7 @@ public class ITPubSubTest {
         MoreExecutors.directExecutor());
     subscriber.startAsync();
 
-    Publisher publisher =
-        Publisher.newBuilder(topicName).setEndpoint(endPoint).setEnableCompression(true).build();
+    Publisher publisher = Publisher.newBuilder(topicName).setEnableCompression(true).build();
 
     String msg1 = generateMessage("msg1", 1000);
     String msg2 = generateMessage("msg2", 1500);

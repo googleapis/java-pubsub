@@ -49,9 +49,13 @@ public class PublishWithCompressionExample {
 
     Publisher publisher = null;
     try {
-      // Create a publisher instance bound to the topic with compression enabled and other default
-      // settings
-      publisher = Publisher.newBuilder(topicName).setEnableCompression(true).build();
+      // Create a publisher instance bound to the topic with compression enabled and a compression
+      // bytes threshold.
+      publisher =
+          Publisher.newBuilder(topicName)
+              .setEnableCompression(true)
+              .setCompressionBytesThreshold(500)
+              .build();
 
       ByteString data = generateData("Hello!", 2000);
       PubsubMessage pubsubMessage = PubsubMessage.newBuilder().setData(data).build();
@@ -59,7 +63,7 @@ public class PublishWithCompressionExample {
       // Once published, returns a server-assigned message id (unique within the topic)
       ApiFuture<String> messageIdFuture = publisher.publish(pubsubMessage);
       String messageId = messageIdFuture.get();
-      System.out.println("Published compressed message ID: " + messageId);
+      System.out.println("Published compressed message, ID:" + messageId);
     } finally {
       if (publisher != null) {
         // When finished with the publisher, shutdown to free up resources.
@@ -69,7 +73,7 @@ public class PublishWithCompressionExample {
     }
   }
 
-  // Generates data of given bytes by repeatedly concatenating a token.
+  /** Generates data of given bytes by repeatedly concatenating a token. */
   // TODO(developer): Replace this method with your own data generation logic
   private static ByteString generateData(String token, int bytes) {
     String message = "";
@@ -80,6 +84,11 @@ public class PublishWithCompressionExample {
     return ByteString.copyFromUtf8(message);
   }
 
+  /**
+   * Sets up logging to observe the outbound data (and its length) over the network to analyze the
+   * effectiveness of compression. A sample log line:
+   * [2022-03-02] FINE [id:..] OUTBOUND DATA: streamId=3 padding=0 endStream=true length=196 bytes=01...
+   */
   private static void setUpLogs() throws IOException {
     String handlers = "handlers = java.util.logging.ConsoleHandler";
     String handlerLevelProp = "java.util.logging.ConsoleHandler.level = ALL";

@@ -680,7 +680,6 @@ public class Publisher implements PublisherInterface {
     // Meaningful defaults.
     static final long DEFAULT_ELEMENT_COUNT_THRESHOLD = 100L;
     static final long DEFAULT_REQUEST_BYTES_THRESHOLD = 1000L; // 1 kB
-    static final long DEFAULT_COMPRESSION_BYTES_THRESHOLD = 500L;
     static final Duration DEFAULT_DELAY_THRESHOLD = Duration.ofMillis(1);
     private static final Duration DEFAULT_INITIAL_RPC_TIMEOUT = Duration.ofSeconds(5);
     private static final Duration DEFAULT_MAX_RPC_TIMEOUT = Duration.ofSeconds(60);
@@ -715,6 +714,7 @@ public class Publisher implements PublisherInterface {
             .setExecutorThreadCount(THREADS_PER_CPU * Runtime.getRuntime().availableProcessors())
             .build();
     static final boolean DEFAULT_ENABLE_COMPRESSION = false;
+    static final long DEFAULT_COMPRESSION_BYTES_THRESHOLD = 500L;
 
     String topicName;
     private String endpoint = PublisherStubSettings.getDefaultEndpoint();
@@ -863,7 +863,11 @@ public class Publisher implements PublisherInterface {
       return this;
     }
 
-    /** Gives the ability to set the threshold in bytes above which gRPC compression happens. */
+    /**
+     * Gives the ability to set the threshold in bytes above which gRPC compression happens. But to
+     * enable gRPC compression at the first place, setEnableCompression(true) should be called along
+     * with this method.
+     */
     public Builder setCompressionBytesThreshold(long compressionBytesThreshold) {
       this.compressionBytesThreshold = compressionBytesThreshold;
       return this;
