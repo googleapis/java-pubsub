@@ -62,10 +62,13 @@ public class SubscribeWithExactlyOnceConsumerWithResponseExample {
                 break;
               case PERMISSION_DENIED:
                 System.out.println("Permission denied. MessageId: " + message.getMessageId());
+                break;
               case FAILED_PRECONDITION:
                 System.out.println("Failed precondition. MessageId: " + message.getMessageId());
+                break;
               case OTHER:
                 System.out.println("Unknown error. MessageId: " + message.getMessageId());
+                break;
               default:
                 break;
             }
