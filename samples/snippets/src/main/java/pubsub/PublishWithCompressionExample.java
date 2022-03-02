@@ -87,7 +87,7 @@ public class PublishWithCompressionExample {
   /**
    * Sets up logging to observe the outbound data (and its length) over the network to analyze the
    * effectiveness of compression. A sample log line:
-   * [2022-03-02] FINE [id:..] OUTBOUND DATA: streamId=3 padding=0 endStream=true length=196 bytes=01...
+   * [2022-03-02] FINE [] OUTBOUND DATA: streamId=3 padding=0 endStream=true length=196 bytes=01..
    */
   private static void setUpLogs() throws IOException {
     String handlers = "handlers = java.util.logging.ConsoleHandler";
