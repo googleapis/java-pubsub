@@ -528,7 +528,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
           // If we fail to parse out the errorInfo, we should retry all
           logger.log(
               Level.WARNING, "Exception occurred when parsing throwable {0} for errorInfo", t);
-          ackRequestDataArrayRetryList.addAll(ackRequestDataArrayRetryList);
+          ackRequestDataArrayRetryList.addAll(ackRequestDataList);
         }
 
         // Handle retries
