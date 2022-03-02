@@ -40,7 +40,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -66,13 +65,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
       "PERMANENT_FAILURE_INVALID_ACK_ID";
   private final String TRANSIENT_FAILURE_METADATA_PREFIX = "TRANSIENT_";
 
-  private Duration maxAckExtensionPeriod;
-  private Duration minDurationPerAckExtension;
-  private boolean minDurationPerAckExtensionDefaultUsed;
-  private Duration maxDurationPerAckExtension;
-  private boolean maxDurationPerAckExtensionDefaultUsed;
-
-  private AtomicInteger streamAckDeadlineSeconds = new AtomicInteger();
+  private Duration inititalStreamAckDeadline;
 
   private final SubscriberStub subscriberStub;
   private final int channelAffinity;
@@ -85,15 +78,12 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
 
   private AtomicBoolean enableExactlyOnceDelivery;
 
-  private final MessageReceiverWithAckResponse receiverWithAckResponse;
-
   // Keeps track of requests without closed futures
   private final Set<AckRequestData> pendingRequests = ConcurrentHashMap.newKeySet();
 
   private final AtomicLong channelReconnectBackoffMillis =
       new AtomicLong(INITIAL_CHANNEL_RECONNECT_BACKOFF.toMillis());
   private final Waiter ackOperationsWaiter = new Waiter();
-  private final ApiClock clock;
 
   private final Lock lock = new ReentrantLock();
   private ClientStream<StreamingPullRequest> clientStream;
@@ -114,40 +104,25 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     if (builder.maxDurationPerAckExtensionDefaultUsed) {
       // If the default is used, check if exactly once is enabled and set appropriately
       if (builder.exactlyOnceDeliveryEnabled) {
-        streamAckDeadlineSeconds.set(
-            Math.toIntExact(
-                Subscriber.STREAM_ACK_DEADLINE_EXACTLY_ONCE_DELIVERY_DEFAULT.getSeconds()));
+        inititalStreamAckDeadline = Subscriber.STREAM_ACK_DEADLINE_EXACTLY_ONCE_DELIVERY_DEFAULT;
       } else {
-        streamAckDeadlineSeconds.set(
-            Math.toIntExact(Subscriber.STREAM_ACK_DEADLINE_DEFAULT.getSeconds()));
+        inititalStreamAckDeadline = Subscriber.STREAM_ACK_DEADLINE_DEFAULT;
       }
     } else if (builder.maxDurationPerAckExtension.compareTo(Subscriber.MIN_STREAM_ACK_DEADLINE)
         < 0) {
       // We will not be able to extend more than the default minimum
-      streamAckDeadlineSeconds.set(
-          Math.toIntExact(Subscriber.MIN_STREAM_ACK_DEADLINE.getSeconds()));
+      inititalStreamAckDeadline = Subscriber.MIN_STREAM_ACK_DEADLINE;
     } else if (builder.maxDurationPerAckExtension.compareTo(Subscriber.MAX_STREAM_ACK_DEADLINE)
         > 0) {
       // Will not be able to extend past the max
-      streamAckDeadlineSeconds.set(
-          Math.toIntExact(Subscriber.MAX_STREAM_ACK_DEADLINE.getSeconds()));
+      inititalStreamAckDeadline = Subscriber.MAX_STREAM_ACK_DEADLINE;
     } else {
-      streamAckDeadlineSeconds.set(
-          Math.toIntExact(builder.maxDurationPerAckExtension.getSeconds()));
+      inititalStreamAckDeadline = builder.maxDurationPerAckExtension;
     }
-
-    // These need to be stored to reference if enableExactlyOnceDelivery changes
-    minDurationPerAckExtension = builder.minDurationPerAckExtension;
-    minDurationPerAckExtensionDefaultUsed = builder.minDurationPerAckExtensionDefaultUsed;
-    maxDurationPerAckExtension = builder.maxDurationPerAckExtension;
-    maxDurationPerAckExtensionDefaultUsed = builder.maxDurationPerAckExtensionDefaultUsed;
 
     subscriberStub = builder.subscriberStub;
     channelAffinity = builder.channelAffinity;
     enableExactlyOnceDelivery = new AtomicBoolean(builder.exactlyOnceDeliveryEnabled);
-    clock = builder.clock;
-
-    receiverWithAckResponse = builder.receiverWithAckResponse;
 
     MessageDispatcher.Builder messageDispatcherBuilder;
     if (builder.receiver != null) {
@@ -170,19 +145,11 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
             .setEnableExactlyOnceDelivery(enableExactlyOnceDelivery.get())
             .setExecutor(builder.executor)
             .setSystemExecutor(builder.systemExecutor)
-            .setApiClock(clock)
+            .setApiClock(builder.clock)
             .build();
 
     flowControlSettings = builder.flowControlSettings;
     useLegacyFlowControl = builder.useLegacyFlowControl;
-  }
-
-  public Integer getStreamAckDeadlineSeconds() {
-    return streamAckDeadlineSeconds.get();
-  }
-
-  public boolean shouldSetMessageFuture() {
-    return receiverWithAckResponse != null;
   }
 
   @Override
@@ -294,7 +261,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     initClientStream.send(
         StreamingPullRequest.newBuilder()
             .setSubscription(subscription)
-            .setStreamAckDeadlineSeconds(streamAckDeadlineSeconds.get())
+            .setStreamAckDeadlineSeconds(Math.toIntExact(inititalStreamAckDeadline.getSeconds()))
             .setClientId(clientId)
             .setMaxOutstandingMessages(
                 this.useLegacyFlowControl
@@ -382,7 +349,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     // We will close the futures with ackResponse - if there are multiple references to the same
     // future they will be handled appropriately
     logger.log(
-        Level.WARNING, "Setting response: {0} on outstanding messages", pendingRequests.size());
+        Level.WARNING, "Setting response: {0} on outstanding messages", ackResponse.toString());
     for (AckRequestData ackRequestData : pendingRequests) {
       ackRequestData.setResponse(ackResponse, false);
     }
@@ -392,26 +359,24 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
   }
 
   private void setFailureFutureOutstandingMessages(Throwable t) {
-    if (shouldSetMessageFuture()) {
-      AckResponse ackResponse;
-      if (!(t instanceof ApiException)) {
-        ackResponse = AckResponse.OTHER;
-      }
-
-      ApiException apiException = (ApiException) t;
-      switch (apiException.getStatusCode().getCode()) {
-        case FAILED_PRECONDITION:
-          ackResponse = AckResponse.FAILED_PRECONDITION;
-          break;
-        case PERMISSION_DENIED:
-          ackResponse = AckResponse.PERMISSION_DENIED;
-          break;
-        default:
-          ackResponse = AckResponse.OTHER;
-      }
-
-      setResponseOutstandingMessages(ackResponse);
+    AckResponse ackResponse;
+    if (!(t instanceof ApiException)) {
+      ackResponse = AckResponse.OTHER;
     }
+
+    ApiException apiException = (ApiException) t;
+    switch (apiException.getStatusCode().getCode()) {
+      case FAILED_PRECONDITION:
+        ackResponse = AckResponse.FAILED_PRECONDITION;
+        break;
+      case PERMISSION_DENIED:
+        ackResponse = AckResponse.PERMISSION_DENIED;
+        break;
+      default:
+        ackResponse = AckResponse.OTHER;
+    }
+
+    setResponseOutstandingMessages(ackResponse);
   }
 
   @Override
@@ -456,35 +421,36 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
   private void sendModackOperations(
       List<ModackRequestData> modackRequestDataList, long currentBackoffMillis) {
     // Send modacks
-    List<ModackRequestData> modacksToSendPartitioned =
-        ModackRequestData.partitionByAckId(modackRequestDataList, MAX_PER_REQUEST_CHANGES);
     int pendingOperations = 0;
-    for (ModackRequestData modackRequestData : modacksToSendPartitioned) {
+    for (ModackRequestData modackRequestData : modackRequestDataList) {
       List<String> ackIdsInRequest = new ArrayList<>();
-      for (AckRequestData ackRequestData : modackRequestData.getAckIdMessageFutures()) {
-        ackIdsInRequest.add(ackRequestData.getAckId());
-        if (ackRequestData.hasMessageFuture()) {
-          // Add to our pending requests if we care about the response
-          pendingRequests.add(ackRequestData);
+      for (List<AckRequestData> ackRequestDataInRequestList :
+          Lists.partition(modackRequestData.getAckRequestData(), MAX_PER_REQUEST_CHANGES)) {
+        for (AckRequestData ackRequestData : ackRequestDataInRequestList) {
+          ackIdsInRequest.add(ackRequestData.getAckId());
+          if (ackRequestData.hasMessageFuture()) {
+            // Add to our pending requests if we care about the response
+            pendingRequests.add(ackRequestData);
+          }
         }
+        ApiFutureCallback<Empty> callback =
+            getCallback(
+                modackRequestData.getAckRequestData(),
+                modackRequestData.getDeadlineExtensionSeconds(),
+                true,
+                currentBackoffMillis);
+        ApiFuture<Empty> modackFuture =
+            subscriberStub
+                .modifyAckDeadlineCallable()
+                .futureCall(
+                    ModifyAckDeadlineRequest.newBuilder()
+                        .setSubscription(subscription)
+                        .addAllAckIds(ackIdsInRequest)
+                        .setAckDeadlineSeconds(modackRequestData.getDeadlineExtensionSeconds())
+                        .build());
+        ApiFutures.addCallback(modackFuture, callback, directExecutor());
+        pendingOperations++;
       }
-      ApiFutureCallback<Empty> callback =
-          getCallback(
-              modackRequestData.getAckIdMessageFutures(),
-              modackRequestData.getDeadlineExtensionSeconds(),
-              true,
-              currentBackoffMillis);
-      ApiFuture<Empty> modackFuture =
-          subscriberStub
-              .modifyAckDeadlineCallable()
-              .futureCall(
-                  ModifyAckDeadlineRequest.newBuilder()
-                      .setSubscription(subscription)
-                      .addAllAckIds(ackIdsInRequest)
-                      .setAckDeadlineSeconds(modackRequestData.getDeadlineExtensionSeconds())
-                      .build());
-      ApiFutures.addCallback(modackFuture, callback, directExecutor());
-      pendingOperations++;
     }
     ackOperationsWaiter.incrementPendingCount(pendingOperations);
   }

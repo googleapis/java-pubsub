@@ -46,8 +46,8 @@ import org.threeten.bp.temporal.ChronoUnit;
  */
 class MessageDispatcher {
   private static final Logger logger = Logger.getLogger(MessageDispatcher.class.getName());
-  private static final double PERCENTILE_FOR_ACK_DEADLINE_UPDATES = 99.9;
 
+  @InternalApi static final double PERCENTILE_FOR_ACK_DEADLINE_UPDATES = 99.9;
   @InternalApi static final Duration PENDING_ACKS_SEND_DELAY = Duration.ofMillis(100);
 
   private final Executor executor;
@@ -59,9 +59,10 @@ class MessageDispatcher {
   private final Duration maxAckExtensionPeriod;
   private int minDurationPerAckExtensionSeconds;
   private final boolean minDurationPerAckExtensionDefaultUsed;
-  private int maxDurationPerAckExtensionSeconds;
+  private final int maxDurationPerAckExtensionSeconds;
   private final boolean maxDurationPerAckExtensionDefaultUsed;
 
+  // Only one of receiver or receiverWithAckResponse will be set
   private MessageReceiver receiver;
   private MessageReceiverWithAckResponse receiverWithAckResponse;
 
@@ -201,19 +202,7 @@ class MessageDispatcher {
     sequentialExecutor = new SequentialExecutorService.AutoExecutor(builder.executor);
   }
 
-  public int getMaxDurationPerAckExtensionSeconds() {
-    return maxDurationPerAckExtensionSeconds;
-  }
-
-  public int getMinDurationPerAckExtensionSeconds() {
-    return minDurationPerAckExtensionSeconds;
-  }
-
-  public boolean getEnableExactlyOnceDelivery() {
-    return enableExactlyOnceDelivery.get();
-  }
-
-  public boolean shouldSetMessageFuture() {
+  private boolean shouldSetMessageFuture() {
     return receiverWithAckResponse != null;
   }
 
@@ -306,8 +295,14 @@ class MessageDispatcher {
   void setEnableExactlyOnceDelivery(boolean enableExactlyOnceDelivery) {
     // Sanity check that we are changing the enableExactlyOnceDelivery state and that we are using
     // the default min
-    if (enableExactlyOnceDelivery == this.enableExactlyOnceDelivery.get()
-        || !minDurationPerAckExtensionDefaultUsed) {
+    if (enableExactlyOnceDelivery == this.enableExactlyOnceDelivery.get()) {
+      return;
+    }
+
+    this.enableExactlyOnceDelivery.set(enableExactlyOnceDelivery);
+
+    // If a custom value for minDurationPerAckExtension, we should respect that
+    if (!minDurationPerAckExtensionDefaultUsed) {
       return;
     }
 
@@ -325,16 +320,13 @@ class MessageDispatcher {
     }
 
     // If we are not using the default maxDurationAckExtension, check if the
-    // minAckDeadlineExtensionExactlyOnce
-    // needs to be bounded by the set max
+    // minAckDeadlineExtensionExactlyOnce needs to be bounded by the set max
     if (!maxDurationPerAckExtensionDefaultUsed
         && (possibleNewMinAckDeadlineExtensionSeconds > maxDurationPerAckExtensionSeconds)) {
       minDurationPerAckExtensionSeconds = maxDurationPerAckExtensionSeconds;
     } else {
       minDurationPerAckExtensionSeconds = possibleNewMinAckDeadlineExtensionSeconds;
     }
-
-    this.enableExactlyOnceDelivery.set(enableExactlyOnceDelivery);
   }
 
   private static class OutstandingMessage {
@@ -498,7 +490,7 @@ class MessageDispatcher {
   void extendDeadlines() {
     int extendSeconds = getMessageDeadlineSeconds();
     int numAckIdToSend = 0;
-    Map<Integer, ModackRequestData> modackWithMessageFutureByExtensionTimeMap =
+    Map<Integer, ModackRequestData> deadlineExtensionModacks =
         new HashMap<Integer, ModackRequestData>();
     Instant now = now();
     Instant extendTo = now.plusSeconds(extendSeconds);
@@ -508,10 +500,10 @@ class MessageDispatcher {
       Instant totalExpiration = entry.getValue().totalExpiration;
       if (totalExpiration.isAfter(extendTo)) {
         ModackRequestData modackRequestData =
-            modackWithMessageFutureByExtensionTimeMap.computeIfAbsent(
+            deadlineExtensionModacks.computeIfAbsent(
                 extendSeconds,
                 deadlineExtensionSeconds -> new ModackRequestData(deadlineExtensionSeconds));
-        modackRequestData.addAckIdMessageFuture(entry.getValue().getAckRequestData());
+        modackRequestData.addAckRequestData(entry.getValue().getAckRequestData());
         numAckIdToSend++;
         continue;
       }
@@ -522,9 +514,9 @@ class MessageDispatcher {
       if (totalExpiration.isAfter(now)) {
         int sec = Math.max(1, (int) now.until(totalExpiration, ChronoUnit.SECONDS));
         ModackRequestData modackRequestData =
-            modackWithMessageFutureByExtensionTimeMap.computeIfAbsent(
+            deadlineExtensionModacks.computeIfAbsent(
                 sec, extensionSeconds -> new ModackRequestData(extensionSeconds));
-        modackRequestData.addAckIdMessageFuture(entry.getValue().getAckRequestData());
+        modackRequestData.addAckRequestData(entry.getValue().getAckRequestData());
         numAckIdToSend++;
       }
     }
@@ -532,7 +524,7 @@ class MessageDispatcher {
     if (numAckIdToSend > 0) {
       logger.log(Level.FINER, "Sending {0} modacks", numAckIdToSend);
       ackProcessor.sendModackOperations(
-          new ArrayList<ModackRequestData>(modackWithMessageFutureByExtensionTimeMap.values()));
+          new ArrayList<ModackRequestData>(deadlineExtensionModacks.values()));
     }
   }
 

@@ -16,7 +16,6 @@
 
 package com.google.cloud.pubsub.v1;
 
-import com.google.common.collect.Lists;
 import java.util.*;
 
 class ModackRequestData {
@@ -42,41 +41,12 @@ class ModackRequestData {
     return deadlineExtensionSeconds;
   }
 
-  public List<AckRequestData> getAckIdMessageFutures() {
+  public List<AckRequestData> getAckRequestData() {
     return ackRequestData;
   }
 
-  public ModackRequestData addAckIdMessageFuture(AckRequestData ackRequestData) {
+  public ModackRequestData addAckRequestData(AckRequestData ackRequestData) {
     this.ackRequestData.add(ackRequestData);
     return this;
-  }
-
-  public ModackRequestData addAllAckIdMessageFuture(List<AckRequestData> ackRequestData) {
-    this.ackRequestData.addAll(ackRequestData);
-    return this;
-  }
-
-  public List<ModackRequestData> partitionByAckId(int batchSize) {
-    // Helper function to return a new list of ModackWithMessageFutures with a batchSize number of
-    // ackIds
-    List<ModackRequestData> modackRequestData = new ArrayList<ModackRequestData>();
-    for (List<AckRequestData> ackRequestData : Lists.partition(this.ackRequestData, batchSize)) {
-      modackRequestData.add(new ModackRequestData(this.deadlineExtensionSeconds, ackRequestData));
-    }
-    return modackRequestData;
-  }
-
-  public static List<ModackRequestData> partitionByAckId(
-      List<ModackRequestData> modackRequestDataList, int batchSize) {
-    // Static helper function to partition a list of ModackWithMessageFutures by AckId
-    List<ModackRequestData> partitionedModackRequestData = new ArrayList<>();
-    for (ModackRequestData modackRequestData : modackRequestDataList) {
-      for (List<AckRequestData> ackRequestData :
-          Lists.partition(modackRequestData.ackRequestData, batchSize)) {
-        partitionedModackRequestData.add(
-            new ModackRequestData(modackRequestData.deadlineExtensionSeconds, ackRequestData));
-      }
-    }
-    return partitionedModackRequestData;
   }
 }

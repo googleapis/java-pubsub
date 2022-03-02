@@ -152,7 +152,7 @@ public class StreamingSubscriberConnectionTest {
 
     // SUCCESS - no message
     SettableApiFuture<AckResponse> messageFutureNotDoneExpected = SettableApiFuture.create();
-    modackRequestDataDefault.addAckIdMessageFuture(
+    modackRequestDataDefault.addAckRequestData(
         AckRequestData.newBuilder(MOCK_ACK_ID_SUCCESS_NO_MESSAGE)
             .setMessageFuture(messageFutureNotDoneExpected)
             .build());
@@ -160,7 +160,7 @@ public class StreamingSubscriberConnectionTest {
 
     // INVALID
     SettableApiFuture<AckResponse> messageFutureInvalidExpected = SettableApiFuture.create();
-    modackRequestDataDefault.addAckIdMessageFuture(
+    modackRequestDataDefault.addAckRequestData(
         AckRequestData.newBuilder(MOCK_ACK_ID_INVALID)
             .setMessageFuture(messageFutureInvalidExpected)
             .build());
@@ -169,7 +169,7 @@ public class StreamingSubscriberConnectionTest {
 
     // OTHER
     SettableApiFuture<AckResponse> messageFutureOtherExpected = SettableApiFuture.create();
-    modackRequestDataDefault.addAckIdMessageFuture(
+    modackRequestDataDefault.addAckRequestData(
         AckRequestData.newBuilder(MOCK_ACK_ID_OTHER)
             .setMessageFuture(messageFutureOtherExpected)
             .build());
@@ -180,7 +180,7 @@ public class StreamingSubscriberConnectionTest {
     // Retry) SUCCESS - but no message future set
     SettableApiFuture<AckResponse> messageFutureTransientFailureServiceUnavailableThenSuccess =
         SettableApiFuture.create();
-    modackRequestDataDefault.addAckIdMessageFuture(
+    modackRequestDataDefault.addAckRequestData(
         AckRequestData.newBuilder(MOCK_ACK_ID_TRANSIENT_FAILURE_SERVICE_UNAVAILABLE_THEN_SUCCESS)
             .setMessageFuture(messageFutureTransientFailureServiceUnavailableThenSuccess)
             .build());
@@ -194,7 +194,7 @@ public class StreamingSubscriberConnectionTest {
     // Retry) SUCCESS - but no message future set
     SettableApiFuture<AckResponse> messageFutureTransientFailureUnorderedAckIdThenSuccess =
         SettableApiFuture.create();
-    modackRequestDataDefault.addAckIdMessageFuture(
+    modackRequestDataDefault.addAckRequestData(
         AckRequestData.newBuilder(MOCK_ACK_ID_TRANSIENT_FAILURE_UNORDERED_ACK_ID_THEN_SUCCESS)
             .setMessageFuture(messageFutureTransientFailureUnorderedAckIdThenSuccess)
             .build());

@@ -126,8 +126,8 @@ public class CustomArgumentMatchers {
             }
 
             // Then sort and compare ackIds
-            List<AckRequestData> ackRequestDataListLeft = left.getAckIdMessageFutures();
-            List<AckRequestData> ackRequestDataListRight = right.getAckIdMessageFutures();
+            List<AckRequestData> ackRequestDataListLeft = left.getAckRequestData();
+            List<AckRequestData> ackRequestDataListRight = right.getAckRequestData();
 
             ackRequestDataListLeft.sort(AckRequestDataMatcher.comparator);
             ackRequestDataListRight.sort(AckRequestDataMatcher.comparator);

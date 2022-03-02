@@ -25,7 +25,7 @@ public class AckRequestData {
 
   protected AckRequestData(Builder builder) {
     this.ackId = builder.ackId;
-    this.messageFuture = Optional.ofNullable(builder.messageFuture);
+    this.messageFuture = builder.messageFuture;
   }
 
   public String getAckId() {
@@ -33,11 +33,7 @@ public class AckRequestData {
   }
 
   public SettableApiFuture<AckResponse> getMessageFutureIfExists() {
-    if (this.messageFuture.isPresent()) {
-      return messageFuture.get();
-    }
-
-    return null;
+    return this.messageFuture.orElse(null);
   }
 
   public AckRequestData setResponse(AckResponse ackResponse, boolean setResponseOnSuccess) {
@@ -71,7 +67,7 @@ public class AckRequestData {
   /** Builder of {@link AckRequestData AckRequestData}. */
   protected static final class Builder {
     private final String ackId;
-    private SettableApiFuture<AckResponse> messageFuture = null;
+    private Optional<SettableApiFuture<AckResponse>> messageFuture = Optional.empty();
     private boolean isModack = false;
 
     protected Builder(String ackId) {
@@ -79,7 +75,7 @@ public class AckRequestData {
     }
 
     public Builder setMessageFuture(SettableApiFuture<AckResponse> messageFuture) {
-      this.messageFuture = messageFuture;
+      this.messageFuture = Optional.of(messageFuture);
       return this;
     }
 
