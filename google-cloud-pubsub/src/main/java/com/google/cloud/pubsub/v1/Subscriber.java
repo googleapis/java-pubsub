@@ -96,7 +96,8 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
   @InternalApi static final Duration DEFAULT_MAX_ACK_EXTENSION_PERIOD = Duration.ofMinutes(60);
 
   @InternalApi
-  static final Duration DEFAULT_MIN_ACK_DEADLINE_EXTENSION_EXACTLY_ONCE = Duration.ofMinutes(1);
+  static final Duration DEFAULT_MIN_ACK_DEADLINE_EXTENSION_EXACTLY_ONCE_DELIVERY =
+      Duration.ofMinutes(1);
 
   @InternalApi static final Duration DEFAULT_MIN_ACK_DEADLINE_EXTENSION = Duration.ofMinutes(0);
   @InternalApi static final Duration DEFAULT_MAX_ACK_DEADLINE_EXTENSION = Duration.ofSeconds(0);
@@ -107,7 +108,7 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
   @InternalApi static final Duration STREAM_ACK_DEADLINE_DEFAULT = Duration.ofSeconds(60);
 
   @InternalApi
-  static final Duration STREAM_ACK_DEADLINE_EXACTLY_ONCE_DEFAULT = Duration.ofSeconds(60);
+  static final Duration STREAM_ACK_DEADLINE_EXACTLY_ONCE_DELIVERY_DEFAULT = Duration.ofSeconds(60);
 
   @InternalApi static final Duration ACK_EXPIRATION_PADDING_DEFAULT = Duration.ofSeconds(5);
 
@@ -581,7 +582,7 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
       // If exactlyOnceDeliveryIsEnabled we want to update the default minAckDeadlineExtension if
       // applicable
       if (exactlyOnceDeliveryEnabled && this.minDurationPerAckExtensionDefaultUsed) {
-        this.minDurationPerAckExtension = DEFAULT_MIN_ACK_DEADLINE_EXTENSION_EXACTLY_ONCE;
+        this.minDurationPerAckExtension = DEFAULT_MIN_ACK_DEADLINE_EXTENSION_EXACTLY_ONCE_DELIVERY;
       }
 
       this.exactlyOnceDeliveryEnabled = exactlyOnceDeliveryEnabled;

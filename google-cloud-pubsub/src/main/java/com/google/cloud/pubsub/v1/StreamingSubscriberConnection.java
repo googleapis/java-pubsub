@@ -115,7 +115,8 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
       // If the default is used, check if exactly once is enabled and set appropriately
       if (builder.exactlyOnceDeliveryEnabled) {
         streamAckDeadlineSeconds.set(
-            Math.toIntExact(Subscriber.STREAM_ACK_DEADLINE_EXACTLY_ONCE_DEFAULT.getSeconds()));
+            Math.toIntExact(
+                Subscriber.STREAM_ACK_DEADLINE_EXACTLY_ONCE_DELIVERY_DEFAULT.getSeconds()));
       } else {
         streamAckDeadlineSeconds.set(
             Math.toIntExact(Subscriber.STREAM_ACK_DEADLINE_DEFAULT.getSeconds()));

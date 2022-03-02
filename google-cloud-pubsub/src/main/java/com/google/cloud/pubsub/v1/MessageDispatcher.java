@@ -317,7 +317,8 @@ class MessageDispatcher {
 
     if (enableExactlyOnceDelivery) {
       possibleNewMinAckDeadlineExtensionSeconds =
-          Math.toIntExact(Subscriber.DEFAULT_MIN_ACK_DEADLINE_EXTENSION_EXACTLY_ONCE.getSeconds());
+          Math.toIntExact(
+              Subscriber.DEFAULT_MIN_ACK_DEADLINE_EXTENSION_EXACTLY_ONCE_DELIVERY.getSeconds());
     } else {
       possibleNewMinAckDeadlineExtensionSeconds =
           Math.toIntExact(Subscriber.DEFAULT_MAX_ACK_DEADLINE_EXTENSION.getSeconds());

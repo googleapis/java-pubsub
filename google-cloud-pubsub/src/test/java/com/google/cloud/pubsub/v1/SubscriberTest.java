@@ -294,7 +294,7 @@ public class SubscriberTest {
     assertEquals(
         expectedChannelCount, fakeSubscriberServiceImpl.waitForOpenedStreams(expectedChannelCount));
     assertEquals(
-        Math.toIntExact(Subscriber.STREAM_ACK_DEADLINE_EXACTLY_ONCE_DEFAULT.getSeconds()),
+        Math.toIntExact(Subscriber.STREAM_ACK_DEADLINE_EXACTLY_ONCE_DELIVERY_DEFAULT.getSeconds()),
         fakeSubscriberServiceImpl.getLastSeenRequest().getStreamAckDeadlineSeconds());
     subscriber.stopAsync().awaitTerminated();
   }
