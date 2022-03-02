@@ -155,7 +155,6 @@ public class StreamingSubscriberConnectionTest {
     modackRequestDataDefault.addAckIdMessageFuture(
         AckRequestData.newBuilder(MOCK_ACK_ID_SUCCESS_NO_MESSAGE)
             .setMessageFuture(messageFutureNotDoneExpected)
-            .setIsModack(true)
             .build());
     ackIdsInitialRequest.add(MOCK_ACK_ID_SUCCESS_NO_MESSAGE);
 
@@ -164,7 +163,6 @@ public class StreamingSubscriberConnectionTest {
     modackRequestDataDefault.addAckIdMessageFuture(
         AckRequestData.newBuilder(MOCK_ACK_ID_INVALID)
             .setMessageFuture(messageFutureInvalidExpected)
-            .setIsModack(true)
             .build());
     errorInfoMetadataMapInitialRequest.put(MOCK_ACK_ID_INVALID, PERMANENT_FAILURE_INVALID_ACK_ID);
     ackIdsInitialRequest.add(MOCK_ACK_ID_INVALID);
@@ -174,7 +172,6 @@ public class StreamingSubscriberConnectionTest {
     modackRequestDataDefault.addAckIdMessageFuture(
         AckRequestData.newBuilder(MOCK_ACK_ID_OTHER)
             .setMessageFuture(messageFutureOtherExpected)
-            .setIsModack(true)
             .build());
     errorInfoMetadataMapInitialRequest.put(MOCK_ACK_ID_OTHER, PERMANENT_FAILURE_OTHER);
     ackIdsInitialRequest.add(MOCK_ACK_ID_OTHER);
@@ -186,7 +183,6 @@ public class StreamingSubscriberConnectionTest {
     modackRequestDataDefault.addAckIdMessageFuture(
         AckRequestData.newBuilder(MOCK_ACK_ID_TRANSIENT_FAILURE_SERVICE_UNAVAILABLE_THEN_SUCCESS)
             .setMessageFuture(messageFutureTransientFailureServiceUnavailableThenSuccess)
-            .setIsModack(true)
             .build());
     errorInfoMetadataMapInitialRequest.put(
         MOCK_ACK_ID_TRANSIENT_FAILURE_SERVICE_UNAVAILABLE_THEN_SUCCESS,
@@ -201,7 +197,6 @@ public class StreamingSubscriberConnectionTest {
     modackRequestDataDefault.addAckIdMessageFuture(
         AckRequestData.newBuilder(MOCK_ACK_ID_TRANSIENT_FAILURE_UNORDERED_ACK_ID_THEN_SUCCESS)
             .setMessageFuture(messageFutureTransientFailureUnorderedAckIdThenSuccess)
-            .setIsModack(true)
             .build());
     errorInfoMetadataMapInitialRequest.put(
         MOCK_ACK_ID_TRANSIENT_FAILURE_UNORDERED_ACK_ID_THEN_SUCCESS,

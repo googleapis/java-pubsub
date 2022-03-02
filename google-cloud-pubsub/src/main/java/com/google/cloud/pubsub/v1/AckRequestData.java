@@ -21,12 +21,10 @@ import java.util.Optional;
 
 public class AckRequestData {
   private final String ackId;
-  private boolean isModack;
   private final Optional<SettableApiFuture<AckResponse>> messageFuture;
 
   protected AckRequestData(Builder builder) {
     this.ackId = builder.ackId;
-    this.isModack = builder.isModack;
     this.messageFuture = Optional.ofNullable(builder.messageFuture);
   }
 
@@ -42,11 +40,11 @@ public class AckRequestData {
     return null;
   }
 
-  public AckRequestData setResponse(AckResponse ackResponse) {
+  public AckRequestData setResponse(AckResponse ackResponse, boolean setResponseOnSuccess) {
     if (this.messageFuture.isPresent() && !this.messageFuture.get().isDone()) {
       switch (ackResponse) {
         case SUCCESSFUL:
-          if (!this.isModack) {
+          if (!setResponseOnSuccess) {
             this.messageFuture.get().set(ackResponse);
           }
           break;
@@ -66,11 +64,6 @@ public class AckRequestData {
     return this.messageFuture.isPresent();
   }
 
-  public AckRequestData setIsModack(boolean isModack) {
-    this.isModack = isModack;
-    return this;
-  }
-
   public static Builder newBuilder(String ackId) {
     return new Builder(ackId);
   }
@@ -87,11 +80,6 @@ public class AckRequestData {
 
     public Builder setMessageFuture(SettableApiFuture<AckResponse> messageFuture) {
       this.messageFuture = messageFuture;
-      return this;
-    }
-
-    public Builder setIsModack(boolean isModack) {
-      this.isModack = isModack;
       return this;
     }
 

@@ -140,7 +140,7 @@ class MessageDispatcher {
               + this.ackRequestData.getAckId()
               + ", the message will be nacked.",
           t);
-      this.ackRequestData.setResponse(AckResponse.OTHER);
+      this.ackRequestData.setResponse(AckResponse.OTHER, false);
       pendingNacks.add(this.ackRequestData);
       forget();
     }
@@ -370,7 +370,6 @@ class MessageDispatcher {
         continue;
       }
       outstandingBatch.add(new OutstandingMessage(message, ackHandler));
-      ackRequestData.setIsModack(true);
       pendingReceipts.add(ackRequestData);
     }
 

@@ -384,7 +384,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     logger.log(
         Level.WARNING, "Setting response: {0} on outstanding messages", pendingRequests.size());
     for (AckRequestData ackRequestData : pendingRequests) {
-      ackRequestData.setResponse(ackResponse);
+      ackRequestData.setResponse(ackResponse, false);
     }
 
     // Clear our pending requests
@@ -438,7 +438,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
         }
       }
       ApiFutureCallback<Empty> callback =
-          getCallback(ackRequestDataInRequestList, 0, true, currentBackoffMillis);
+          getCallback(ackRequestDataInRequestList, 0, false, currentBackoffMillis);
       ApiFuture<Empty> ackFuture =
           subscriberStub
               .acknowledgeCallable()
@@ -472,7 +472,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
           getCallback(
               modackRequestData.getAckIdMessageFutures(),
               modackRequestData.getDeadlineExtensionSeconds(),
-              false,
+              true,
               currentBackoffMillis);
       ApiFuture<Empty> modackFuture =
           subscriberStub
@@ -515,7 +515,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
   private ApiFutureCallback<Empty> getCallback(
       List<AckRequestData> ackRequestDataList,
       int deadlineExtensionSeconds,
-      boolean isAckRequest,
+      boolean isModack,
       long currentBackoffMillis) {
     // This callback handles retries, and sets message futures
     return new ApiFutureCallback<Empty>() {
@@ -524,7 +524,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
         ackOperationsWaiter.incrementPendingCount(-1);
         for (AckRequestData ackRequestData : ackRequestDataList) {
           // This will check if a response is needed, and if it has already been set
-          ackRequestData.setResponse(AckResponse.SUCCESSFUL);
+          ackRequestData.setResponse(AckResponse.SUCCESSFUL, isModack);
           // Remove from our pending operations
           pendingRequests.remove(ackRequestData);
         }
@@ -552,13 +552,13 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
                       Level.WARNING,
                       "Permanent error invalid ack id message, will not resend",
                       errorMessage);
-                  ackRequestData.setResponse(AckResponse.INVALID);
+                  ackRequestData.setResponse(AckResponse.INVALID, false);
                 } else {
                   logger.log(Level.WARNING, "Unknown error message, will not resend", errorMessage);
-                  ackRequestData.setResponse(AckResponse.OTHER);
+                  ackRequestData.setResponse(AckResponse.OTHER, false);
                 }
               } else {
-                ackRequestData.setResponse(AckResponse.SUCCESSFUL);
+                ackRequestData.setResponse(AckResponse.SUCCESSFUL, false);
               }
 
               // Remove from our pending
@@ -573,15 +573,15 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
               new Runnable() {
                 @Override
                 public void run() {
-                  if (isAckRequest) {
-                    sendAckOperations(ackRequestDataArrayRetryList, newBackoffMillis);
-                  } else {
+                  if (isModack) {
                     // Create a new modackRequest with only the retries
                     ModackRequestData modackRequestData =
                         new ModackRequestData(
                             deadlineExtensionSeconds, ackRequestDataArrayRetryList);
                     sendModackOperations(
                         Collections.singletonList(modackRequestData), newBackoffMillis);
+                  } else {
+                    sendAckOperations(ackRequestDataArrayRetryList, newBackoffMillis);
                   }
                 }
               },
