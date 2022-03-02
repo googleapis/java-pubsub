@@ -209,7 +209,7 @@ public class SubscriberIT {
     SubscribeWithExactlyOnceConsumerWithResponseExample
         .subscribeWithExactlyOnceConsumerWithResponseExample(projectId, subscriptionId);
     for (int i = 0; i < 10; i++) {
-      assertThat(bout.toString()).contains("Successful MessageId: " + i);
+      assertThat(bout.toString()).contains("Message Id: " +  i + " successfully acked.");
     }
   }
 }

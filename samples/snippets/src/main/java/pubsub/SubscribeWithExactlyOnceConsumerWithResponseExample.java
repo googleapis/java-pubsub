@@ -55,26 +55,26 @@ public class SubscribeWithExactlyOnceConsumerWithResponseExample {
 
             switch (ackResponse) {
               case SUCCESSFUL:
-                System.out.println("Successful MessageId: " + message.getMessageId());
+                System.out.println("Message Id: " +  message.getMessageId() + " successfully acked");
                 break;
               case INVALID:
-                System.out.println("Invalid MessageId: " + message.getMessageId());
+                System.out.println("Message Id: " + message.getMessageId() + " failed to ack with a response of Invalid");
                 break;
               case PERMISSION_DENIED:
-                System.out.println("Permission denied. MessageId: " + message.getMessageId());
+                System.out.println("Message Id: " + message.getMessageId() + " failed to ack with a response of Permission Denied");
                 break;
               case FAILED_PRECONDITION:
-                System.out.println("Failed precondition. MessageId: " + message.getMessageId());
+                System.out.println("Message Id: " + message.getMessageId() + " failed to ack with a response of Failed Precondition");
                 break;
               case OTHER:
-                System.out.println("Unknown error. MessageId: " + message.getMessageId());
+                System.out.println("MessageId: " + message.getMessageId() + " failed to ack with a response of Other");
                 break;
               default:
                 break;
             }
           } catch (InterruptedException | ExecutionException e) {
             // Something went wrong retrieving the future
-            System.out.println("Failed to retrieve future for Id: " + message.getMessageId());
+            System.out.println("MessageId: " +  message.getMessageId() + " failed when retrieving future");
           }
         };
 
@@ -82,7 +82,6 @@ public class SubscribeWithExactlyOnceConsumerWithResponseExample {
     try {
       subscriber =
           Subscriber.newBuilder(subscriptionName, receiverWithResponse)
-              .setMinDurationPerAckExtension(Duration.ofSeconds(60))
               .build();
       // Start the subscriber.
       subscriber.startAsync().awaitRunning();
