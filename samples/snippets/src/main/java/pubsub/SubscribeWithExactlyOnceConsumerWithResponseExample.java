@@ -45,17 +45,14 @@ public class SubscribeWithExactlyOnceConsumerWithResponseExample {
     // to not be delivered again if the ack future succeeds.
     MessageReceiverWithAckResponse receiverWithResponse =
         (PubsubMessage message, AckReplyConsumerWithResponse consumerWithResponse) -> {
-          // Handle incoming message, then ack the received message, and receive the response.
+          // Handle incoming message, then ack the message, and receive an ack response.
+          System.out.println("Message received: " + message.getData().toStringUtf8());
           Future<AckResponse> ackResponseFuture = consumerWithResponse.ack();
 
           try {
-            // Retrieve the completed future.
+            // Retrieve the completed future for the ack response from the server.
             AckResponse ackResponse = ackResponseFuture.get();
             
-            // For subscriptions with exactly once enabled, the AckResponse will
-            // return success OR permanent failures.
-            // For subscriptions without exactly once enabled the AckResponse will
-            // return success for messages ack/nack'd OR permanent failures.
             switch (ackResponse) {
               case SUCCESSFUL:
                 // Success code means that this MessageID will not be delivered again.
