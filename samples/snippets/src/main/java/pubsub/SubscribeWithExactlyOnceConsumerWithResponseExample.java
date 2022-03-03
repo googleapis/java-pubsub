@@ -58,6 +58,7 @@ public class SubscribeWithExactlyOnceConsumerWithResponseExample {
             // return success for messages ack/nack'd OR permanent failures.
             switch (ackResponse) {
               case SUCCESSFUL:
+                // Success code means that this MessageID will not be delivered again.
                 System.out.println("Message successfully acked: " + message.getMessageId());
                 break;
               case INVALID:
