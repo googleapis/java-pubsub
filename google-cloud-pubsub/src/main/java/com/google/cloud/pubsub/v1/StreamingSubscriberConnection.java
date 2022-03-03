@@ -521,6 +521,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
         if (!isExactlyOnceDeliveryEnabled()) {
           Level level = isAlive() ? Level.WARNING : Level.FINER;
           logger.log(level, "failed to send operations", t);
+          return;
         }
 
         List<AckRequestData> ackRequestDataArrayRetryList = new ArrayList<>();
