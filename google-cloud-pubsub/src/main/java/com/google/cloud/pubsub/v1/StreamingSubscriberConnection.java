@@ -40,6 +40,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -86,6 +87,8 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
   private final Lock lock = new ReentrantLock();
   private ClientStream<StreamingPullRequest> clientStream;
 
+  private AtomicBoolean exactlyOnceDeliveryEnabled = new AtomicBoolean(false);
+
   /**
    * The same clientId is used across all streaming pull connections that are created. This is
    * intentional, as it indicates to the server that any guarantees made for a stream that
@@ -120,6 +123,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
 
     subscriberStub = builder.subscriberStub;
     channelAffinity = builder.channelAffinity;
+    exactlyOnceDeliveryEnabled.set(builder.exactlyOnceDeliveryEnabled);
 
     MessageDispatcher.Builder messageDispatcherBuilder;
     if (builder.receiver != null) {
@@ -147,6 +151,16 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
 
     flowControlSettings = builder.flowControlSettings;
     useLegacyFlowControl = builder.useLegacyFlowControl;
+  }
+
+  public StreamingSubscriberConnection setExactlyOnceDeliveryEnabled(
+      boolean isExactlyOnceDeliveryEnabled) {
+    exactlyOnceDeliveryEnabled.set(isExactlyOnceDeliveryEnabled);
+    return this;
+  }
+
+  public boolean isExactlyOnceDeliveryEnabled() {
+    return exactlyOnceDeliveryEnabled.get();
   }
 
   @Override
@@ -202,8 +216,12 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     @Override
     public void onResponse(StreamingPullResponse response) {
       channelReconnectBackoffMillis.set(INITIAL_CHANNEL_RECONNECT_BACKOFF.toMillis());
-      messageDispatcher.setEnableExactlyOnceDelivery(
-          response.getSubscriptionProperties().getExactlyOnceDeliveryEnabled());
+
+      boolean exactlyOnceDeliveryEnabledResponse =
+          response.getSubscriptionProperties().getExactlyOnceDeliveryEnabled();
+
+      setExactlyOnceDeliveryEnabled(exactlyOnceDeliveryEnabledResponse);
+      messageDispatcher.setEnableExactlyOnceDelivery(exactlyOnceDeliveryEnabledResponse);
       messageDispatcher.processReceivedMessages(response.getReceivedMessagesList());
 
       // Only request more if we're not shutdown.
@@ -351,20 +369,26 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
 
   private void setFailureFutureOutstandingMessages(Throwable t) {
     AckResponse ackResponse;
-    if (!(t instanceof ApiException)) {
-      ackResponse = AckResponse.OTHER;
-    }
 
-    ApiException apiException = (ApiException) t;
-    switch (apiException.getStatusCode().getCode()) {
-      case FAILED_PRECONDITION:
-        ackResponse = AckResponse.FAILED_PRECONDITION;
-        break;
-      case PERMISSION_DENIED:
-        ackResponse = AckResponse.PERMISSION_DENIED;
-        break;
-      default:
+    if (isExactlyOnceDeliveryEnabled()) {
+      if (!(t instanceof ApiException)) {
         ackResponse = AckResponse.OTHER;
+      }
+
+      ApiException apiException = (ApiException) t;
+      switch (apiException.getStatusCode().getCode()) {
+        case FAILED_PRECONDITION:
+          ackResponse = AckResponse.FAILED_PRECONDITION;
+          break;
+        case PERMISSION_DENIED:
+          ackResponse = AckResponse.PERMISSION_DENIED;
+          break;
+        default:
+          ackResponse = AckResponse.OTHER;
+      }
+    } else {
+      // We should set success regardless if ExactlyOnceDelivery is not enabled
+      ackResponse = AckResponse.SUCCESSFUL;
     }
 
     setResponseOutstandingMessages(ackResponse);
@@ -493,6 +517,12 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
       public void onFailure(Throwable t) {
         // Remove from our pending operations
         ackOperationsWaiter.incrementPendingCount(-1);
+
+        if (!isExactlyOnceDeliveryEnabled()) {
+          Level level = isAlive() ? Level.WARNING : Level.FINER;
+          logger.log(level, "failed to send operations", t);
+        }
+
         List<AckRequestData> ackRequestDataArrayRetryList = new ArrayList<>();
         try {
           Map<String, String> metadataMap = getMetadataMapFromThrowable(t);
