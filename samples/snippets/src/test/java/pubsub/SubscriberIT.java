@@ -53,9 +53,13 @@ public class SubscriberIT {
   private static final String _suffix = UUID.randomUUID().toString();
   private static final String topicId = "subscriber-test-topic-" + _suffix;
   private static final String subscriptionId = "subscriber-test-subscription-" + _suffix;
+  // For a subscription with exactly once delivery enabled.
+  private static final String subscriptionEodId = "subscriber-test-subscription-eod" + _suffix;
   private static final TopicName topicName = TopicName.of(projectId, topicId);
   private static final ProjectSubscriptionName subscriptionName =
       ProjectSubscriptionName.of(projectId, subscriptionId);
+  private static final ProjectSubscriptionName subscriptionEodName =
+      ProjectSubscriptionName.of(projectId, subscriptionEodId);
 
   private static void requireEnvVar(String varName) {
     assertNotNull(
@@ -132,6 +136,15 @@ public class SubscriberIT {
               .setTopic(topicName.toString())
               .build();
       subscriptionAdminClient.createSubscription(subscription);
+  
+      Subscription subscriptionEod =
+          Subscription.newBuilder()
+              .setName(subscriptionEodName.toString())
+              .setTopic(topicName.toString())
+              // Enable exactly once delivery in the subscription.
+              .setEnableExactlyOnceDelivery(true)
+              .build();
+      subscriptionAdminClient.createSubscription(subscriptionEod);
     }
   }
 
@@ -139,6 +152,7 @@ public class SubscriberIT {
   public void tearDown() throws Exception {
     try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
       subscriptionAdminClient.deleteSubscription(subscriptionName.toString());
+      subscriptionAdminClient.deleteSubscription(subscriptionEodName.toString());
     }
 
     try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
@@ -207,7 +221,7 @@ public class SubscriberIT {
     publishSomeMessages(10);
     bout.reset();
     SubscribeWithExactlyOnceConsumerWithResponseExample
-        .subscribeWithExactlyOnceConsumerWithResponseExample(projectId, subscriptionId);
+        .subscribeWithExactlyOnceConsumerWithResponseExample(projectId, subscriptionEodId);
     for (int i = 0; i < 10; i++) {
       assertThat(bout.toString()).contains("Message successfully acked: " + i);
     }
