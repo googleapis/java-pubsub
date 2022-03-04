@@ -18,9 +18,14 @@ package pubsub;
 
 // [START pubsub_subscriber_exactly_once]
 
+import com.google.cloud.pubsub.v1.AckReplyConsumerWithResponse;
+import com.google.cloud.pubsub.v1.AckResponse;
+import com.google.cloud.pubsub.v1.MessageReceiverWithAckResponse;
 import com.google.cloud.pubsub.v1.Subscriber;
 import com.google.pubsub.v1.ProjectSubscriptionName;
 import com.google.pubsub.v1.PubsubMessage;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
