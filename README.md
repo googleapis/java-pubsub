@@ -347,7 +347,6 @@ and on [google-cloud-java][g-c-j].
 This library follows [Semantic Versioning](http://semver.org/).
 
 
-
 ## Contributing
 
 
