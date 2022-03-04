@@ -33,14 +33,13 @@ public class SubscribeWithExactlyOnceConsumerWithResponseExample {
   public static void main(String... args) throws Exception {
     // TODO(developer): Replace these variables before running the sample.
     String projectId = "your-project-id";
-    String topicId = "your-topic-id";
     String subscriptionId = "your-subscription-id";
 
-    subscribeWithExactlyOnceConsumerWithResponseExample(projectId, topicId, subscriptionId);
+    subscribeWithExactlyOnceConsumerWithResponseExample(projectId, subscriptionId);
   }
 
   public static void subscribeWithExactlyOnceConsumerWithResponseExample(
-      String projectId, String topicId, String subscriptionId) {
+      String projectId, String subscriptionId) {
     ProjectSubscriptionName subscriptionName =
         ProjectSubscriptionName.of(projectId, subscriptionId);
 
