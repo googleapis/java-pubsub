@@ -49,10 +49,13 @@ public class SubscribeWithExactlyOnceConsumerWithResponseExample {
     // to not be delivered again if the ack future succeeds.
     MessageReceiverWithAckResponse receiverWithResponse =
         (PubsubMessage message, AckReplyConsumerWithResponse consumerWithResponse) -> {
-          // Handle incoming message, then ack the message, and receive an ack response.
-          System.out.println("Message received: " + message.getData().toStringUtf8());
-          Future<AckResponse> ackResponseFuture = consumerWithResponse.ack();
-
+          try {
+            // Handle incoming message, then ack the message, and receive an ack response.
+            System.out.println("Message received: " + message.getData().toStringUtf8());
+            Future<AckResponse> ackResponseFuture = consumerWithResponse.ack();
+          } catch (Throwable t) {
+            System.out.println("Throwable caught" + t.getMessage());
+          }
           try {
             // Retrieve the completed future for the ack response from the server.
             AckResponse ackResponse = ackResponseFuture.get();
