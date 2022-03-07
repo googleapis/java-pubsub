@@ -56,7 +56,7 @@ public class SubscribeWithExactlyOnceConsumerWithResponseExample {
           try {
             // Retrieve the completed future for the ack response from the server.
             AckResponse ackResponse = ackResponseFuture.get();
-            
+
             switch (ackResponse) {
               case SUCCESSFUL:
                 // Success code means that this MessageID will not be delivered again.

@@ -68,7 +68,7 @@ public class SubscriberIT {
   }
 
   // Helper function to publish some messages.
-  private static void publishSomeMessages(Integer numOfMessages) throws Exception {
+  private static List<String> publishSomeMessages(Integer numOfMessages) throws Exception {
     ProjectTopicName topicName = ProjectTopicName.of(projectId, topicId);
     Publisher publisher = Publisher.newBuilder(topicName).build();
     List<ApiFuture<String>> messageIdFutures = new ArrayList<>();
@@ -82,7 +82,7 @@ public class SubscriberIT {
       ApiFuture<String> messageIdFuture = publisher.publish(pubsubMessage);
       messageIdFutures.add(messageIdFuture);
     }
-    ApiFutures.allAsList(messageIdFutures).get();
+    return ApiFutures.allAsList(messageIdFutures).get();
   }
 
   // Helper function to retry synchronous pull attempts until all outstanding messages are received.
@@ -136,7 +136,7 @@ public class SubscriberIT {
               .setTopic(topicName.toString())
               .build();
       subscriptionAdminClient.createSubscription(subscription);
-  
+
       Subscription subscriptionEod =
           Subscription.newBuilder()
               .setName(subscriptionEodName.toString())
@@ -218,12 +218,12 @@ public class SubscriberIT {
             SubscribeSyncWithLeaseExample.subscribeSyncWithLeaseExample(
                 projectId, subscriptionId, 10));
 
-    publishSomeMessages(10);
+    List<String> messageIds = publishSomeMessages(10);
     bout.reset();
     SubscribeWithExactlyOnceConsumerWithResponseExample
         .subscribeWithExactlyOnceConsumerWithResponseExample(projectId, subscriptionEodId);
-    for (int i = 0; i < 10; i++) {
-      assertThat(bout.toString()).contains("Message successfully acked: " + i);
+    for (String messageId : messageIds) {
+      assertThat(bout.toString()).contains("Message successfully acked: " + messageId);
     }
   }
 }
