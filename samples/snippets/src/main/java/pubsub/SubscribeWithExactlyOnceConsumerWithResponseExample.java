@@ -65,8 +65,7 @@ public class SubscribeWithExactlyOnceConsumerWithResponseExample {
               case INVALID:
                 System.out.println(
                     "Message failed to ack with a response of Invalid. Id: "
-                        + message.getMessageId()
-                        + " ");
+                        + message.getMessageId());
                 break;
               case PERMISSION_DENIED:
                 System.out.println(
