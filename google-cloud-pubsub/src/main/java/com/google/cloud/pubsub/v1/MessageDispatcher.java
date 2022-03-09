@@ -70,7 +70,7 @@ class MessageDispatcher {
 
   private final FlowController flowController;
 
-  private AtomicBoolean enableExactlyOnceDelivery;
+  private AtomicBoolean enableExactlyOnceDelivery = new AtomicBoolean(false);
 
   private final Waiter messagesWaiter;
 
@@ -198,7 +198,6 @@ class MessageDispatcher {
 
     ackProcessor = builder.ackProcessor;
     flowController = builder.flowController;
-    enableExactlyOnceDelivery = new AtomicBoolean(builder.enableExactlyOnceDelivery);
     ackLatencyDistribution = builder.ackLatencyDistribution;
     clock = builder.clock;
     jobLock = new ReentrantLock();
@@ -580,7 +579,6 @@ class MessageDispatcher {
 
     private Distribution ackLatencyDistribution;
     private FlowController flowController;
-    private boolean enableExactlyOnceDelivery;
 
     private Executor executor;
     private ScheduledExecutorService systemExecutor;
@@ -638,11 +636,6 @@ class MessageDispatcher {
 
     public Builder setFlowController(FlowController flowController) {
       this.flowController = flowController;
-      return this;
-    }
-
-    public Builder setEnableExactlyOnceDelivery(boolean enableExactlyOnceDelivery) {
-      this.enableExactlyOnceDelivery = enableExactlyOnceDelivery;
       return this;
     }
 

@@ -338,7 +338,6 @@ public class MessageDispatcherTest {
 
   @Test
   public void testAckExtensionDefaultsExactlyOnceDeliveryOffThenOn() {
-    // EnableExactlyOnceDelivery is turned off by default
     MessageDispatcher messageDispatcher =
         MessageDispatcher.newBuilder(mock(MessageReceiver.class))
             .setAckLatencyDistribution(mockAckLatencyDistribution)
@@ -348,12 +347,16 @@ public class MessageDispatcherTest {
             .setMaxDurationPerAckExtensionDefaultUsed(true)
             .build();
 
+    // EnableExactlyOnceDelivery is turned off by default
+
     // We should be using the Subscriber set hard deadlines
     assertMinAndMaxAckDeadlines(
         messageDispatcher,
         Math.toIntExact(Subscriber.MIN_STREAM_ACK_DEADLINE.getSeconds()),
         Math.toIntExact(Subscriber.MAX_STREAM_ACK_DEADLINE.getSeconds()));
 
+    // This would normally be set from the streaming pull response in the
+    // StreamingSubscriberConnection
     messageDispatcher.setEnableExactlyOnceDelivery(true);
 
     // Should only change min deadline
@@ -369,7 +372,6 @@ public class MessageDispatcherTest {
     MessageDispatcher messageDispatcher =
         MessageDispatcher.newBuilder(mock(MessageReceiver.class))
             .setAckLatencyDistribution(mockAckLatencyDistribution)
-            .setEnableExactlyOnceDelivery(true)
             .setMinDurationPerAckExtension(
                 Subscriber.DEFAULT_MIN_ACK_DEADLINE_EXTENSION_EXACTLY_ONCE_DELIVERY)
             .setMinDurationPerAckExtensionDefaultUsed(true)
@@ -377,12 +379,18 @@ public class MessageDispatcherTest {
             .setMaxDurationPerAckExtensionDefaultUsed(true)
             .build();
 
+    // This would normally be set from the streaming pull response in the
+    // StreamingSubscriberConnection
+    messageDispatcher.setEnableExactlyOnceDelivery(true);
+
     assertMinAndMaxAckDeadlines(
         messageDispatcher,
         Math.toIntExact(
             Subscriber.DEFAULT_MIN_ACK_DEADLINE_EXTENSION_EXACTLY_ONCE_DELIVERY.getSeconds()),
         Math.toIntExact(Subscriber.MAX_STREAM_ACK_DEADLINE.getSeconds()));
 
+    // This would normally be set from the streaming pull response in the
+    // StreamingSubscriberConnection
     messageDispatcher.setEnableExactlyOnceDelivery(false);
 
     // Should change min deadline
@@ -404,11 +412,14 @@ public class MessageDispatcherTest {
             .setMaxDurationPerAckExtensionDefaultUsed(true)
             .build();
 
+    // EnableExactlyOnceDelivery is turned off by default
     assertMinAndMaxAckDeadlines(
         messageDispatcher,
         customMinSeconds,
         Math.toIntExact(Subscriber.MAX_STREAM_ACK_DEADLINE.getSeconds()));
 
+    // This would normally be set from the streaming pull response in the
+    // StreamingSubscriberConnection
     messageDispatcher.setEnableExactlyOnceDelivery(true);
 
     // no changes should occur
@@ -430,11 +441,14 @@ public class MessageDispatcherTest {
             .setMaxDurationPerAckExtensionDefaultUsed(false)
             .build();
 
+    // EnableExactlyOnceDelivery is turned off by default
     assertMinAndMaxAckDeadlines(
         messageDispatcher,
         Math.toIntExact(Subscriber.MIN_STREAM_ACK_DEADLINE.getSeconds()),
         customMaxSeconds);
 
+    // This would normally be set from the streaming pull response in the
+    // StreamingSubscriberConnection
     messageDispatcher.setEnableExactlyOnceDelivery(true);
 
     // Because the customMaxSeconds is above the

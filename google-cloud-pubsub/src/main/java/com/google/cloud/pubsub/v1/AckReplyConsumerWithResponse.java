@@ -18,8 +18,23 @@ package com.google.cloud.pubsub.v1;
 
 import java.util.concurrent.Future;
 
+/**
+ * Accepts a reply, sending it to the service. A future is returned representing the server response
+ */
 public interface AckReplyConsumerWithResponse {
+  /**
+   * Acknowledges that the message has been successfully processed. The service will not send the
+   * message again.
+   *
+   * <p>A future representing the server response is returned
+   */
   Future<AckResponse> ack();
 
+  /**
+   * Signals that the message has not been successfully processed. The service should resend the
+   * message.
+   *
+   * <p>A future representing the server response is returned
+   */
   Future<AckResponse> nack();
 }
