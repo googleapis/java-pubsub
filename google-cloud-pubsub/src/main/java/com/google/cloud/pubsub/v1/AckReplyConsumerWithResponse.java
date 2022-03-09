@@ -29,10 +29,8 @@ import java.util.concurrent.Future;
  * contain an exception with more details about the failure and the message may be re-delivered.
  *
  * <p>If exactly-once delivery is NOT enabled on the subscription, the future returns immediately
- * with an AckResponse.SUCCESS. Since acks in Cloud Pub/Sub are best effort when exactly-once
- * delivery is disabled, the message may be re-delivered. Because re-deliveries are possible, you
- * should ensure that your processing code is idempotent, as you may receive any given message more
- * than once.
+ * with an AckResponse.SUCCESS. Because re-deliveries are possible, you should ensure that your
+ * processing code is idempotent, as you may receive any given message more than once.
  */
 public interface AckReplyConsumerWithResponse {
   /**
