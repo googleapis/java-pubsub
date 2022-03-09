@@ -152,7 +152,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     return this;
   }
 
-  public boolean isExactlyOnceDeliveryEnabled() {
+  public boolean getExactlyOnceDeliveryEnabled() {
     return exactlyOnceDeliveryEnabled.get();
   }
 
@@ -214,7 +214,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
           response.getSubscriptionProperties().getExactlyOnceDeliveryEnabled();
 
       setExactlyOnceDeliveryEnabled(exactlyOnceDeliveryEnabledResponse);
-      messageDispatcher.setEnableExactlyOnceDelivery(exactlyOnceDeliveryEnabledResponse);
+      messageDispatcher.setExactlyOnceDeliveryEnabled(exactlyOnceDeliveryEnabledResponse);
       messageDispatcher.processReceivedMessages(response.getReceivedMessagesList());
 
       // Only request more if we're not shutdown.
@@ -363,7 +363,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
   private void setFailureFutureOutstandingMessages(Throwable t) {
     AckResponse ackResponse;
 
-    if (isExactlyOnceDeliveryEnabled()) {
+    if (getExactlyOnceDeliveryEnabled()) {
       if (!(t instanceof ApiException)) {
         ackResponse = AckResponse.OTHER;
       }
@@ -511,7 +511,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
         // Remove from our pending operations
         ackOperationsWaiter.incrementPendingCount(-1);
 
-        if (!isExactlyOnceDeliveryEnabled()) {
+        if (!getExactlyOnceDeliveryEnabled()) {
           Level level = isAlive() ? Level.WARNING : Level.FINER;
           logger.log(level, "failed to send operations", t);
           return;
