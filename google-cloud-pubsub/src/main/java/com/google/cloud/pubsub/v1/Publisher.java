@@ -119,6 +119,7 @@ public class Publisher implements PublisherInterface {
   private MessageFlowController flowController = null;
 
   private final boolean enableCompression;
+  private final boolean enableCompressionBytesThreshold;
   private final long compressionBytesThreshold;
 
   /** The maximum number of messages in one request. Defined by the API. */
@@ -148,6 +149,7 @@ public class Publisher implements PublisherInterface {
     this.enableMessageOrdering = builder.enableMessageOrdering;
     this.messageTransform = builder.messageTransform;
     this.enableCompression = builder.enableCompression;
+    this.enableCompressionBytesThreshold = builder.enableCompressionBytesThreshold;
     this.compressionBytesThreshold = builder.compressionBytesThreshold;
 
     messagesBatches = new HashMap<>();
@@ -212,11 +214,6 @@ public class Publisher implements PublisherInterface {
     return topicName;
   }
 
-  /** Returns True/False if compression is enabled or disabled respectively. */
-  public boolean getEnableCompression() {
-    return this.enableCompression;
-  }
-
   /**
    * Schedules the publishing of a message. The publishing of the message may occur immediately or
    * be delayed based on the publisher batching options.
@@ -255,6 +252,12 @@ public class Publisher implements PublisherInterface {
         "Cannot publish a message with an ordering key when message ordering is not enabled in the "
             + "Publisher client. Please create a Publisher client with "
             + "setEnableMessageOrdering(true) in the builder.");
+
+    Preconditions.checkState(
+        !enableCompressionBytesThreshold || enableCompression,
+        "Cannot publish a message with compression bytes threshold when compression is not enabled "
+            + "in the Publisher client. Please create a Publisher client with "
+            + "setEnableCompression(true) in the builder.");
 
     final OutstandingPublish outstandingPublish =
         new OutstandingPublish(messageTransform.apply(message));
@@ -747,6 +750,7 @@ public class Publisher implements PublisherInterface {
         };
 
     private boolean enableCompression = DEFAULT_ENABLE_COMPRESSION;
+    private boolean enableCompressionBytesThreshold = DEFAULT_ENABLE_COMPRESSION;
     private long compressionBytesThreshold = DEFAULT_COMPRESSION_BYTES_THRESHOLD;
 
     private Builder(String topic) {
@@ -871,6 +875,7 @@ public class Publisher implements PublisherInterface {
      * with this method.
      */
     public Builder setCompressionBytesThreshold(long compressionBytesThreshold) {
+      this.enableCompressionBytesThreshold = true;
       this.compressionBytesThreshold = compressionBytesThreshold;
       return this;
     }
