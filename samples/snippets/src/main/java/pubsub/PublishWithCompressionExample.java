@@ -35,11 +35,7 @@ public class PublishWithCompressionExample {
     // TODO(developer): Replace these variables before running the sample.
     String projectId = "your-project-id";
     String topicId = "your-topic-id";
-    boolean allowLogging = false; // Set to true to get the stdout logs
 
-    if (allowLogging) {
-      setUpLogs();
-    }
     publishWithCompressionExample(projectId, topicId);
   }
 
@@ -72,34 +68,6 @@ public class PublishWithCompressionExample {
         publisher.awaitTermination(1, TimeUnit.MINUTES);
       }
     }
-  }
-
-  /**
-   * Sets up logging to observe the outbound data (and its length) over the network to analyze the
-   * effectiveness of compression. A sample log line:
-   * [2022-03-02] FINE [] OUTBOUND DATA: streamId=3 padding=0 endStream=true length=196 bytes=01..
-   */
-  private static void setUpLogs() throws IOException {
-    String handlers = "handlers = java.util.logging.ConsoleHandler";
-    String handlerLevelProp = "java.util.logging.ConsoleHandler.level = ALL";
-    String fineProp = ".level = FINE";
-    String handlerFormatterProp =
-        "java.util.logging.ConsoleHandler.formatter = java.util.logging.SimpleFormatter";
-    String format = "java.util.logging.SimpleFormatter.format=[%1$tF %1$tT] %4$-5s %5$s %n";
-
-    LogManager.getLogManager()
-        .readConfiguration(
-            new ByteArrayInputStream(
-                (handlers
-                        + "\n"
-                        + handlerLevelProp
-                        + "\n"
-                        + fineProp
-                        + "\n"
-                        + handlerFormatterProp
-                        + "\n"
-                        + format)
-                    .getBytes(StandardCharsets.UTF_8)));
   }
 }
 // [END pubsub_publish_with_compression]
