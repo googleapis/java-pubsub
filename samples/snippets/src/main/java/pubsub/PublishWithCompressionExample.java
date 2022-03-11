@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Google LLC
+ * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,10 +54,11 @@ public class PublishWithCompressionExample {
       publisher =
           Publisher.newBuilder(topicName)
               .setEnableCompression(true)
-              .setCompressionBytesThreshold(500)
+              .setCompressionBytesThreshold(10)
               .build();
 
-      ByteString data = generateData("Hello!", 2000);
+      String message = "Hello World!";
+      ByteString data = ByteString.copyFromUtf8(message);
       PubsubMessage pubsubMessage = PubsubMessage.newBuilder().setData(data).build();
 
       // Once published, returns a server-assigned message id (unique within the topic)
@@ -71,17 +72,6 @@ public class PublishWithCompressionExample {
         publisher.awaitTermination(1, TimeUnit.MINUTES);
       }
     }
-  }
-
-  /** Generates data of given bytes by repeatedly concatenating a token. */
-  // TODO(developer): Replace this method with your own data generation logic
-  private static ByteString generateData(String token, int bytes) {
-    String message = "";
-    int tokenBytes = token.length();
-    for (int i = 0; i < Math.floor(bytes / tokenBytes) + 1; i++) {
-      message = message.concat(token);
-    }
-    return ByteString.copyFromUtf8(message);
   }
 
   /**

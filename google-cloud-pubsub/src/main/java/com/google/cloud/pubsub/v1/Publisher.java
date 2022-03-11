@@ -865,16 +865,15 @@ public class Publisher implements PublisherInterface {
       return this;
     }
 
-    /** Gives the ability to enable gRPC compression. */
+    /** Gives the ability to enable transport compression. */
     public Builder setEnableCompression(boolean enableCompression) {
       this.enableCompression = enableCompression;
       return this;
     }
 
     /**
-     * Gives the ability to set the threshold in bytes above which gRPC compression happens. But to
-     * enable gRPC compression at the first place, setEnableCompression(true) should be called along
-     * with this method.
+     * Sets the threshold (in bytes) above which messages are compressed for transport.
+     * Only takes effect if setEnableCompression(true) is also called."
      */
     public Builder setCompressionBytesThreshold(long compressionBytesThreshold) {
       this.enableCompressionBytesThreshold = true;
