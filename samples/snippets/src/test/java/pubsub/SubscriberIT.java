@@ -52,10 +52,12 @@ public class SubscriberIT {
   private static final String projectId = System.getenv("GOOGLE_CLOUD_PROJECT");
   private static final String _suffix = UUID.randomUUID().toString();
   private static final String topicId = "subscriber-test-topic-" + _suffix;
+  private static final String topicIdEod = "subscriber-test-topic-eod" + _suffix;
   private static final String subscriptionId = "subscriber-test-subscription-" + _suffix;
   // For a subscription with exactly once delivery enabled.
   private static final String subscriptionEodId = "subscriber-test-subscription-eod" + _suffix;
   private static final TopicName topicName = TopicName.of(projectId, topicId);
+  private static final TopicName topicNameEod = TopicName.of(projectId, topicIdEod);
   private static final ProjectSubscriptionName subscriptionName =
       ProjectSubscriptionName.of(projectId, subscriptionId);
   private static final ProjectSubscriptionName subscriptionEodName =
@@ -67,8 +69,12 @@ public class SubscriberIT {
         System.getenv(varName));
   }
 
-  // Helper function to publish some messages.
   private static List<String> publishSomeMessages(Integer numOfMessages) throws Exception {
+    return publishSomeMessages(numOfMessages, topicId);
+  }
+
+  // Helper function to publish some messages.
+  private static List<String> publishSomeMessages(Integer numOfMessages, String topicId) throws Exception {
     ProjectTopicName topicName = ProjectTopicName.of(projectId, topicId);
     Publisher publisher = Publisher.newBuilder(topicName).build();
     List<ApiFuture<String>> messageIdFutures = new ArrayList<>();
@@ -217,8 +223,11 @@ public class SubscriberIT {
         () ->
             SubscribeSyncWithLeaseExample.subscribeSyncWithLeaseExample(
                 projectId, subscriptionId, 10));
+  }
 
-    List<String> messageIds = publishSomeMessages(10);
+  @Test
+  public void testSubscriberExactlyOnceDelivery() throws Exception {
+    List<String> messageIds = publishSomeMessages(10, topicIdEod);
     bout.reset();
     SubscribeWithExactlyOnceConsumerWithResponseExample
         .subscribeWithExactlyOnceConsumerWithResponseExample(projectId, subscriptionEodId);
