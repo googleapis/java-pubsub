@@ -448,26 +448,18 @@ public class Publisher implements PublisherInterface {
   }
 
   private ApiFuture<PublishResponse> publishCall(OutstandingBatch outstandingBatch) {
+    GrpcCallContext context = GrpcCallContext.createDefault();
     if (enableCompression && outstandingBatch.batchSizeBytes >= compressionBytesThreshold) {
-      GrpcCallContext context = GrpcCallContext.createDefault();
       context = context.withCallOptions(CallOptions.DEFAULT.withCompression(GZIP_COMPRESSION));
-      return publisherStub
-          .publishCallable()
-          .futureCall(
-              PublishRequest.newBuilder()
-                  .setTopic(topicName)
-                  .addAllMessages(outstandingBatch.getMessages())
-                  .build(),
-              context);
-    } else {
-      return publisherStub
-          .publishCallable()
-          .futureCall(
-              PublishRequest.newBuilder()
-                  .setTopic(topicName)
-                  .addAllMessages(outstandingBatch.getMessages())
-                  .build());
     }
+    return publisherStub
+        .publishCallable()
+        .futureCall(
+            PublishRequest.newBuilder()
+                .setTopic(topicName)
+                .addAllMessages(outstandingBatch.getMessages())
+                .build(),
+            context);
   }
 
   private void publishOutstandingBatch(final OutstandingBatch outstandingBatch) {
@@ -870,8 +862,8 @@ public class Publisher implements PublisherInterface {
     }
 
     /**
-     * Sets the threshold (in bytes) above which messages are compressed for transport.
-     * Only takes effect if setEnableCompression(true) is also called."
+     * Sets the threshold (in bytes) above which messages are compressed for transport. Only takes
+     * effect if setEnableCompression(true) is also called."
      */
     public Builder setCompressionBytesThreshold(long compressionBytesThreshold) {
       this.enableCompressionBytesThreshold = true;
