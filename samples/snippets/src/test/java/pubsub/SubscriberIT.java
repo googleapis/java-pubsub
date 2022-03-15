@@ -74,7 +74,8 @@ public class SubscriberIT {
   }
 
   // Helper function to publish some messages.
-  private static List<String> publishSomeMessages(Integer numOfMessages, String topicId) throws Exception {
+  private static List<String> publishSomeMessages(Integer numOfMessages, String topicId)
+      throws Exception {
     ProjectTopicName topicName = ProjectTopicName.of(projectId, topicId);
     Publisher publisher = Publisher.newBuilder(topicName).build();
     List<ApiFuture<String>> messageIdFutures = new ArrayList<>();
