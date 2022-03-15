@@ -133,6 +133,9 @@ public class SubscriberIT {
     try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
       Topic topic = Topic.newBuilder().setName(topicName.toString()).build();
       topicAdminClient.createTopic(topic);
+
+      Topic topicEod = Topic.newBuilder().setName(topicNameEod.toString()).build();
+      topicAdminClient.createTopic(topicEod);
     }
 
     try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
@@ -146,7 +149,7 @@ public class SubscriberIT {
       Subscription subscriptionEod =
           Subscription.newBuilder()
               .setName(subscriptionEodName.toString())
-              .setTopic(topicName.toString())
+              .setTopic(topicNameEod.toString())
               // Enable exactly once delivery in the subscription.
               .setEnableExactlyOnceDelivery(true)
               .build();
@@ -163,6 +166,7 @@ public class SubscriberIT {
 
     try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
       topicAdminClient.deleteTopic(topicName.toString());
+      topicAdminClient.deleteTopic(topicNameEod.toString());
     }
 
     System.setOut(null);
