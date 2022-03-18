@@ -1,11 +1,11 @@
 /*
- * Copyright 2020-2021 Google LLC
+ * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     https://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -52,15 +52,12 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import utilities.PublishOperations;
 
-/**
- * Pub/Sub sample application compiled with Native Image.
- */
+/** Pub/Sub sample application compiled with Native Image. */
 public class NativeImagePubSubSample {
 
-  /**
-   * Driver for the Pub/Sub Sample application which publishes a message to a specified topic.
-   */
+  /** Driver for the Pub/Sub Sample application which publishes a message to a specified topic. */
   public static void main(String[] args) throws Exception {
     Instant startTime = Instant.now();
     String projectId = ServiceOptions.getDefaultProjectId();
@@ -111,8 +108,8 @@ public class NativeImagePubSubSample {
     }
   }
 
-  static void createPullSubscription(
-      String projectId, String subscriptionId, String topicId) throws IOException {
+  static void createPullSubscription(String projectId, String subscriptionId, String topicId)
+      throws IOException {
 
     try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
       TopicName topicName = TopicName.of(projectId, topicId);
@@ -125,8 +122,7 @@ public class NativeImagePubSubSample {
     }
   }
 
-  static void createPushSubscription(
-      String projectId, String subscriptionId, String topicId)
+  static void createPushSubscription(String projectId, String subscriptionId, String topicId)
       throws IOException {
 
     try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
@@ -143,8 +139,7 @@ public class NativeImagePubSubSample {
     }
   }
 
-  static void detachSubscription(String projectId, String subscriptionId)
-      throws IOException {
+  static void detachSubscription(String projectId, String subscriptionId) throws IOException {
 
     ProjectSubscriptionName subscriptionName =
         ProjectSubscriptionName.of(projectId, subscriptionId);
@@ -166,8 +161,7 @@ public class NativeImagePubSubSample {
     }
   }
 
-  static void getSubscriptionPolicy(String projectId, String subscriptionId)
-      throws IOException {
+  static void getSubscriptionPolicy(String projectId, String subscriptionId) throws IOException {
     try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
       ProjectSubscriptionName subscriptionName =
           ProjectSubscriptionName.of(projectId, subscriptionId);
@@ -200,8 +194,7 @@ public class NativeImagePubSubSample {
     }
   }
 
-  static void listSubscriptionInTopic(String projectId, String topicId)
-      throws IOException {
+  static void listSubscriptionInTopic(String projectId, String topicId) throws IOException {
     try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
       TopicName topicName = TopicName.of(projectId, topicId);
       int count = 0;
@@ -223,8 +216,7 @@ public class NativeImagePubSubSample {
     }
   }
 
-  static void receiveMessagesWithDeliveryAttempts(
-      String projectId, String subscriptionId) {
+  static void receiveMessagesWithDeliveryAttempts(String projectId, String subscriptionId) {
 
     ProjectSubscriptionName subscriptionName =
         ProjectSubscriptionName.of(projectId, subscriptionId);
@@ -262,10 +254,7 @@ public class NativeImagePubSubSample {
     try (SubscriberStub subscriber = GrpcSubscriberStub.create(subscriberStubSettings)) {
       String subscriptionName = ProjectSubscriptionName.format(projectId, subscriptionId);
       PullRequest pullRequest =
-          PullRequest.newBuilder()
-              .setMaxMessages(1)
-              .setSubscription(subscriptionName)
-              .build();
+          PullRequest.newBuilder().setMaxMessages(1).setSubscription(subscriptionName).build();
 
       PullResponse pullResponse = subscriber.pullCallable().call(pullRequest);
       List<String> ackIds = new ArrayList<>();
@@ -309,8 +298,7 @@ public class NativeImagePubSubSample {
               .setDeadLetterPolicy(deadLetterPolicy)
               .build();
 
-      FieldMask updateMask =
-          FieldMask.newBuilder().addPaths("dead_letter_policy").build();
+      FieldMask updateMask = FieldMask.newBuilder().addPaths("dead_letter_policy").build();
 
       UpdateSubscriptionRequest request =
           UpdateSubscriptionRequest.newBuilder()
@@ -342,13 +330,12 @@ public class NativeImagePubSubSample {
       TestIamPermissionsResponse testedPermissionsResponse =
           subscriptionAdminClient.testIamPermissions(testIamPermissionsRequest);
 
-      System.out.println("Tested PubSub subscription permissions\n"
-          + testedPermissionsResponse.toString().trim());
+      System.out.println(
+          "Tested PubSub subscription permissions\n" + testedPermissionsResponse.toString().trim());
     }
   }
 
-  static void testTopicPermissions(String projectId, String topicId)
-      throws IOException {
+  static void testTopicPermissions(String projectId, String topicId) throws IOException {
     try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
       ProjectTopicName topicName = ProjectTopicName.of(projectId, topicId);
 
@@ -366,8 +353,8 @@ public class NativeImagePubSubSample {
       TestIamPermissionsResponse testedPermissionsResponse =
           topicAdminClient.testIamPermissions(testIamPermissionsRequest);
 
-      System.out.println("Tested topic permissions\n"
-          + testedPermissionsResponse.toString().trim());
+      System.out.println(
+          "Tested topic permissions\n" + testedPermissionsResponse.toString().trim());
     }
   }
 
@@ -383,8 +370,7 @@ public class NativeImagePubSubSample {
     }
   }
 
-  static void deleteSubscription(String projectId, String subscriptionId)
-      throws IOException {
+  static void deleteSubscription(String projectId, String subscriptionId) throws IOException {
     try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
       ProjectSubscriptionName subscriptionName =
           ProjectSubscriptionName.of(projectId, subscriptionId);

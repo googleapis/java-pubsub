@@ -30,7 +30,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
       <dependency>
         <groupId>com.google.cloud</groupId>
         <artifactId>libraries-bom</artifactId>
-        <version>24.3.0</version>
+        <version>25.0.0</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -69,11 +69,31 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
         <configuration>
           <archive>
             <manifest>
-              <mainClass>pubsub.NativeImagePubSubSample
-              </mainClass>
+              <addClasspath>true</addClasspath>
+              <classpathPrefix>dependency-jars/</classpathPrefix>
+              <mainClass>pubsub.NativeImagePubSubSample</mainClass>
             </manifest>
           </archive>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>3.2.0</version>
+        <executions>
+          <execution>
+            <id>copy-dependencies</id>
+            <phase>package</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>
+                ${project.build.directory}/dependency-jars/
+              </outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
@@ -87,7 +107,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
         <dependency>
           <groupId>com.google.cloud</groupId>
           <artifactId>native-image-support</artifactId>
-          <version>0.12.4</version>
+          <version>0.12.10</version>
         </dependency>
         <dependency>
           <groupId>org.junit.vintage</groupId>
@@ -98,7 +118,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
         <dependency>
           <groupId>org.graalvm.buildtools</groupId>
           <artifactId>junit-platform-native</artifactId>
-          <version>0.9.9</version>
+          <version>0.9.10</version>
           <scope>test</scope>
         </dependency>
       </dependencies>
@@ -119,7 +139,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
           <plugin>
             <groupId>org.graalvm.buildtools</groupId>
             <artifactId>native-maven-plugin</artifactId>
-            <version>0.9.9</version>
+            <version>0.9.10</version>
             <extensions>true</extensions>
             <configuration>
               <mainClass>pubsub.NativeImagePubSubSample

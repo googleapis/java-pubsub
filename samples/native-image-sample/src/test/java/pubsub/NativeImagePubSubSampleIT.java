@@ -1,11 +1,11 @@
 /*
- * Copyright 2022-2023 Google LLC
+ * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     https://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,6 +28,7 @@ import java.util.UUID;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import utilities.PublishOperations;
 
 public class NativeImagePubSubSampleIT {
 
@@ -36,10 +37,10 @@ public class NativeImagePubSubSampleIT {
   private static String PUSH_SUB_ID = "native-pubsub-test-sub" + UUID.randomUUID();
   private static String PROJECT_ID = ServiceOptions.getDefaultProjectId();
   private static final TopicName TOPIC_NAME = TopicName.of(PROJECT_ID, TOPIC_ID);
-  private static final SubscriptionName PULL_SUBSCRIPTION_NAME = SubscriptionName.of(PROJECT_ID,
-      PULL_SUB_ID);
-  private static final SubscriptionName PUSH_SUBSCRIPTION_NAME = SubscriptionName.of(PROJECT_ID,
-      PUSH_SUB_ID);
+  private static final SubscriptionName PULL_SUBSCRIPTION_NAME =
+      SubscriptionName.of(PROJECT_ID, PULL_SUB_ID);
+  private static final SubscriptionName PUSH_SUBSCRIPTION_NAME =
+      SubscriptionName.of(PROJECT_ID, PUSH_SUB_ID);
 
   private ByteArrayOutputStream bout;
   private PrintStream out;
@@ -70,18 +71,18 @@ public class NativeImagePubSubSampleIT {
     NativeImagePubSubSample.listSubscriptionInProject(PROJECT_ID);
     NativeImagePubSubSample.listSubscriptionInTopic(PROJECT_ID, TOPIC_ID);
     NativeImagePubSubSample.listTopics(PROJECT_ID);
-    NativeImagePubSubSample.updateSubscriptionDeadLetterTopic(PROJECT_ID, PUSH_SUB_ID, TOPIC_ID,
-        TOPIC_ID);
+    NativeImagePubSubSample.updateSubscriptionDeadLetterTopic(
+        PROJECT_ID, PUSH_SUB_ID, TOPIC_ID, TOPIC_ID);
     NativeImagePubSubSample.testTopicPermissions(PROJECT_ID, TOPIC_ID);
     NativeImagePubSubSample.testSubscriptionPermissions(PROJECT_ID, PUSH_SUB_ID);
 
     // Verify create topic and subscriptions
-    assertThat(bout.toString()).contains(
-        "Created topic: " + TOPIC_NAME.toString() + " under project: " + PROJECT_ID);
-    assertThat(bout.toString()).contains(
-        "Created pull subscription: " + PULL_SUBSCRIPTION_NAME.toString());
-    assertThat(bout.toString()).contains(
-        "Created push subscription: " + PUSH_SUBSCRIPTION_NAME.toString());
+    assertThat(bout.toString())
+        .contains("Created topic: " + TOPIC_NAME.toString() + " under project: " + PROJECT_ID);
+    assertThat(bout.toString())
+        .contains("Created pull subscription: " + PULL_SUBSCRIPTION_NAME.toString());
+    assertThat(bout.toString())
+        .contains("Created push subscription: " + PUSH_SUBSCRIPTION_NAME.toString());
 
     // Verify detach subscription
     assertThat(bout.toString()).contains("Subscription is detached");
