@@ -712,7 +712,7 @@ public class Publisher implements PublisherInterface {
             .setExecutorThreadCount(THREADS_PER_CPU * Runtime.getRuntime().availableProcessors())
             .build();
     static final boolean DEFAULT_ENABLE_COMPRESSION = false;
-    static final long DEFAULT_COMPRESSION_BYTES_THRESHOLD = 500L;
+    static final long DEFAULT_COMPRESSION_BYTES_THRESHOLD = 240L;
 
     String topicName;
     private String endpoint = PublisherStubSettings.getDefaultEndpoint();

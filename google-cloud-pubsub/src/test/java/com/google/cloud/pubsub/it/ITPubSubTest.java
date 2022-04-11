@@ -24,14 +24,7 @@ import static org.junit.Assume.assumeTrue;
 import com.google.api.gax.rpc.PermissionDeniedException;
 import com.google.auto.value.AutoValue;
 import com.google.cloud.ServiceOptions;
-import com.google.cloud.pubsub.v1.AckReplyConsumer;
-import com.google.cloud.pubsub.v1.MessageReceiver;
-import com.google.cloud.pubsub.v1.Publisher;
-import com.google.cloud.pubsub.v1.Subscriber;
-import com.google.cloud.pubsub.v1.SubscriptionAdminClient;
-import com.google.cloud.pubsub.v1.SubscriptionAdminSettings;
-import com.google.cloud.pubsub.v1.TopicAdminClient;
-import com.google.cloud.pubsub.v1.TopicAdminSettings;
+import com.google.cloud.pubsub.v1.*;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.iam.v1.Binding;
 import com.google.iam.v1.GetIamPolicyRequest;
@@ -90,9 +83,8 @@ public class ITPubSubTest {
 
   @BeforeClass
   public static void setupClass() throws Exception {
-    topicAdminClient = TopicAdminClient.create(TopicAdminSettings.newBuilder().build());
-    subscriptionAdminClient =
-        SubscriptionAdminClient.create(SubscriptionAdminSettings.newBuilder().build());
+    topicAdminClient = TopicAdminClient.create();
+    subscriptionAdminClient = SubscriptionAdminClient.create();
     projectId = ServiceOptions.getDefaultProjectId();
   }
 
@@ -420,7 +412,7 @@ public class ITPubSubTest {
     topicAdminClient.createTopic(topicName);
 
     subscriptionAdminClient.createSubscription(
-        getSubscription(subscriptionName, topicName, PushConfig.newBuilder().build(), 10));
+        getSubscription(subscriptionName, topicName, PushConfig.newBuilder().build(), 10, false));
 
     final BlockingQueue<Object> receiveQueue = new LinkedBlockingQueue<>();
     Subscriber subscriber =
@@ -457,12 +449,12 @@ public class ITPubSubTest {
     publisher.awaitTermination(1, TimeUnit.MINUTES);
 
     // Ack the first message.
-    MessageAndConsumer toAck1 = pollQueue(receiveQueue);
+    MessageAndConsumer toAck1 = pollQueueMessageAndConsumer(receiveQueue);
     assertThat(toAck1.message().getData()).isEqualTo(ByteString.copyFromUtf8(msg1));
     toAck1.consumer().ack();
 
     // Ack the second message.
-    MessageAndConsumer toAck2 = pollQueue(receiveQueue);
+    MessageAndConsumer toAck2 = pollQueueMessageAndConsumer(receiveQueue);
     assertThat(toAck2.message().getData()).isEqualTo(ByteString.copyFromUtf8(msg2));
     toAck2.consumer().ack();
 
