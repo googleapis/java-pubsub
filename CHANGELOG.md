@@ -1,5 +1,210 @@
 # Changelog
 
+### [1.116.4](https://github.com/googleapis/java-pubsub/compare/v1.116.3...v1.116.4) (2022-04-19)
+
+
+### Dependencies
+
+* update dependency com.google.cloud:google-cloud-core to v2.6.1 ([#1084](https://github.com/googleapis/java-pubsub/issues/1084)) ([b1c4d89](https://github.com/googleapis/java-pubsub/commit/b1c4d899e98fc58bdcd6a38b4544497e65ca591d))
+* update dependency com.google.cloud:google-cloud-shared-dependencies to v2.10.0 ([#1085](https://github.com/googleapis/java-pubsub/issues/1085)) ([4826dcb](https://github.com/googleapis/java-pubsub/commit/4826dcb4ce80e165a4c2c7e65a8d6931ebb0abc9))
+* update dependency com.google.cloud:native-image-support to v0.13.1 ([#1086](https://github.com/googleapis/java-pubsub/issues/1086)) ([98c7b2b](https://github.com/googleapis/java-pubsub/commit/98c7b2be08e80744b6bc8e38c327e3874b755df9))
+* update dependency com.google.errorprone:error_prone_annotations to v2.12.1 ([#1080](https://github.com/googleapis/java-pubsub/issues/1080)) ([d13bd94](https://github.com/googleapis/java-pubsub/commit/d13bd94074740b870c90a216715dfe18bbd6c248))
+* update dependency com.google.errorprone:error_prone_annotations to v2.13.0 ([#1083](https://github.com/googleapis/java-pubsub/issues/1083)) ([3b8cbcb](https://github.com/googleapis/java-pubsub/commit/3b8cbcbee1b7451adcdf1305d90960f682889c44))
+* update dependency com.google.errorprone:error_prone_annotations to v2.13.1 ([#1087](https://github.com/googleapis/java-pubsub/issues/1087)) ([34121f0](https://github.com/googleapis/java-pubsub/commit/34121f0d9943735a231d4c1e045df4f7e822268e))
+* update dependency com.google.protobuf:protobuf-java-util to v3.20.0 ([#1078](https://github.com/googleapis/java-pubsub/issues/1078)) ([b064d6c](https://github.com/googleapis/java-pubsub/commit/b064d6ca8b2b1e6e083dc273073b3734d434ef8c))
+
+### [1.116.3](https://github.com/googleapis/java-pubsub/compare/v1.116.2...v1.116.3) (2022-03-29)
+
+
+### Dependencies
+
+* update dependency com.google.cloud:google-cloud-core to v2.5.11 ([#1070](https://github.com/googleapis/java-pubsub/issues/1070)) ([662e2ec](https://github.com/googleapis/java-pubsub/commit/662e2ec8c4130c237bcfc61efe2e42a9912c8df0))
+* update dependency com.google.cloud:google-cloud-shared-dependencies to v2.9.0 ([#1072](https://github.com/googleapis/java-pubsub/issues/1072)) ([56f9e91](https://github.com/googleapis/java-pubsub/commit/56f9e91b3accdf59b077771141fd42d09ebecdf1))
+* update dependency com.google.cloud:native-image-support to v0.12.11 ([#1071](https://github.com/googleapis/java-pubsub/issues/1071)) ([82f4501](https://github.com/googleapis/java-pubsub/commit/82f4501b84ea97b2903f51d8cae2011c1b96abf4))
+
+### [1.116.2](https://github.com/googleapis/java-pubsub/compare/v1.116.1...v1.116.2) (2022-03-24)
+
+
+### Dependencies
+
+* update dependency org.graalvm.buildtools:junit-platform-native to v0.9.11 ([#1064](https://github.com/googleapis/java-pubsub/issues/1064)) ([3ebcc5e](https://github.com/googleapis/java-pubsub/commit/3ebcc5e262bf420fd2ba36f26d8b6350b56f989d))
+* update dependency org.graalvm.buildtools:native-maven-plugin to v0.9.11 ([#1065](https://github.com/googleapis/java-pubsub/issues/1065)) ([d1ce9c6](https://github.com/googleapis/java-pubsub/commit/d1ce9c6cc9fc9c8030c117bff1b0d2d8e317107c))
+
+### [1.116.1](https://github.com/googleapis/java-pubsub/compare/v1.116.0...v1.116.1) (2022-03-22)
+
+
+### Bug Fixes
+
+* added a maximum metadata size when creating the subscriber ([#1061](https://github.com/googleapis/java-pubsub/issues/1061)) ([3a8c83b](https://github.com/googleapis/java-pubsub/commit/3a8c83b973a1dfbae2ca037125574d74034218ce))
+* Removed EnableExactlyOnceDelivery from Builders ([#1052](https://github.com/googleapis/java-pubsub/issues/1052)) ([9add538](https://github.com/googleapis/java-pubsub/commit/9add53894981d862ac1348d0b641e472b3b3aa79))
+
+
+### Dependencies
+
+* update dependency com.google.cloud:google-cloud-core to v2.5.10 ([#1057](https://github.com/googleapis/java-pubsub/issues/1057)) ([0b7d19f](https://github.com/googleapis/java-pubsub/commit/0b7d19fe39326c36152267e4d2a13a2b51530ac2))
+* update dependency com.google.cloud:google-cloud-core to v2.5.8 ([#1050](https://github.com/googleapis/java-pubsub/issues/1050)) ([c7551d6](https://github.com/googleapis/java-pubsub/commit/c7551d621343eac4476a16579763e3aab7f71ea9))
+* update dependency com.google.cloud:google-cloud-core to v2.5.9 ([#1054](https://github.com/googleapis/java-pubsub/issues/1054)) ([5b3227f](https://github.com/googleapis/java-pubsub/commit/5b3227f4013a5121a3db34702f90be5a9ba41748))
+* update dependency com.google.cloud:native-image-support to v0.12.10 ([#1058](https://github.com/googleapis/java-pubsub/issues/1058)) ([af2b364](https://github.com/googleapis/java-pubsub/commit/af2b3640eb22e8e78f5beea07a73e2b3127cce71))
+* update dependency com.google.cloud:native-image-support to v0.12.7 ([#1042](https://github.com/googleapis/java-pubsub/issues/1042)) ([fd52aa8](https://github.com/googleapis/java-pubsub/commit/fd52aa8ffaa4d7cb8e0ad19bb6993b5616eb81df))
+* update dependency com.google.cloud:native-image-support to v0.12.8 ([#1051](https://github.com/googleapis/java-pubsub/issues/1051)) ([da2d3fa](https://github.com/googleapis/java-pubsub/commit/da2d3fa91fe4f07455fbe0aa3ccac15e456666c7))
+* update dependency com.google.cloud:native-image-support to v0.12.9 ([#1053](https://github.com/googleapis/java-pubsub/issues/1053)) ([6e97d52](https://github.com/googleapis/java-pubsub/commit/6e97d5222994dc567bc24ab3457f3431ed000134))
+* update dependency org.graalvm.buildtools:junit-platform-native to v0.9.10 ([#1043](https://github.com/googleapis/java-pubsub/issues/1043)) ([5884bdf](https://github.com/googleapis/java-pubsub/commit/5884bdfafc5ee621935b620e763ca6c0adf67ff7))
+* update dependency org.graalvm.buildtools:native-maven-plugin to v0.9.10 ([#1044](https://github.com/googleapis/java-pubsub/issues/1044)) ([158e7f8](https://github.com/googleapis/java-pubsub/commit/158e7f884660a312b7168cecfa85cf594071a7be))
+
+
+### Documentation
+
+* **sample:** Add sample for Native Image support in Pub/Sub ([#1026](https://github.com/googleapis/java-pubsub/issues/1026)) ([a4fa69b](https://github.com/googleapis/java-pubsub/commit/a4fa69b99f34304f7ee7a56fb3c633f018905f09))
+* **sample:** use Java 8 for native image sample ([#1060](https://github.com/googleapis/java-pubsub/issues/1060)) ([2d5c010](https://github.com/googleapis/java-pubsub/commit/2d5c0109fe797698749d2c198cbb5a8a1a9d11dc))
+
+## [1.116.0](https://github.com/googleapis/java-pubsub/compare/v1.115.5...v1.116.0) (2022-03-04)
+
+
+### Features
+
+* exactly once support v3 ([#1022](https://github.com/googleapis/java-pubsub/issues/1022)) ([02ed621](https://github.com/googleapis/java-pubsub/commit/02ed621f5ca6c96e1bb63cd9a5ed137896313c4f))
+
+
+### Bug Fixes
+
+* removing misspelled field, add correctly spelled field ([#1011](https://github.com/googleapis/java-pubsub/issues/1011)) ([2e8b681](https://github.com/googleapis/java-pubsub/commit/2e8b68111c1d50a5322ad1fdc5d3b93561090e98))
+
+
+### Dependencies
+
+* update dependency com.google.cloud:google-cloud-core to v2.5.4 ([#1017](https://github.com/googleapis/java-pubsub/issues/1017)) ([55c53e3](https://github.com/googleapis/java-pubsub/commit/55c53e34448a0fda7c4ea1fb087bd2dc2dc8e163))
+* update dependency com.google.cloud:google-cloud-core to v2.5.6 ([#1038](https://github.com/googleapis/java-pubsub/issues/1038)) ([c319f59](https://github.com/googleapis/java-pubsub/commit/c319f59f26973dbb0b88f9ccd6c60b3e480392a8))
+* update dependency com.google.cloud:google-cloud-shared-dependencies to v2.8.0 ([#1035](https://github.com/googleapis/java-pubsub/issues/1035)) ([10dba36](https://github.com/googleapis/java-pubsub/commit/10dba36088a54860061d5435ac51ef7101eec891))
+
+### [1.115.5](https://github.com/googleapis/java-pubsub/compare/v1.115.4...v1.115.5) (2022-02-11)
+
+
+### Dependencies
+
+* update actions/github-script action to v6 ([#1010](https://github.com/googleapis/java-pubsub/issues/1010)) ([04ee4c9](https://github.com/googleapis/java-pubsub/commit/04ee4c98bd2c09bbb58bc73c501386c2e7fc927d))
+* update dependency com.google.cloud:google-cloud-core to v2.5.3 ([#1008](https://github.com/googleapis/java-pubsub/issues/1008)) ([0eacfb0](https://github.com/googleapis/java-pubsub/commit/0eacfb0b54f82cf05aa3d100a59d11c5fe0c40ae))
+
+### [1.115.4](https://github.com/googleapis/java-pubsub/compare/v1.115.3...v1.115.4) (2022-02-10)
+
+
+### Dependencies
+
+* update dependency com.google.cloud:google-cloud-core to v2.5.1 ([#1004](https://github.com/googleapis/java-pubsub/issues/1004)) ([8f6879b](https://github.com/googleapis/java-pubsub/commit/8f6879b8021bf8e6b351249a0352fd0537110fcd))
+
+### [1.115.3](https://github.com/googleapis/java-pubsub/compare/v1.115.2...v1.115.3) (2022-02-08)
+
+
+### Dependencies
+
+* update dependency com.google.cloud:google-cloud-core to v2.5.0 ([#995](https://github.com/googleapis/java-pubsub/issues/995)) ([3b3b90a](https://github.com/googleapis/java-pubsub/commit/3b3b90ad1cf520fa8cdfea180002745789ebfce9))
+
+### [1.115.2](https://github.com/googleapis/java-pubsub/compare/v1.115.1...v1.115.2) (2022-02-03)
+
+
+### Dependencies
+
+* **java:** update actions/github-script action to v5 ([#1339](https://github.com/googleapis/java-pubsub/issues/1339)) ([#984](https://github.com/googleapis/java-pubsub/issues/984)) ([9a1cc0e](https://github.com/googleapis/java-pubsub/commit/9a1cc0eaf344e2f9cded1c331b0e71543f20ef65))
+* update dependency com.google.cloud:google-cloud-core to v2.4.0 ([#986](https://github.com/googleapis/java-pubsub/issues/986)) ([8cdf7a0](https://github.com/googleapis/java-pubsub/commit/8cdf7a0b1dffa1c01e9c739d79af552e6b42796e))
+* update dependency com.google.cloud:google-cloud-shared-dependencies to v2.7.0 ([#988](https://github.com/googleapis/java-pubsub/issues/988)) ([8993760](https://github.com/googleapis/java-pubsub/commit/89937606134be8e0eb8b7669c6243f1f3b8a9aad))
+* update dependency com.google.errorprone:error_prone_annotations to v2.11.0 ([#983](https://github.com/googleapis/java-pubsub/issues/983)) ([abcbb32](https://github.com/googleapis/java-pubsub/commit/abcbb32e442948ff4637df8b657a7f8a0abd3062))
+* update dependency com.google.protobuf:protobuf-java-util to v3.19.3 ([#973](https://github.com/googleapis/java-pubsub/issues/973)) ([13a9f96](https://github.com/googleapis/java-pubsub/commit/13a9f9645661324cc26b23b9eca5d833bf9d089f))
+* update dependency com.google.protobuf:protobuf-java-util to v3.19.4 ([#987](https://github.com/googleapis/java-pubsub/issues/987)) ([ff71dc7](https://github.com/googleapis/java-pubsub/commit/ff71dc73c9950973512920073a0f0491527a0678))
+
+### [1.115.1](https://www.github.com/googleapis/java-pubsub/compare/v1.115.0...v1.115.1) (2022-01-07)
+
+
+### Dependencies
+
+* update dependency com.google.cloud:google-cloud-core to v2.3.4 ([#955](https://www.github.com/googleapis/java-pubsub/issues/955)) ([b39ecd5](https://www.github.com/googleapis/java-pubsub/commit/b39ecd5db18c99461206b287eb403199eea7a654))
+* update dependency com.google.cloud:google-cloud-core to v2.3.5 ([#959](https://www.github.com/googleapis/java-pubsub/issues/959)) ([5efec45](https://www.github.com/googleapis/java-pubsub/commit/5efec45e1761b642bcef309a45de4342e0f553f7))
+* update dependency com.google.cloud:google-cloud-shared-dependencies to v2.6.0 ([#957](https://www.github.com/googleapis/java-pubsub/issues/957)) ([b562ce8](https://www.github.com/googleapis/java-pubsub/commit/b562ce8550d227d99352df17c5c01221153f94fd))
+* update dependency com.google.protobuf:protobuf-java-util to v3.19.2 ([#954](https://www.github.com/googleapis/java-pubsub/issues/954)) ([a1ac149](https://www.github.com/googleapis/java-pubsub/commit/a1ac1491f0c682da6d84e69477823d2446a9c475))
+
+## [1.115.0](https://www.github.com/googleapis/java-pubsub/compare/v1.114.7...v1.115.0) (2021-12-05)
+
+
+### Features
+
+* creating java backport ([#895](https://www.github.com/googleapis/java-pubsub/issues/895)) ([51b01e2](https://www.github.com/googleapis/java-pubsub/commit/51b01e254a4be87a8a779fbc5da697c70920d82f))
+
+
+### Bug Fixes
+
+* **java:** java 17 dependency arguments ([#1266](https://www.github.com/googleapis/java-pubsub/issues/1266)) ([#888](https://www.github.com/googleapis/java-pubsub/issues/888)) ([ed3ae2f](https://www.github.com/googleapis/java-pubsub/commit/ed3ae2fb0a0c72073f6bae5dc4111424740fd883))
+
+
+### Dependencies
+
+* update dependency com.google.cloud:google-cloud-core to v2.3.0 ([#913](https://www.github.com/googleapis/java-pubsub/issues/913)) ([adfd456](https://www.github.com/googleapis/java-pubsub/commit/adfd4562a8041d71af65cd98cf1d17b881e35dd3))
+* update dependency com.google.cloud:google-cloud-core to v2.3.1 ([#927](https://www.github.com/googleapis/java-pubsub/issues/927)) ([9fcc996](https://www.github.com/googleapis/java-pubsub/commit/9fcc9965284f6a57dc79f31eb96a2e430cef72e4))
+* update dependency com.google.cloud:google-cloud-core to v2.3.2 ([#941](https://www.github.com/googleapis/java-pubsub/issues/941)) ([41f881b](https://www.github.com/googleapis/java-pubsub/commit/41f881b2d075f9ee730f5eaf24885146d9fadccf))
+* update dependency com.google.cloud:google-cloud-core to v2.3.3 ([#943](https://www.github.com/googleapis/java-pubsub/issues/943)) ([df3a5fe](https://www.github.com/googleapis/java-pubsub/commit/df3a5fecd4d87ae79cba312109242146b84f9e55))
+* update dependency com.google.cloud:google-cloud-shared-dependencies to v2.5.0 ([#919](https://www.github.com/googleapis/java-pubsub/issues/919)) ([4adf335](https://www.github.com/googleapis/java-pubsub/commit/4adf335b78ce6b13af22c3c3a64c4ea1a24f05cd))
+* update dependency com.google.cloud:google-cloud-shared-dependencies to v2.5.1 ([#942](https://www.github.com/googleapis/java-pubsub/issues/942)) ([44cdcf5](https://www.github.com/googleapis/java-pubsub/commit/44cdcf5d3f1815654b9b255c1096e290a7db9030))
+* update dependency com.google.errorprone:error_prone_annotations to v2.10.0 ([#901](https://www.github.com/googleapis/java-pubsub/issues/901)) ([8733144](https://www.github.com/googleapis/java-pubsub/commit/8733144854aaebfec0cd5f03ab14d820c6d22c0e))
+* update dependency com.google.protobuf:protobuf-java-util to v3.19.1 ([#885](https://www.github.com/googleapis/java-pubsub/issues/885)) ([d0a02a9](https://www.github.com/googleapis/java-pubsub/commit/d0a02a9f320b254a3e4ef60bfff47a6bb3a2427f))
+* update dependency org.apache.avro:avro to v1.11.0 ([#894](https://www.github.com/googleapis/java-pubsub/issues/894)) ([b7ba1a8](https://www.github.com/googleapis/java-pubsub/commit/b7ba1a871c4c26f50d87b41c2627b6e6aef63b3c))
+* update gson to 2.8.9 ([ec97e93](https://www.github.com/googleapis/java-pubsub/commit/ec97e93ae53666d5c5cad71821f12cefa4fbaf2e))
+
+### [1.114.7](https://www.github.com/googleapis/java-pubsub/compare/v1.114.6...v1.114.7) (2021-10-19)
+
+
+### Dependencies
+
+* update dependency com.google.cloud:google-cloud-core to v2.1.8 ([#877](https://www.github.com/googleapis/java-pubsub/issues/877)) ([c76329b](https://www.github.com/googleapis/java-pubsub/commit/c76329b06f2f620662f4fe4ffefa897daea8703b))
+* update dependency com.google.cloud:google-cloud-core to v2.2.0 ([#881](https://www.github.com/googleapis/java-pubsub/issues/881)) ([1eb4a1f](https://www.github.com/googleapis/java-pubsub/commit/1eb4a1f0a7d318b88cd04f4aefd3191f289e8a0f))
+* update dependency com.google.cloud:google-cloud-shared-dependencies to v2.4.0 ([#882](https://www.github.com/googleapis/java-pubsub/issues/882)) ([2c367bb](https://www.github.com/googleapis/java-pubsub/commit/2c367bb22860cbbfa57fca70a436919ac6aa8084))
+
+### [1.114.6](https://www.github.com/googleapis/java-pubsub/compare/v1.114.5...v1.114.6) (2021-10-05)
+
+
+### Dependencies
+
+* update dependency com.google.protobuf:protobuf-java-util to v3.18.1 ([#870](https://www.github.com/googleapis/java-pubsub/issues/870)) ([5188e39](https://www.github.com/googleapis/java-pubsub/commit/5188e39a13b97d9fa943c89d9082f58afa3d9d98))
+
+### [1.114.5](https://www.github.com/googleapis/java-pubsub/compare/v1.114.4...v1.114.5) (2021-09-27)
+
+
+### Bug Fixes
+
+* do not block forever if message size > flow control limits ([#847](https://www.github.com/googleapis/java-pubsub/issues/847)) ([f4ca4b2](https://www.github.com/googleapis/java-pubsub/commit/f4ca4b2d12730d5cef64d6f986b140de2c51147d))
+* reset resource ids before test retries ([#852](https://www.github.com/googleapis/java-pubsub/issues/852)) ([3769e53](https://www.github.com/googleapis/java-pubsub/commit/3769e53225e1c4e32a1a0d5179c2a333258d69a8))
+
+
+### Documentation
+
+* **samples:** add readme ([#849](https://www.github.com/googleapis/java-pubsub/issues/849)) ([66135cf](https://www.github.com/googleapis/java-pubsub/commit/66135cf20c4d3c3ffc881b52f0273a14881ac97b))
+
+
+### Dependencies
+
+* update dependency com.google.cloud:google-cloud-core to v2.1.5 ([#854](https://www.github.com/googleapis/java-pubsub/issues/854)) ([374b8c3](https://www.github.com/googleapis/java-pubsub/commit/374b8c3f25aedd9ebdbb0d8075a201c482dadd40))
+* update dependency com.google.cloud:google-cloud-core to v2.1.6 ([#855](https://www.github.com/googleapis/java-pubsub/issues/855)) ([9fabfc3](https://www.github.com/googleapis/java-pubsub/commit/9fabfc3177ebb08082557803801ade0e12e2e36d))
+* update dependency com.google.cloud:google-cloud-core to v2.1.7 ([#858](https://www.github.com/googleapis/java-pubsub/issues/858)) ([2cd94b5](https://www.github.com/googleapis/java-pubsub/commit/2cd94b57529f683465c8fd969cbf4a435d214b60))
+* update dependency com.google.cloud:google-cloud-shared-dependencies to v2.3.0 ([#856](https://www.github.com/googleapis/java-pubsub/issues/856)) ([ab47c15](https://www.github.com/googleapis/java-pubsub/commit/ab47c15a92978fbc994ed2db02ad1f24ed640fd0))
+
+### [1.114.4](https://www.github.com/googleapis/java-pubsub/compare/v1.114.3...v1.114.4) (2021-09-17)
+
+
+### Dependencies
+
+* update dependency com.google.cloud:google-cloud-core to v2.1.4 ([#835](https://www.github.com/googleapis/java-pubsub/issues/835)) ([2ab94ab](https://www.github.com/googleapis/java-pubsub/commit/2ab94abdc18c010496c50827c1f2eff02dae68e0))
+* update dependency com.google.cloud:google-cloud-shared-dependencies to v2.2.1 ([#836](https://www.github.com/googleapis/java-pubsub/issues/836)) ([39770c9](https://www.github.com/googleapis/java-pubsub/commit/39770c9a6641273e4839b758d67ecbf2abd3a63f))
+* update dependency com.google.protobuf:protobuf-java-util to v3.18.0 ([#841](https://www.github.com/googleapis/java-pubsub/issues/841)) ([f5d515c](https://www.github.com/googleapis/java-pubsub/commit/f5d515c718c39dcfb5bf9375e624c1b1c28eb892))
+
+### [1.114.3](https://www.github.com/googleapis/java-pubsub/compare/v1.114.2...v1.114.3) (2021-08-31)
+
+
+### Bug Fixes
+
+* Set publish timeouts to be consistent with desired values ([#820](https://www.github.com/googleapis/java-pubsub/issues/820)) ([826dc10](https://www.github.com/googleapis/java-pubsub/commit/826dc10f5bb373e88b06d390fc2029960a2cad7c))
+
+
+### Dependencies
+
+* update dependency com.google.cloud:google-cloud-core to v2.1.2 ([#823](https://www.github.com/googleapis/java-pubsub/issues/823)) ([cc0786f](https://www.github.com/googleapis/java-pubsub/commit/cc0786f0c8e8c88df15563204953ff8870244fd5))
+* update dependency com.google.cloud:google-cloud-shared-dependencies to v2.2.0 ([#824](https://www.github.com/googleapis/java-pubsub/issues/824)) ([32623af](https://www.github.com/googleapis/java-pubsub/commit/32623af172e367b61a5bcb10c0001d5488b1e772))
+
 ### [1.114.2](https://www.github.com/googleapis/java-pubsub/compare/v1.114.1...v1.114.2) (2021-08-24)
 
 

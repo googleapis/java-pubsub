@@ -33,7 +33,7 @@
   <parent>
     <groupId>com.google.cloud.samples</groupId>
     <artifactId>shared-configuration</artifactId>
-    <version>1.0.23</version>
+    <version>1.2.0</version>
   </parent>
 
   <properties>
@@ -46,6 +46,7 @@
     <module>install-without-bom</module>
     <module>snapshot</module>
     <module>snippets</module>
+    <module>native-image-sample</module>
   </modules>
 
   <build>
@@ -61,7 +62,7 @@
       <plugin>
         <groupId>org.sonatype.plugins</groupId>
         <artifactId>nexus-staging-maven-plugin</artifactId>
-        <version>1.6.8</version>
+        <version>1.6.11</version>
         <configuration>
           <skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
         </configuration>

@@ -16,7 +16,6 @@
 
 package com.google.cloud.pubsub.v1;
 
-import com.google.api.core.ApiFunction;
 import com.google.api.core.ApiFuture;
 import com.google.api.core.ApiFutures;
 import com.google.api.core.BetaApi;
@@ -58,9 +57,11 @@ import com.google.pubsub.v1.PushConfig;
 import com.google.pubsub.v1.SeekRequest;
 import com.google.pubsub.v1.SeekResponse;
 import com.google.pubsub.v1.Snapshot;
+import com.google.pubsub.v1.SnapshotName;
 import com.google.pubsub.v1.StreamingPullRequest;
 import com.google.pubsub.v1.StreamingPullResponse;
 import com.google.pubsub.v1.Subscription;
+import com.google.pubsub.v1.SubscriptionName;
 import com.google.pubsub.v1.TopicName;
 import com.google.pubsub.v1.UpdateSnapshotRequest;
 import com.google.pubsub.v1.UpdateSubscriptionRequest;
@@ -80,7 +81,7 @@ import javax.annotation.Generated;
  *
  * <pre>{@code
  * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
- *   ProjectSubscriptionName name = ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
+ *   SubscriptionName name = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
  *   TopicName topic = TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]");
  *   PushConfig pushConfig = PushConfig.newBuilder().build();
  *   int ackDeadlineSeconds = 2135351438;
@@ -208,7 +209,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *
    * <pre>{@code
    * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
-   *   ProjectSubscriptionName name = ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
+   *   SubscriptionName name = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
    *   TopicName topic = TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]");
    *   PushConfig pushConfig = PushConfig.newBuilder().build();
    *   int ackDeadlineSeconds = 2135351438;
@@ -246,10 +247,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    * @throws com.google.api.gax.rpc.ApiException if the remote call fails
    */
   public final Subscription createSubscription(
-      ProjectSubscriptionName name,
-      TopicName topic,
-      PushConfig pushConfig,
-      int ackDeadlineSeconds) {
+      SubscriptionName name, TopicName topic, PushConfig pushConfig, int ackDeadlineSeconds) {
     Subscription request =
         Subscription.newBuilder()
             .setName(name == null ? null : name.toString())
@@ -277,7 +275,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *
    * <pre>{@code
    * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
-   *   ProjectSubscriptionName name = ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
+   *   SubscriptionName name = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
    *   String topic = TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]").toString();
    *   PushConfig pushConfig = PushConfig.newBuilder().build();
    *   int ackDeadlineSeconds = 2135351438;
@@ -315,7 +313,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    * @throws com.google.api.gax.rpc.ApiException if the remote call fails
    */
   public final Subscription createSubscription(
-      ProjectSubscriptionName name, String topic, PushConfig pushConfig, int ackDeadlineSeconds) {
+      SubscriptionName name, String topic, PushConfig pushConfig, int ackDeadlineSeconds) {
     Subscription request =
         Subscription.newBuilder()
             .setName(name == null ? null : name.toString())
@@ -343,7 +341,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *
    * <pre>{@code
    * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
-   *   String name = ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString();
+   *   String name = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString();
    *   TopicName topic = TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]");
    *   PushConfig pushConfig = PushConfig.newBuilder().build();
    *   int ackDeadlineSeconds = 2135351438;
@@ -409,13 +407,14 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *
    * <pre>{@code
    * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
-   *   ProjectSubscriptionName name = ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
-   *   TopicName topic = TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]");
+   *   String name = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString();
+   *   String topic = TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]").toString();
    *   PushConfig pushConfig = PushConfig.newBuilder().build();
-   *   int ackDeadlineSeconds = 0;
-   *   Subscription response = subscriptionAdminClient.createSubscription(name.toString(), topic.toString(), pushConfig, ackDeadlineSeconds);
+   *   int ackDeadlineSeconds = 2135351438;
+   *   Subscription response =
+   *       subscriptionAdminClient.createSubscription(name, topic, pushConfig, ackDeadlineSeconds);
    * }
-   * </code></pre>
+   * }</pre>
    *
    * @param name Required. The name of the subscription. It must have the format
    *     `"projects/{project}/subscriptions/{subscription}"`. `{subscription}` must start with a
@@ -476,7 +475,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
    *   Subscription request =
    *       Subscription.newBuilder()
-   *           .setName(ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
+   *           .setName(SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
    *           .setTopic(TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]").toString())
    *           .setPushConfig(PushConfig.newBuilder().build())
    *           .setAckDeadlineSeconds(2135351438)
@@ -489,6 +488,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *           .setDeadLetterPolicy(DeadLetterPolicy.newBuilder().build())
    *           .setRetryPolicy(RetryPolicy.newBuilder().build())
    *           .setDetached(true)
+   *           .setEnableExactlyOnceDelivery(true)
    *           .setTopicMessageRetentionDuration(Duration.newBuilder().build())
    *           .build();
    *   Subscription response = subscriptionAdminClient.createSubscription(request);
@@ -554,8 +554,8 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *     <p>If the subscriber never acknowledges the message, the Pub/Sub system will eventually
    *     redeliver the message.
    * @throws com.google.api.gax.rpc.ApiException if the remote call fails
-   * @deprecated Use {@link #createSubscription(ProjectSubscriptionName, TopicName, PushConfig,
-   *     int)} instead.
+   * @deprecated Use {@link #createSubscription(SubscriptionName, TopicName, PushConfig, int)}
+   *     instead.
    */
   @Deprecated
   public final Subscription createSubscription(
@@ -590,9 +590,148 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *
    * <pre>{@code
    * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
+   *   ProjectSubscriptionName name = ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
+   *   String topic = TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]").toString();
+   *   PushConfig pushConfig = PushConfig.newBuilder().build();
+   *   int ackDeadlineSeconds = 2135351438;
+   *   Subscription response =
+   *       subscriptionAdminClient.createSubscription(name, topic, pushConfig, ackDeadlineSeconds);
+   * }
+   * }</pre>
+   *
+   * @param name Required. The name of the subscription. It must have the format
+   *     `"projects/{project}/subscriptions/{subscription}"`. `{subscription}` must start with a
+   *     letter, and contain only letters (`[A-Za-z]`), numbers (`[0-9]`), dashes (`-`), underscores
+   *     (`_`), periods (`.`), tildes (`~`), plus (`+`) or percent signs (`%`). It must be between 3
+   *     and 255 characters in length, and it must not start with `"goog"`.
+   * @param topic Required. The name of the topic from which this subscription is receiving
+   *     messages. Format is `projects/{project}/topics/{topic}`. The value of this field will be
+   *     `_deleted-topic_` if the topic has been deleted.
+   * @param pushConfig If push delivery is used with this subscription, this field is used to
+   *     configure it. An empty `pushConfig` signifies that the subscriber will pull and ack
+   *     messages using API methods.
+   * @param ackDeadlineSeconds The approximate amount of time (on a best-effort basis) Pub/Sub waits
+   *     for the subscriber to acknowledge receipt before resending the message. In the interval
+   *     after the message is delivered and before it is acknowledged, it is considered to be
+   *     &lt;i&gt;outstanding&lt;/i&gt;. During that time period, the message will not be
+   *     redelivered (on a best-effort basis).
+   *     <p>For pull subscriptions, this value is used as the initial value for the ack deadline. To
+   *     override this value for a given message, call `ModifyAckDeadline` with the corresponding
+   *     `ack_id` if using non-streaming pull or send the `ack_id` in a
+   *     `StreamingModifyAckDeadlineRequest` if using streaming pull. The minimum custom deadline
+   *     you can specify is 10 seconds. The maximum custom deadline you can specify is 600 seconds
+   *     (10 minutes). If this parameter is 0, a default value of 10 seconds is used.
+   *     <p>For push delivery, this value is also used to set the request timeout for the call to
+   *     the push endpoint.
+   *     <p>If the subscriber never acknowledges the message, the Pub/Sub system will eventually
+   *     redeliver the message.
+   * @deprecated Use {@link #createSubscription(SubscriptionName, String, PushConfig, int)} instead.
+   */
+  @Deprecated
+  public final Subscription createSubscription(
+      ProjectSubscriptionName name, String topic, PushConfig pushConfig, int ackDeadlineSeconds) {
+    Subscription request =
+        Subscription.newBuilder()
+            .setName(name == null ? null : name.toString())
+            .setTopic(topic)
+            .setPushConfig(pushConfig)
+            .setAckDeadlineSeconds(ackDeadlineSeconds)
+            .build();
+    return createSubscription(request);
+  }
+
+  // AUTO-GENERATED DOCUMENTATION AND METHOD.
+  /**
+   * Creates a subscription to a given topic. See the [resource name rules]
+   * (https://cloud.google.com/pubsub/docs/admin#resource_names). If the subscription already
+   * exists, returns `ALREADY_EXISTS`. If the corresponding topic doesn't exist, returns
+   * `NOT_FOUND`.
+   *
+   * <p>If the name is not provided in the request, the server will assign a random name for this
+   * subscription on the same project as the topic, conforming to the [resource name format]
+   * (https://cloud.google.com/pubsub/docs/admin#resource_names). The generated name is populated in
+   * the returned Subscription object. Note that for REST API requests, you must specify a name in
+   * the request.
+   *
+   * <p>Sample code:
+   *
+   * <pre>{@code
+   * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
+   *   ProjectSubscriptionName name = ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
+   *   TopicName topic = TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]");
+   *   PushConfig pushConfig = PushConfig.newBuilder().build();
+   *   int ackDeadlineSeconds = 2135351438;
+   *   Subscription response =
+   *       subscriptionAdminClient.createSubscription(name, topic, pushConfig, ackDeadlineSeconds);
+   * }
+   * }</pre>
+   *
+   * @param name Required. The name of the subscription. It must have the format
+   *     `"projects/{project}/subscriptions/{subscription}"`. `{subscription}` must start with a
+   *     letter, and contain only letters (`[A-Za-z]`), numbers (`[0-9]`), dashes (`-`), underscores
+   *     (`_`), periods (`.`), tildes (`~`), plus (`+`) or percent signs (`%`). It must be between 3
+   *     and 255 characters in length, and it must not start with `"goog"`.
+   * @param topic Required. The name of the topic from which this subscription is receiving
+   *     messages. Format is `projects/{project}/topics/{topic}`. The value of this field will be
+   *     `_deleted-topic_` if the topic has been deleted.
+   * @param pushConfig If push delivery is used with this subscription, this field is used to
+   *     configure it. An empty `pushConfig` signifies that the subscriber will pull and ack
+   *     messages using API methods.
+   * @param ackDeadlineSeconds The approximate amount of time (on a best-effort basis) Pub/Sub waits
+   *     for the subscriber to acknowledge receipt before resending the message. In the interval
+   *     after the message is delivered and before it is acknowledged, it is considered to be
+   *     &lt;i&gt;outstanding&lt;/i&gt;. During that time period, the message will not be
+   *     redelivered (on a best-effort basis).
+   *     <p>For pull subscriptions, this value is used as the initial value for the ack deadline. To
+   *     override this value for a given message, call `ModifyAckDeadline` with the corresponding
+   *     `ack_id` if using non-streaming pull or send the `ack_id` in a
+   *     `StreamingModifyAckDeadlineRequest` if using streaming pull. The minimum custom deadline
+   *     you can specify is 10 seconds. The maximum custom deadline you can specify is 600 seconds
+   *     (10 minutes). If this parameter is 0, a default value of 10 seconds is used.
+   *     <p>For push delivery, this value is also used to set the request timeout for the call to
+   *     the push endpoint.
+   *     <p>If the subscriber never acknowledges the message, the Pub/Sub system will eventually
+   *     redeliver the message.
+   * @throws com.google.api.gax.rpc.ApiException if the remote call fails
+   * @deprecated Use {@link #createSubscription(SubscriptionName, TopicName, PushConfig, int)}
+   *     instead.
+   */
+  @Deprecated
+  public final Subscription createSubscription(
+      ProjectSubscriptionName name,
+      TopicName topic,
+      PushConfig pushConfig,
+      int ackDeadlineSeconds) {
+    Subscription request =
+        Subscription.newBuilder()
+            .setName(name == null ? null : name.toString())
+            .setTopic(topic == null ? null : topic.toString())
+            .setPushConfig(pushConfig)
+            .setAckDeadlineSeconds(ackDeadlineSeconds)
+            .build();
+    return createSubscription(request);
+  }
+
+  // AUTO-GENERATED DOCUMENTATION AND METHOD.
+  /**
+   * Creates a subscription to a given topic. See the [resource name rules]
+   * (https://cloud.google.com/pubsub/docs/admin#resource_names). If the subscription already
+   * exists, returns `ALREADY_EXISTS`. If the corresponding topic doesn't exist, returns
+   * `NOT_FOUND`.
+   *
+   * <p>If the name is not provided in the request, the server will assign a random name for this
+   * subscription on the same project as the topic, conforming to the [resource name format]
+   * (https://cloud.google.com/pubsub/docs/admin#resource_names). The generated name is populated in
+   * the returned Subscription object. Note that for REST API requests, you must specify a name in
+   * the request.
+   *
+   * <p>Sample code:
+   *
+   * <pre>{@code
+   * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
    *   Subscription request =
    *       Subscription.newBuilder()
-   *           .setName(ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
+   *           .setName(SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
    *           .setTopic(TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]").toString())
    *           .setPushConfig(PushConfig.newBuilder().build())
    *           .setAckDeadlineSeconds(2135351438)
@@ -605,6 +744,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *           .setDeadLetterPolicy(DeadLetterPolicy.newBuilder().build())
    *           .setRetryPolicy(RetryPolicy.newBuilder().build())
    *           .setDetached(true)
+   *           .setEnableExactlyOnceDelivery(true)
    *           .setTopicMessageRetentionDuration(Duration.newBuilder().build())
    *           .build();
    *   ApiFuture<Subscription> future =
@@ -626,7 +766,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *
    * <pre>{@code
    * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
-   *   ProjectSubscriptionName subscription = ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
+   *   SubscriptionName subscription = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
    *   Subscription response = subscriptionAdminClient.getSubscription(subscription);
    * }
    * }</pre>
@@ -635,7 +775,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *     `projects/{project}/subscriptions/{sub}`.
    * @throws com.google.api.gax.rpc.ApiException if the remote call fails
    */
-  public final Subscription getSubscription(ProjectSubscriptionName subscription) {
+  public final Subscription getSubscription(SubscriptionName subscription) {
     GetSubscriptionRequest request =
         GetSubscriptionRequest.newBuilder()
             .setSubscription(subscription == null ? null : subscription.toString())
@@ -651,8 +791,8 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *
    * <pre>{@code
    * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
-   *   ProjectSubscriptionName subscription = ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
-   *   Subscription response = subscriptionAdminClient.getSubscription(subscription.toString());
+   *   String subscription = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString();
+   *   Subscription response = subscriptionAdminClient.getSubscription(subscription);
    * }
    * }</pre>
    *
@@ -676,7 +816,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
    *   GetSubscriptionRequest request =
    *       GetSubscriptionRequest.newBuilder()
-   *           .setSubscription(ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
+   *           .setSubscription(SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
    *           .build();
    *   Subscription response = subscriptionAdminClient.getSubscription(request);
    * }
@@ -697,9 +837,36 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *
    * <pre>{@code
    * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
+   *   ProjectSubscriptionName subscription = ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
+   *   Subscription response = subscriptionAdminClient.getSubscription(subscription);
+   * }
+   * }</pre>
+   *
+   * @param subscription Required. The name of the subscription to get. Format is
+   *     `projects/{project}/subscriptions/{sub}`.
+   * @throws com.google.api.gax.rpc.ApiException if the remote call fails
+   * @deprecated Use {@link #getSubscription(SubscriptionName)} instead.
+   */
+  @Deprecated
+  public final Subscription getSubscription(ProjectSubscriptionName subscription) {
+    GetSubscriptionRequest request =
+        GetSubscriptionRequest.newBuilder()
+            .setSubscription(subscription == null ? null : subscription.toString())
+            .build();
+    return getSubscription(request);
+  }
+
+  // AUTO-GENERATED DOCUMENTATION AND METHOD.
+  /**
+   * Gets the configuration details of a subscription.
+   *
+   * <p>Sample code:
+   *
+   * <pre>{@code
+   * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
    *   GetSubscriptionRequest request =
    *       GetSubscriptionRequest.newBuilder()
-   *           .setSubscription(ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
+   *           .setSubscription(SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
    *           .build();
    *   ApiFuture<Subscription> future =
    *       subscriptionAdminClient.getSubscriptionCallable().futureCall(request);
@@ -855,7 +1022,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *           .setPageSize(883849137)
    *           .setPageToken("pageToken873572522")
    *           .build();
-   *   ApiFuture<ListSubscriptionsPagedResponse> future =
+   *   ApiFuture<Subscription> future =
    *       subscriptionAdminClient.listSubscriptionsPagedCallable().futureCall(request);
    *   // Do something.
    *   for (Subscription element : future.get().iterateAll()) {
@@ -886,7 +1053,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *   while (true) {
    *     ListSubscriptionsResponse response =
    *         subscriptionAdminClient.listSubscriptionsCallable().call(request);
-   *     for (Subscription element : response.getSubscriptionsList()) {
+   *     for (Subscription element : response.getResponsesList()) {
    *       // doThingsWith(element);
    *     }
    *     String nextPageToken = response.getNextPageToken();
@@ -915,7 +1082,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *
    * <pre>{@code
    * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
-   *   ProjectSubscriptionName subscription = ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
+   *   SubscriptionName subscription = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
    *   subscriptionAdminClient.deleteSubscription(subscription);
    * }
    * }</pre>
@@ -924,7 +1091,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *     `projects/{project}/subscriptions/{sub}`.
    * @throws com.google.api.gax.rpc.ApiException if the remote call fails
    */
-  public final void deleteSubscription(ProjectSubscriptionName subscription) {
+  public final void deleteSubscription(SubscriptionName subscription) {
     DeleteSubscriptionRequest request =
         DeleteSubscriptionRequest.newBuilder()
             .setSubscription(subscription == null ? null : subscription.toString())
@@ -943,7 +1110,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *
    * <pre>{@code
    * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
-   *   String subscription = ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString();
+   *   String subscription = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString();
    *   subscriptionAdminClient.deleteSubscription(subscription);
    * }
    * }</pre>
@@ -971,7 +1138,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
    *   DeleteSubscriptionRequest request =
    *       DeleteSubscriptionRequest.newBuilder()
-   *           .setSubscription(ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
+   *           .setSubscription(SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
    *           .build();
    *   subscriptionAdminClient.deleteSubscription(request);
    * }
@@ -995,9 +1162,39 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *
    * <pre>{@code
    * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
+   *   ProjectSubscriptionName subscription = ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
+   *   subscriptionAdminClient.deleteSubscription(subscription);
+   * }
+   * }</pre>
+   *
+   * @param subscription Required. The subscription to delete. Format is
+   *     `projects/{project}/subscriptions/{sub}`.
+   * @throws com.google.api.gax.rpc.ApiException if the remote call fails
+   * @deprecated Use {@link #deleteSubscription(SubscriptionName)} instead.
+   */
+  @Deprecated
+  public final void deleteSubscription(ProjectSubscriptionName subscription) {
+    DeleteSubscriptionRequest request =
+        DeleteSubscriptionRequest.newBuilder()
+            .setSubscription(subscription == null ? null : subscription.toString())
+            .build();
+    deleteSubscription(request);
+  }
+
+  // AUTO-GENERATED DOCUMENTATION AND METHOD.
+  /**
+   * Deletes an existing subscription. All messages retained in the subscription are immediately
+   * dropped. Calls to `Pull` after deletion will return `NOT_FOUND`. After a subscription is
+   * deleted, a new one may be created with the same name, but the new one has no association with
+   * the old subscription or its topic unless the same topic is specified.
+   *
+   * <p>Sample code:
+   *
+   * <pre>{@code
+   * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
    *   DeleteSubscriptionRequest request =
    *       DeleteSubscriptionRequest.newBuilder()
-   *           .setSubscription(ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
+   *           .setSubscription(SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
    *           .build();
    *   ApiFuture<Empty> future =
    *       subscriptionAdminClient.deleteSubscriptionCallable().futureCall(request);
@@ -1021,7 +1218,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *
    * <pre>{@code
    * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
-   *   ProjectSubscriptionName subscription = ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
+   *   SubscriptionName subscription = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
    *   List<String> ackIds = new ArrayList<>();
    *   int ackDeadlineSeconds = 2135351438;
    *   subscriptionAdminClient.modifyAckDeadline(subscription, ackIds, ackDeadlineSeconds);
@@ -1040,8 +1237,8 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *     600 seconds (10 minutes).
    * @throws com.google.api.gax.rpc.ApiException if the remote call fails
    */
-  /* package-private */ final void modifyAckDeadline(
-      ProjectSubscriptionName subscription, List<String> ackIds, int ackDeadlineSeconds) {
+  public final void modifyAckDeadline(
+      SubscriptionName subscription, List<String> ackIds, int ackDeadlineSeconds) {
     ModifyAckDeadlineRequest request =
         ModifyAckDeadlineRequest.newBuilder()
             .setSubscription(subscription == null ? null : subscription.toString())
@@ -1062,7 +1259,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *
    * <pre>{@code
    * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
-   *   String subscription = ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString();
+   *   String subscription = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString();
    *   List<String> ackIds = new ArrayList<>();
    *   int ackDeadlineSeconds = 2135351438;
    *   subscriptionAdminClient.modifyAckDeadline(subscription, ackIds, ackDeadlineSeconds);
@@ -1105,7 +1302,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
    *   ModifyAckDeadlineRequest request =
    *       ModifyAckDeadlineRequest.newBuilder()
-   *           .setSubscription(ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
+   *           .setSubscription(SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
    *           .addAllAckIds(new ArrayList<String>())
    *           .setAckDeadlineSeconds(2135351438)
    *           .build();
@@ -1131,9 +1328,52 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *
    * <pre>{@code
    * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
+   *   ProjectSubscriptionName subscription = ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
+   *   List<String> ackIds = new ArrayList<>();
+   *   int ackDeadlineSeconds = 2135351438;
+   *   subscriptionAdminClient.modifyAckDeadline(subscription, ackIds, ackDeadlineSeconds);
+   * }
+   * }</pre>
+   *
+   * @param subscription Required. The name of the subscription. Format is
+   *     `projects/{project}/subscriptions/{sub}`.
+   * @param ackIds Required. List of acknowledgment IDs.
+   * @param ackDeadlineSeconds Required. The new ack deadline with respect to the time this request
+   *     was sent to the Pub/Sub system. For example, if the value is 10, the new ack deadline will
+   *     expire 10 seconds after the `ModifyAckDeadline` call was made. Specifying zero might
+   *     immediately make the message available for delivery to another subscriber client. This
+   *     typically results in an increase in the rate of message redeliveries (that is, duplicates).
+   *     The minimum deadline you can specify is 0 seconds. The maximum deadline you can specify is
+   *     600 seconds (10 minutes).
+   * @throws com.google.api.gax.rpc.ApiException if the remote call fails
+   * @deprecated Use {@link #modifyAckDeadline(SubscriptionName, List<String>, int)} instead.
+   */
+  @Deprecated
+  final void modifyAckDeadline(
+      ProjectSubscriptionName subscription, List<String> ackIds, int ackDeadlineSeconds) {
+    ModifyAckDeadlineRequest request =
+        ModifyAckDeadlineRequest.newBuilder()
+            .setSubscription(subscription == null ? null : subscription.toString())
+            .addAllAckIds(ackIds)
+            .setAckDeadlineSeconds(ackDeadlineSeconds)
+            .build();
+    modifyAckDeadline(request);
+  }
+
+  // AUTO-GENERATED DOCUMENTATION AND METHOD.
+  /**
+   * Modifies the ack deadline for a specific message. This method is useful to indicate that more
+   * time is needed to process a message by the subscriber, or to make the message available for
+   * redelivery if the processing was interrupted. Note that this does not modify the
+   * subscription-level `ackDeadlineSeconds` used for subsequent messages.
+   *
+   * <p>Sample code:
+   *
+   * <pre>{@code
+   * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
    *   ModifyAckDeadlineRequest request =
    *       ModifyAckDeadlineRequest.newBuilder()
-   *           .setSubscription(ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
+   *           .setSubscription(SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
    *           .addAllAckIds(new ArrayList<String>())
    *           .setAckDeadlineSeconds(2135351438)
    *           .build();
@@ -1160,7 +1400,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *
    * <pre>{@code
    * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
-   *   ProjectSubscriptionName subscription = ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
+   *   SubscriptionName subscription = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
    *   List<String> ackIds = new ArrayList<>();
    *   subscriptionAdminClient.acknowledge(subscription, ackIds);
    * }
@@ -1172,8 +1412,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *     returned by the Pub/Sub system in the `Pull` response. Must not be empty.
    * @throws com.google.api.gax.rpc.ApiException if the remote call fails
    */
-  /* package-private */ final void acknowledge(
-      ProjectSubscriptionName subscription, List<String> ackIds) {
+  public final void acknowledge(SubscriptionName subscription, List<String> ackIds) {
     AcknowledgeRequest request =
         AcknowledgeRequest.newBuilder()
             .setSubscription(subscription == null ? null : subscription.toString())
@@ -1194,7 +1433,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *
    * <pre>{@code
    * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
-   *   String subscription = ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString();
+   *   String subscription = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString();
    *   List<String> ackIds = new ArrayList<>();
    *   subscriptionAdminClient.acknowledge(subscription, ackIds);
    * }
@@ -1226,7 +1465,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
    *   AcknowledgeRequest request =
    *       AcknowledgeRequest.newBuilder()
-   *           .setSubscription(ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
+   *           .setSubscription(SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
    *           .addAllAckIds(new ArrayList<String>())
    *           .build();
    *   subscriptionAdminClient.acknowledge(request);
@@ -1252,9 +1491,44 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *
    * <pre>{@code
    * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
+   *   ProjectSubscriptionName subscription = ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
+   *   List<String> ackIds = new ArrayList<>();
+   *   subscriptionAdminClient.acknowledge(subscription, ackIds);
+   * }
+   * }</pre>
+   *
+   * @param subscription Required. The subscription whose message is being acknowledged. Format is
+   *     `projects/{project}/subscriptions/{sub}`.
+   * @param ackIds Required. The acknowledgment ID for the messages being acknowledged that was
+   *     returned by the Pub/Sub system in the `Pull` response. Must not be empty.
+   * @throws com.google.api.gax.rpc.ApiException if the remote call fails
+   * @deprecated Use {@link #acknowledge(SubscriptionName, List<String>)} instead.
+   */
+  @Deprecated
+  public final void acknowledge(ProjectSubscriptionName subscription, List<String> ackIds) {
+    AcknowledgeRequest request =
+        AcknowledgeRequest.newBuilder()
+            .setSubscription(subscription == null ? null : subscription.toString())
+            .addAllAckIds(ackIds)
+            .build();
+    acknowledge(request);
+  }
+
+  // AUTO-GENERATED DOCUMENTATION AND METHOD.
+  /**
+   * Acknowledges the messages associated with the `ack_ids` in the `AcknowledgeRequest`. The
+   * Pub/Sub system can remove the relevant messages from the subscription.
+   *
+   * <p>Acknowledging a message whose ack deadline has expired may succeed, but such a message may
+   * be redelivered later. Acknowledging a message more than once will not result in an error.
+   *
+   * <p>Sample code:
+   *
+   * <pre>{@code
+   * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
    *   AcknowledgeRequest request =
    *       AcknowledgeRequest.newBuilder()
-   *           .setSubscription(ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
+   *           .setSubscription(SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
    *           .addAllAckIds(new ArrayList<String>())
    *           .build();
    *   ApiFuture<Empty> future = subscriptionAdminClient.acknowledgeCallable().futureCall(request);
@@ -1276,7 +1550,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *
    * <pre>{@code
    * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
-   *   ProjectSubscriptionName subscription = ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
+   *   SubscriptionName subscription = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
    *   int maxMessages = 496131527;
    *   PullResponse response = subscriptionAdminClient.pull(subscription, maxMessages);
    * }
@@ -1288,7 +1562,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *     a positive integer. The Pub/Sub system may return fewer than the number specified.
    * @throws com.google.api.gax.rpc.ApiException if the remote call fails
    */
-  public final PullResponse pull(ProjectSubscriptionName subscription, int maxMessages) {
+  public final PullResponse pull(SubscriptionName subscription, int maxMessages) {
     PullRequest request =
         PullRequest.newBuilder()
             .setSubscription(subscription == null ? null : subscription.toString())
@@ -1306,7 +1580,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *
    * <pre>{@code
    * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
-   *   String subscription = ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString();
+   *   String subscription = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString();
    *   int maxMessages = 496131527;
    *   PullResponse response = subscriptionAdminClient.pull(subscription, maxMessages);
    * }
@@ -1333,7 +1607,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *
    * <pre>{@code
    * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
-   *   ProjectSubscriptionName subscription = ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
+   *   SubscriptionName subscription = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
    *   boolean returnImmediately = true;
    *   int maxMessages = 496131527;
    *   PullResponse response =
@@ -1353,8 +1627,8 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *     a positive integer. The Pub/Sub system may return fewer than the number specified.
    * @throws com.google.api.gax.rpc.ApiException if the remote call fails
    */
-  /* package-private */ final PullResponse pull(
-      ProjectSubscriptionName subscription, boolean returnImmediately, int maxMessages) {
+  public final PullResponse pull(
+      SubscriptionName subscription, boolean returnImmediately, int maxMessages) {
     PullRequest request =
         PullRequest.newBuilder()
             .setSubscription(subscription == null ? null : subscription.toString())
@@ -1373,7 +1647,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *
    * <pre>{@code
    * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
-   *   String subscription = ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString();
+   *   String subscription = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString();
    *   boolean returnImmediately = true;
    *   int maxMessages = 496131527;
    *   PullResponse response =
@@ -1414,7 +1688,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
    *   PullRequest request =
    *       PullRequest.newBuilder()
-   *           .setSubscription(ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
+   *           .setSubscription(SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
    *           .setReturnImmediately(true)
    *           .setMaxMessages(496131527)
    *           .build();
@@ -1438,9 +1712,83 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *
    * <pre>{@code
    * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
+   *   ProjectSubscriptionName subscription = ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
+   *   int maxMessages = 496131527;
+   *   PullResponse response = subscriptionAdminClient.pull(subscription, maxMessages);
+   * }
+   * }</pre>
+   *
+   * @param subscription Required. The subscription from which messages should be pulled. Format is
+   *     `projects/{project}/subscriptions/{sub}`.
+   * @param maxMessages Required. The maximum number of messages to return for this request. Must be
+   *     a positive integer. The Pub/Sub system may return fewer than the number specified.
+   * @throws com.google.api.gax.rpc.ApiException if the remote call fails
+   * @deprecated Use {@link #pull(SubscriptionName, int)} instead.
+   */
+  @Deprecated
+  public final PullResponse pull(ProjectSubscriptionName subscription, int maxMessages) {
+    PullRequest request =
+        PullRequest.newBuilder()
+            .setSubscription(subscription == null ? null : subscription.toString())
+            .setMaxMessages(maxMessages)
+            .build();
+    return pull(request);
+  }
+
+  // AUTO-GENERATED DOCUMENTATION AND METHOD.
+  /**
+   * Pulls messages from the server. The server may return `UNAVAILABLE` if there are too many
+   * concurrent pull requests pending for the given subscription.
+   *
+   * <p>Sample code:
+   *
+   * <pre>{@code
+   * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
+   *   ProjectSubscriptionName subscription = ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
+   *   boolean returnImmediately = true;
+   *   int maxMessages = 496131527;
+   *   PullResponse response =
+   *       subscriptionAdminClient.pull(subscription, returnImmediately, maxMessages);
+   * }
+   * }</pre>
+   *
+   * @param subscription Required. The subscription from which messages should be pulled. Format is
+   *     `projects/{project}/subscriptions/{sub}`.
+   * @param returnImmediately Optional. If this field set to true, the system will respond
+   *     immediately even if it there are no messages available to return in the `Pull` response.
+   *     Otherwise, the system may wait (for a bounded amount of time) until at least one message is
+   *     available, rather than returning no messages. Warning: setting this field to `true` is
+   *     discouraged because it adversely impacts the performance of `Pull` operations. We recommend
+   *     that users do not set this field.
+   * @param maxMessages Required. The maximum number of messages to return for this request. Must be
+   *     a positive integer. The Pub/Sub system may return fewer than the number specified.
+   * @throws com.google.api.gax.rpc.ApiException if the remote call fails
+   * @deprecated Use {@link #pull(SubscriptionName, boolean, int)} instead.
+   */
+  @Deprecated
+  final PullResponse pull(
+      ProjectSubscriptionName subscription, boolean returnImmediately, int maxMessages) {
+    PullRequest request =
+        PullRequest.newBuilder()
+            .setSubscription(subscription == null ? null : subscription.toString())
+            .setReturnImmediately(returnImmediately)
+            .setMaxMessages(maxMessages)
+            .build();
+    return pull(request);
+  }
+
+  // AUTO-GENERATED DOCUMENTATION AND METHOD.
+  /**
+   * Pulls messages from the server. The server may return `UNAVAILABLE` if there are too many
+   * concurrent pull requests pending for the given subscription.
+   *
+   * <p>Sample code:
+   *
+   * <pre>{@code
+   * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
    *   PullRequest request =
    *       PullRequest.newBuilder()
-   *           .setSubscription(ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
+   *           .setSubscription(SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
    *           .setReturnImmediately(true)
    *           .setMaxMessages(496131527)
    *           .build();
@@ -1471,7 +1819,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *       subscriptionAdminClient.streamingPullCallable().call();
    *   StreamingPullRequest request =
    *       StreamingPullRequest.newBuilder()
-   *           .setSubscription(ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
+   *           .setSubscription(SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
    *           .addAllAckIds(new ArrayList<String>())
    *           .addAllModifyDeadlineSeconds(new ArrayList<Integer>())
    *           .addAllModifyDeadlineAckIds(new ArrayList<String>())
@@ -1505,7 +1853,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *
    * <pre>{@code
    * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
-   *   ProjectSubscriptionName subscription = ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
+   *   SubscriptionName subscription = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
    *   PushConfig pushConfig = PushConfig.newBuilder().build();
    *   subscriptionAdminClient.modifyPushConfig(subscription, pushConfig);
    * }
@@ -1519,7 +1867,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *     pausing the subscription if `Pull` or `StreamingPull` is not called.
    * @throws com.google.api.gax.rpc.ApiException if the remote call fails
    */
-  public final void modifyPushConfig(ProjectSubscriptionName subscription, PushConfig pushConfig) {
+  public final void modifyPushConfig(SubscriptionName subscription, PushConfig pushConfig) {
     ModifyPushConfigRequest request =
         ModifyPushConfigRequest.newBuilder()
             .setSubscription(subscription == null ? null : subscription.toString())
@@ -1541,7 +1889,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *
    * <pre>{@code
    * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
-   *   String subscription = ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString();
+   *   String subscription = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString();
    *   PushConfig pushConfig = PushConfig.newBuilder().build();
    *   subscriptionAdminClient.modifyPushConfig(subscription, pushConfig);
    * }
@@ -1579,7 +1927,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
    *   ModifyPushConfigRequest request =
    *       ModifyPushConfigRequest.newBuilder()
-   *           .setSubscription(ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
+   *           .setSubscription(SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
    *           .setPushConfig(PushConfig.newBuilder().build())
    *           .build();
    *   subscriptionAdminClient.modifyPushConfig(request);
@@ -1606,9 +1954,47 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *
    * <pre>{@code
    * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
+   *   ProjectSubscriptionName subscription = ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
+   *   PushConfig pushConfig = PushConfig.newBuilder().build();
+   *   subscriptionAdminClient.modifyPushConfig(subscription, pushConfig);
+   * }
+   * }</pre>
+   *
+   * @param subscription Required. The name of the subscription. Format is
+   *     `projects/{project}/subscriptions/{sub}`.
+   * @param pushConfig Required. The push configuration for future deliveries.
+   *     <p>An empty `pushConfig` indicates that the Pub/Sub system should stop pushing messages
+   *     from the given subscription and allow messages to be pulled and acknowledged - effectively
+   *     pausing the subscription if `Pull` or `StreamingPull` is not called.
+   * @throws com.google.api.gax.rpc.ApiException if the remote call fails
+   * @deprecated Use {@link #modifyPushConfig(SubscriptionName, PushConfig)} instead.
+   */
+  @Deprecated
+  public final void modifyPushConfig(ProjectSubscriptionName subscription, PushConfig pushConfig) {
+    ModifyPushConfigRequest request =
+        ModifyPushConfigRequest.newBuilder()
+            .setSubscription(subscription == null ? null : subscription.toString())
+            .setPushConfig(pushConfig)
+            .build();
+    modifyPushConfig(request);
+  }
+
+  // AUTO-GENERATED DOCUMENTATION AND METHOD.
+  /**
+   * Modifies the `PushConfig` for a specified subscription.
+   *
+   * <p>This may be used to change a push subscription to a pull one (signified by an empty
+   * `PushConfig`) or vice versa, or change the endpoint URL and other attributes of a push
+   * subscription. Messages will accumulate for delivery continuously through the call regardless of
+   * changes to the `PushConfig`.
+   *
+   * <p>Sample code:
+   *
+   * <pre>{@code
+   * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
    *   ModifyPushConfigRequest request =
    *       ModifyPushConfigRequest.newBuilder()
-   *           .setSubscription(ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
+   *           .setSubscription(SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
    *           .setPushConfig(PushConfig.newBuilder().build())
    *           .build();
    *   ApiFuture<Empty> future =
@@ -1633,7 +2019,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *
    * <pre>{@code
    * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
-   *   ProjectSnapshotName snapshot = ProjectSnapshotName.of("[PROJECT]", "[SNAPSHOT]");
+   *   SnapshotName snapshot = SnapshotName.of("[PROJECT]", "[SNAPSHOT]");
    *   Snapshot response = subscriptionAdminClient.getSnapshot(snapshot);
    * }
    * }</pre>
@@ -1642,7 +2028,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *     `projects/{project}/snapshots/{snap}`.
    * @throws com.google.api.gax.rpc.ApiException if the remote call fails
    */
-  public final Snapshot getSnapshot(ProjectSnapshotName snapshot) {
+  public final Snapshot getSnapshot(SnapshotName snapshot) {
     GetSnapshotRequest request =
         GetSnapshotRequest.newBuilder()
             .setSnapshot(snapshot == null ? null : snapshot.toString())
@@ -1661,7 +2047,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *
    * <pre>{@code
    * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
-   *   String snapshot = ProjectSnapshotName.of("[PROJECT]", "[SNAPSHOT]").toString();
+   *   String snapshot = SnapshotName.of("[PROJECT]", "[SNAPSHOT]").toString();
    *   Snapshot response = subscriptionAdminClient.getSnapshot(snapshot);
    * }
    * }</pre>
@@ -1688,7 +2074,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
    *   GetSnapshotRequest request =
    *       GetSnapshotRequest.newBuilder()
-   *           .setSnapshot(ProjectSnapshotName.of("[PROJECT]", "[SNAPSHOT]").toString())
+   *           .setSnapshot(SnapshotName.of("[PROJECT]", "[SNAPSHOT]").toString())
    *           .build();
    *   Snapshot response = subscriptionAdminClient.getSnapshot(request);
    * }
@@ -1712,9 +2098,39 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *
    * <pre>{@code
    * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
+   *   ProjectSnapshotName snapshot = ProjectSnapshotName.of("[PROJECT]", "[SNAPSHOT]");
+   *   Snapshot response = subscriptionAdminClient.getSnapshot(snapshot);
+   * }
+   * }</pre>
+   *
+   * @param snapshot Required. The name of the snapshot to get. Format is
+   *     `projects/{project}/snapshots/{snap}`.
+   * @throws com.google.api.gax.rpc.ApiException if the remote call fails
+   * @deprecated Use Use {@link #getSnapshot(SnapshotName)} instead.
+   */
+  @Deprecated
+  public final Snapshot getSnapshot(ProjectSnapshotName snapshot) {
+    GetSnapshotRequest request =
+        GetSnapshotRequest.newBuilder()
+            .setSnapshot(snapshot == null ? null : snapshot.toString())
+            .build();
+    return getSnapshot(request);
+  }
+
+  // AUTO-GENERATED DOCUMENTATION AND METHOD.
+  /**
+   * Gets the configuration details of a snapshot. Snapshots are used in &lt;a
+   * href="https://cloud.google.com/pubsub/docs/replay-overview"&gt;Seek&lt;/a&gt; operations, which
+   * allow you to manage message acknowledgments in bulk. That is, you can set the acknowledgment
+   * state of messages in an existing subscription to the state captured by a snapshot.
+   *
+   * <p>Sample code:
+   *
+   * <pre>{@code
+   * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
    *   GetSnapshotRequest request =
    *       GetSnapshotRequest.newBuilder()
-   *           .setSnapshot(ProjectSnapshotName.of("[PROJECT]", "[SNAPSHOT]").toString())
+   *           .setSnapshot(SnapshotName.of("[PROJECT]", "[SNAPSHOT]").toString())
    *           .build();
    *   ApiFuture<Snapshot> future =
    *       subscriptionAdminClient.getSnapshotCallable().futureCall(request);
@@ -1831,7 +2247,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *           .setPageSize(883849137)
    *           .setPageToken("pageToken873572522")
    *           .build();
-   *   ApiFuture<ListSnapshotsPagedResponse> future =
+   *   ApiFuture<Snapshot> future =
    *       subscriptionAdminClient.listSnapshotsPagedCallable().futureCall(request);
    *   // Do something.
    *   for (Snapshot element : future.get().iterateAll()) {
@@ -1865,7 +2281,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *   while (true) {
    *     ListSnapshotsResponse response =
    *         subscriptionAdminClient.listSnapshotsCallable().call(request);
-   *     for (Snapshot element : response.getSnapshotsList()) {
+   *     for (Snapshot element : response.getResponsesList()) {
    *       // doThingsWith(element);
    *     }
    *     String nextPageToken = response.getNextPageToken();
@@ -1901,8 +2317,8 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *
    * <pre>{@code
    * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
-   *   ProjectSnapshotName name = ProjectSnapshotName.of("[PROJECT]", "[SNAPSHOT]");
-   *   ProjectSubscriptionName subscription = ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
+   *   SnapshotName name = SnapshotName.of("[PROJECT]", "[SNAPSHOT]");
+   *   SubscriptionName subscription = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
    *   Snapshot response = subscriptionAdminClient.createSnapshot(name, subscription);
    * }
    * }</pre>
@@ -1921,8 +2337,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *     `projects/{project}/subscriptions/{sub}`.
    * @throws com.google.api.gax.rpc.ApiException if the remote call fails
    */
-  public final Snapshot createSnapshot(
-      ProjectSnapshotName name, ProjectSubscriptionName subscription) {
+  public final Snapshot createSnapshot(SnapshotName name, SubscriptionName subscription) {
     CreateSnapshotRequest request =
         CreateSnapshotRequest.newBuilder()
             .setName(name == null ? null : name.toString())
@@ -1950,8 +2365,8 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *
    * <pre>{@code
    * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
-   *   ProjectSnapshotName name = ProjectSnapshotName.of("[PROJECT]", "[SNAPSHOT]");
-   *   String subscription = ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString();
+   *   SnapshotName name = SnapshotName.of("[PROJECT]", "[SNAPSHOT]");
+   *   String subscription = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString();
    *   Snapshot response = subscriptionAdminClient.createSnapshot(name, subscription);
    * }
    * }</pre>
@@ -1970,7 +2385,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *     `projects/{project}/subscriptions/{sub}`.
    * @throws com.google.api.gax.rpc.ApiException if the remote call fails
    */
-  public final Snapshot createSnapshot(ProjectSnapshotName name, String subscription) {
+  public final Snapshot createSnapshot(SnapshotName name, String subscription) {
     CreateSnapshotRequest request =
         CreateSnapshotRequest.newBuilder()
             .setName(name == null ? null : name.toString())
@@ -1998,8 +2413,8 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *
    * <pre>{@code
    * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
-   *   String name = ProjectSnapshotName.of("[PROJECT]", "[SNAPSHOT]").toString();
-   *   ProjectSubscriptionName subscription = ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
+   *   String name = SnapshotName.of("[PROJECT]", "[SNAPSHOT]").toString();
+   *   SubscriptionName subscription = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
    *   Snapshot response = subscriptionAdminClient.createSnapshot(name, subscription);
    * }
    * }</pre>
@@ -2018,7 +2433,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *     `projects/{project}/subscriptions/{sub}`.
    * @throws com.google.api.gax.rpc.ApiException if the remote call fails
    */
-  public final Snapshot createSnapshot(String name, ProjectSubscriptionName subscription) {
+  public final Snapshot createSnapshot(String name, SubscriptionName subscription) {
     CreateSnapshotRequest request =
         CreateSnapshotRequest.newBuilder()
             .setName(name)
@@ -2046,8 +2461,8 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *
    * <pre>{@code
    * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
-   *   String name = ProjectSnapshotName.of("[PROJECT]", "[SNAPSHOT]").toString();
-   *   String subscription = ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString();
+   *   String name = SnapshotName.of("[PROJECT]", "[SNAPSHOT]").toString();
+   *   String subscription = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString();
    *   Snapshot response = subscriptionAdminClient.createSnapshot(name, subscription);
    * }
    * }</pre>
@@ -2093,8 +2508,8 @@ public class SubscriptionAdminClient implements BackgroundResource {
    * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
    *   CreateSnapshotRequest request =
    *       CreateSnapshotRequest.newBuilder()
-   *           .setName(ProjectSnapshotName.of("[PROJECT]", "[SNAPSHOT]").toString())
-   *           .setSubscription(ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
+   *           .setName(SnapshotName.of("[PROJECT]", "[SNAPSHOT]").toString())
+   *           .setSubscription(SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
    *           .putAllLabels(new HashMap<String, String>())
    *           .build();
    *   Snapshot response = subscriptionAdminClient.createSnapshot(request);
@@ -2127,10 +2542,161 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *
    * <pre>{@code
    * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
+   *   ProjectSnapshotName name = ProjectSnapshotName.of("[PROJECT]", "[SNAPSHOT]");
+   *   ProjectSubscriptionName subscription = ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
+   *   Snapshot response = subscriptionAdminClient.createSnapshot(name, subscription);
+   * }
+   * }</pre>
+   *
+   * @param name Required. User-provided name for this snapshot. If the name is not provided in the
+   *     request, the server will assign a random name for this snapshot on the same project as the
+   *     subscription. Note that for REST API requests, you must specify a name. See the &lt;a
+   *     href="https://cloud.google.com/pubsub/docs/admin#resource_names"&gt; resource name
+   *     rules&lt;/a&gt;. Format is `projects/{project}/snapshots/{snap}`.
+   * @param subscription Required. The subscription whose backlog the snapshot retains.
+   *     Specifically, the created snapshot is guaranteed to retain: (a) The existing backlog on the
+   *     subscription. More precisely, this is defined as the messages in the subscription's backlog
+   *     that are unacknowledged upon the successful completion of the `CreateSnapshot` request; as
+   *     well as: (b) Any messages published to the subscription's topic following the successful
+   *     completion of the CreateSnapshot request. Format is
+   *     `projects/{project}/subscriptions/{sub}`.
+   * @throws com.google.api.gax.rpc.ApiException if the remote call fails
+   * @deprecated Use Use {@link #createSnapshot(SnapshotName, SubscriptionName)} instead.
+   */
+  @Deprecated
+  public final Snapshot createSnapshot(
+      ProjectSnapshotName name, ProjectSubscriptionName subscription) {
+    CreateSnapshotRequest request =
+        CreateSnapshotRequest.newBuilder()
+            .setName(name == null ? null : name.toString())
+            .setSubscription(subscription == null ? null : subscription.toString())
+            .build();
+    return createSnapshot(request);
+  }
+
+  // AUTO-GENERATED DOCUMENTATION AND METHOD.
+  /**
+   * Creates a snapshot from the requested subscription. Snapshots are used in
+   * [Seek](https://cloud.google.com/pubsub/docs/replay-overview) operations, which allow you to
+   * manage message acknowledgments in bulk. That is, you can set the acknowledgment state of
+   * messages in an existing subscription to the state captured by a snapshot. If the snapshot
+   * already exists, returns `ALREADY_EXISTS`. If the requested subscription doesn't exist, returns
+   * `NOT_FOUND`. If the backlog in the subscription is too old -- and the resulting snapshot would
+   * expire in less than 1 hour -- then `FAILED_PRECONDITION` is returned. See also the
+   * `Snapshot.expire_time` field. If the name is not provided in the request, the server will
+   * assign a random name for this snapshot on the same project as the subscription, conforming to
+   * the [resource name format] (https://cloud.google.com/pubsub/docs/admin#resource_names). The
+   * generated name is populated in the returned Snapshot object. Note that for REST API requests,
+   * you must specify a name in the request.
+   *
+   * <p>Sample code:
+   *
+   * <pre>{@code
+   * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
+   *   String name = ProjectSnapshotName.of("[PROJECT]", "[SNAPSHOT]").toString();
+   *   ProjectSubscriptionName subscription = ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
+   *   Snapshot response = subscriptionAdminClient.createSnapshot(name, subscription);
+   * }
+   * }</pre>
+   *
+   * @param name Required. User-provided name for this snapshot. If the name is not provided in the
+   *     request, the server will assign a random name for this snapshot on the same project as the
+   *     subscription. Note that for REST API requests, you must specify a name. See the &lt;a
+   *     href="https://cloud.google.com/pubsub/docs/admin#resource_names"&gt; resource name
+   *     rules&lt;/a&gt;. Format is `projects/{project}/snapshots/{snap}`.
+   * @param subscription Required. The subscription whose backlog the snapshot retains.
+   *     Specifically, the created snapshot is guaranteed to retain: (a) The existing backlog on the
+   *     subscription. More precisely, this is defined as the messages in the subscription's backlog
+   *     that are unacknowledged upon the successful completion of the `CreateSnapshot` request; as
+   *     well as: (b) Any messages published to the subscription's topic following the successful
+   *     completion of the CreateSnapshot request. Format is
+   *     `projects/{project}/subscriptions/{sub}`.
+   * @throws com.google.api.gax.rpc.ApiException if the remote call fails
+   * @deprecated Use Use {@link #createSnapshot(String, SubscriptionName)} instead.
+   */
+  @Deprecated
+  public final Snapshot createSnapshot(String name, ProjectSubscriptionName subscription) {
+    CreateSnapshotRequest request =
+        CreateSnapshotRequest.newBuilder()
+            .setName(name)
+            .setSubscription(subscription == null ? null : subscription.toString())
+            .build();
+    return createSnapshot(request);
+  }
+
+  // AUTO-GENERATED DOCUMENTATION AND METHOD.
+  /**
+   * Creates a snapshot from the requested subscription. Snapshots are used in
+   * [Seek](https://cloud.google.com/pubsub/docs/replay-overview) operations, which allow you to
+   * manage message acknowledgments in bulk. That is, you can set the acknowledgment state of
+   * messages in an existing subscription to the state captured by a snapshot. If the snapshot
+   * already exists, returns `ALREADY_EXISTS`. If the requested subscription doesn't exist, returns
+   * `NOT_FOUND`. If the backlog in the subscription is too old -- and the resulting snapshot would
+   * expire in less than 1 hour -- then `FAILED_PRECONDITION` is returned. See also the
+   * `Snapshot.expire_time` field. If the name is not provided in the request, the server will
+   * assign a random name for this snapshot on the same project as the subscription, conforming to
+   * the [resource name format] (https://cloud.google.com/pubsub/docs/admin#resource_names). The
+   * generated name is populated in the returned Snapshot object. Note that for REST API requests,
+   * you must specify a name in the request.
+   *
+   * <p>Sample code:
+   *
+   * <pre>{@code
+   * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
+   *   ProjectSnapshotName name = ProjectSnapshotName.of("[PROJECT]", "[SNAPSHOT]");
+   *   String subscription = ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString();
+   *   Snapshot response = subscriptionAdminClient.createSnapshot(name, subscription);
+   * }
+   * }</pre>
+   *
+   * @param name Required. User-provided name for this snapshot. If the name is not provided in the
+   *     request, the server will assign a random name for this snapshot on the same project as the
+   *     subscription. Note that for REST API requests, you must specify a name. See the &lt;a
+   *     href="https://cloud.google.com/pubsub/docs/admin#resource_names"&gt; resource name
+   *     rules&lt;/a&gt;. Format is `projects/{project}/snapshots/{snap}`.
+   * @param subscription Required. The subscription whose backlog the snapshot retains.
+   *     Specifically, the created snapshot is guaranteed to retain: (a) The existing backlog on the
+   *     subscription. More precisely, this is defined as the messages in the subscription's backlog
+   *     that are unacknowledged upon the successful completion of the `CreateSnapshot` request; as
+   *     well as: (b) Any messages published to the subscription's topic following the successful
+   *     completion of the CreateSnapshot request. Format is
+   *     `projects/{project}/subscriptions/{sub}`.
+   * @throws com.google.api.gax.rpc.ApiException if the remote call fails
+   * @deprecated Use Use {@link #createSnapshot(SnapshotName, String)} instead.
+   */
+  @Deprecated
+  public final Snapshot createSnapshot(ProjectSnapshotName name, String subscription) {
+    CreateSnapshotRequest request =
+        CreateSnapshotRequest.newBuilder()
+            .setName(name == null ? null : name.toString())
+            .setSubscription(subscription)
+            .build();
+    return createSnapshot(request);
+  }
+
+  // AUTO-GENERATED DOCUMENTATION AND METHOD.
+  /**
+   * Creates a snapshot from the requested subscription. Snapshots are used in
+   * [Seek](https://cloud.google.com/pubsub/docs/replay-overview) operations, which allow you to
+   * manage message acknowledgments in bulk. That is, you can set the acknowledgment state of
+   * messages in an existing subscription to the state captured by a snapshot. If the snapshot
+   * already exists, returns `ALREADY_EXISTS`. If the requested subscription doesn't exist, returns
+   * `NOT_FOUND`. If the backlog in the subscription is too old -- and the resulting snapshot would
+   * expire in less than 1 hour -- then `FAILED_PRECONDITION` is returned. See also the
+   * `Snapshot.expire_time` field. If the name is not provided in the request, the server will
+   * assign a random name for this snapshot on the same project as the subscription, conforming to
+   * the [resource name format] (https://cloud.google.com/pubsub/docs/admin#resource_names). The
+   * generated name is populated in the returned Snapshot object. Note that for REST API requests,
+   * you must specify a name in the request.
+   *
+   * <p>Sample code:
+   *
+   * <pre>{@code
+   * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
    *   CreateSnapshotRequest request =
    *       CreateSnapshotRequest.newBuilder()
-   *           .setName(ProjectSnapshotName.of("[PROJECT]", "[SNAPSHOT]").toString())
-   *           .setSubscription(ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
+   *           .setName(SnapshotName.of("[PROJECT]", "[SNAPSHOT]").toString())
+   *           .setSubscription(SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
    *           .putAllLabels(new HashMap<String, String>())
    *           .build();
    *   ApiFuture<Snapshot> future =
@@ -2212,7 +2778,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *
    * <pre>{@code
    * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
-   *   ProjectSnapshotName snapshot = ProjectSnapshotName.of("[PROJECT]", "[SNAPSHOT]");
+   *   SnapshotName snapshot = SnapshotName.of("[PROJECT]", "[SNAPSHOT]");
    *   subscriptionAdminClient.deleteSnapshot(snapshot);
    * }
    * }</pre>
@@ -2221,7 +2787,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *     `projects/{project}/snapshots/{snap}`.
    * @throws com.google.api.gax.rpc.ApiException if the remote call fails
    */
-  public final void deleteSnapshot(ProjectSnapshotName snapshot) {
+  public final void deleteSnapshot(SnapshotName snapshot) {
     DeleteSnapshotRequest request =
         DeleteSnapshotRequest.newBuilder()
             .setSnapshot(snapshot == null ? null : snapshot.toString())
@@ -2243,7 +2809,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *
    * <pre>{@code
    * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
-   *   String snapshot = ProjectSnapshotName.of("[PROJECT]", "[SNAPSHOT]").toString();
+   *   String snapshot = SnapshotName.of("[PROJECT]", "[SNAPSHOT]").toString();
    *   subscriptionAdminClient.deleteSnapshot(snapshot);
    * }
    * }</pre>
@@ -2274,7 +2840,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
    *   DeleteSnapshotRequest request =
    *       DeleteSnapshotRequest.newBuilder()
-   *           .setSnapshot(ProjectSnapshotName.of("[PROJECT]", "[SNAPSHOT]").toString())
+   *           .setSnapshot(SnapshotName.of("[PROJECT]", "[SNAPSHOT]").toString())
    *           .build();
    *   subscriptionAdminClient.deleteSnapshot(request);
    * }
@@ -2301,9 +2867,42 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *
    * <pre>{@code
    * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
+   *   ProjectSnapshotName snapshot = ProjectSnapshotName.of("[PROJECT]", "[SNAPSHOT]");
+   *   subscriptionAdminClient.deleteSnapshot(snapshot);
+   * }
+   * }</pre>
+   *
+   * @param snapshot Required. The name of the snapshot to delete. Format is
+   *     `projects/{project}/snapshots/{snap}`.
+   * @throws com.google.api.gax.rpc.ApiException if the remote call fails
+   * @deprecated Use Use {@link #deleteSnapshot(SnapshotName)} instead.
+   */
+  @Deprecated
+  public final void deleteSnapshot(ProjectSnapshotName snapshot) {
+    DeleteSnapshotRequest request =
+        DeleteSnapshotRequest.newBuilder()
+            .setSnapshot(snapshot == null ? null : snapshot.toString())
+            .build();
+    deleteSnapshot(request);
+  }
+
+  // AUTO-GENERATED DOCUMENTATION AND METHOD.
+  /**
+   * Removes an existing snapshot. Snapshots are used in [Seek]
+   * (https://cloud.google.com/pubsub/docs/replay-overview) operations, which allow you to manage
+   * message acknowledgments in bulk. That is, you can set the acknowledgment state of messages in
+   * an existing subscription to the state captured by a snapshot. When the snapshot is deleted, all
+   * messages retained in the snapshot are immediately dropped. After a snapshot is deleted, a new
+   * one may be created with the same name, but the new one has no association with the old snapshot
+   * or its subscription, unless the same subscription is specified.
+   *
+   * <p>Sample code:
+   *
+   * <pre>{@code
+   * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
    *   DeleteSnapshotRequest request =
    *       DeleteSnapshotRequest.newBuilder()
-   *           .setSnapshot(ProjectSnapshotName.of("[PROJECT]", "[SNAPSHOT]").toString())
+   *           .setSnapshot(SnapshotName.of("[PROJECT]", "[SNAPSHOT]").toString())
    *           .build();
    *   ApiFuture<Empty> future =
    *       subscriptionAdminClient.deleteSnapshotCallable().futureCall(request);
@@ -2331,7 +2930,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
    *   SeekRequest request =
    *       SeekRequest.newBuilder()
-   *           .setSubscription(ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
+   *           .setSubscription(SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
    *           .build();
    *   SeekResponse response = subscriptionAdminClient.seek(request);
    * }
@@ -2359,7 +2958,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
    *   SeekRequest request =
    *       SeekRequest.newBuilder()
-   *           .setSubscription(ProjectSubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
+   *           .setSubscription(SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
    *           .build();
    *   ApiFuture<SeekResponse> future = subscriptionAdminClient.seekCallable().futureCall(request);
    *   // Do something.
@@ -2373,9 +2972,9 @@ public class SubscriptionAdminClient implements BackgroundResource {
 
   // AUTO-GENERATED DOCUMENTATION AND METHOD.
   /**
-   * Sets the access control policy on the specified resource. Replaces any existing policy.
+   * Sets the access control policy on the specified resource. Replacesany existing policy.
    *
-   * <p>Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
+   * <p>Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`errors.
    *
    * <p>Sample code:
    *
@@ -2430,9 +3029,9 @@ public class SubscriptionAdminClient implements BackgroundResource {
 
   // AUTO-GENERATED DOCUMENTATION AND METHOD.
   /**
-   * Sets the access control policy on the specified resource. Replaces any existing policy.
+   * Sets the access control policy on the specified resource. Replacesany existing policy.
    *
-   * <p>Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
+   * <p>Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`errors.
    *
    * <p>Sample code:
    *
@@ -2455,7 +3054,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
 
   // AUTO-GENERATED DOCUMENTATION AND METHOD.
   /**
-   * Gets the access control policy for a resource. Returns an empty policy if the resource exists
+   * Gets the access control policy for a resource. Returns an empty policyif the resource exists
    * and does not have a policy set.
    *
    * <p>Sample code:
@@ -2505,7 +3104,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
 
   // AUTO-GENERATED DOCUMENTATION AND METHOD.
   /**
-   * Gets the access control policy for a resource. Returns an empty policy if the resource exists
+   * Gets the access control policy for a resource. Returns an empty policyif the resource exists
    * and does not have a policy set.
    *
    * <p>Sample code:
@@ -2529,11 +3128,11 @@ public class SubscriptionAdminClient implements BackgroundResource {
 
   // AUTO-GENERATED DOCUMENTATION AND METHOD.
   /**
-   * Returns permissions that a caller has on the specified resource. If the resource does not
-   * exist, this will return an empty set of permissions, not a `NOT_FOUND` error.
+   * Returns permissions that a caller has on the specified resource. If theresource does not exist,
+   * this will return an empty set ofpermissions, not a `NOT_FOUND` error.
    *
-   * <p>Note: This operation is designed to be used for building permission-aware UIs and
-   * command-line tools, not for authorization checking. This operation may "fail open" without
+   * <p>Note: This operation is designed to be used for buildingpermission-aware UIs and
+   * command-line tools, not for authorizationchecking. This operation may "fail open" without
    * warning.
    *
    * <p>Sample code:
@@ -2596,11 +3195,11 @@ public class SubscriptionAdminClient implements BackgroundResource {
 
   // AUTO-GENERATED DOCUMENTATION AND METHOD.
   /**
-   * Returns permissions that a caller has on the specified resource. If the resource does not
-   * exist, this will return an empty set of permissions, not a `NOT_FOUND` error.
+   * Returns permissions that a caller has on the specified resource. If theresource does not exist,
+   * this will return an empty set ofpermissions, not a `NOT_FOUND` error.
    *
-   * <p>Note: This operation is designed to be used for building permission-aware UIs and
-   * command-line tools, not for authorization checking. This operation may "fail open" without
+   * <p>Note: This operation is designed to be used for buildingpermission-aware UIs and
+   * command-line tools, not for authorizationchecking. This operation may "fail open" without
    * warning.
    *
    * <p>Sample code:
@@ -2669,12 +3268,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
           ListSubscriptionsPage.createEmptyPage().createPageAsync(context, futureResponse);
       return ApiFutures.transform(
           futurePage,
-          new ApiFunction<ListSubscriptionsPage, ListSubscriptionsPagedResponse>() {
-            @Override
-            public ListSubscriptionsPagedResponse apply(ListSubscriptionsPage input) {
-              return new ListSubscriptionsPagedResponse(input);
-            }
-          },
+          input -> new ListSubscriptionsPagedResponse(input),
           MoreExecutors.directExecutor());
     }
 
@@ -2754,12 +3348,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
           ListSnapshotsPage.createEmptyPage().createPageAsync(context, futureResponse);
       return ApiFutures.transform(
           futurePage,
-          new ApiFunction<ListSnapshotsPage, ListSnapshotsPagedResponse>() {
-            @Override
-            public ListSnapshotsPagedResponse apply(ListSnapshotsPage input) {
-              return new ListSnapshotsPagedResponse(input);
-            }
-          },
+          input -> new ListSnapshotsPagedResponse(input),
           MoreExecutors.directExecutor());
     }
 

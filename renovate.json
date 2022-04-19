@@ -50,7 +50,8 @@
         "^junit:junit",
         "^com.google.truth:truth",
         "^org.mockito:mockito-core",
-        "^org.objenesis:objenesis"
+        "^org.objenesis:objenesis",
+        "^com.google.cloud:google-cloud-conformance-tests"
       ],
       "semanticCommitType": "test",
       "semanticCommitScope": "deps"
@@ -69,8 +70,5 @@
     }
   ],
   "semanticCommits": true,
-  "dependencyDashboard": true,
-  "dependencyDashboardLabels": [
-    "type: process"
-  ]
+  "dependencyDashboard": true
 }

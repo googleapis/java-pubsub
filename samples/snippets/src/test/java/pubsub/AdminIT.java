@@ -22,8 +22,8 @@ import static junit.framework.TestCase.assertNotNull;
 import com.google.api.gax.rpc.NotFoundException;
 import com.google.cloud.pubsub.v1.SubscriptionAdminClient;
 import com.google.cloud.pubsub.v1.TopicAdminClient;
-import com.google.pubsub.v1.ProjectSubscriptionName;
-import com.google.pubsub.v1.ProjectTopicName;
+import com.google.pubsub.v1.SubscriptionName;
+import com.google.pubsub.v1.TopicName;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.UUID;
@@ -44,15 +44,22 @@ public class AdminIT {
   private static final String pullSubscriptionId = "iam-pull-subscription-" + _suffix;
   private static final String pushSubscriptionId = "iam-push-subscription-" + _suffix;
   private static final String orderedSubscriptionId = "iam-ordered-subscription-" + _suffix;
+  private static final String filteredSubscriptionId = "iam-filtered-subscription-" + _suffix;
+  private static final String exactlyOnceSubscriptionId =
+      "iam-exactly-once-subscription-" + _suffix;
   private static final String pushEndpoint = "https://my-test-project.appspot.com/push";
 
-  private static final ProjectTopicName topicName = ProjectTopicName.of(projectId, topicId);
-  private static final ProjectSubscriptionName pullSubscriptionName =
-      ProjectSubscriptionName.of(projectId, pullSubscriptionId);
-  private static final ProjectSubscriptionName pushSubscriptionName =
-      ProjectSubscriptionName.of(projectId, pushSubscriptionId);
-  private static final ProjectSubscriptionName orderedSubscriptionName =
-      ProjectSubscriptionName.of(projectId, orderedSubscriptionId);
+  private static final TopicName topicName = TopicName.of(projectId, topicId);
+  private static final SubscriptionName pullSubscriptionName =
+      SubscriptionName.of(projectId, pullSubscriptionId);
+  private static final SubscriptionName pushSubscriptionName =
+      SubscriptionName.of(projectId, pushSubscriptionId);
+  private static final SubscriptionName orderedSubscriptionName =
+      SubscriptionName.of(projectId, orderedSubscriptionId);
+  private static final SubscriptionName filteredSubscriptionName =
+      SubscriptionName.of(projectId, filteredSubscriptionId);
+  private static final SubscriptionName exactlyOnceSubscriptionName =
+      SubscriptionName.of(projectId, exactlyOnceSubscriptionId);
 
   private static void requireEnvVar(String varName) {
     assertNotNull(
@@ -82,6 +89,8 @@ public class AdminIT {
         subscriptionAdminClient.deleteSubscription(pullSubscriptionName);
         subscriptionAdminClient.deleteSubscription(pushSubscriptionName);
         subscriptionAdminClient.deleteSubscription(orderedSubscriptionName);
+        subscriptionAdminClient.deleteSubscription(filteredSubscriptionName);
+        subscriptionAdminClient.deleteSubscription(exactlyOnceSubscriptionName);
       } catch (NotFoundException ignored) {
         // ignore this as resources may not have been created
       }
@@ -184,10 +193,27 @@ public class AdminIT {
     assertThat(bout.toString()).contains("enable_message_ordering=true");
 
     bout.reset();
-    // Test delete subscription. Run twice to delete both pull and push subscriptions.
+    // Test create a subscription with filtering enabled
+    CreateSubscriptionWithFiltering.createSubscriptionWithFilteringExample(
+        projectId, topicId, filteredSubscriptionId, "attributes.author=\"unknown\"");
+    assertThat(bout.toString()).contains("Created a subscription with filtering enabled");
+    assertThat(bout.toString())
+        .contains("google.pubsub.v1.Subscription.filter=attributes.author=\"unknown\"");
+
+    bout.reset();
+    // Test create a subscription with exactly once delivery enabled
+    CreateSubscriptionWithExactlyOnceDelivery.createSubscriptionWithExactlyOnceDeliveryExample(
+        projectId, topicId, exactlyOnceSubscriptionId);
+    assertThat(bout.toString())
+        .contains("Created a subscription with exactly once delivery enabled:");
+    assertThat(bout.toString()).contains("enable_exactly_once_delivery=true");
+
+    bout.reset();
+    // Test delete subscription.
     DeleteSubscriptionExample.deleteSubscriptionExample(projectId, pullSubscriptionId);
     DeleteSubscriptionExample.deleteSubscriptionExample(projectId, pushSubscriptionId);
     DeleteSubscriptionExample.deleteSubscriptionExample(projectId, orderedSubscriptionId);
+    DeleteSubscriptionExample.deleteSubscriptionExample(projectId, exactlyOnceSubscriptionId);
     assertThat(bout.toString()).contains("Deleted subscription.");
 
     bout.reset();
