@@ -142,7 +142,6 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
               <buildArgs>
                 <buildArg>--no-fallback</buildArg>
                 <buildArg>--no-server</buildArg>
-                <buildArg>--features=com.google.cloud.nativeimage.features.ProtobufMessageFeature</buildArg>
               </buildArgs>
             </configuration>
             <executions>
