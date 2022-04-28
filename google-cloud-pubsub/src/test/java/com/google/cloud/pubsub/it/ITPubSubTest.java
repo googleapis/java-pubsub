@@ -450,13 +450,13 @@ public class ITPubSubTest {
 
     // Ack the first message.
     MessageAndConsumer toAck1 = pollQueueMessageAndConsumer(receiveQueue);
-    assertThat(toAck1.message().getData()).isEqualTo(ByteString.copyFromUtf8(msg1));
     toAck1.consumer().ack();
 
     // Ack the second message.
     MessageAndConsumer toAck2 = pollQueueMessageAndConsumer(receiveQueue);
-    assertThat(toAck2.message().getData()).isEqualTo(ByteString.copyFromUtf8(msg2));
     toAck2.consumer().ack();
+
+    assertNotEquals(toAck1.message().getData(), toAck2.message().getData());
 
     subscriber.stopAsync().awaitTerminated();
     subscriptionAdminClient.deleteSubscription(subscriptionName);
