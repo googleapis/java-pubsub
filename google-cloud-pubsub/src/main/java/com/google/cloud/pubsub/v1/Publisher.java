@@ -452,7 +452,8 @@ public class Publisher implements PublisherInterface {
 
   private ApiFuture<PublishResponse> publishCall(OutstandingBatch outstandingBatch) {
     if (enableCompression && outstandingBatch.batchSizeBytes >= compressionBytesThreshold) {
-      publishContext = publishContext.withCallOptions(CallOptions.DEFAULT.withCompression(GZIP_COMPRESSION));
+      publishContext =
+          publishContext.withCallOptions(CallOptions.DEFAULT.withCompression(GZIP_COMPRESSION));
     }
     return publisherStub
         .publishCallable()
