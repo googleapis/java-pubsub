@@ -122,6 +122,8 @@ public class Publisher implements PublisherInterface {
   private final boolean enableCompressionBytesThreshold;
   private final long compressionBytesThreshold;
 
+  private GrpcCallContext publishContext;
+
   /** The maximum number of messages in one request. Defined by the API. */
   public static long getApiMaxRequestElementCount() {
     return 1000L;
@@ -202,6 +204,7 @@ public class Publisher implements PublisherInterface {
     backgroundResources = new BackgroundResourceAggregation(backgroundResourceList);
     shutdown = new AtomicBoolean(false);
     messagesWaiter = new Waiter();
+    this.publishContext = GrpcCallContext.createDefault();
   }
 
   /** Topic which the publisher publishes to. */
@@ -448,9 +451,8 @@ public class Publisher implements PublisherInterface {
   }
 
   private ApiFuture<PublishResponse> publishCall(OutstandingBatch outstandingBatch) {
-    GrpcCallContext context = GrpcCallContext.createDefault();
     if (enableCompression && outstandingBatch.batchSizeBytes >= compressionBytesThreshold) {
-      context = context.withCallOptions(CallOptions.DEFAULT.withCompression(GZIP_COMPRESSION));
+      publishContext = publishContext.withCallOptions(CallOptions.DEFAULT.withCompression(GZIP_COMPRESSION));
     }
     return publisherStub
         .publishCallable()
@@ -459,7 +461,7 @@ public class Publisher implements PublisherInterface {
                 .setTopic(topicName)
                 .addAllMessages(outstandingBatch.getMessages())
                 .build(),
-            context);
+            publishContext);
   }
 
   private void publishOutstandingBatch(final OutstandingBatch outstandingBatch) {
