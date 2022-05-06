@@ -119,10 +119,10 @@ public class Publisher implements PublisherInterface {
   private MessageFlowController flowController = null;
 
   private final boolean enableCompression;
-  private final boolean enableCompressionBytesThreshold;
   private final long compressionBytesThreshold;
 
-  private GrpcCallContext publishContext;
+  private final GrpcCallContext publishContext;
+  private final GrpcCallContext publishContextWithCompression;
 
   /** The maximum number of messages in one request. Defined by the API. */
   public static long getApiMaxRequestElementCount() {
@@ -151,7 +151,6 @@ public class Publisher implements PublisherInterface {
     this.enableMessageOrdering = builder.enableMessageOrdering;
     this.messageTransform = builder.messageTransform;
     this.enableCompression = builder.enableCompression;
-    this.enableCompressionBytesThreshold = builder.enableCompressionBytesThreshold;
     this.compressionBytesThreshold = builder.compressionBytesThreshold;
 
     messagesBatches = new HashMap<>();
@@ -205,6 +204,9 @@ public class Publisher implements PublisherInterface {
     shutdown = new AtomicBoolean(false);
     messagesWaiter = new Waiter();
     this.publishContext = GrpcCallContext.createDefault();
+    this.publishContextWithCompression =
+        GrpcCallContext.createDefault()
+            .withCallOptions(CallOptions.DEFAULT.withCompression(GZIP_COMPRESSION));
   }
 
   /** Topic which the publisher publishes to. */
@@ -255,12 +257,6 @@ public class Publisher implements PublisherInterface {
         "Cannot publish a message with an ordering key when message ordering is not enabled in the "
             + "Publisher client. Please create a Publisher client with "
             + "setEnableMessageOrdering(true) in the builder.");
-
-    Preconditions.checkState(
-        !enableCompressionBytesThreshold || enableCompression,
-        "Cannot publish a message with compression bytes threshold when compression is not enabled "
-            + "in the Publisher client. Please create a Publisher client with "
-            + "setEnableCompression(true) in the builder.");
 
     final OutstandingPublish outstandingPublish =
         new OutstandingPublish(messageTransform.apply(message));
@@ -451,9 +447,9 @@ public class Publisher implements PublisherInterface {
   }
 
   private ApiFuture<PublishResponse> publishCall(OutstandingBatch outstandingBatch) {
+    GrpcCallContext context = publishContext;
     if (enableCompression && outstandingBatch.batchSizeBytes >= compressionBytesThreshold) {
-      publishContext =
-          publishContext.withCallOptions(CallOptions.DEFAULT.withCompression(GZIP_COMPRESSION));
+      context = publishContextWithCompression;
     }
     return publisherStub
         .publishCallable()
@@ -462,7 +458,7 @@ public class Publisher implements PublisherInterface {
                 .setTopic(topicName)
                 .addAllMessages(outstandingBatch.getMessages())
                 .build(),
-            publishContext);
+            context);
   }
 
   private void publishOutstandingBatch(final OutstandingBatch outstandingBatch) {
@@ -745,7 +741,6 @@ public class Publisher implements PublisherInterface {
         };
 
     private boolean enableCompression = DEFAULT_ENABLE_COMPRESSION;
-    private boolean enableCompressionBytesThreshold = DEFAULT_ENABLE_COMPRESSION;
     private long compressionBytesThreshold = DEFAULT_COMPRESSION_BYTES_THRESHOLD;
 
     private Builder(String topic) {
@@ -869,7 +864,6 @@ public class Publisher implements PublisherInterface {
      * effect if setEnableCompression(true) is also called."
      */
     public Builder setCompressionBytesThreshold(long compressionBytesThreshold) {
-      this.enableCompressionBytesThreshold = true;
       this.compressionBytesThreshold = compressionBytesThreshold;
       return this;
     }
