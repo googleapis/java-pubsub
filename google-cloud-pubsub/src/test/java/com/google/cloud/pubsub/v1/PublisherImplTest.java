@@ -307,29 +307,6 @@ public class PublisherImplTest {
     shutdownTestPublisher(publisher);
   }
 
-  @Test
-  public void testCompressionBytesThresholdWhenCompressionDisabled_throwsException()
-      throws Exception {
-    // Compression is not enabled but compression bytes theshold is set
-    Publisher publisher =
-        getTestPublisherBuilder()
-            .setBatchingSettings(
-                Publisher.Builder.DEFAULT_BATCHING_SETTINGS
-                    .toBuilder()
-                    .setElementCountThreshold(2L)
-                    .setDelayThreshold(Duration.ofSeconds(100))
-                    .build())
-            .setCompressionBytesThreshold(200)
-            .build();
-    try {
-      ApiFuture<String> publishFuture = sendTestMessage(publisher, "A");
-      fail("Should have thrown an IllegalStateException");
-    } catch (IllegalStateException expected) {
-      // expected
-    }
-    shutdownTestPublisher(publisher);
-  }
-
   private ApiFuture<String> sendTestMessage(Publisher publisher, String data) {
     return publisher.publish(
         PubsubMessage.newBuilder().setData(ByteString.copyFromUtf8(data)).build());
