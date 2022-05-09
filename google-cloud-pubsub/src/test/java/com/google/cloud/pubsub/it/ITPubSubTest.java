@@ -435,10 +435,7 @@ public class ITPubSubTest {
         MoreExecutors.directExecutor());
     subscriber.startAsync();
 
-    Publisher publisher =
-        Publisher.newBuilder(topicName)
-            .setEnableCompression(true)
-            .build();
+    Publisher publisher = Publisher.newBuilder(topicName).setEnableCompression(true).build();
 
     String msg1 = generateMessage("msg1", 1000);
     String msg2 = generateMessage("msg2", 1500);
