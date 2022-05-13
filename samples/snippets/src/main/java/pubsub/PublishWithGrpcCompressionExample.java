@@ -17,18 +17,12 @@
 package pubsub;
 
 import com.google.api.core.ApiFuture;
-import com.google.api.core.ApiFutureCallback;
-import com.google.api.core.ApiFutures;
-import com.google.api.gax.rpc.ApiException;
 import com.google.cloud.pubsub.v1.Publisher;
-import com.google.common.util.concurrent.MoreExecutors;
 import com.google.protobuf.ByteString;
 import com.google.pubsub.v1.PubsubMessage;
 import com.google.pubsub.v1.TopicName;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class PublishWithGrpcCompressionExample {
@@ -64,7 +58,8 @@ public class PublishWithGrpcCompressionExample {
 
       // Once published, returns a server-assigned message id (unique within the topic).
       // You can look up the actual size of the outbound data using the Java Logging API.
-      // Configure logging properties as shown in https://github.com/googleapis/java-pubsub/tree/main/samples/snippets/src/main/resources/logging.properties
+      // Configure logging properties as shown in
+      // https://github.com/googleapis/java-pubsub/tree/main/samples/snippets/src/main/resources/logging.properties
       // and look for "OUTBOUND DATA" with "length=" in the output log.
       ApiFuture<String> messageIdFuture = publisher.publish(pubsubMessage);
       String messageId = messageIdFuture.get();
