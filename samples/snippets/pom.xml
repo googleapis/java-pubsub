@@ -56,7 +56,6 @@
     <dependency>
       <groupId>com.google.cloud</groupId>
       <artifactId>google-cloud-pubsub</artifactId>
-      <version>1.117.0</version>
     </dependency>
     
     <!-- [START_EXCLUDE] -->
