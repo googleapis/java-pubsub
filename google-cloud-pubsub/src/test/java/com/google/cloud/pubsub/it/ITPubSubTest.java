@@ -21,8 +21,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assume.assumeTrue;
 
-import com.google.api.core.ApiFuture;
-import com.google.api.gax.batching.FlowControlSettings;
 import com.google.api.gax.rpc.PermissionDeniedException;
 import com.google.auto.value.AutoValue;
 import com.google.cloud.ServiceOptions;
@@ -35,13 +33,13 @@ import com.google.iam.v1.SetIamPolicyRequest;
 import com.google.iam.v1.TestIamPermissionsRequest;
 import com.google.protobuf.ByteString;
 import com.google.pubsub.v1.*;
-
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.*;
-
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import org.junit.*;
 import org.junit.rules.Timeout;
 
@@ -322,69 +320,6 @@ public class ITPubSubTest {
     subscriber.stopAsync().awaitTerminated();
     subscriptionAdminClient.deleteSubscription(subscriptionName);
     topicAdminClient.deleteTopic(topicName);
-  }
-
-  @Test
-  public void testPublishSubscribeMessageFuturesPayloadTooLarge() throws Exception {
-    TopicName topicName =
-            TopicName.newBuilder()
-                    .setProject(projectId)
-                    .setTopic(formatForTest("testing-publish-subscribe-message-futures"))
-                    .build();
-    SubscriptionName subscriptionName =
-            SubscriptionName.of(projectId, formatForTest("testing-publish-subscribe-message-futures"));
-
-    topicAdminClient.createTopic(topicName);
-    subscriptionAdminClient.createSubscription(
-            getSubscription(subscriptionName, topicName, PushConfig.newBuilder().build(), 10, false));
-
-    Publisher publisher = Publisher.newBuilder(topicName).build();
-
-    try {
-      // publish enough messages to exceed a single ModifyAckDeadline request
-      int sentCount = 2775;
-      List<ApiFuture<String>> published = new ArrayList<>(sentCount);
-      for (int i = 0; i < sentCount; i++) {
-        published.add(publisher.publish(PubsubMessage.newBuilder().setData(ByteString.copyFromUtf8("" + i)).build()));
-      }
-      publisher.publishAllOutstanding();
-      for (ApiFuture<String> future : published) {
-        future.get();
-      }
-
-      publisher.shutdown();
-
-      // pull all messages and hold them for 1 minute
-      final CompletableFuture<Void> done = new CompletableFuture<Void>().orTimeout(15, TimeUnit.SECONDS);
-      final MessageReceiver receiver = (message, consumer) -> {
-        done.whenComplete((result, exception) -> {
-          if (exception == null) {
-            consumer.ack();
-          } else {
-            consumer.nack();
-          }
-        });
-      };
-
-      final Subscriber subscriber = Subscriber
-              .newBuilder(subscriptionName.toString(), receiver)
-              .setFlowControlSettings(
-                      FlowControlSettings.newBuilder().setMaxOutstandingElementCount(2775L)
-                              .setMaxOutstandingRequestBytes(30_000_000L).build())
-              .build();
-      done.whenComplete((v, e) -> subscriber.stopAsync());
-      try {
-        subscriber.startAsync();
-        subscriber.awaitTerminated();
-      } finally {
-        subscriber.stopAsync();
-      }
-    } finally {
-//      topicAdminClient.deleteTopic(subscription.getTopic());
-//      subscriptionAdminClient.deleteSubscription(subscription.getName());
-      subscriptionAdminClient.deleteSubscription(subscriptionName);
-      topicAdminClient.deleteTopic(topicName);
-    }
   }
 
   @Test
