@@ -412,14 +412,16 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
       }
       ApiFutureCallback<Empty> callback =
           getCallback(ackRequestDataInRequestList, 0, false, currentBackoffMillis);
+      AcknowledgeRequest acknowledgeRequest = AcknowledgeRequest.newBuilder()
+              .setSubscription(subscription)
+              .addAllAckIds(ackIdsInRequest)
+              .build();
+
       ApiFuture<Empty> ackFuture =
           subscriberStub
               .acknowledgeCallable()
               .futureCall(
-                  AcknowledgeRequest.newBuilder()
-                      .setSubscription(subscription)
-                      .addAllAckIds(ackIdsInRequest)
-                      .build());
+                  acknowledgeRequest);
       ApiFutures.addCallback(ackFuture, callback, directExecutor());
       pendingOperations++;
     }
