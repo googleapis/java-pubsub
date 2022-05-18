@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.117.0-sp.1](https://github.com/googleapis/java-pubsub/compare/v1.117.0...v1.117.0-sp.1) (2022-05-18)
+
+
+### Features
+
+* configure the protected branch ([#1128](https://github.com/googleapis/java-pubsub/issues/1128)) ([6b84697](https://github.com/googleapis/java-pubsub/commit/6b84697dfb8c7896d8dc1b815962723cb7b42dd5))
+
+
+### Bug Fixes
+
+* updated modack batching behavior ([#1139](https://github.com/googleapis/java-pubsub/issues/1139)) ([8a8c537](https://github.com/googleapis/java-pubsub/commit/8a8c537c3b655595f92516b0a4284427efe33e28))
+
 ## [1.117.0](https://github.com/googleapis/java-pubsub/compare/v1.116.4...v1.117.0) (2022-05-10)
 
 
