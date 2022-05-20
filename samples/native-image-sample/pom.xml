@@ -30,7 +30,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
       <dependency>
         <groupId>com.google.cloud</groupId>
         <artifactId>libraries-bom</artifactId>
-        <version>25.0.0</version>
+        <version>25.3.0</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -104,11 +104,6 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
       <id>native</id>
 
       <dependencies>
-        <dependency>
-          <groupId>com.google.cloud</groupId>
-          <artifactId>native-image-support</artifactId>
-          <version>0.12.11</version>
-        </dependency>
         <dependency>
           <groupId>org.junit.vintage</groupId>
           <artifactId>junit-vintage-engine</artifactId>
