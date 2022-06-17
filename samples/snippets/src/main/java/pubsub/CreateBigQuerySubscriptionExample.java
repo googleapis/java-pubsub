@@ -30,7 +30,7 @@ public class CreateBigQuerySubscriptionExample {
     String projectId = "your-project-id";
     String topicId = "your-topic-id";
     String subscriptionId = "your-subscription-id";
-    String bigqueryTableId = "your-bigquery-table-id";
+    String bigqueryTableId = "your-project.your-dataset.your-table;
 
     createBigQuerySubscription(projectId, topicId, subscriptionId, bigqueryTableId);
   }
