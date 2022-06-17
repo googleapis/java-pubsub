@@ -253,7 +253,6 @@ public class AdminIT {
     // Test create a BigQuery subscription
     createBigQueryTable();
     String bigqueryTablePath = String.join(".", projectId, bigqueryDatasetId, bigqueryTableId);
-    System.err.println("SAMPLE: " + bigqueryTablePath);
     CreateBigQuerySubscriptionExample.createBigQuerySubscription(
         projectId, topicId, bigquerySubscriptionId, bigqueryTablePath);
     assertThat(bout.toString()).contains("Created a BigQuery subscription:");
