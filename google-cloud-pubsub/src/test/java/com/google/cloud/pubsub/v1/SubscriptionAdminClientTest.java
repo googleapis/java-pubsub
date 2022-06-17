@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Google LLC
+ * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import com.google.api.gax.rpc.BidiStreamingCallable;
 import com.google.api.gax.rpc.InvalidArgumentException;
 import com.google.api.gax.rpc.StatusCode;
 import com.google.common.collect.Lists;
+import com.google.iam.v1.AuditConfig;
 import com.google.iam.v1.Binding;
 import com.google.iam.v1.GetIamPolicyRequest;
 import com.google.iam.v1.GetPolicyOptions;
@@ -45,6 +46,7 @@ import com.google.protobuf.Empty;
 import com.google.protobuf.FieldMask;
 import com.google.protobuf.Timestamp;
 import com.google.pubsub.v1.AcknowledgeRequest;
+import com.google.pubsub.v1.BigQueryConfig;
 import com.google.pubsub.v1.CreateSnapshotRequest;
 import com.google.pubsub.v1.DeadLetterPolicy;
 import com.google.pubsub.v1.DeleteSnapshotRequest;
@@ -139,6 +141,7 @@ public class SubscriptionAdminClientTest {
             .setName(SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
             .setTopic(TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]").toString())
             .setPushConfig(PushConfig.newBuilder().build())
+            .setBigqueryConfig(BigQueryConfig.newBuilder().build())
             .setAckDeadlineSeconds(2135351438)
             .setRetainAckedMessages(true)
             .setMessageRetentionDuration(Duration.newBuilder().build())
@@ -201,6 +204,7 @@ public class SubscriptionAdminClientTest {
             .setName(SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
             .setTopic(TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]").toString())
             .setPushConfig(PushConfig.newBuilder().build())
+            .setBigqueryConfig(BigQueryConfig.newBuilder().build())
             .setAckDeadlineSeconds(2135351438)
             .setRetainAckedMessages(true)
             .setMessageRetentionDuration(Duration.newBuilder().build())
@@ -263,6 +267,7 @@ public class SubscriptionAdminClientTest {
             .setName(SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
             .setTopic(TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]").toString())
             .setPushConfig(PushConfig.newBuilder().build())
+            .setBigqueryConfig(BigQueryConfig.newBuilder().build())
             .setAckDeadlineSeconds(2135351438)
             .setRetainAckedMessages(true)
             .setMessageRetentionDuration(Duration.newBuilder().build())
@@ -325,6 +330,7 @@ public class SubscriptionAdminClientTest {
             .setName(SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
             .setTopic(TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]").toString())
             .setPushConfig(PushConfig.newBuilder().build())
+            .setBigqueryConfig(BigQueryConfig.newBuilder().build())
             .setAckDeadlineSeconds(2135351438)
             .setRetainAckedMessages(true)
             .setMessageRetentionDuration(Duration.newBuilder().build())
@@ -387,6 +393,7 @@ public class SubscriptionAdminClientTest {
             .setName(SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
             .setTopic(TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]").toString())
             .setPushConfig(PushConfig.newBuilder().build())
+            .setBigqueryConfig(BigQueryConfig.newBuilder().build())
             .setAckDeadlineSeconds(2135351438)
             .setRetainAckedMessages(true)
             .setMessageRetentionDuration(Duration.newBuilder().build())
@@ -439,6 +446,7 @@ public class SubscriptionAdminClientTest {
             .setName(SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
             .setTopic(TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]").toString())
             .setPushConfig(PushConfig.newBuilder().build())
+            .setBigqueryConfig(BigQueryConfig.newBuilder().build())
             .setAckDeadlineSeconds(2135351438)
             .setRetainAckedMessages(true)
             .setMessageRetentionDuration(Duration.newBuilder().build())
@@ -491,6 +499,7 @@ public class SubscriptionAdminClientTest {
             .setName(SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
             .setTopic(TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]").toString())
             .setPushConfig(PushConfig.newBuilder().build())
+            .setBigqueryConfig(BigQueryConfig.newBuilder().build())
             .setAckDeadlineSeconds(2135351438)
             .setRetainAckedMessages(true)
             .setMessageRetentionDuration(Duration.newBuilder().build())
@@ -1679,6 +1688,7 @@ public class SubscriptionAdminClientTest {
         Policy.newBuilder()
             .setVersion(351608024)
             .addAllBindings(new ArrayList<Binding>())
+            .addAllAuditConfigs(new ArrayList<AuditConfig>())
             .setEtag(ByteString.EMPTY)
             .build();
     mockIAMPolicy.addResponse(expectedResponse);
@@ -1687,6 +1697,7 @@ public class SubscriptionAdminClientTest {
         SetIamPolicyRequest.newBuilder()
             .setResource(ProjectName.of("[PROJECT]").toString())
             .setPolicy(Policy.newBuilder().build())
+            .setUpdateMask(FieldMask.newBuilder().build())
             .build();
 
     Policy actualResponse = client.setIamPolicy(request);
@@ -1698,6 +1709,7 @@ public class SubscriptionAdminClientTest {
 
     Assert.assertEquals(request.getResource(), actualRequest.getResource());
     Assert.assertEquals(request.getPolicy(), actualRequest.getPolicy());
+    Assert.assertEquals(request.getUpdateMask(), actualRequest.getUpdateMask());
     Assert.assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
@@ -1714,6 +1726,7 @@ public class SubscriptionAdminClientTest {
           SetIamPolicyRequest.newBuilder()
               .setResource(ProjectName.of("[PROJECT]").toString())
               .setPolicy(Policy.newBuilder().build())
+              .setUpdateMask(FieldMask.newBuilder().build())
               .build();
       client.setIamPolicy(request);
       Assert.fail("No exception raised");
@@ -1728,6 +1741,7 @@ public class SubscriptionAdminClientTest {
         Policy.newBuilder()
             .setVersion(351608024)
             .addAllBindings(new ArrayList<Binding>())
+            .addAllAuditConfigs(new ArrayList<AuditConfig>())
             .setEtag(ByteString.EMPTY)
             .build();
     mockIAMPolicy.addResponse(expectedResponse);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Google LLC
+ * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package com.google.cloud.pubsub.v1;
 
 import com.google.api.core.ApiFuture;
 import com.google.api.core.ApiFutures;
-import com.google.api.core.BetaApi;
 import com.google.api.gax.core.BackgroundResource;
 import com.google.api.gax.paging.AbstractFixedSizeCollection;
 import com.google.api.gax.paging.AbstractPage;
@@ -59,6 +58,8 @@ import javax.annotation.Generated;
  * calls that map to API methods. Sample code to get started:
  *
  * <pre>{@code
+ * // This snippet has been automatically generated for illustrative purposes only.
+ * // It may require modifications to work in your environment.
  * try (SchemaServiceClient schemaServiceClient = SchemaServiceClient.create()) {
  *   ProjectName parent = ProjectName.of("[PROJECT]");
  *   Schema schema = Schema.newBuilder().build();
@@ -96,6 +97,8 @@ import javax.annotation.Generated;
  * <p>To customize credentials:
  *
  * <pre>{@code
+ * // This snippet has been automatically generated for illustrative purposes only.
+ * // It may require modifications to work in your environment.
  * SchemaServiceSettings schemaServiceSettings =
  *     SchemaServiceSettings.newBuilder()
  *         .setCredentialsProvider(FixedCredentialsProvider.create(myCredentials))
@@ -106,6 +109,8 @@ import javax.annotation.Generated;
  * <p>To customize the endpoint:
  *
  * <pre>{@code
+ * // This snippet has been automatically generated for illustrative purposes only.
+ * // It may require modifications to work in your environment.
  * SchemaServiceSettings schemaServiceSettings =
  *     SchemaServiceSettings.newBuilder().setEndpoint(myEndpoint).build();
  * SchemaServiceClient schemaServiceClient = SchemaServiceClient.create(schemaServiceSettings);
@@ -136,7 +141,6 @@ public class SchemaServiceClient implements BackgroundResource {
    * Constructs an instance of SchemaServiceClient, using the given stub for making calls. This is
    * for advanced usage - prefer using create(SchemaServiceSettings).
    */
-  @BetaApi("A restructuring of stub classes is planned, so this may break in the future")
   public static final SchemaServiceClient create(SchemaServiceStub stub) {
     return new SchemaServiceClient(stub);
   }
@@ -151,7 +155,6 @@ public class SchemaServiceClient implements BackgroundResource {
     this.stub = ((SchemaServiceStubSettings) settings.getStubSettings()).createStub();
   }
 
-  @BetaApi("A restructuring of stub classes is planned, so this may break in the future")
   protected SchemaServiceClient(SchemaServiceStub stub) {
     this.settings = null;
     this.stub = stub;
@@ -161,7 +164,6 @@ public class SchemaServiceClient implements BackgroundResource {
     return settings;
   }
 
-  @BetaApi("A restructuring of stub classes is planned, so this may break in the future")
   public SchemaServiceStub getStub() {
     return stub;
   }
@@ -173,6 +175,8 @@ public class SchemaServiceClient implements BackgroundResource {
    * <p>Sample code:
    *
    * <pre>{@code
+   * // This snippet has been automatically generated for illustrative purposes only.
+   * // It may require modifications to work in your environment.
    * try (SchemaServiceClient schemaServiceClient = SchemaServiceClient.create()) {
    *   ProjectName parent = ProjectName.of("[PROJECT]");
    *   Schema schema = Schema.newBuilder().build();
@@ -209,6 +213,8 @@ public class SchemaServiceClient implements BackgroundResource {
    * <p>Sample code:
    *
    * <pre>{@code
+   * // This snippet has been automatically generated for illustrative purposes only.
+   * // It may require modifications to work in your environment.
    * try (SchemaServiceClient schemaServiceClient = SchemaServiceClient.create()) {
    *   String parent = ProjectName.of("[PROJECT]").toString();
    *   Schema schema = Schema.newBuilder().build();
@@ -245,6 +251,8 @@ public class SchemaServiceClient implements BackgroundResource {
    * <p>Sample code:
    *
    * <pre>{@code
+   * // This snippet has been automatically generated for illustrative purposes only.
+   * // It may require modifications to work in your environment.
    * try (SchemaServiceClient schemaServiceClient = SchemaServiceClient.create()) {
    *   CreateSchemaRequest request =
    *       CreateSchemaRequest.newBuilder()
@@ -270,6 +278,8 @@ public class SchemaServiceClient implements BackgroundResource {
    * <p>Sample code:
    *
    * <pre>{@code
+   * // This snippet has been automatically generated for illustrative purposes only.
+   * // It may require modifications to work in your environment.
    * try (SchemaServiceClient schemaServiceClient = SchemaServiceClient.create()) {
    *   CreateSchemaRequest request =
    *       CreateSchemaRequest.newBuilder()
@@ -294,6 +304,8 @@ public class SchemaServiceClient implements BackgroundResource {
    * <p>Sample code:
    *
    * <pre>{@code
+   * // This snippet has been automatically generated for illustrative purposes only.
+   * // It may require modifications to work in your environment.
    * try (SchemaServiceClient schemaServiceClient = SchemaServiceClient.create()) {
    *   SchemaName name = SchemaName.of("[PROJECT]", "[SCHEMA]");
    *   Schema response = schemaServiceClient.getSchema(name);
@@ -317,6 +329,8 @@ public class SchemaServiceClient implements BackgroundResource {
    * <p>Sample code:
    *
    * <pre>{@code
+   * // This snippet has been automatically generated for illustrative purposes only.
+   * // It may require modifications to work in your environment.
    * try (SchemaServiceClient schemaServiceClient = SchemaServiceClient.create()) {
    *   String name = SchemaName.of("[PROJECT]", "[SCHEMA]").toString();
    *   Schema response = schemaServiceClient.getSchema(name);
@@ -339,6 +353,8 @@ public class SchemaServiceClient implements BackgroundResource {
    * <p>Sample code:
    *
    * <pre>{@code
+   * // This snippet has been automatically generated for illustrative purposes only.
+   * // It may require modifications to work in your environment.
    * try (SchemaServiceClient schemaServiceClient = SchemaServiceClient.create()) {
    *   GetSchemaRequest request =
    *       GetSchemaRequest.newBuilder()
@@ -363,6 +379,8 @@ public class SchemaServiceClient implements BackgroundResource {
    * <p>Sample code:
    *
    * <pre>{@code
+   * // This snippet has been automatically generated for illustrative purposes only.
+   * // It may require modifications to work in your environment.
    * try (SchemaServiceClient schemaServiceClient = SchemaServiceClient.create()) {
    *   GetSchemaRequest request =
    *       GetSchemaRequest.newBuilder()
@@ -386,6 +404,8 @@ public class SchemaServiceClient implements BackgroundResource {
    * <p>Sample code:
    *
    * <pre>{@code
+   * // This snippet has been automatically generated for illustrative purposes only.
+   * // It may require modifications to work in your environment.
    * try (SchemaServiceClient schemaServiceClient = SchemaServiceClient.create()) {
    *   ProjectName parent = ProjectName.of("[PROJECT]");
    *   for (Schema element : schemaServiceClient.listSchemas(parent).iterateAll()) {
@@ -413,6 +433,8 @@ public class SchemaServiceClient implements BackgroundResource {
    * <p>Sample code:
    *
    * <pre>{@code
+   * // This snippet has been automatically generated for illustrative purposes only.
+   * // It may require modifications to work in your environment.
    * try (SchemaServiceClient schemaServiceClient = SchemaServiceClient.create()) {
    *   String parent = ProjectName.of("[PROJECT]").toString();
    *   for (Schema element : schemaServiceClient.listSchemas(parent).iterateAll()) {
@@ -437,6 +459,8 @@ public class SchemaServiceClient implements BackgroundResource {
    * <p>Sample code:
    *
    * <pre>{@code
+   * // This snippet has been automatically generated for illustrative purposes only.
+   * // It may require modifications to work in your environment.
    * try (SchemaServiceClient schemaServiceClient = SchemaServiceClient.create()) {
    *   ListSchemasRequest request =
    *       ListSchemasRequest.newBuilder()
@@ -465,6 +489,8 @@ public class SchemaServiceClient implements BackgroundResource {
    * <p>Sample code:
    *
    * <pre>{@code
+   * // This snippet has been automatically generated for illustrative purposes only.
+   * // It may require modifications to work in your environment.
    * try (SchemaServiceClient schemaServiceClient = SchemaServiceClient.create()) {
    *   ListSchemasRequest request =
    *       ListSchemasRequest.newBuilder()
@@ -493,6 +519,8 @@ public class SchemaServiceClient implements BackgroundResource {
    * <p>Sample code:
    *
    * <pre>{@code
+   * // This snippet has been automatically generated for illustrative purposes only.
+   * // It may require modifications to work in your environment.
    * try (SchemaServiceClient schemaServiceClient = SchemaServiceClient.create()) {
    *   ListSchemasRequest request =
    *       ListSchemasRequest.newBuilder()
@@ -527,6 +555,8 @@ public class SchemaServiceClient implements BackgroundResource {
    * <p>Sample code:
    *
    * <pre>{@code
+   * // This snippet has been automatically generated for illustrative purposes only.
+   * // It may require modifications to work in your environment.
    * try (SchemaServiceClient schemaServiceClient = SchemaServiceClient.create()) {
    *   SchemaName name = SchemaName.of("[PROJECT]", "[SCHEMA]");
    *   schemaServiceClient.deleteSchema(name);
@@ -550,6 +580,8 @@ public class SchemaServiceClient implements BackgroundResource {
    * <p>Sample code:
    *
    * <pre>{@code
+   * // This snippet has been automatically generated for illustrative purposes only.
+   * // It may require modifications to work in your environment.
    * try (SchemaServiceClient schemaServiceClient = SchemaServiceClient.create()) {
    *   String name = SchemaName.of("[PROJECT]", "[SCHEMA]").toString();
    *   schemaServiceClient.deleteSchema(name);
@@ -572,6 +604,8 @@ public class SchemaServiceClient implements BackgroundResource {
    * <p>Sample code:
    *
    * <pre>{@code
+   * // This snippet has been automatically generated for illustrative purposes only.
+   * // It may require modifications to work in your environment.
    * try (SchemaServiceClient schemaServiceClient = SchemaServiceClient.create()) {
    *   DeleteSchemaRequest request =
    *       DeleteSchemaRequest.newBuilder()
@@ -595,6 +629,8 @@ public class SchemaServiceClient implements BackgroundResource {
    * <p>Sample code:
    *
    * <pre>{@code
+   * // This snippet has been automatically generated for illustrative purposes only.
+   * // It may require modifications to work in your environment.
    * try (SchemaServiceClient schemaServiceClient = SchemaServiceClient.create()) {
    *   DeleteSchemaRequest request =
    *       DeleteSchemaRequest.newBuilder()
@@ -617,6 +653,8 @@ public class SchemaServiceClient implements BackgroundResource {
    * <p>Sample code:
    *
    * <pre>{@code
+   * // This snippet has been automatically generated for illustrative purposes only.
+   * // It may require modifications to work in your environment.
    * try (SchemaServiceClient schemaServiceClient = SchemaServiceClient.create()) {
    *   ProjectName parent = ProjectName.of("[PROJECT]");
    *   Schema schema = Schema.newBuilder().build();
@@ -645,6 +683,8 @@ public class SchemaServiceClient implements BackgroundResource {
    * <p>Sample code:
    *
    * <pre>{@code
+   * // This snippet has been automatically generated for illustrative purposes only.
+   * // It may require modifications to work in your environment.
    * try (SchemaServiceClient schemaServiceClient = SchemaServiceClient.create()) {
    *   String parent = ProjectName.of("[PROJECT]").toString();
    *   Schema schema = Schema.newBuilder().build();
@@ -670,6 +710,8 @@ public class SchemaServiceClient implements BackgroundResource {
    * <p>Sample code:
    *
    * <pre>{@code
+   * // This snippet has been automatically generated for illustrative purposes only.
+   * // It may require modifications to work in your environment.
    * try (SchemaServiceClient schemaServiceClient = SchemaServiceClient.create()) {
    *   ValidateSchemaRequest request =
    *       ValidateSchemaRequest.newBuilder()
@@ -694,6 +736,8 @@ public class SchemaServiceClient implements BackgroundResource {
    * <p>Sample code:
    *
    * <pre>{@code
+   * // This snippet has been automatically generated for illustrative purposes only.
+   * // It may require modifications to work in your environment.
    * try (SchemaServiceClient schemaServiceClient = SchemaServiceClient.create()) {
    *   ValidateSchemaRequest request =
    *       ValidateSchemaRequest.newBuilder()
@@ -719,6 +763,8 @@ public class SchemaServiceClient implements BackgroundResource {
    * <p>Sample code:
    *
    * <pre>{@code
+   * // This snippet has been automatically generated for illustrative purposes only.
+   * // It may require modifications to work in your environment.
    * try (SchemaServiceClient schemaServiceClient = SchemaServiceClient.create()) {
    *   ValidateMessageRequest request =
    *       ValidateMessageRequest.newBuilder()
@@ -744,6 +790,8 @@ public class SchemaServiceClient implements BackgroundResource {
    * <p>Sample code:
    *
    * <pre>{@code
+   * // This snippet has been automatically generated for illustrative purposes only.
+   * // It may require modifications to work in your environment.
    * try (SchemaServiceClient schemaServiceClient = SchemaServiceClient.create()) {
    *   ValidateMessageRequest request =
    *       ValidateMessageRequest.newBuilder()
@@ -772,11 +820,14 @@ public class SchemaServiceClient implements BackgroundResource {
    * <p>Sample code:
    *
    * <pre>{@code
+   * // This snippet has been automatically generated for illustrative purposes only.
+   * // It may require modifications to work in your environment.
    * try (SchemaServiceClient schemaServiceClient = SchemaServiceClient.create()) {
    *   SetIamPolicyRequest request =
    *       SetIamPolicyRequest.newBuilder()
    *           .setResource(ProjectName.of("[PROJECT]").toString())
    *           .setPolicy(Policy.newBuilder().build())
+   *           .setUpdateMask(FieldMask.newBuilder().build())
    *           .build();
    *   Policy response = schemaServiceClient.setIamPolicy(request);
    * }
@@ -798,11 +849,14 @@ public class SchemaServiceClient implements BackgroundResource {
    * <p>Sample code:
    *
    * <pre>{@code
+   * // This snippet has been automatically generated for illustrative purposes only.
+   * // It may require modifications to work in your environment.
    * try (SchemaServiceClient schemaServiceClient = SchemaServiceClient.create()) {
    *   SetIamPolicyRequest request =
    *       SetIamPolicyRequest.newBuilder()
    *           .setResource(ProjectName.of("[PROJECT]").toString())
    *           .setPolicy(Policy.newBuilder().build())
+   *           .setUpdateMask(FieldMask.newBuilder().build())
    *           .build();
    *   ApiFuture<Policy> future = schemaServiceClient.setIamPolicyCallable().futureCall(request);
    *   // Do something.
@@ -822,6 +876,8 @@ public class SchemaServiceClient implements BackgroundResource {
    * <p>Sample code:
    *
    * <pre>{@code
+   * // This snippet has been automatically generated for illustrative purposes only.
+   * // It may require modifications to work in your environment.
    * try (SchemaServiceClient schemaServiceClient = SchemaServiceClient.create()) {
    *   GetIamPolicyRequest request =
    *       GetIamPolicyRequest.newBuilder()
@@ -847,6 +903,8 @@ public class SchemaServiceClient implements BackgroundResource {
    * <p>Sample code:
    *
    * <pre>{@code
+   * // This snippet has been automatically generated for illustrative purposes only.
+   * // It may require modifications to work in your environment.
    * try (SchemaServiceClient schemaServiceClient = SchemaServiceClient.create()) {
    *   GetIamPolicyRequest request =
    *       GetIamPolicyRequest.newBuilder()
@@ -875,6 +933,8 @@ public class SchemaServiceClient implements BackgroundResource {
    * <p>Sample code:
    *
    * <pre>{@code
+   * // This snippet has been automatically generated for illustrative purposes only.
+   * // It may require modifications to work in your environment.
    * try (SchemaServiceClient schemaServiceClient = SchemaServiceClient.create()) {
    *   TestIamPermissionsRequest request =
    *       TestIamPermissionsRequest.newBuilder()
@@ -904,6 +964,8 @@ public class SchemaServiceClient implements BackgroundResource {
    * <p>Sample code:
    *
    * <pre>{@code
+   * // This snippet has been automatically generated for illustrative purposes only.
+   * // It may require modifications to work in your environment.
    * try (SchemaServiceClient schemaServiceClient = SchemaServiceClient.create()) {
    *   TestIamPermissionsRequest request =
    *       TestIamPermissionsRequest.newBuilder()

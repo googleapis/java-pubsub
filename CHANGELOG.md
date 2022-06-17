@@ -1,5 +1,67 @@
 # Changelog
 
+## [1.119.1](https://github.com/googleapis/java-pubsub/compare/v1.119.0...v1.119.1) (2022-06-06)
+
+
+### Dependencies
+
+* update dependency com.google.protobuf:protobuf-java-util to v3.21.0 ([#1152](https://github.com/googleapis/java-pubsub/issues/1152)) ([d015371](https://github.com/googleapis/java-pubsub/commit/d015371c91e22a1c03494da37a2523110c3437e0))
+* update dependency com.google.protobuf:protobuf-java-util to v3.21.1 ([#1154](https://github.com/googleapis/java-pubsub/issues/1154)) ([61aeecf](https://github.com/googleapis/java-pubsub/commit/61aeecf6c40ad0b9aa93ea48acc8cca0fe4e3764))
+
+## [1.119.0](https://github.com/googleapis/java-pubsub/compare/v1.118.0...v1.119.0) (2022-05-23)
+
+
+### Features
+
+* add BigQuery configuration for subscriptions ([#1133](https://github.com/googleapis/java-pubsub/issues/1133)) ([6f271db](https://github.com/googleapis/java-pubsub/commit/6f271db0feadcd338e2c5a0735e3828df5327772))
+* add build scripts for native image testing in Java 17 ([#1440](https://github.com/googleapis/java-pubsub/issues/1440)) ([#1145](https://github.com/googleapis/java-pubsub/issues/1145)) ([2f89017](https://github.com/googleapis/java-pubsub/commit/2f89017c4a9737d0db1456b0b9903ec07a9392e8))
+
+
+### Dependencies
+
+* update dependency com.google.cloud:google-cloud-core to v2.7.1 ([#1141](https://github.com/googleapis/java-pubsub/issues/1141)) ([851a119](https://github.com/googleapis/java-pubsub/commit/851a1190725d381232270bd80f6b82929f680f5f))
+* update dependency com.google.cloud:google-cloud-shared-dependencies to v2.11.0 ([#1142](https://github.com/googleapis/java-pubsub/issues/1142)) ([3cf6d82](https://github.com/googleapis/java-pubsub/commit/3cf6d82f85bdb49f8b5a4f9805506e8a2fafc53c))
+* update dependency com.google.cloud:google-cloud-shared-dependencies to v2.12.0 ([#1148](https://github.com/googleapis/java-pubsub/issues/1148)) ([b5b004b](https://github.com/googleapis/java-pubsub/commit/b5b004b69a0d1154f51233e1e47facc1cd13c716))
+
+## [1.118.0](https://github.com/googleapis/java-pubsub/compare/v1.117.0...v1.118.0) (2022-05-18)
+
+
+### Features
+
+* creating java backport ([#1120](https://github.com/googleapis/java-pubsub/issues/1120)) ([d88f417](https://github.com/googleapis/java-pubsub/commit/d88f4175356b0fdeb0697cfb1a7e6cd83ac0b7a5))
+* next release from main branch is 1.118.0 ([#1127](https://github.com/googleapis/java-pubsub/issues/1127)) ([67605a7](https://github.com/googleapis/java-pubsub/commit/67605a7efb36da5b9e123efb8fe69c58d4cfcbfd))
+
+
+### Bug Fixes
+
+* Too many leases ([#1135](https://github.com/googleapis/java-pubsub/issues/1135)) ([c9bcec5](https://github.com/googleapis/java-pubsub/commit/c9bcec531bf175684306e50eaf7ef96ee60cba78))
+
+## [1.117.0](https://github.com/googleapis/java-pubsub/compare/v1.116.4...v1.117.0) (2022-05-10)
+
+
+### Features
+
+* Adding grpc compression support for publisher client ([#1000](https://github.com/googleapis/java-pubsub/issues/1000)) ([4ad1a3f](https://github.com/googleapis/java-pubsub/commit/4ad1a3fc6e334b6b4efe2167dbe6976c5b5625a6))
+* AuditConfig for IAM v1 ([a1c9b74](https://github.com/googleapis/java-pubsub/commit/a1c9b7448494f50736b9eb5864d49d38a7936280))
+
+
+### Bug Fixes
+
+* added exactly once delivery files to owlbot config ([#1106](https://github.com/googleapis/java-pubsub/issues/1106)) ([bb6f105](https://github.com/googleapis/java-pubsub/commit/bb6f105873f94faf564773d821b8d5d01bac94ca))
+* adding BetaApi annotation on AckReplyConsumerWithResponse for Exactly Once Delivery ([#1097](https://github.com/googleapis/java-pubsub/issues/1097)) ([0e89054](https://github.com/googleapis/java-pubsub/commit/0e890546727657ddb5cb23e58d9c57dd65d978f2))
+* removed beta api annotation for ordering keys ([#1094](https://github.com/googleapis/java-pubsub/issues/1094)) ([3f140fb](https://github.com/googleapis/java-pubsub/commit/3f140fbacf3a157b503b081e7c6964a60ae09466))
+
+
+### Dependencies
+
+* error_prone_annotations from the shared deps BOM ([#1102](https://github.com/googleapis/java-pubsub/issues/1102)) ([3bb2bec](https://github.com/googleapis/java-pubsub/commit/3bb2bec6534e97b2ee84ac5271819f3aea568a85))
+* update dependency com.google.protobuf:protobuf-java-util to v3.20.1 ([#1100](https://github.com/googleapis/java-pubsub/issues/1100)) ([063b7aa](https://github.com/googleapis/java-pubsub/commit/063b7aa3e10fc4f74278fc36c73af8ac68dce26d))
+
+
+### Documentation
+
+* **sample:** remove unused native-image-support dependency ([#1103](https://github.com/googleapis/java-pubsub/issues/1103)) ([e7d9000](https://github.com/googleapis/java-pubsub/commit/e7d9000cd0c236d5ff222e13ca3bc25911aa9bd9))
+
 ### [1.116.4](https://github.com/googleapis/java-pubsub/compare/v1.116.3...v1.116.4) (2022-04-19)
 
 
