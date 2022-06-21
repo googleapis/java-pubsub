@@ -94,6 +94,9 @@ public class AdminIT {
     bout = new ByteArrayOutputStream();
     out = new PrintStream(bout);
     System.setOut(out);
+
+    // Create table for BigQuery subscription.
+    createBigQueryTable();
   }
 
   @After
@@ -117,6 +120,10 @@ public class AdminIT {
     } catch (NotFoundException ignored) {
       // ignore this as resources may not have been created
     }
+
+    // Delete BigQuery table.
+    deleteBigQueryTable();
+
     System.setOut(null);
   }
 
@@ -251,7 +258,6 @@ public class AdminIT {
 
     bout.reset();
     // Test create a BigQuery subscription
-    createBigQueryTable();
     String bigqueryTablePath = String.join(".", projectId, bigqueryDatasetId, bigqueryTableId);
     CreateBigQuerySubscriptionExample.createBigQuerySubscription(
         projectId, topicId, bigquerySubscriptionId, bigqueryTablePath);
@@ -271,8 +277,5 @@ public class AdminIT {
     // Test delete topic.
     DeleteTopicExample.deleteTopicExample(projectId, topicId);
     assertThat(bout.toString()).contains("Deleted topic.");
-
-    // Delete BigQuery table.
-    deleteBigQueryTable();
   }
 }
