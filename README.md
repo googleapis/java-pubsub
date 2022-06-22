@@ -31,10 +31,6 @@ If you are using Maven with [BOM][libraries-bom], add this to your pom.xml file
     <groupId>com.google.cloud</groupId>
     <artifactId>google-cloud-pubsub</artifactId>
   </dependency>
-  <dependency>
-    <groupId>com.google.cloud</groupId>
-    <artifactId>google-cloud-bigquery</artifactId>
-  </dependency>
 
 </dependencies>
 
