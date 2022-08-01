@@ -557,8 +557,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
                         errorMessage);
                     ackRequestData.setResponse(AckResponse.INVALID, setResponseOnSuccess);
                   } else {
-                    logger.log(
-                        Level.INFO, "Unknown error message, will not resend", errorMessage);
+                    logger.log(Level.INFO, "Unknown error message, will not resend", errorMessage);
                     ackRequestData.setResponse(AckResponse.OTHER, setResponseOnSuccess);
                   }
                 } else {
