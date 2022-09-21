@@ -153,12 +153,7 @@ public interface CreateSnapshotRequestOrBuilder
    *
    * <code>map&lt;string, string&gt; labels = 3;</code>
    */
-
-  /* nullable */
-  java.lang.String getLabelsOrDefault(
-      java.lang.String key,
-      /* nullable */
-      java.lang.String defaultValue);
+  java.lang.String getLabelsOrDefault(java.lang.String key, java.lang.String defaultValue);
   /**
    *
    *
