@@ -70,6 +70,7 @@ public interface PullRequestOrBuilder
    * <code>bool return_immediately = 2 [deprecated = true, (.google.api.field_behavior) = OPTIONAL];
    * </code>
    *
+   * @deprecated
    * @return The returnImmediately.
    */
   @java.lang.Deprecated

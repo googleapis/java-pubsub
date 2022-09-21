@@ -232,7 +232,7 @@ public final class PubsubMessage extends com.google.protobuf.GeneratedMessageV3
   @java.lang.Override
   public boolean containsAttributes(java.lang.String key) {
     if (key == null) {
-      throw new java.lang.NullPointerException();
+      throw new NullPointerException("map key");
     }
     return internalGetAttributes().getMap().containsKey(key);
   }
@@ -272,7 +272,7 @@ public final class PubsubMessage extends com.google.protobuf.GeneratedMessageV3
   public java.lang.String getAttributesOrDefault(
       java.lang.String key, java.lang.String defaultValue) {
     if (key == null) {
-      throw new java.lang.NullPointerException();
+      throw new NullPointerException("map key");
     }
     java.util.Map<java.lang.String, java.lang.String> map = internalGetAttributes().getMap();
     return map.containsKey(key) ? map.get(key) : defaultValue;
@@ -291,7 +291,7 @@ public final class PubsubMessage extends com.google.protobuf.GeneratedMessageV3
   @java.lang.Override
   public java.lang.String getAttributesOrThrow(java.lang.String key) {
     if (key == null) {
-      throw new java.lang.NullPointerException();
+      throw new NullPointerException("map key");
     }
     java.util.Map<java.lang.String, java.lang.String> map = internalGetAttributes().getMap();
     if (!map.containsKey(key)) {
@@ -485,13 +485,13 @@ public final class PubsubMessage extends com.google.protobuf.GeneratedMessageV3
     }
     com.google.protobuf.GeneratedMessageV3.serializeStringMapTo(
         output, internalGetAttributes(), AttributesDefaultEntryHolder.defaultEntry, 2);
-    if (!getMessageIdBytes().isEmpty()) {
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(messageId_)) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 3, messageId_);
     }
     if (publishTime_ != null) {
       output.writeMessage(4, getPublishTime());
     }
-    if (!getOrderingKeyBytes().isEmpty()) {
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(orderingKey_)) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 5, orderingKey_);
     }
     unknownFields.writeTo(output);
@@ -516,13 +516,13 @@ public final class PubsubMessage extends com.google.protobuf.GeneratedMessageV3
               .build();
       size += com.google.protobuf.CodedOutputStream.computeMessageSize(2, attributes__);
     }
-    if (!getMessageIdBytes().isEmpty()) {
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(messageId_)) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, messageId_);
     }
     if (publishTime_ != null) {
       size += com.google.protobuf.CodedOutputStream.computeMessageSize(4, getPublishTime());
     }
-    if (!getOrderingKeyBytes().isEmpty()) {
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(orderingKey_)) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(5, orderingKey_);
     }
     size += unknownFields.getSerializedSize();
@@ -989,7 +989,7 @@ public final class PubsubMessage extends com.google.protobuf.GeneratedMessageV3
     @java.lang.Override
     public boolean containsAttributes(java.lang.String key) {
       if (key == null) {
-        throw new java.lang.NullPointerException();
+        throw new NullPointerException("map key");
       }
       return internalGetAttributes().getMap().containsKey(key);
     }
@@ -1029,7 +1029,7 @@ public final class PubsubMessage extends com.google.protobuf.GeneratedMessageV3
     public java.lang.String getAttributesOrDefault(
         java.lang.String key, java.lang.String defaultValue) {
       if (key == null) {
-        throw new java.lang.NullPointerException();
+        throw new NullPointerException("map key");
       }
       java.util.Map<java.lang.String, java.lang.String> map = internalGetAttributes().getMap();
       return map.containsKey(key) ? map.get(key) : defaultValue;
@@ -1048,7 +1048,7 @@ public final class PubsubMessage extends com.google.protobuf.GeneratedMessageV3
     @java.lang.Override
     public java.lang.String getAttributesOrThrow(java.lang.String key) {
       if (key == null) {
-        throw new java.lang.NullPointerException();
+        throw new NullPointerException("map key");
       }
       java.util.Map<java.lang.String, java.lang.String> map = internalGetAttributes().getMap();
       if (!map.containsKey(key)) {
@@ -1074,7 +1074,7 @@ public final class PubsubMessage extends com.google.protobuf.GeneratedMessageV3
      */
     public Builder removeAttributes(java.lang.String key) {
       if (key == null) {
-        throw new java.lang.NullPointerException();
+        throw new NullPointerException("map key");
       }
       internalGetMutableAttributes().getMutableMap().remove(key);
       return this;
@@ -1097,11 +1097,12 @@ public final class PubsubMessage extends com.google.protobuf.GeneratedMessageV3
      */
     public Builder putAttributes(java.lang.String key, java.lang.String value) {
       if (key == null) {
-        throw new java.lang.NullPointerException();
+        throw new NullPointerException("map key");
       }
       if (value == null) {
-        throw new java.lang.NullPointerException();
+        throw new NullPointerException("map value");
       }
+
       internalGetMutableAttributes().getMutableMap().put(key, value);
       return this;
     }

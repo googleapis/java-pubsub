@@ -324,6 +324,22 @@ public final class SeekRequest extends com.google.protobuf.GeneratedMessageV3
    *
    * <code>string snapshot = 3 [(.google.api.resource_reference) = { ... }</code>
    *
+   * @return Whether the snapshot field is set.
+   */
+  public boolean hasSnapshot() {
+    return targetCase_ == 3;
+  }
+  /**
+   *
+   *
+   * <pre>
+   * The snapshot to seek to. The snapshot's topic must be the same as that of
+   * the provided subscription.
+   * Format is `projects/{project}/snapshots/{snap}`.
+   * </pre>
+   *
+   * <code>string snapshot = 3 [(.google.api.resource_reference) = { ... }</code>
+   *
    * @return The snapshot.
    */
   public java.lang.String getSnapshot() {
@@ -386,7 +402,7 @@ public final class SeekRequest extends com.google.protobuf.GeneratedMessageV3
 
   @java.lang.Override
   public void writeTo(com.google.protobuf.CodedOutputStream output) throws java.io.IOException {
-    if (!getSubscriptionBytes().isEmpty()) {
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(subscription_)) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 1, subscription_);
     }
     if (targetCase_ == 2) {
@@ -404,7 +420,7 @@ public final class SeekRequest extends com.google.protobuf.GeneratedMessageV3
     if (size != -1) return size;
 
     size = 0;
-    if (!getSubscriptionBytes().isEmpty()) {
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(subscription_)) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, subscription_);
     }
     if (targetCase_ == 2) {
@@ -1177,6 +1193,23 @@ public final class SeekRequest extends com.google.protobuf.GeneratedMessageV3
       return timeBuilder_;
     }
 
+    /**
+     *
+     *
+     * <pre>
+     * The snapshot to seek to. The snapshot's topic must be the same as that of
+     * the provided subscription.
+     * Format is `projects/{project}/snapshots/{snap}`.
+     * </pre>
+     *
+     * <code>string snapshot = 3 [(.google.api.resource_reference) = { ... }</code>
+     *
+     * @return Whether the snapshot field is set.
+     */
+    @java.lang.Override
+    public boolean hasSnapshot() {
+      return targetCase_ == 3;
+    }
     /**
      *
      *

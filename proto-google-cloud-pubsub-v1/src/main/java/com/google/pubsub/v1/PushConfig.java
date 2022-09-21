@@ -460,10 +460,10 @@ public final class PushConfig extends com.google.protobuf.GeneratedMessageV3
 
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output) throws java.io.IOException {
-      if (!getServiceAccountEmailBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(serviceAccountEmail_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 1, serviceAccountEmail_);
       }
-      if (!getAudienceBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(audience_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 2, audience_);
       }
       unknownFields.writeTo(output);
@@ -475,10 +475,10 @@ public final class PushConfig extends com.google.protobuf.GeneratedMessageV3
       if (size != -1) return size;
 
       size = 0;
-      if (!getServiceAccountEmailBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(serviceAccountEmail_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, serviceAccountEmail_);
       }
-      if (!getAudienceBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(audience_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, audience_);
       }
       size += unknownFields.getSerializedSize();
@@ -1240,7 +1240,7 @@ public final class PushConfig extends com.google.protobuf.GeneratedMessageV3
   @java.lang.Override
   public boolean containsAttributes(java.lang.String key) {
     if (key == null) {
-      throw new java.lang.NullPointerException();
+      throw new NullPointerException("map key");
     }
     return internalGetAttributes().getMap().containsKey(key);
   }
@@ -1306,7 +1306,7 @@ public final class PushConfig extends com.google.protobuf.GeneratedMessageV3
   public java.lang.String getAttributesOrDefault(
       java.lang.String key, java.lang.String defaultValue) {
     if (key == null) {
-      throw new java.lang.NullPointerException();
+      throw new NullPointerException("map key");
     }
     java.util.Map<java.lang.String, java.lang.String> map = internalGetAttributes().getMap();
     return map.containsKey(key) ? map.get(key) : defaultValue;
@@ -1338,7 +1338,7 @@ public final class PushConfig extends com.google.protobuf.GeneratedMessageV3
   @java.lang.Override
   public java.lang.String getAttributesOrThrow(java.lang.String key) {
     if (key == null) {
-      throw new java.lang.NullPointerException();
+      throw new NullPointerException("map key");
     }
     java.util.Map<java.lang.String, java.lang.String> map = internalGetAttributes().getMap();
     if (!map.containsKey(key)) {
@@ -1415,7 +1415,7 @@ public final class PushConfig extends com.google.protobuf.GeneratedMessageV3
 
   @java.lang.Override
   public void writeTo(com.google.protobuf.CodedOutputStream output) throws java.io.IOException {
-    if (!getPushEndpointBytes().isEmpty()) {
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(pushEndpoint_)) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 1, pushEndpoint_);
     }
     com.google.protobuf.GeneratedMessageV3.serializeStringMapTo(
@@ -1432,7 +1432,7 @@ public final class PushConfig extends com.google.protobuf.GeneratedMessageV3
     if (size != -1) return size;
 
     size = 0;
-    if (!getPushEndpointBytes().isEmpty()) {
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(pushEndpoint_)) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, pushEndpoint_);
     }
     for (java.util.Map.Entry<java.lang.String, java.lang.String> entry :
@@ -1982,7 +1982,7 @@ public final class PushConfig extends com.google.protobuf.GeneratedMessageV3
     @java.lang.Override
     public boolean containsAttributes(java.lang.String key) {
       if (key == null) {
-        throw new java.lang.NullPointerException();
+        throw new NullPointerException("map key");
       }
       return internalGetAttributes().getMap().containsKey(key);
     }
@@ -2048,7 +2048,7 @@ public final class PushConfig extends com.google.protobuf.GeneratedMessageV3
     public java.lang.String getAttributesOrDefault(
         java.lang.String key, java.lang.String defaultValue) {
       if (key == null) {
-        throw new java.lang.NullPointerException();
+        throw new NullPointerException("map key");
       }
       java.util.Map<java.lang.String, java.lang.String> map = internalGetAttributes().getMap();
       return map.containsKey(key) ? map.get(key) : defaultValue;
@@ -2080,7 +2080,7 @@ public final class PushConfig extends com.google.protobuf.GeneratedMessageV3
     @java.lang.Override
     public java.lang.String getAttributesOrThrow(java.lang.String key) {
       if (key == null) {
-        throw new java.lang.NullPointerException();
+        throw new NullPointerException("map key");
       }
       java.util.Map<java.lang.String, java.lang.String> map = internalGetAttributes().getMap();
       if (!map.containsKey(key)) {
@@ -2119,7 +2119,7 @@ public final class PushConfig extends com.google.protobuf.GeneratedMessageV3
      */
     public Builder removeAttributes(java.lang.String key) {
       if (key == null) {
-        throw new java.lang.NullPointerException();
+        throw new NullPointerException("map key");
       }
       internalGetMutableAttributes().getMutableMap().remove(key);
       return this;
@@ -2155,11 +2155,12 @@ public final class PushConfig extends com.google.protobuf.GeneratedMessageV3
      */
     public Builder putAttributes(java.lang.String key, java.lang.String value) {
       if (key == null) {
-        throw new java.lang.NullPointerException();
+        throw new NullPointerException("map key");
       }
       if (value == null) {
-        throw new java.lang.NullPointerException();
+        throw new NullPointerException("map value");
       }
+
       internalGetMutableAttributes().getMutableMap().put(key, value);
       return this;
     }
