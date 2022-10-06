@@ -51,7 +51,7 @@ public class PublishWithRetrySettingsExample {
       Duration initialRpcTimeout = Duration.ofSeconds(1); // default: 5 seconds
       double rpcTimeoutMultiplier = 1.0; // default: 1.0
       Duration maxRpcTimeout = Duration.ofSeconds(600); // default: 600 seconds
-      Duration totalTimeout = Duration.ofSeconds(600); // default for Pubsub: 600 seconds
+      Duration totalTimeout = Duration.ofSeconds(600); // default only for Pubsub: 600 seconds
 
       RetrySettings retrySettings =
           RetrySettings.newBuilder()
