@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.117.1](https://github.com/googleapis/java-pubsub/compare/v1.117.0-sp.1...v1.117.1) (2022-10-13)
+
+
+### Dependencies
+
+* Regenerating with new Protobuf (1.117.x) ([#1342](https://github.com/googleapis/java-pubsub/issues/1342)) ([c0945b8](https://github.com/googleapis/java-pubsub/commit/c0945b8d6d29173cac8d68be64c0f4bbe7a88416))
+
+
+### Miscellaneous Chores
+
+* fixing sp.1 version in 1.117.x branch ([4399010](https://github.com/googleapis/java-pubsub/commit/43990102f0f752780c4d430c310d57c6d6b12c82))
+
 ## [1.117.0-sp.1](https://github.com/googleapis/java-pubsub/compare/v1.117.0...v1.117.0-sp.1) (2022-05-18)
 
 
