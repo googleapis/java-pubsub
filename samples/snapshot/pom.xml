@@ -43,7 +43,7 @@
     <dependency>
       <groupId>com.google.cloud</groupId>
       <artifactId>google-cloud-pubsub</artifactId>
-      <version>1.120.24-SNAPSHOT</version>
+      <version>1.120.25-SNAPSHOT</version>
     </dependency>
     <!-- {x-version-update-end} -->
 
@@ -61,7 +61,7 @@
     <dependency>
       <groupId>com.google.protobuf</groupId>
       <artifactId>protobuf-java-util</artifactId>
-      <version>3.21.8</version>
+      <version>3.21.9</version>
     </dependency>
 
     <dependency>
