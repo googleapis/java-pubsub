@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.111.0-sp.3](https://github.com/googleapis/java-pubsub/compare/v1.111.0-sp.2...v1.111.0-sp.3) (2022-11-03)
+
+
+### Dependencies
+
+* Regenerating with new Protobuf (1.111.0-sp) ([#1382](https://github.com/googleapis/java-pubsub/issues/1382)) ([58d55aa](https://github.com/googleapis/java-pubsub/commit/58d55aa1290a62d2f3e9708e815c7392a49903df))
+
 ## [1.111.0-sp.2](https://www.github.com/googleapis/java-pubsub/compare/1.111.0-sp.1...v1.111.0-sp.2) (2021-11-15)
 
 
