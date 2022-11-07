@@ -52,6 +52,8 @@ import com.google.pubsub.v1.PubsubMessage;
 import com.google.pubsub.v1.TopicName;
 import com.google.pubsub.v1.TopicNames;
 import io.grpc.CallOptions;
+import io.opentelemetry.api.OpenTelemetry;
+import io.opentelemetry.api.trace.Tracer;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -69,9 +71,6 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import io.opentelemetry.api.OpenTelemetry;
-import io.opentelemetry.api.trace.Tracer;
 import org.threeten.bp.Duration;
 
 /**
@@ -147,12 +146,12 @@ public class Publisher implements PublisherInterface {
     this.batchingSettings = builder.batchingSettings;
     FlowControlSettings flowControl = this.batchingSettings.getFlowControlSettings();
     if (flowControl != null
-            && flowControl.getLimitExceededBehavior() != FlowController.LimitExceededBehavior.Ignore) {
+        && flowControl.getLimitExceededBehavior() != FlowController.LimitExceededBehavior.Ignore) {
       this.flowController =
-              new MessageFlowController(
-                      flowControl.getMaxOutstandingElementCount(),
-                      flowControl.getMaxOutstandingRequestBytes(),
-                      flowControl.getLimitExceededBehavior());
+          new MessageFlowController(
+              flowControl.getMaxOutstandingElementCount(),
+              flowControl.getMaxOutstandingRequestBytes(),
+              flowControl.getLimitExceededBehavior());
     }
 
     this.enableMessageOrdering = builder.enableMessageOrdering;
@@ -182,29 +181,29 @@ public class Publisher implements PublisherInterface {
       // TODO: is there a way to have the default retry settings for requests without an ordering
       // key?
       retrySettingsBuilder
-              .setMaxAttempts(Integer.MAX_VALUE)
-              .setTotalTimeout(Duration.ofNanos(Long.MAX_VALUE));
+          .setMaxAttempts(Integer.MAX_VALUE)
+          .setTotalTimeout(Duration.ofNanos(Long.MAX_VALUE));
     }
 
     PublisherStubSettings.Builder stubSettings =
-            PublisherStubSettings.newBuilder()
-                    .setCredentialsProvider(builder.credentialsProvider)
-                    .setExecutorProvider(FixedExecutorProvider.create(executor))
-                    .setTransportChannelProvider(builder.channelProvider)
-                    .setEndpoint(builder.endpoint)
-                    .setHeaderProvider(builder.headerProvider);
+        PublisherStubSettings.newBuilder()
+            .setCredentialsProvider(builder.credentialsProvider)
+            .setExecutorProvider(FixedExecutorProvider.create(executor))
+            .setTransportChannelProvider(builder.channelProvider)
+            .setEndpoint(builder.endpoint)
+            .setHeaderProvider(builder.headerProvider);
     stubSettings
-            .publishSettings()
-            .setRetryableCodes(
-                    StatusCode.Code.ABORTED,
-                    StatusCode.Code.CANCELLED,
-                    StatusCode.Code.DEADLINE_EXCEEDED,
-                    StatusCode.Code.INTERNAL,
-                    StatusCode.Code.RESOURCE_EXHAUSTED,
-                    StatusCode.Code.UNKNOWN,
-                    StatusCode.Code.UNAVAILABLE)
-            .setRetrySettings(retrySettingsBuilder.build())
-            .setBatchingSettings(BatchingSettings.newBuilder().setIsEnabled(false).build());
+        .publishSettings()
+        .setRetryableCodes(
+            StatusCode.Code.ABORTED,
+            StatusCode.Code.CANCELLED,
+            StatusCode.Code.DEADLINE_EXCEEDED,
+            StatusCode.Code.INTERNAL,
+            StatusCode.Code.RESOURCE_EXHAUSTED,
+            StatusCode.Code.UNKNOWN,
+            StatusCode.Code.UNAVAILABLE)
+        .setRetrySettings(retrySettingsBuilder.build())
+        .setBatchingSettings(BatchingSettings.newBuilder().setIsEnabled(false).build());
     this.publisherStub = GrpcPublisherStub.create(stubSettings.build());
     backgroundResourceList.add(publisherStub);
     backgroundResources = new BackgroundResourceAggregation(backgroundResourceList);
@@ -212,11 +211,12 @@ public class Publisher implements PublisherInterface {
     messagesWaiter = new Waiter();
     this.publishContext = GrpcCallContext.createDefault();
     this.publishContextWithCompression =
-            GrpcCallContext.createDefault()
-                    .withCallOptions(CallOptions.DEFAULT.withCompression(GZIP_COMPRESSION));
+        GrpcCallContext.createDefault()
+            .withCallOptions(CallOptions.DEFAULT.withCompression(GZIP_COMPRESSION));
 
     this.openTelemetry = builder.openTelemetry;
     if (this.openTelemetry != null) {
+      // Create a tracer if we have an instance of OpenTelemetry
       this.openTelemetryTracer = this.openTelemetry.getTracer(OPEN_TELEMETRY_TRACER_NAME);
     }
   }
