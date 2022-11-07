@@ -69,6 +69,9 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import io.opentelemetry.api.OpenTelemetry;
+import io.opentelemetry.api.trace.Tracer;
 import org.threeten.bp.Duration;
 
 /**
@@ -92,6 +95,7 @@ public class Publisher implements PublisherInterface {
   private static final Logger logger = Logger.getLogger(Publisher.class.getName());
 
   private static final String GZIP_COMPRESSION = "gzip";
+  private static final String OPEN_TELEMETRY_TRACER_NAME = "cloud.google.com/java/pubsub";
 
   private final String topicName;
 
@@ -124,6 +128,9 @@ public class Publisher implements PublisherInterface {
   private final GrpcCallContext publishContext;
   private final GrpcCallContext publishContextWithCompression;
 
+  private OpenTelemetry openTelemetry;
+  private Tracer openTelemetryTracer;
+
   /** The maximum number of messages in one request. Defined by the API. */
   public static long getApiMaxRequestElementCount() {
     return 1000L;
@@ -140,12 +147,12 @@ public class Publisher implements PublisherInterface {
     this.batchingSettings = builder.batchingSettings;
     FlowControlSettings flowControl = this.batchingSettings.getFlowControlSettings();
     if (flowControl != null
-        && flowControl.getLimitExceededBehavior() != FlowController.LimitExceededBehavior.Ignore) {
+            && flowControl.getLimitExceededBehavior() != FlowController.LimitExceededBehavior.Ignore) {
       this.flowController =
-          new MessageFlowController(
-              flowControl.getMaxOutstandingElementCount(),
-              flowControl.getMaxOutstandingRequestBytes(),
-              flowControl.getLimitExceededBehavior());
+              new MessageFlowController(
+                      flowControl.getMaxOutstandingElementCount(),
+                      flowControl.getMaxOutstandingRequestBytes(),
+                      flowControl.getLimitExceededBehavior());
     }
 
     this.enableMessageOrdering = builder.enableMessageOrdering;
@@ -175,29 +182,29 @@ public class Publisher implements PublisherInterface {
       // TODO: is there a way to have the default retry settings for requests without an ordering
       // key?
       retrySettingsBuilder
-          .setMaxAttempts(Integer.MAX_VALUE)
-          .setTotalTimeout(Duration.ofNanos(Long.MAX_VALUE));
+              .setMaxAttempts(Integer.MAX_VALUE)
+              .setTotalTimeout(Duration.ofNanos(Long.MAX_VALUE));
     }
 
     PublisherStubSettings.Builder stubSettings =
-        PublisherStubSettings.newBuilder()
-            .setCredentialsProvider(builder.credentialsProvider)
-            .setExecutorProvider(FixedExecutorProvider.create(executor))
-            .setTransportChannelProvider(builder.channelProvider)
-            .setEndpoint(builder.endpoint)
-            .setHeaderProvider(builder.headerProvider);
+            PublisherStubSettings.newBuilder()
+                    .setCredentialsProvider(builder.credentialsProvider)
+                    .setExecutorProvider(FixedExecutorProvider.create(executor))
+                    .setTransportChannelProvider(builder.channelProvider)
+                    .setEndpoint(builder.endpoint)
+                    .setHeaderProvider(builder.headerProvider);
     stubSettings
-        .publishSettings()
-        .setRetryableCodes(
-            StatusCode.Code.ABORTED,
-            StatusCode.Code.CANCELLED,
-            StatusCode.Code.DEADLINE_EXCEEDED,
-            StatusCode.Code.INTERNAL,
-            StatusCode.Code.RESOURCE_EXHAUSTED,
-            StatusCode.Code.UNKNOWN,
-            StatusCode.Code.UNAVAILABLE)
-        .setRetrySettings(retrySettingsBuilder.build())
-        .setBatchingSettings(BatchingSettings.newBuilder().setIsEnabled(false).build());
+            .publishSettings()
+            .setRetryableCodes(
+                    StatusCode.Code.ABORTED,
+                    StatusCode.Code.CANCELLED,
+                    StatusCode.Code.DEADLINE_EXCEEDED,
+                    StatusCode.Code.INTERNAL,
+                    StatusCode.Code.RESOURCE_EXHAUSTED,
+                    StatusCode.Code.UNKNOWN,
+                    StatusCode.Code.UNAVAILABLE)
+            .setRetrySettings(retrySettingsBuilder.build())
+            .setBatchingSettings(BatchingSettings.newBuilder().setIsEnabled(false).build());
     this.publisherStub = GrpcPublisherStub.create(stubSettings.build());
     backgroundResourceList.add(publisherStub);
     backgroundResources = new BackgroundResourceAggregation(backgroundResourceList);
@@ -205,8 +212,13 @@ public class Publisher implements PublisherInterface {
     messagesWaiter = new Waiter();
     this.publishContext = GrpcCallContext.createDefault();
     this.publishContextWithCompression =
-        GrpcCallContext.createDefault()
-            .withCallOptions(CallOptions.DEFAULT.withCompression(GZIP_COMPRESSION));
+            GrpcCallContext.createDefault()
+                    .withCallOptions(CallOptions.DEFAULT.withCompression(GZIP_COMPRESSION));
+
+    this.openTelemetry = builder.openTelemetry;
+    if (this.openTelemetry != null) {
+      this.openTelemetryTracer = this.openTelemetry.getTracer(OPEN_TELEMETRY_TRACER_NAME);
+    }
   }
 
   /** Topic which the publisher publishes to. */
@@ -747,6 +759,8 @@ public class Publisher implements PublisherInterface {
     private boolean enableCompression = DEFAULT_ENABLE_COMPRESSION;
     private long compressionBytesThreshold = DEFAULT_COMPRESSION_BYTES_THRESHOLD;
 
+    private OpenTelemetry openTelemetry;
+
     private Builder(String topic) {
       this.topicName = Preconditions.checkNotNull(topic);
     }
@@ -875,6 +889,11 @@ public class Publisher implements PublisherInterface {
     /** Returns the default BatchingSettings used by the client if settings are not provided. */
     public static BatchingSettings getDefaultBatchingSettings() {
       return DEFAULT_BATCHING_SETTINGS;
+    }
+
+    public Builder setOpenTelemetry(OpenTelemetry openTelemetry) {
+      this.openTelemetry = openTelemetry;
+      return this;
     }
 
     public Publisher build() throws IOException {

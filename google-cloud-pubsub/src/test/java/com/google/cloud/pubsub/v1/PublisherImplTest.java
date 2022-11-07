@@ -22,6 +22,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
 
 import com.google.api.core.ApiFuture;
 import com.google.api.gax.batching.BatchingSettings;
@@ -37,6 +39,7 @@ import com.google.api.gax.rpc.DataLossException;
 import com.google.api.gax.rpc.FixedTransportChannelProvider;
 import com.google.api.gax.rpc.TransportChannelProvider;
 import com.google.cloud.pubsub.v1.Publisher.Builder;
+import com.google.cloud.pubsub.v1.stub.SubscriberStub;
 import com.google.protobuf.ByteString;
 import com.google.pubsub.v1.ProjectTopicName;
 import com.google.pubsub.v1.PublishRequest;
@@ -48,12 +51,16 @@ import io.grpc.Status;
 import io.grpc.StatusException;
 import io.grpc.inprocess.InProcessChannelBuilder;
 import io.grpc.inprocess.InProcessServerBuilder;
+
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+
+import io.opentelemetry.api.OpenTelemetry;
 import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Assert;
@@ -82,6 +89,7 @@ public class PublisherImplTest {
   private ManagedChannel testChannel;
 
   private Server testServer;
+
 
   @Before
   public void setUp() throws Exception {
@@ -800,6 +808,26 @@ public class PublisherImplTest {
       publisher.shutdown();
       assertTrue(publisher.awaitTermination(1, TimeUnit.MINUTES));
     }
+  }
+
+  @Test
+  public void testPublishOpenTelemetry() throws Exception {
+    OpenTelemetry mockOpenTelemetry = mock(OpenTelemetry.class, RETURNS_DEEP_STUBS);
+    Publisher.Builder builder = getTestPublisherBuilder();
+    Publisher publisher = getTestPublisherBuilder().setOpenTelemetry(mockOpenTelemetry).build();
+
+    PublishResponse publishResponse = PublishResponse.newBuilder().addMessageIds("1").build();
+
+    testPublisherServiceImpl.addPublishResponse(publishResponse);
+
+    ApiFuture<String> publishFuture = sendTestMessage(publisher, "A");
+
+    assertFalse(publishFuture.isDone());
+
+    fakeExecutor.advanceTime(Duration.ofSeconds(10));
+
+    assertEquals("1", publishFuture.get());
+    shutdownTestPublisher(publisher);
   }
 
   @Test
