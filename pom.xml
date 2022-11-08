@@ -137,6 +137,28 @@
             </ignoredUnusedDeclaredDependencies>
           </configuration>
         </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-enforcer-plugin</artifactId>
+          <version>3.0.0-M3</version>
+          <executions>
+            <execution>
+              <id>enforce</id>
+              <configuration>
+                <rules>
+                  <requireUpperBoundDeps>
+                    <excludes>
+                      <exclude>io.opencensus:opencensus-api</exclude>
+                    </excludes>
+                  </requireUpperBoundDeps>
+                </rules>
+              </configuration>
+              <goals>
+                <goal>enforce</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
       </plugins>
     </pluginManagement>
   </build>
