@@ -1,5 +1,38 @@
 # Changelog
 
+## [1.121.1](https://github.com/googleapis/java-pubsub/compare/v1.121.0...v1.121.1) (2022-11-21)
+
+
+### Dependencies
+
+* Update dependency com.google.cloud:google-cloud-bigquery to v2.18.0 ([#1375](https://github.com/googleapis/java-pubsub/issues/1375)) ([b6ada4e](https://github.com/googleapis/java-pubsub/commit/b6ada4e06397d785b6747bd989fe6cd9d6e76801))
+* Update dependency com.google.cloud:google-cloud-bigquery to v2.19.1 ([#1416](https://github.com/googleapis/java-pubsub/issues/1416)) ([e140a49](https://github.com/googleapis/java-pubsub/commit/e140a4975a5bff4c73254784409f4f3dda27db09))
+* Update dependency org.graalvm.buildtools:junit-platform-native to v0.9.18 ([#1413](https://github.com/googleapis/java-pubsub/issues/1413)) ([b3fb828](https://github.com/googleapis/java-pubsub/commit/b3fb828480f491e4275adf0b6367aeb51ac0569e))
+* Update dependency org.graalvm.buildtools:native-maven-plugin to v0.9.18 ([#1414](https://github.com/googleapis/java-pubsub/issues/1414)) ([74d2dc3](https://github.com/googleapis/java-pubsub/commit/74d2dc3329f6d4e33c977fa1e73df1aca278b9b3))
+
+## [1.121.0](https://github.com/googleapis/java-pubsub/compare/v1.120.25...v1.121.0) (2022-11-16)
+
+
+### Features
+
+* Next release from main branch is 1.121.0 ([#1406](https://github.com/googleapis/java-pubsub/issues/1406)) ([1b25b0e](https://github.com/googleapis/java-pubsub/commit/1b25b0e01a7b1068dbebaa5d6516419c11e31b96))
+
+
+### Dependencies
+
+* Update dependency com.google.cloud:google-cloud-core to v2.8.28 ([#1399](https://github.com/googleapis/java-pubsub/issues/1399)) ([ec1cae8](https://github.com/googleapis/java-pubsub/commit/ec1cae87596921078478ed96a22b9ca5b138f729))
+* Update dependency com.google.cloud:google-cloud-shared-dependencies to v3.0.6 ([#1395](https://github.com/googleapis/java-pubsub/issues/1395)) ([a3c32ea](https://github.com/googleapis/java-pubsub/commit/a3c32eadb8e6d4ce730f2f2d1f8960ccd6269ecb))
+
+## [1.120.25](https://github.com/googleapis/java-pubsub/compare/v1.120.24...v1.120.25) (2022-11-09)
+
+
+### Dependencies
+
+* Update dependency com.google.cloud:google-cloud-core to v2.8.27 ([#1391](https://github.com/googleapis/java-pubsub/issues/1391)) ([dd9f1c3](https://github.com/googleapis/java-pubsub/commit/dd9f1c366c9aa5f78dccc01a4dc3e2ee42290be3))
+* Update dependency com.google.protobuf:protobuf-java-util to v3.21.9 ([#1370](https://github.com/googleapis/java-pubsub/issues/1370)) ([8b753a4](https://github.com/googleapis/java-pubsub/commit/8b753a452a3f778402b61565d38a9a2ce90f084a))
+* Update dependency org.graalvm.buildtools:junit-platform-native to v0.9.17 ([#1389](https://github.com/googleapis/java-pubsub/issues/1389)) ([6def6bb](https://github.com/googleapis/java-pubsub/commit/6def6bbff8c31af6a008fee89654a13b0db1550f))
+* Update dependency org.graalvm.buildtools:native-maven-plugin to v0.9.17 ([#1388](https://github.com/googleapis/java-pubsub/issues/1388)) ([0924923](https://github.com/googleapis/java-pubsub/commit/0924923039e30716d66ad8ca519fbdae88946807))
+
 ## [1.120.24](https://github.com/googleapis/java-pubsub/compare/v1.120.23...v1.120.24) (2022-10-28)
 
 
