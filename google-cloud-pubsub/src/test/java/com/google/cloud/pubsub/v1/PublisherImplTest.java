@@ -22,6 +22,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
 
 import com.google.api.core.ApiFuture;
 import com.google.api.gax.batching.BatchingSettings;
@@ -48,6 +50,7 @@ import io.grpc.Status;
 import io.grpc.StatusException;
 import io.grpc.inprocess.InProcessChannelBuilder;
 import io.grpc.inprocess.InProcessServerBuilder;
+import io.opentelemetry.api.OpenTelemetry;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
@@ -800,6 +803,26 @@ public class PublisherImplTest {
       publisher.shutdown();
       assertTrue(publisher.awaitTermination(1, TimeUnit.MINUTES));
     }
+  }
+
+  @Test
+  public void testPublishOpenTelemetry() throws Exception {
+    OpenTelemetry mockOpenTelemetry = mock(OpenTelemetry.class, RETURNS_DEEP_STUBS);
+    Publisher.Builder builder = getTestPublisherBuilder();
+    Publisher publisher =
+        getTestPublisherBuilder()
+            .setOpenTelemetry(mockOpenTelemetry)
+            .setBatchingSettings(
+                Publisher.Builder.getDefaultBatchingSettings()
+                    .toBuilder()
+                    .setElementCountThreshold(1L)
+                    .build())
+            .build();
+
+    PublishResponse publishResponse = PublishResponse.newBuilder().addMessageIds("1").build();
+    testPublisherServiceImpl.addPublishResponse(publishResponse);
+    ApiFuture<String> publishFuture = sendTestMessage(publisher, "A");
+    assertEquals("1", publishFuture.get());
   }
 
   @Test
