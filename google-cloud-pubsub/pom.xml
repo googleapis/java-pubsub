@@ -147,12 +147,6 @@
       <artifactId>opencensus-impl</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>io.opentelemetry</groupId>
-      <artifactId>opentelemetry-sdk</artifactId>
-      <version>1.20.0</version>
-      <scope>test</scope>
-    </dependency>
     <!-- Need testing utility classes for generated gRPC clients tests -->
     <dependency>
       <groupId>com.google.api</groupId>
