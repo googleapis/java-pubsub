@@ -40,10 +40,10 @@ public class PubsubMessageWrapper {
   private static final String PUBLISH_SCHEDULER_SPAN_NAME = "publish scheduler";
   private static final String PUBLISH_RPC_SPAN_NAME = "send Publish";
 
-  private Span publishSpan;
+  private Optional<Span> publishSpan = Optional.empty();
   private Optional<Span> publishFlowControlSpan = Optional.empty();
   private Optional<Span> publishSchedulerSpan = Optional.empty();
-  private Span publishRpcSpan;
+  private Optional<Span> publishRpcSpan = Optional.empty();
 
   /**
    * Subscribe Spans are hierarchical - they must be open and closed in the following order:
@@ -62,13 +62,13 @@ public class PubsubMessageWrapper {
   private static final String ACK_SPAN_NAME = "send Acknowledgement";
   private static final String NACK_SPAN_NAME = "send Negative Acknowledgement";
 
-  private Span subscribeSpan;
+  private Optional<Span> subscribeSpan = Optional.empty();
   private Optional<Span> subscribeFlowControlSpan = Optional.empty();
   private Optional<Span> subscribeSchedulerSpan = Optional.empty();
-  private Span processSpan;
-  private Span modackSpan;
-  private Span ackSpan;
-  private Span nackSpan;
+  private Optional<Span> processSpan = Optional.empty();
+  private Optional<Span> modackSpan = Optional.empty();
+  private Optional<Span> ackSpan = Optional.empty();
+  private Optional<Span> nackSpan = Optional.empty();
 
   protected PubsubMessageWrapper(Builder builder) {
     this.pubsubMessage = builder.pubsubMessage;
@@ -83,24 +83,26 @@ public class PubsubMessageWrapper {
     }
   }
 
-  public PubsubMessage getPubsubMessage() {
-    return this.pubsubMessage;
-  }
-
   public void startPublishSpan(Optional<Tracer> tracer) {
     if (tracer.isPresent()) {
-      this.publishSpan = createAndStartSpan(tracer.get(), PUBLISH_SPAN_NAME);
+      this.publishSpan = Optional.of(createAndStartSpan(tracer.get(), PUBLISH_SPAN_NAME));
     }
   }
 
   public void endPublishSpan() {
-    this.publishSpan.end();
+    if (this.publishSpan.isPresent()) {
+      this.publishSpan.get().end();
+    }
   }
 
   /** (Optional) Start Publish Flow Control Span */
-  public void startPublishFlowControlSpan(Tracer tracer) {
-    this.publishFlowControlSpan =
-        Optional.of(createAndStartSpan(tracer, PUBLISH_FLOW_CONTROL_SPAN_NAME, this.publishSpan));
+  public void startPublishFlowControlSpan(Optional<Tracer> tracer) {
+    if (tracer.isPresent()) {
+      this.publishFlowControlSpan =
+          Optional.of(
+              createAndStartSpan(
+                  tracer.get(), PUBLISH_FLOW_CONTROL_SPAN_NAME, this.publishSpan.get()));
+    }
   }
 
   /** (Optional) End Publish Flow Control Span */
@@ -111,14 +113,16 @@ public class PubsubMessageWrapper {
   }
 
   /** (Optional) Start Flow Control Span */
-  public void startPublishSchedulerSpan(Tracer tracer) {
-    // Check for optional parent
-    Span parent =
-        this.publishFlowControlSpan.isPresent()
-            ? this.publishFlowControlSpan.get()
-            : this.publishSpan;
-    this.publishSchedulerSpan =
-        Optional.of(this.createAndStartSpan(tracer, PUBLISH_SCHEDULER_SPAN_NAME, parent));
+  public void startPublishSchedulerSpan(Optional<Tracer> tracer) {
+    if (tracer.isPresent()) {
+      // Check for optional parent
+      Span parent =
+          this.publishFlowControlSpan.isPresent()
+              ? this.publishFlowControlSpan.get()
+              : this.publishSpan.get();
+      this.publishSchedulerSpan =
+          Optional.of(this.createAndStartSpan(tracer.get(), PUBLISH_SCHEDULER_SPAN_NAME, parent));
+    }
   }
 
   /** (Optional) End Publish Scheduler Span */
@@ -128,26 +132,46 @@ public class PubsubMessageWrapper {
     }
   }
 
-  public void startPublishRpcSpan(Tracer tracer) {
-    this.publishRpcSpan = createAndStartSpan(tracer, PUBLISH_RPC_SPAN_NAME, publishSpan);
+  public void startPublishRpcSpan(Optional<Tracer> tracer) {
+    if (tracer.isPresent()) {
+      Span parent;
+      if (this.publishSchedulerSpan.isPresent()) {
+        parent = this.publishSchedulerSpan.get();
+      } else if (this.publishFlowControlSpan.isPresent()) {
+        parent = this.publishFlowControlSpan.get();
+      } else {
+        parent = this.publishSpan.get();
+      }
+      this.publishRpcSpan =
+          Optional.of(createAndStartSpan(tracer.get(), PUBLISH_RPC_SPAN_NAME, parent));
+    }
   }
 
   public void endPublishRpcSpan() {
-    this.publishRpcSpan.end();
+    if (this.publishRpcSpan.isPresent()) {
+      this.publishRpcSpan.get().end();
+    }
   }
 
-  public void startSubscribeReceiveSpan(Tracer tracer) {
-    this.subscribeSpan = createAndStartSpan(tracer, RECEIVE_SPAN_NAME);
+  public void startSubscribeReceiveSpan(Optional<Tracer> tracer) {
+    if (tracer.isPresent()) {
+      this.subscribeSpan = Optional.of(createAndStartSpan(tracer.get(), RECEIVE_SPAN_NAME));
+    }
   }
 
   public void endSubscribeReceiveSpan() {
-    this.subscribeSpan.end();
+    if (this.subscribeSpan.isPresent()) {
+      this.subscribeSpan.get().end();
+    }
   }
 
-  public void startSubscribeFlowControlSpan(Tracer tracer) {
-    this.subscribeFlowControlSpan =
-        Optional.of(
-            this.createAndStartSpan(tracer, SUBSCRIBE_FLOW_CONTROL_SPAN_NAME, this.subscribeSpan));
+  public void startSubscribeFlowControlSpan(Optional<Tracer> tracer) {
+    if (tracer.isPresent()) {
+      this.subscribeFlowControlSpan =
+          Optional.of(
+              this.createAndStartSpan(
+                  tracer.get(), SUBSCRIBE_FLOW_CONTROL_SPAN_NAME, this.subscribeSpan.get()));
+    }
   }
 
   public void endSubscribeFlowControlSpan() {
@@ -156,13 +180,15 @@ public class PubsubMessageWrapper {
     }
   }
 
-  public void startSubscribeSchedulerSpan(Tracer tracer) {
-    Span parent =
-        this.subscribeFlowControlSpan.isPresent()
-            ? this.subscribeFlowControlSpan.get()
-            : this.subscribeSpan;
-    this.subscribeSchedulerSpan =
-        Optional.of(this.createAndStartSpan(tracer, SUBSCRIBE_SCHEDULE_SPAN_NAME, parent));
+  public void startSubscribeSchedulerSpan(Optional<Tracer> tracer) {
+    if (tracer.isPresent()) {
+      Span parent =
+          this.subscribeFlowControlSpan.isPresent()
+              ? this.subscribeFlowControlSpan.get()
+              : this.subscribeSpan.get();
+      this.subscribeSchedulerSpan =
+          Optional.of(this.createAndStartSpan(tracer.get(), SUBSCRIBE_SCHEDULE_SPAN_NAME, parent));
+    }
   }
 
   public void endSubscribeSchedulerSpan() {
@@ -171,45 +197,67 @@ public class PubsubMessageWrapper {
     }
   }
 
-  public void startSubscribeProcessSpan(Tracer tracer) {
-    Span parent = this.subscribeSpan;
+  public void startSubscribeProcessSpan(Optional<Tracer> tracer) {
+    if (tracer.isPresent()) {
+      Span parent;
 
-    // Check for optional Scheduler and Flow Control spans
-    if (this.subscribeSchedulerSpan.isPresent()) {
-      parent = this.subscribeSchedulerSpan.get();
-    } else if (this.subscribeFlowControlSpan.isPresent()) {
-      parent = this.subscribeFlowControlSpan.get();
+      if (this.subscribeSchedulerSpan.isPresent()) {
+        parent = this.subscribeSchedulerSpan.get();
+      } else if (this.subscribeFlowControlSpan.isPresent()) {
+        parent = this.subscribeFlowControlSpan.get();
+      } else {
+        parent = this.subscribeSpan.get();
+      }
+
+      this.processSpan =
+          Optional.of(this.createAndStartSpan(tracer.get(), PROCESS_SPAN_NAME, parent));
     }
-
-    this.processSpan = this.createAndStartSpan(tracer, PROCESS_SPAN_NAME, parent);
   }
 
   public void endSubscribeProcessSpan() {
-    this.processSpan.end();
+    if (this.processSpan.isPresent()) {
+      this.processSpan.get().end();
+    }
   }
 
-  public void startSubscribeModAckSpan(Tracer tracer) {
-    this.modackSpan = this.createAndStartSpan(tracer, MODACK_SPAN_NAME, this.processSpan);
+  public void startSubscribeModAckSpan(Optional<Tracer> tracer) {
+    if (tracer.isPresent()) {
+      this.modackSpan =
+          Optional.of(
+              this.createAndStartSpan(tracer.get(), MODACK_SPAN_NAME, this.processSpan.get()));
+    }
   }
 
   public void endSubscribeModAckSpan() {
-    this.modackSpan.end();
+    if (this.modackSpan.isPresent()) {
+      this.modackSpan.get().end();
+    }
   }
 
-  public void startSubscribeAckSpan(Tracer tracer) {
-    this.ackSpan = this.createAndStartSpan(tracer, ACK_SPAN_NAME, this.modackSpan);
+  public void startSubscribeAckSpan(Optional<Tracer> tracer) {
+    if (tracer.isPresent()) {
+      this.ackSpan =
+          Optional.of(this.createAndStartSpan(tracer.get(), ACK_SPAN_NAME, this.modackSpan.get()));
+    }
   }
 
   public void endSubscribeAckSpan() {
-    this.ackSpan.end();
+    if (this.ackSpan.isPresent()) {
+      this.ackSpan.get().end();
+    }
   }
 
-  public void startSubscribeNackSpan(Tracer tracer) {
-    this.nackSpan = this.createAndStartSpan(tracer, NACK_SPAN_NAME, this.modackSpan);
+  public void startSubscribeNackSpan(Optional<Tracer> tracer) {
+    if (tracer.isPresent()) {
+      this.nackSpan =
+          Optional.of(this.createAndStartSpan(tracer.get(), NACK_SPAN_NAME, this.modackSpan.get()));
+    }
   }
 
   public void endSubscribeNackSpan() {
-    this.nackSpan.end();
+    if (this.nackSpan.isPresent()) {
+      this.nackSpan.get().end();
+    }
   }
 
   private Span createAndStartSpan(Tracer tracer, String spanName) {

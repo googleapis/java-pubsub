@@ -29,6 +29,7 @@ import com.google.testing.junit.testparameterinjector.TestParameterInjector;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.context.Context;
+import java.util.Optional;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
@@ -57,53 +58,63 @@ public class PubsubMessageWrapperTest {
 
   @Test
   public void testPublishSpans(
-      @TestParameter boolean useFlowControlSpan, @TestParameter boolean useSchedulerSpan) {
-    Tracer mockTracer = mock(Tracer.class, RETURNS_DEEP_STUBS);
+      @TestParameter boolean useTracer,
+      @TestParameter boolean useFlowControl,
+      @TestParameter boolean useScheduler) {
+
+    PubsubMessageWrapper pubsubMessageWrapper =
+        PubsubMessageWrapper.newBuilder(getPubsubMessage()).setTopicName(FULL_TOPIC_NAME).build();
+
+    Optional<Tracer> mockTracer = Optional.empty();
 
     Span mockPublishSpan = mock(Span.class);
     Span mockFlowControlSpan = mock(Span.class);
     Span mockSchedulerSpan = mock(Span.class);
     Span mockPublishRpcSpan = mock(Span.class);
 
-    PubsubMessageWrapper pubsubMessageWrapper =
-        PubsubMessageWrapper.newBuilder(getPubsubMessage()).setTopicName(FULL_TOPIC_NAME).build();
+    if (useTracer) {
+      // Set up our mocks if needed
+      mockTracer = Optional.of(mock(Tracer.class, RETURNS_DEEP_STUBS));
+      when(mockTracer.get().spanBuilder(PUBLISH_SPAN_NAME).startSpan()).thenReturn(mockPublishSpan);
 
-    when(mockTracer.spanBuilder(PUBLISH_SPAN_NAME).startSpan()).thenReturn(mockPublishSpan);
+      // Need to set up our parent span(s) for the optional spans
+      Span publishRpcSpanParent = mockPublishSpan;
 
-    // Need to set up our parent span(s) for the optional spans
-    Span publishRpcSpanParent = mockPublishSpan;
+      if (useFlowControl) {
+        when(mockTracer
+                .get()
+                .spanBuilder(PUBLISH_FLOW_CONTROL_SPAN_NAME)
+                .setParent(Context.current().with(mockPublishSpan))
+                .startSpan())
+            .thenReturn(mockFlowControlSpan);
+        publishRpcSpanParent = mockFlowControlSpan;
+      }
 
-    if (useFlowControlSpan) {
+      if (useScheduler) {
+        Span schedulerSpanParent = useFlowControl ? mockFlowControlSpan : mockPublishSpan;
+        when(mockTracer
+                .get()
+                .spanBuilder(PUBLISH_SCHEDULER_SPAN_NAME)
+                .setParent(Context.current().with(schedulerSpanParent))
+                .startSpan())
+            .thenReturn(mockSchedulerSpan);
+        publishRpcSpanParent = schedulerSpanParent;
+      }
+
       when(mockTracer
-              .spanBuilder(PUBLISH_FLOW_CONTROL_SPAN_NAME)
-              .setParent(Context.current().with(mockPublishSpan))
+              .get()
+              .spanBuilder(PUBLISH_RPC_SPAN_NAME)
+              .setParent(Context.current().with(mockSchedulerSpan))
               .startSpan())
-          .thenReturn(mockFlowControlSpan);
-      publishRpcSpanParent = mockFlowControlSpan;
+          .thenReturn(mockPublishRpcSpan);
     }
-
-    if (useSchedulerSpan) {
-      Span schedulerSpanParent = useFlowControlSpan ? mockFlowControlSpan : mockPublishSpan;
-      when(mockTracer
-              .spanBuilder(PUBLISH_SCHEDULER_SPAN_NAME)
-              .setParent(Context.current().with(schedulerSpanParent))
-              .startSpan())
-          .thenReturn(mockSchedulerSpan);
-      publishRpcSpanParent = schedulerSpanParent;
-    }
-
-    when(mockTracer
-            .spanBuilder(PUBLISH_RPC_SPAN_NAME)
-            .setParent(Context.current().with(mockSchedulerSpan))
-            .startSpan())
-        .thenReturn(mockPublishRpcSpan);
 
     pubsubMessageWrapper.startPublishSpan(mockTracer);
-    if (useFlowControlSpan) {
+    if (useFlowControl) {
       pubsubMessageWrapper.startPublishFlowControlSpan(mockTracer);
     }
 
-    if (useSchedulerSpan) {
+    if (useScheduler) {
       pubsubMessageWrapper.startPublishSchedulerSpan(mockTracer);
     }
 
@@ -114,25 +125,26 @@ public class PubsubMessageWrapperTest {
     pubsubMessageWrapper.endPublishFlowControlSpan();
     pubsubMessageWrapper.endPublishSpan();
 
-    verify(mockPublishSpan, times(1)).end();
-    // If we used the flow control span we expect 1 call, otherwise 0
-    verify(mockFlowControlSpan, times(useFlowControlSpan ? 1 : 0)).end();
-    // If we used the scheduler span we expect 1 call, otherwise 0
-    verify(mockSchedulerSpan, times(useSchedulerSpan ? 1 : 0)).end();
-    verify(mockPublishRpcSpan, times(1)).end();
+    verify(mockPublishSpan, times(useTracer ? 1 : 0)).end();
+    // If we are using a tracer and flow control we expect 1 call, otherwise 0
+    verify(mockFlowControlSpan, times((useTracer && useFlowControl) ? 1 : 0)).end();
+    // If we are using a tracer and scheduler we expect 1 call, otherwise 0
+    verify(mockSchedulerSpan, times((useTracer && useScheduler) ? 1 : 0)).end();
+    verify(mockPublishRpcSpan, times(useTracer ? 1 : 0)).end();
   }
 
   @Test
   public void testSubscribeSpans(
+      @TestParameter boolean useTracer,
       @TestParameter boolean isAck,
-      @TestParameter boolean useFlowControlSpan,
-      @TestParameter boolean useSchedulerSpan) {
-    Tracer mockTracer = mock(Tracer.class, RETURNS_DEEP_STUBS);
-
+      @TestParameter boolean useFlowControl,
+      @TestParameter boolean useScheduler) {
     PubsubMessageWrapper pubsubMessageWrapper =
         PubsubMessageWrapper.newBuilder(getPubsubMessage())
             .setSubscriptionName(FULL_SUBSCRIPTION_NAME)
             .build();
+
+    Optional<Tracer> mockTracer = Optional.empty();
 
     Span mockReceiveSpan = mock(Span.class);
     Span mockFlowControlSpan = mock(Span.class);
@@ -141,54 +153,63 @@ public class PubsubMessageWrapperTest {
     Span mockModackSpan = mock(Span.class);
     Span mockAckNackSpan = mock(Span.class);
 
-    when(mockTracer.spanBuilder(RECEIVE_SPAN_NAME).startSpan()).thenReturn(mockReceiveSpan);
+    if (useTracer) {
+      // Set up our mocks if needed
+      mockTracer = Optional.of(mock(Tracer.class, RETURNS_DEEP_STUBS));
+      when(mockTracer.get().spanBuilder(RECEIVE_SPAN_NAME).startSpan()).thenReturn(mockReceiveSpan);
 
-    // Need to set up our parent span(s) for the optional spans
-    Span processSpanParent = mockReceiveSpan;
+      // Need to set up our parent span(s) for the optional spans
+      Span processSpanParent = mockReceiveSpan;
 
-    if (useFlowControlSpan) {
+      if (useFlowControl) {
+        when(mockTracer
+                .get()
+                .spanBuilder(SUBSCRIBE_FLOW_CONTROL_SPAN_NAME)
+                .setParent(Context.current().with(mockReceiveSpan))
+                .startSpan())
+            .thenReturn(mockFlowControlSpan);
+        processSpanParent = mockFlowControlSpan;
+      }
+
+      if (useScheduler) {
+        Span schedulerSpanParent = useFlowControl ? mockFlowControlSpan : mockReceiveSpan;
+        when(mockTracer
+                .get()
+                .spanBuilder(SUBSCRIBE_SCHEDULE_SPAN_NAME)
+                .setParent(Context.current().with(schedulerSpanParent))
+                .startSpan())
+            .thenReturn(mockSchedulerSpan);
+        processSpanParent = schedulerSpanParent;
+      }
+
       when(mockTracer
-              .spanBuilder(SUBSCRIBE_FLOW_CONTROL_SPAN_NAME)
-              .setParent(Context.current().with(mockReceiveSpan))
+              .get()
+              .spanBuilder(SUBSCRIBE_PROCESS_SPAN_NAME)
+              .setParent(Context.current().with(processSpanParent))
               .startSpan())
-          .thenReturn(mockFlowControlSpan);
-      processSpanParent = mockFlowControlSpan;
-    }
+          .thenReturn(mockProcessSpan);
 
-    if (useSchedulerSpan) {
-      Span schedulerSpanParent = useFlowControlSpan ? mockFlowControlSpan : mockReceiveSpan;
       when(mockTracer
-              .spanBuilder(SUBSCRIBE_SCHEDULE_SPAN_NAME)
-              .setParent(Context.current().with(schedulerSpanParent))
+              .get()
+              .spanBuilder(MODACK_SPAN_NAME)
+              .setParent(Context.current().with(mockProcessSpan))
               .startSpan())
-          .thenReturn(mockSchedulerSpan);
-      processSpanParent = schedulerSpanParent;
+          .thenReturn(mockModackSpan);
+
+      when(mockTracer
+              .get()
+              .spanBuilder(isAck ? ACK_SPAN_NAME : NACK_SPAN_NAME)
+              .setParent(Context.current().with(mockModackSpan))
+              .startSpan())
+          .thenReturn(mockAckNackSpan);
     }
-
-    when(mockTracer
-            .spanBuilder(SUBSCRIBE_PROCESS_SPAN_NAME)
-            .setParent(Context.current().with(processSpanParent))
-            .startSpan())
-        .thenReturn(mockProcessSpan);
-
-    when(mockTracer
-            .spanBuilder(MODACK_SPAN_NAME)
-            .setParent(Context.current().with(mockProcessSpan))
-            .startSpan())
-        .thenReturn(mockModackSpan);
-
-    when(mockTracer
-            .spanBuilder(isAck ? ACK_SPAN_NAME : NACK_SPAN_NAME)
-            .setParent(Context.current().with(mockModackSpan))
-            .startSpan())
-        .thenReturn(mockAckNackSpan);
 
     pubsubMessageWrapper.startSubscribeReceiveSpan(mockTracer);
-    if (useFlowControlSpan) {
+    if (useFlowControl) {
       pubsubMessageWrapper.startSubscribeFlowControlSpan(mockTracer);
     }
 
-    if (useSchedulerSpan) {
+    if (useScheduler) {
       pubsubMessageWrapper.startSubscribeSchedulerSpan(mockTracer);
     }
 
@@ -209,14 +230,14 @@ public class PubsubMessageWrapperTest {
     pubsubMessageWrapper.endSubscribeFlowControlSpan();
     pubsubMessageWrapper.endSubscribeReceiveSpan();
 
-    verify(mockReceiveSpan, times(1)).end();
-    // If we used the flow control span we expect 1 call, otherwise 0
-    verify(mockFlowControlSpan, times(useFlowControlSpan ? 1 : 0)).end();
-    // If we used the scheduler span we expect 1 call, otherwise 0
-    verify(mockSchedulerSpan, times(useSchedulerSpan ? 1 : 0)).end();
-    verify(mockProcessSpan, times(1)).end();
-    verify(mockModackSpan, times(1)).end();
-    verify(mockAckNackSpan, times(1)).end();
+    verify(mockReceiveSpan, times(useTracer ? 1 : 0)).end();
+    // If we are using a tracer and flow control we expect 1 call, otherwise 0
+    verify(mockFlowControlSpan, times((useTracer && useFlowControl) ? 1 : 0)).end();
+    // If we are using a tracer and scheduler we expect 1 call, otherwise 0
+    verify(mockSchedulerSpan, times((useTracer && useScheduler) ? 1 : 0)).end();
+    verify(mockProcessSpan, times(useTracer ? 1 : 0)).end();
+    verify(mockModackSpan, times(useTracer ? 1 : 0)).end();
+    verify(mockAckNackSpan, times(useTracer ? 1 : 0)).end();
   }
 
   private PubsubMessage getPubsubMessage() {
