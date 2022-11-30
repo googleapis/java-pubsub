@@ -55,7 +55,7 @@ public class PubsubMessageWrapper {
 
   private String RECEIVE_SPAN_NAME;
   private static final String SUBSCRIBE_FLOW_CONTROL_SPAN_NAME = "subscribe flow control";
-  private static final String SUBSCRIBE_SCHEDULE_SPAN_NAME = "subscribe flow control";
+  private static final String SUBSCRIBE_SCHEDULE_SPAN_NAME = "subscribe scheduler";
   private static final String PROCESS = "process";
   private String PROCESS_SPAN_NAME;
   private static final String MODACK_SPAN_NAME = "send modifyAckDeadline";
@@ -154,7 +154,7 @@ public class PubsubMessageWrapper {
     Span parent =
         this.subscribeFlowControlSpan.isPresent()
             ? this.subscribeFlowControlSpan.get()
-            : this.publishSpan;
+            : this.subscribeSpan;
     this.subscribeSchedulerSpan =
         Optional.of(this.createAndStartSpan(tracer, SUBSCRIBE_SCHEDULE_SPAN_NAME, parent));
   }
