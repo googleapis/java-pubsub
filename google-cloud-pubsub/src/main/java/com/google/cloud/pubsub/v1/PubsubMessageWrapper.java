@@ -83,8 +83,14 @@ public class PubsubMessageWrapper {
     }
   }
 
-  public void startPublishSpan(Tracer tracer) {
-    this.publishSpan = createAndStartSpan(tracer, PUBLISH_SPAN_NAME);
+  public PubsubMessage getPubsubMessage() {
+    return this.pubsubMessage;
+  }
+
+  public void startPublishSpan(Optional<Tracer> tracer) {
+    if (tracer.isPresent()) {
+      this.publishSpan = createAndStartSpan(tracer.get(), PUBLISH_SPAN_NAME);
+    }
   }
 
   public void endPublishSpan() {

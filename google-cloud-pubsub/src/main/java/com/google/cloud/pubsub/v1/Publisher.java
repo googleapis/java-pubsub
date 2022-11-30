@@ -61,6 +61,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ScheduledExecutorService;
@@ -126,9 +127,7 @@ public class Publisher implements PublisherInterface {
 
   private final GrpcCallContext publishContext;
   private final GrpcCallContext publishContextWithCompression;
-
-  private OpenTelemetry openTelemetry;
-  private Tracer openTelemetryTracer;
+  private Optional<Tracer> openTelemetryTracer = Optional.empty();
 
   /** The maximum number of messages in one request. Defined by the API. */
   public static long getApiMaxRequestElementCount() {
@@ -213,10 +212,9 @@ public class Publisher implements PublisherInterface {
     this.publishContextWithCompression =
         GrpcCallContext.createDefault()
             .withCallOptions(CallOptions.DEFAULT.withCompression(GZIP_COMPRESSION));
-    this.openTelemetry = builder.openTelemetry;
-    if (this.openTelemetry != null) {
+    if (builder.openTelemetry.isPresent()) {
       // Create a tracer if we have an instance of OpenTelemetry
-      this.openTelemetryTracer = this.openTelemetry.getTracer(OPEN_TELEMETRY_TRACER_NAME);
+      this.openTelemetryTracer = Optional.of(builder.openTelemetry.get().getTracer(OPEN_TELEMETRY_TRACER_NAME));
     }
   }
 
@@ -261,7 +259,6 @@ public class Publisher implements PublisherInterface {
   @Override
   public ApiFuture<String> publish(PubsubMessage message) {
     Preconditions.checkState(!shutdown.get(), "Cannot publish on a shut-down publisher.");
-
     final String orderingKey = message.getOrderingKey();
     Preconditions.checkState(
         orderingKey.isEmpty() || enableMessageOrdering,
@@ -269,8 +266,11 @@ public class Publisher implements PublisherInterface {
             + "Publisher client. Please create a Publisher client with "
             + "setEnableMessageOrdering(true) in the builder.");
 
+    PubsubMessageWrapper pubsubMessageWrapper = PubsubMessageWrapper.newBuilder(this.messageTransform.apply(message)).setTopicName(this.topicName).build();
+    pubsubMessageWrapper.startPublishSpan(this.openTelemetryTracer);
+
     final OutstandingPublish outstandingPublish =
-        new OutstandingPublish(messageTransform.apply(message));
+        new OutstandingPublish(pubsubMessageWrapper);
 
     if (flowController != null) {
       try {
@@ -596,13 +596,13 @@ public class Publisher implements PublisherInterface {
 
   private static final class OutstandingPublish {
     final SettableApiFuture<String> publishResult;
-    final PubsubMessage message;
+    final PubsubMessageWrapper pubsubMessageWrapper;
     final int messageSize;
 
-    OutstandingPublish(PubsubMessage message) {
+    OutstandingPublish(PubsubMessageWrapper pubsubMessageWrapper) {
       this.publishResult = SettableApiFuture.create();
-      this.message = message;
-      this.messageSize = message.getSerializedSize();
+      this.pubsubMessageWrapper = pubsubMessageWrapper;
+      this.messageSize = pubsubMessageWrapper.getPubsubMessage().getSerializedSize();
     }
   }
 
@@ -758,7 +758,7 @@ public class Publisher implements PublisherInterface {
     private boolean enableCompression = DEFAULT_ENABLE_COMPRESSION;
     private long compressionBytesThreshold = DEFAULT_COMPRESSION_BYTES_THRESHOLD;
 
-    private OpenTelemetry openTelemetry;
+    private Optional<OpenTelemetry> openTelemetry = Optional.empty();
 
     private Builder(String topic) {
       this.topicName = Preconditions.checkNotNull(topic);
