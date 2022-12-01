@@ -19,6 +19,7 @@ package com.google.cloud.pubsub.v1;
 import com.google.common.base.Preconditions;
 import com.google.pubsub.v1.PubsubMessage;
 import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.StatusCode;
 import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.context.Context;
 import java.util.Optional;
@@ -31,7 +32,10 @@ public class PubsubMessageWrapper {
   /**
    * Publish Spans are hierarchical - they must be open and closed in the following order:
    *
-   * <p>Publish -> (optional) Flow Control -> (optional) Scheduler -> PublishRpc
+   * Publish
+   *   (optional) Flow Control
+   *   (optional) Scheduler
+   *   PublishRpc
    */
   private static final String SEND = "send";
 
@@ -83,6 +87,10 @@ public class PubsubMessageWrapper {
     }
   }
 
+  public PubsubMessage getPubsubMessage() {
+    return pubsubMessage;
+  }
+
   public void startPublishSpan(Optional<Tracer> tracer) {
     if (tracer.isPresent()) {
       this.publishSpan = Optional.of(createAndStartSpan(tracer.get(), PUBLISH_SPAN_NAME));
@@ -112,16 +120,19 @@ public class PubsubMessageWrapper {
     }
   }
 
+  public void setPublishFlowControlSpanException(Throwable throwable) {
+    if (this.publishFlowControlSpan.isPresent()) {
+      this.publishFlowControlSpan.get().setStatus(StatusCode.ERROR, "Publish flow control exception caught.");
+      this.publishFlowControlSpan.get().recordException(throwable);
+      this.endAllPublishSpans();
+    }
+  }
+
   /** (Optional) Start Flow Control Span */
   public void startPublishSchedulerSpan(Optional<Tracer> tracer) {
     if (tracer.isPresent()) {
-      // Check for optional parent
-      Span parent =
-          this.publishFlowControlSpan.isPresent()
-              ? this.publishFlowControlSpan.get()
-              : this.publishSpan.get();
       this.publishSchedulerSpan =
-          Optional.of(this.createAndStartSpan(tracer.get(), PUBLISH_SCHEDULER_SPAN_NAME, parent));
+          Optional.of(this.createAndStartSpan(tracer.get(), PUBLISH_SCHEDULER_SPAN_NAME, this.publishSpan.get()));
     }
   }
 
@@ -132,18 +143,18 @@ public class PubsubMessageWrapper {
     }
   }
 
+  public void setPublishSchedulerException(Throwable throwable) {
+    if (this.publishSchedulerSpan.isPresent()) {
+      this.publishSchedulerSpan.get().setStatus(StatusCode.ERROR, "Publish scheduler exception caught.");
+      this.publishSchedulerSpan.get().recordException(throwable);
+      this.endAllPublishSpans();
+    }
+  }
+
   public void startPublishRpcSpan(Optional<Tracer> tracer) {
     if (tracer.isPresent()) {
-      Span parent;
-      if (this.publishSchedulerSpan.isPresent()) {
-        parent = this.publishSchedulerSpan.get();
-      } else if (this.publishFlowControlSpan.isPresent()) {
-        parent = this.publishFlowControlSpan.get();
-      } else {
-        parent = this.publishSpan.get();
-      }
       this.publishRpcSpan =
-          Optional.of(createAndStartSpan(tracer.get(), PUBLISH_RPC_SPAN_NAME, parent));
+          Optional.of(createAndStartSpan(tracer.get(), PUBLISH_RPC_SPAN_NAME, this.publishSpan.get()));
     }
   }
 
@@ -266,6 +277,14 @@ public class PubsubMessageWrapper {
 
   private Span createAndStartSpan(Tracer tracer, String spanName, Span parent) {
     return tracer.spanBuilder(spanName).setParent(Context.current().with(parent)).startSpan();
+ }
+
+  /** Helper function used after setting an exception to end all publish spans. */
+  private void endAllPublishSpans() {
+    this.endPublishRpcSpan();
+    this.endPublishSchedulerSpan();
+    this.endPublishFlowControlSpan();
+    this.endPublishSpan();
   }
 
   public static PubsubMessageWrapper.Builder newBuilder(PubsubMessage pubsubMessage) {
