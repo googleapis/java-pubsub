@@ -40,7 +40,6 @@ public class PubsubMessageWrapper {
   private static final String PUBLISH_FLOW_CONTROL_SPAN_NAME = "publish flow control";
   private static final String PUBLISH_SCHEDULER_SPAN_NAME = "publish scheduler";
   private static final String PUBLISH_RPC_SPAN_NAME = "send Publish";
-
   private static final String PUBLISH_NUM_MESSAGES_IN_BATCH_ATTRIBUTE_KEY =
       "messaging.pubsub.num_messages_in_batch";
 
