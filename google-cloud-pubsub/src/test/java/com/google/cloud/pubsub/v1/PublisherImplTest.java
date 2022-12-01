@@ -94,7 +94,7 @@ public class PublisherImplTest {
   private Server testServer;
 
   // Open Telemetry
-  private static final String OPEN_TELEMETRY_TRACER_NAME = "cloud.google.com/java/pubsub";
+  private static final String OPEN_TELEMETRY_TRACER_NAME = "com.google.pubsub.v1";
   private static final String PUBLISH_SPAN_NAME = TEST_TOPIC + " send";
   private static final String PUBLISH_FLOW_CONTROL_SPAN_NAME = "publish flow control";
   private static final String PUBLISH_SCHEDULER_SPAN_NAME = "publish scheduler";
