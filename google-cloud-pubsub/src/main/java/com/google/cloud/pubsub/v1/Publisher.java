@@ -94,6 +94,7 @@ public class Publisher implements PublisherInterface {
   private static final Logger logger = Logger.getLogger(Publisher.class.getName());
 
   private static final String GZIP_COMPRESSION = "gzip";
+
   private static final String OPEN_TELEMETRY_TRACER_NAME = "com.google.pubsub.v1";
 
   private final String topicName;
