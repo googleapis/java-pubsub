@@ -41,7 +41,8 @@ public class PubsubMessageWrapper {
   private static final String PUBLISH_SCHEDULER_SPAN_NAME = "publish scheduler";
   private static final String PUBLISH_RPC_SPAN_NAME = "send Publish";
 
-  private static final String PUBLISH_NUM_MESSAGES_IN_BATCH_ATTRIBUTE_KEY = "messaging.pubsub.num_messages_in_batch";
+  private static final String PUBLISH_NUM_MESSAGES_IN_BATCH_ATTRIBUTE_KEY =
+      "messaging.pubsub.num_messages_in_batch";
 
   private Optional<Span> publishSpan = Optional.empty();
   private Optional<Span> publishFlowControlSpan = Optional.empty();
@@ -162,7 +163,9 @@ public class PubsubMessageWrapper {
       this.publishRpcSpan =
           Optional.of(
               createAndStartSpan(tracer.get(), PUBLISH_RPC_SPAN_NAME, this.publishSpan.get()));
-      this.publishRpcSpan.get().setAttribute(PUBLISH_NUM_MESSAGES_IN_BATCH_ATTRIBUTE_KEY, numMessagesInBatch);
+      this.publishRpcSpan
+          .get()
+          .setAttribute(PUBLISH_NUM_MESSAGES_IN_BATCH_ATTRIBUTE_KEY, numMessagesInBatch);
     }
   }
 
