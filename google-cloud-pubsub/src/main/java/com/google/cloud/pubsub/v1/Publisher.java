@@ -52,6 +52,8 @@ import com.google.pubsub.v1.PubsubMessage;
 import com.google.pubsub.v1.TopicName;
 import com.google.pubsub.v1.TopicNames;
 import io.grpc.CallOptions;
+import io.opentelemetry.api.OpenTelemetry;
+import io.opentelemetry.api.trace.Tracer;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -92,6 +94,7 @@ public class Publisher implements PublisherInterface {
   private static final Logger logger = Logger.getLogger(Publisher.class.getName());
 
   private static final String GZIP_COMPRESSION = "gzip";
+  private static final String OPEN_TELEMETRY_TRACER_NAME = "com.google.pubsub.v1";
 
   private final String topicName;
 
@@ -123,6 +126,9 @@ public class Publisher implements PublisherInterface {
 
   private final GrpcCallContext publishContext;
   private final GrpcCallContext publishContextWithCompression;
+
+  private OpenTelemetry openTelemetry;
+  private Tracer openTelemetryTracer;
 
   /** The maximum number of messages in one request. Defined by the API. */
   public static long getApiMaxRequestElementCount() {
@@ -207,6 +213,11 @@ public class Publisher implements PublisherInterface {
     this.publishContextWithCompression =
         GrpcCallContext.createDefault()
             .withCallOptions(CallOptions.DEFAULT.withCompression(GZIP_COMPRESSION));
+    this.openTelemetry = builder.openTelemetry;
+    if (this.openTelemetry != null) {
+      // Create a tracer if we have an instance of OpenTelemetry
+      this.openTelemetryTracer = this.openTelemetry.getTracer(OPEN_TELEMETRY_TRACER_NAME);
+    }
   }
 
   /** Topic which the publisher publishes to. */
@@ -747,6 +758,8 @@ public class Publisher implements PublisherInterface {
     private boolean enableCompression = DEFAULT_ENABLE_COMPRESSION;
     private long compressionBytesThreshold = DEFAULT_COMPRESSION_BYTES_THRESHOLD;
 
+    private OpenTelemetry openTelemetry;
+
     private Builder(String topic) {
       this.topicName = Preconditions.checkNotNull(topic);
     }
@@ -875,6 +888,12 @@ public class Publisher implements PublisherInterface {
     /** Returns the default BatchingSettings used by the client if settings are not provided. */
     public static BatchingSettings getDefaultBatchingSettings() {
       return DEFAULT_BATCHING_SETTINGS;
+    }
+
+    /** Sets the Open Telemetry Instance to allow for tracing. */
+    public Builder setOpenTelemetry(OpenTelemetry openTelemetry) {
+      this.openTelemetry = openTelemetry;
+      return this;
     }
 
     public Publisher build() throws IOException {
