@@ -926,6 +926,26 @@ public class PublisherImplTest {
   }
 
   @Test
+  public void testPublishOpenTelemetry() throws Exception {
+    OpenTelemetry mockOpenTelemetry = mock(OpenTelemetry.class, RETURNS_DEEP_STUBS);
+    Publisher.Builder builder = getTestPublisherBuilder();
+    Publisher publisher =
+        getTestPublisherBuilder()
+            .setOpenTelemetry(mockOpenTelemetry)
+            .setBatchingSettings(
+                Publisher.Builder.getDefaultBatchingSettings()
+                    .toBuilder()
+                    .setElementCountThreshold(1L)
+                    .build())
+            .build();
+
+    PublishResponse publishResponse = PublishResponse.newBuilder().addMessageIds("1").build();
+    testPublisherServiceImpl.addPublishResponse(publishResponse);
+    ApiFuture<String> publishFuture = sendTestMessage(publisher, "A");
+    assertEquals("1", publishFuture.get());
+  }
+
+  @Test
   public void testPublisherGetters() throws Exception {
     Publisher.Builder builder = Publisher.newBuilder(TEST_TOPIC);
     builder.setChannelProvider(

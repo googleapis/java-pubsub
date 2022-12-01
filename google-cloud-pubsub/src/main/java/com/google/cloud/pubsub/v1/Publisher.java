@@ -95,7 +95,8 @@ public class Publisher implements PublisherInterface {
   private static final Logger logger = Logger.getLogger(Publisher.class.getName());
 
   private static final String GZIP_COMPRESSION = "gzip";
-  private static final String OPEN_TELEMETRY_TRACER_NAME = "cloud.google.com/java/pubsub";
+
+  private static final String OPEN_TELEMETRY_TRACER_NAME = "com.google.pubsub.v1";
 
   private final String topicName;
 
@@ -128,6 +129,9 @@ public class Publisher implements PublisherInterface {
   private final GrpcCallContext publishContext;
   private final GrpcCallContext publishContextWithCompression;
   private Optional<Tracer> tracer = Optional.empty();
+
+  private OpenTelemetry openTelemetry;
+  private Tracer openTelemetryTracer;
 
   /** The maximum number of messages in one request. Defined by the API. */
   public static long getApiMaxRequestElementCount() {
