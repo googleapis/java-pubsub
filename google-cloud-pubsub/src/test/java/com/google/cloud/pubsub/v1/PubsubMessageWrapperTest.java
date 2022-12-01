@@ -77,9 +77,6 @@ public class PubsubMessageWrapperTest {
       mockTracer = Optional.of(mock(Tracer.class, RETURNS_DEEP_STUBS));
       when(mockTracer.get().spanBuilder(PUBLISH_SPAN_NAME).startSpan()).thenReturn(mockPublishSpan);
 
-      // Need to set up our parent span(s) for the optional spans
-      Span publishRpcSpanParent = mockPublishSpan;
-
       if (useFlowControl) {
         when(mockTracer
                 .get()
@@ -87,24 +84,21 @@ public class PubsubMessageWrapperTest {
                 .setParent(Context.current().with(mockPublishSpan))
                 .startSpan())
             .thenReturn(mockFlowControlSpan);
-        publishRpcSpanParent = mockFlowControlSpan;
       }
 
       if (useScheduler) {
-        Span schedulerSpanParent = useFlowControl ? mockFlowControlSpan : mockPublishSpan;
         when(mockTracer
                 .get()
                 .spanBuilder(PUBLISH_SCHEDULER_SPAN_NAME)
-                .setParent(Context.current().with(schedulerSpanParent))
+                .setParent(Context.current().with(mockPublishSpan))
                 .startSpan())
             .thenReturn(mockSchedulerSpan);
-        publishRpcSpanParent = schedulerSpanParent;
       }
 
       when(mockTracer
               .get()
               .spanBuilder(PUBLISH_RPC_SPAN_NAME)
-              .setParent(Context.current().with(mockSchedulerSpan))
+              .setParent(Context.current().with(mockPublishSpan))
               .startSpan())
           .thenReturn(mockPublishRpcSpan);
     }
@@ -118,7 +112,7 @@ public class PubsubMessageWrapperTest {
       pubsubMessageWrapper.startPublishSchedulerSpan(mockTracer);
     }
 
-    pubsubMessageWrapper.startPublishRpcSpan(mockTracer);
+    pubsubMessageWrapper.startPublishRpcSpan(mockTracer, 1);
 
     pubsubMessageWrapper.endPublishRpcSpan();
     pubsubMessageWrapper.endPublishSchedulerSpan();

@@ -266,11 +266,13 @@ public class Publisher implements PublisherInterface {
             + "Publisher client. Please create a Publisher client with "
             + "setEnableMessageOrdering(true) in the builder.");
 
-    PubsubMessageWrapper pubsubMessageWrapper = PubsubMessageWrapper.newBuilder(this.messageTransform.apply(message)).setTopicName(this.topicName).build();
+    PubsubMessageWrapper pubsubMessageWrapper =
+        PubsubMessageWrapper.newBuilder(this.messageTransform.apply(message))
+            .setTopicName(this.topicName)
+            .build();
     pubsubMessageWrapper.startPublishSpan(this.tracer);
 
-    final OutstandingPublish outstandingPublish =
-        new OutstandingPublish(pubsubMessageWrapper);
+    final OutstandingPublish outstandingPublish = new OutstandingPublish(pubsubMessageWrapper);
 
     if (flowController != null) {
       outstandingPublish.pubsubMessageWrapper.startPublishFlowControlSpan(this.tracer);
@@ -294,7 +296,8 @@ public class Publisher implements PublisherInterface {
       if (!orderingKey.isEmpty() && sequentialExecutor.keyHasError(orderingKey)) {
         outstandingPublish.publishResult.setException(
             SequentialExecutorService.CallbackExecutor.CANCELLATION_EXCEPTION);
-        outstandingPublish.pubsubMessageWrapper.setPublishSchedulerException(SequentialExecutorService.CallbackExecutor.CANCELLATION_EXCEPTION);
+        outstandingPublish.pubsubMessageWrapper.setPublishSchedulerException(
+            SequentialExecutorService.CallbackExecutor.CANCELLATION_EXCEPTION);
         return outstandingPublish.publishResult;
       }
       MessagesBatch messagesBatch = messagesBatches.get(orderingKey);
@@ -468,11 +471,12 @@ public class Publisher implements PublisherInterface {
       context = publishContextWithCompression;
     }
 
-    List<PubsubMessage> pubsubMessageList = new ArrayList<PubsubMessage>(outstandingBatch.size());
+    int numMessagesInBatch = outstandingBatch.size();
+    List<PubsubMessage> pubsubMessageList = new ArrayList<PubsubMessage>(numMessagesInBatch);
 
     for (PubsubMessageWrapper pubsubMessageWrapper : outstandingBatch.getMessageWrappers()) {
       pubsubMessageWrapper.endPublishSchedulerSpan();
-      pubsubMessageWrapper.startPublishRpcSpan(this.tracer);
+      pubsubMessageWrapper.startPublishRpcSpan(this.tracer, numMessagesInBatch);
       pubsubMessageList.add(pubsubMessageWrapper.getPubsubMessage());
     }
 
@@ -490,11 +494,6 @@ public class Publisher implements PublisherInterface {
     if (outstandingBatch.size() == 0) {
       logger.log(Level.WARNING, "Attempted to publish batch with zero messages.");
       return;
-    }
-
-    // If we are tracing, we need to update that our batches are over
-    for (OutstandingPublish outstandingPublish : outstandingBatch.outstandingPublishes) {
-      outstandingPublish.pubsubMessageWrapper.endPublishSchedulerSpan();
     }
 
     final ApiFutureCallback<PublishResponse> futureCallback =
