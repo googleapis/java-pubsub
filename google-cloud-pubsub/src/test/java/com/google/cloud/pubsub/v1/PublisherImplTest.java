@@ -180,9 +180,14 @@ public class PublisherImplTest {
     assertEquals("1", publishFuture1.get());
     assertEquals("2", publishFuture2.get());
     assertEquals(2, testPublisherServiceImpl.getCapturedRequests().get(0).getMessagesCount());
+    shutdownTestPublisher(publisher);
+
     verify(this.mockPublishSpan, times(useTracer ? 2 : 0)).end();
     verify(this.mockPublishRpcSpan, times(useTracer ? 2 : 0)).end();
-    shutdownTestPublisher(publisher);
+    verify(this.mockPublishSpan, times(useTracer ? 1 : 0))
+        .setAttribute(PUBLISH_SPAN_MESSAGE_ID_ATTRIBUTE_KEY, "1");
+    verify(this.mockPublishSpan, times(useTracer ? 1 : 0))
+        .setAttribute(PUBLISH_SPAN_MESSAGE_ID_ATTRIBUTE_KEY, "2");
   }
 
   @Test
@@ -225,15 +230,14 @@ public class PublisherImplTest {
 
     assertEquals(2, testPublisherServiceImpl.getCapturedRequests().get(0).getMessagesCount());
     assertEquals(2, testPublisherServiceImpl.getCapturedRequests().get(1).getMessagesCount());
+    fakeExecutor.advanceTime(Duration.ofSeconds(100));
+    shutdownTestPublisher(publisher);
 
     verify(this.mockPublishSpan, times(useTracer ? 4 : 0)).end();
     verify(this.mockSchedulerSpan, times(useTracer ? 4 : 0)).end();
     verify(this.mockPublishRpcSpan, times(useTracer ? 4 : 0)).end();
     verify(this.mockPublishRpcSpan, times(useTracer ? 4 : 0))
         .setAttribute(PUBLISH_RPC_SPAN_NUM_MESSAGES_IN_BATCH_ATTRIBUTE_KEY, 2);
-
-    fakeExecutor.advanceTime(Duration.ofSeconds(100));
-    shutdownTestPublisher(publisher);
   }
 
   @Test
@@ -276,14 +280,14 @@ public class PublisherImplTest {
 
     assertEquals(2, testPublisherServiceImpl.getCapturedRequests().size());
 
+    fakeExecutor.advanceTime(Duration.ofSeconds(100));
+    shutdownTestPublisher(publisher);
+
     verify(this.mockPublishSpan, times(useTracer ? 4 : 0)).end();
     verify(this.mockSchedulerSpan, times(useTracer ? 4 : 0)).end();
     verify(this.mockPublishRpcSpan, times(useTracer ? 4 : 0)).end();
     verify(this.mockPublishRpcSpan, times(useTracer ? 4 : 0))
         .setAttribute(PUBLISH_RPC_SPAN_NUM_MESSAGES_IN_BATCH_ATTRIBUTE_KEY, 2);
-
-    fakeExecutor.advanceTime(Duration.ofSeconds(100));
-    shutdownTestPublisher(publisher);
   }
 
   @Test
@@ -442,14 +446,14 @@ public class PublisherImplTest {
       }
     }
 
+    fakeExecutor.advanceTime(Duration.ofSeconds(100));
+    shutdownTestPublisher(publisher);
+
     verify(this.mockPublishSpan, times(useTracer ? 6 : 0)).end();
     verify(this.mockSchedulerSpan, times(useTracer ? 6 : 0)).end();
     verify(this.mockPublishRpcSpan, times(useTracer ? 6 : 0)).end();
     verify(this.mockPublishRpcSpan, times(useTracer ? 6 : 0))
         .setAttribute(PUBLISH_RPC_SPAN_NUM_MESSAGES_IN_BATCH_ATTRIBUTE_KEY, 3);
-
-    fakeExecutor.advanceTime(Duration.ofSeconds(100));
-    shutdownTestPublisher(publisher);
   }
 
   @Test

@@ -615,6 +615,7 @@ public class Publisher implements PublisherInterface {
           flowController.release(nextPublish.messageSize);
         }
         nextPublish.publishResult.set(messageId);
+        nextPublish.pubsubMessageWrapper.setPublishSpanMessageIdAttribute(messageId);
         nextPublish.pubsubMessageWrapper.endPublishRpcSpan();
         nextPublish.pubsubMessageWrapper.endPublishSpan();
       }
