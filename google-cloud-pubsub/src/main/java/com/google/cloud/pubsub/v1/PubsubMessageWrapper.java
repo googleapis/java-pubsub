@@ -36,7 +36,12 @@ public class PubsubMessageWrapper {
   /**
    * Publish Spans are hierarchical - they must be open and closed in the following order:
    *
-   * <p>Publish (optional) Flow Control (optional) Scheduler PublishRpc
+   * <p><<<<<<< HEAD
+   *
+   * <p>Publish (optional) Flow Control (optional) Scheduler PublishRpc =======
+   *
+   * <p>Publish -> (optional) Flow Control -> (optional) Scheduler -> PublishRpc >>>>>>>
+   * open_telemetry
    */
   private static final String SEND = "send";
 
