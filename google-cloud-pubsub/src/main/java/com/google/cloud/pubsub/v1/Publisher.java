@@ -601,6 +601,7 @@ public class Publisher implements PublisherInterface {
         if (flowController != null) {
           flowController.release(outstandingPublish.messageSize);
         }
+        outstandingPublish.pubsubMessageWrapper.setPublishRpcSpanException(t);
         outstandingPublish.publishResult.setException(t);
       }
     }

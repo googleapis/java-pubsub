@@ -22,6 +22,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -93,14 +94,25 @@ public class PublisherImplTest {
 
   private Server testServer;
 
-  // Open Telemetry
+  // Open Telemetry constants
   private static final String OPEN_TELEMETRY_TRACER_NAME = "com.google.pubsub.v1";
   private static final String PUBLISH_SPAN_NAME = TEST_TOPIC + " send";
   private static final String PUBLISH_FLOW_CONTROL_SPAN_NAME = "publish flow control";
   private static final String PUBLISH_SCHEDULER_SPAN_NAME = "publish scheduler";
   private static final String PUBLISH_RPC_SPAN_NAME = "send Publish";
 
-  private static final String PUBLISH_NUM_MESSAGES_IN_BATCH_ATTRIBUTE_KEY =
+  // Open Telemetry Span attribute contants
+  private static final String PUBLISH_SPAN_SYSTEM_ATTRIBUTE_KEY = "messaging.system";
+  private static final String PUBLISH_SPAN_SYSTEM_ATTRIBUTE_VALUE = "pubsub";
+  private static final String PUBLISH_SPAN_DESTINATION_ATTRIBUTE_KEY = "messaging.destination";
+  private static final String PUBLISH_SPAN_DESTINATION_KIND_ATTRIBUTE_KEY =
+      "messaging.destination_kind";
+  private static final String PUBLISH_SPAN_DESTINATION_KIND_ATTRIBUTE_VALUE = "topic";
+  private static final String PUBLISH_SPAN_MESSAGE_ID_ATTRIBUTE_KEY = "messaging.message_id";
+  private static final String PUBLISH_SPAN_MESSAGE_PAYLOAD_SIZE_BYTES_ATTRIBUTE_KEY =
+      "messaging.message_payload_size_bytes";
+  private static final String PUBLISH_SPAN_ORDERING_KEY_ATTRIBUTE_KEY = "messaging.ordering_key";
+  private static final String PUBLISH_RPC_SPAN_NUM_MESSAGES_IN_BATCH_ATTRIBUTE_KEY =
       "messaging.pubsub.num_messages_in_batch";
 
   private OpenTelemetry mockOpenTelemetry;
@@ -218,7 +230,7 @@ public class PublisherImplTest {
     verify(this.mockSchedulerSpan, times(useTracer ? 4 : 0)).end();
     verify(this.mockPublishRpcSpan, times(useTracer ? 4 : 0)).end();
     verify(this.mockPublishRpcSpan, times(useTracer ? 4 : 0))
-        .setAttribute(PUBLISH_NUM_MESSAGES_IN_BATCH_ATTRIBUTE_KEY, 2);
+        .setAttribute(PUBLISH_RPC_SPAN_NUM_MESSAGES_IN_BATCH_ATTRIBUTE_KEY, 2);
 
     fakeExecutor.advanceTime(Duration.ofSeconds(100));
     shutdownTestPublisher(publisher);
@@ -268,7 +280,7 @@ public class PublisherImplTest {
     verify(this.mockSchedulerSpan, times(useTracer ? 4 : 0)).end();
     verify(this.mockPublishRpcSpan, times(useTracer ? 4 : 0)).end();
     verify(this.mockPublishRpcSpan, times(useTracer ? 4 : 0))
-        .setAttribute(PUBLISH_NUM_MESSAGES_IN_BATCH_ATTRIBUTE_KEY, 2);
+        .setAttribute(PUBLISH_RPC_SPAN_NUM_MESSAGES_IN_BATCH_ATTRIBUTE_KEY, 2);
 
     fakeExecutor.advanceTime(Duration.ofSeconds(100));
     shutdownTestPublisher(publisher);
@@ -434,7 +446,7 @@ public class PublisherImplTest {
     verify(this.mockSchedulerSpan, times(useTracer ? 6 : 0)).end();
     verify(this.mockPublishRpcSpan, times(useTracer ? 6 : 0)).end();
     verify(this.mockPublishRpcSpan, times(useTracer ? 6 : 0))
-        .setAttribute(PUBLISH_NUM_MESSAGES_IN_BATCH_ATTRIBUTE_KEY, 3);
+        .setAttribute(PUBLISH_RPC_SPAN_NUM_MESSAGES_IN_BATCH_ATTRIBUTE_KEY, 3);
 
     fakeExecutor.advanceTime(Duration.ofSeconds(100));
     shutdownTestPublisher(publisher);
@@ -772,8 +784,8 @@ public class PublisherImplTest {
   }
 
   @Test
-  public void testErrorPropagation() throws Exception {
-    Publisher publisher =
+  public void testErrorPropagation(@TestParameter boolean useTracer) throws Exception {
+    Builder publisherBuilder =
         getTestPublisherBuilder()
             .setExecutorProvider(SINGLE_THREAD_EXECUTOR)
             .setBatchingSettings(
@@ -781,8 +793,15 @@ public class PublisherImplTest {
                     .toBuilder()
                     .setElementCountThreshold(1L)
                     .setDelayThreshold(Duration.ofSeconds(5))
-                    .build())
-            .build();
+                    .build());
+
+    if (useTracer) {
+      configureOpenTelemetryMocks(true, false);
+      publisherBuilder.setOpenTelemetry(this.mockOpenTelemetry);
+    }
+
+    Publisher publisher = publisherBuilder.build();
+
     testPublisherServiceImpl.addPublishError(Status.DATA_LOSS.asException());
     try {
       sendTestMessage(publisher, "A").get();
@@ -790,6 +809,8 @@ public class PublisherImplTest {
     } catch (ExecutionException e) {
       assertThat(e.getCause()).isInstanceOf(DataLossException.class);
     }
+    verify(this.mockPublishRpcSpan, times(useTracer ? 1 : 0))
+        .recordException(any(DataLossException.class));
   }
 
   @Test
@@ -818,8 +839,9 @@ public class PublisherImplTest {
   }
 
   @Test(expected = ExecutionException.class)
-  public void testPublishFailureRetries_retriesDisabled() throws Exception {
-    Publisher publisher =
+  public void testPublishFailureRetries_retriesDisabled(@TestParameter boolean useTracer)
+      throws Exception {
+    Builder publisherBuilder =
         getTestPublisherBuilder()
             .setExecutorProvider(SINGLE_THREAD_EXECUTOR)
             .setRetrySettings(
@@ -827,8 +849,14 @@ public class PublisherImplTest {
                     .toBuilder()
                     .setTotalTimeout(Duration.ofSeconds(10))
                     .setMaxAttempts(1)
-                    .build())
-            .build();
+                    .build());
+
+    if (useTracer) {
+      configureOpenTelemetryMocks(true, false);
+      publisherBuilder.setOpenTelemetry(this.mockOpenTelemetry);
+    }
+
+    Publisher publisher = publisherBuilder.build();
 
     testPublisherServiceImpl.addPublishError(new Throwable("Transiently failing"));
 
@@ -840,6 +868,8 @@ public class PublisherImplTest {
       assertSame(testPublisherServiceImpl.getCapturedRequests().size(), 1);
       shutdownTestPublisher(publisher);
     }
+    verify(this.mockPublishRpcSpan, times(useTracer ? 1 : 0))
+        .recordException(any(DataLossException.class));
   }
 
   @Test
@@ -896,8 +926,9 @@ public class PublisherImplTest {
   }
 
   @Test(expected = ExecutionException.class)
-  public void testPublishFailureRetries_nonRetryableFailsImmediately() throws Exception {
-    Publisher publisher =
+  public void testPublishFailureRetries_nonRetryableFailsImmediately(
+      @TestParameter boolean useTracer) throws Exception {
+    Builder publisherBuilder =
         getTestPublisherBuilder()
             .setExecutorProvider(SINGLE_THREAD_EXECUTOR)
             .setRetrySettings(
@@ -910,8 +941,15 @@ public class PublisherImplTest {
                     .toBuilder()
                     .setElementCountThreshold(1L)
                     .setDelayThreshold(Duration.ofSeconds(5))
-                    .build())
-            .build(); // To demonstrate that reaching duration will trigger publish
+                    .build());
+    // To demonstrate that reaching duration will trigger publish
+
+    if (useTracer) {
+      configureOpenTelemetryMocks(true, false);
+      publisherBuilder.setOpenTelemetry(this.mockOpenTelemetry);
+    }
+
+    Publisher publisher = publisherBuilder.build();
 
     testPublisherServiceImpl.addPublishError(new StatusException(Status.INVALID_ARGUMENT));
     ApiFuture<String> publishFuture1 = sendTestMessage(publisher, "A");
@@ -923,26 +961,8 @@ public class PublisherImplTest {
       publisher.shutdown();
       assertTrue(publisher.awaitTermination(1, TimeUnit.MINUTES));
     }
-  }
-
-  @Test
-  public void testPublishOpenTelemetry() throws Exception {
-    OpenTelemetry mockOpenTelemetry = mock(OpenTelemetry.class, RETURNS_DEEP_STUBS);
-    Publisher.Builder builder = getTestPublisherBuilder();
-    Publisher publisher =
-        getTestPublisherBuilder()
-            .setOpenTelemetry(mockOpenTelemetry)
-            .setBatchingSettings(
-                Publisher.Builder.getDefaultBatchingSettings()
-                    .toBuilder()
-                    .setElementCountThreshold(1L)
-                    .build())
-            .build();
-
-    PublishResponse publishResponse = PublishResponse.newBuilder().addMessageIds("1").build();
-    testPublisherServiceImpl.addPublishResponse(publishResponse);
-    ApiFuture<String> publishFuture = sendTestMessage(publisher, "A");
-    assertEquals("1", publishFuture.get());
+    verify(this.mockPublishRpcSpan, times(useTracer ? 1 : 0))
+        .recordException(any(DataLossException.class));
   }
 
   @Test
@@ -1265,8 +1285,9 @@ public class PublisherImplTest {
   }
 
   @Test
-  public void testPublishFlowControl_throwException() throws Exception {
-    Publisher publisher =
+  public void testPublishFlowControl_throwException(@TestParameter boolean useTracer)
+      throws Exception {
+    Builder publisherBuilder =
         getTestPublisherBuilder()
             .setExecutorProvider(SINGLE_THREAD_EXECUTOR)
             .setBatchingSettings(
@@ -1281,8 +1302,14 @@ public class PublisherImplTest {
                             .setMaxOutstandingElementCount(1L)
                             .setMaxOutstandingRequestBytes(10L)
                             .build())
-                    .build())
-            .build();
+                    .build());
+
+    if (useTracer) {
+      configureOpenTelemetryMocks(true, true);
+      publisherBuilder.setOpenTelemetry(this.mockOpenTelemetry);
+    }
+
+    Publisher publisher = publisherBuilder.build();
 
     // Sending a message less than the byte limit succeeds.
     ApiFuture<String> publishFuture1 = sendTestMessage(publisher, "AAAA");
@@ -1305,11 +1332,14 @@ public class PublisherImplTest {
 
     testPublisherServiceImpl.addPublishResponse(PublishResponse.newBuilder().addMessageIds("2"));
     assertEquals("2", publishFuture4.get());
+    verify(this.mockFlowControlSpan, times(useTracer ? 1 : 0))
+        .recordException(any(FlowController.MaxOutstandingElementCountReachedException.class));
   }
 
   @Test
-  public void testPublishFlowControl_throwExceptionWithOrderingKey() throws Exception {
-    Publisher publisher =
+  public void testPublishFlowControl_throwExceptionWithOrderingKey(@TestParameter boolean useTracer)
+      throws Exception {
+    Builder publisherBuilder =
         getTestPublisherBuilder()
             .setExecutorProvider(SINGLE_THREAD_EXECUTOR)
             .setBatchingSettings(
@@ -1325,8 +1355,14 @@ public class PublisherImplTest {
                             .setMaxOutstandingRequestBytes(10L)
                             .build())
                     .build())
-            .setEnableMessageOrdering(true)
-            .build();
+            .setEnableMessageOrdering(true);
+
+    if (useTracer) {
+      configureOpenTelemetryMocks(true, true);
+      publisherBuilder.setOpenTelemetry(this.mockOpenTelemetry);
+    }
+
+    Publisher publisher = publisherBuilder.build();
 
     // Sending a message less than the byte limit succeeds.
     ApiFuture<String> publishFuture1 = sendTestMessageWithOrderingKey(publisher, "AAAA", "a");
@@ -1352,6 +1388,8 @@ public class PublisherImplTest {
     } catch (ExecutionException e) {
       assertEquals(SequentialExecutorService.CallbackExecutor.CANCELLATION_EXCEPTION, e.getCause());
     }
+    verify(this.mockFlowControlSpan, times(useTracer ? 1 : 0))
+        .recordException(any(FlowController.MaxOutstandingElementCountReachedException.class));
   }
 
   @Test
@@ -1461,7 +1499,11 @@ public class PublisherImplTest {
     }
 
     if (useFlowControl) {
-      // TODO: Fill this out
+      when(this.mockTracer
+              .spanBuilder(PUBLISH_FLOW_CONTROL_SPAN_NAME)
+              .setParent(Context.current().with(this.mockPublishSpan))
+              .startSpan())
+          .thenReturn(this.mockFlowControlSpan);
     }
 
     when(this.mockTracer

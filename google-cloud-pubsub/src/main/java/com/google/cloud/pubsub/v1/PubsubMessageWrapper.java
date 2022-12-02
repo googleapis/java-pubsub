@@ -27,7 +27,11 @@ import java.util.Optional;
 public class PubsubMessageWrapper {
   private final PubsubMessage pubsubMessage;
 
-  private static final String MESSAGE_ATTRIBUTE_PREFIX = "googclient_";
+  // Pubsub Message attribute
+  private static final String PUBSUB_MESSAGE_ATTRIBUTE_PREFIX = "googclient_";
+
+  private String topicName;
+  private String subscriptionName;
 
   /**
    * Publish Spans are hierarchical - they must be open and closed in the following order:
@@ -40,7 +44,19 @@ public class PubsubMessageWrapper {
   private static final String PUBLISH_FLOW_CONTROL_SPAN_NAME = "publish flow control";
   private static final String PUBLISH_SCHEDULER_SPAN_NAME = "publish scheduler";
   private static final String PUBLISH_RPC_SPAN_NAME = "send Publish";
-  private static final String PUBLISH_NUM_MESSAGES_IN_BATCH_ATTRIBUTE_KEY =
+
+  // Open Telemetry Span attributes
+  private static final String PUBLISH_SPAN_SYSTEM_ATTRIBUTE_KEY = "messaging.system";
+  private static final String PUBLISH_SPAN_SYSTEM_ATTRIBUTE_VALUE = "pubsub";
+  private static final String PUBLISH_SPAN_DESTINATION_ATTRIBUTE_KEY = "messaging.destination";
+  private static final String PUBLISH_SPAN_DESTINATION_KIND_ATTRIBUTE_KEY =
+      "messaging.destination_kind";
+  private static final String PUBLISH_SPAN_DESTINATION_KIND_ATTRIBUTE_VALUE = "topic";
+  private static final String PUBLISH_SPAN_MESSAGE_ID_ATTRIBUTE_KEY = "messaging.message_id";
+  private static final String PUBLISH_SPAN_MESSAGE_PAYLOAD_SIZE_BYTES_ATTRIBUTE_KEY =
+      "messaging.message_payload_size_bytes";
+  private static final String PUBLISH_SPAN_ORDERING_KEY_ATTRIBUTE_KEY = "messaging.ordering_key";
+  private static final String PUBLISH_RPC_SPAN_NUM_MESSAGES_IN_BATCH_ATTRIBUTE_KEY =
       "messaging.pubsub.num_messages_in_batch";
 
   private Optional<Span> publishSpan = Optional.empty();
@@ -77,10 +93,12 @@ public class PubsubMessageWrapper {
     this.pubsubMessage = builder.pubsubMessage;
 
     if (builder.topicName.isPresent()) {
+      this.topicName = builder.topicName.get();
       this.PUBLISH_SPAN_NAME = builder.topicName.get() + " " + this.SEND;
     }
 
     if (builder.subscriptionName.isPresent()) {
+      this.subscriptionName = builder.subscriptionName.get();
       this.RECEIVE_SPAN_NAME = builder.subscriptionName.get() + " " + this.RECEIVE;
       this.PROCESS_SPAN_NAME = builder.subscriptionName.get() + " " + this.PROCESS;
     }
@@ -93,13 +111,41 @@ public class PubsubMessageWrapper {
   public void startPublishSpan(Optional<Tracer> tracer) {
     if (tracer.isPresent()) {
       this.publishSpan = Optional.of(createAndStartSpan(tracer.get(), PUBLISH_SPAN_NAME));
-      // Inject attribute into message
+      // Set required span attribute(s)
+      this.publishSpan
+          .get()
+          .setAttribute(PUBLISH_SPAN_SYSTEM_ATTRIBUTE_KEY, PUBLISH_SPAN_SYSTEM_ATTRIBUTE_VALUE);
+      this.publishSpan.get().setAttribute(PUBLISH_SPAN_DESTINATION_ATTRIBUTE_KEY, this.topicName);
+      this.publishSpan
+          .get()
+          .setAttribute(
+              PUBLISH_SPAN_DESTINATION_KIND_ATTRIBUTE_KEY,
+              PUBLISH_SPAN_DESTINATION_KIND_ATTRIBUTE_VALUE);
+      this.publishSpan
+          .get()
+          .setAttribute(
+              PUBLISH_SPAN_MESSAGE_PAYLOAD_SIZE_BYTES_ATTRIBUTE_KEY,
+              this.pubsubMessage.getSerializedSize());
+      this.publishSpan
+          .get()
+          .setAttribute(
+              PUBLISH_SPAN_ORDERING_KEY_ATTRIBUTE_KEY, this.pubsubMessage.getOrderingKey());
     }
   }
 
   public void endPublishSpan() {
     if (this.publishSpan.isPresent()) {
       this.publishSpan.get().end();
+    }
+  }
+
+  /**
+   * Set the MessageId attribute for the Publish Span. This must be set AFTER the publish is done as
+   * we receive a messageId from the server
+   */
+  public void setPublishSpanMessageIdAttribute(String messageId) {
+    if (this.publishSpan.isPresent()) {
+      this.publishSpan.get().setAttribute(PUBLISH_SPAN_MESSAGE_ID_ATTRIBUTE_KEY, messageId);
     }
   }
 
@@ -162,15 +208,26 @@ public class PubsubMessageWrapper {
       this.publishRpcSpan =
           Optional.of(
               createAndStartSpan(tracer.get(), PUBLISH_RPC_SPAN_NAME, this.publishSpan.get()));
+      // Set required span attribute(s)
       this.publishRpcSpan
           .get()
-          .setAttribute(PUBLISH_NUM_MESSAGES_IN_BATCH_ATTRIBUTE_KEY, numMessagesInBatch);
+          .setAttribute(PUBLISH_RPC_SPAN_NUM_MESSAGES_IN_BATCH_ATTRIBUTE_KEY, numMessagesInBatch);
     }
   }
 
   public void endPublishRpcSpan() {
     if (this.publishRpcSpan.isPresent()) {
       this.publishRpcSpan.get().end();
+    }
+  }
+
+  public void setPublishRpcSpanException(Throwable throwable) {
+    if (this.publishRpcSpan.isPresent()) {
+      this.publishRpcSpan
+          .get()
+          .setStatus(StatusCode.ERROR, "Publish flow control exception caught.");
+      this.publishRpcSpan.get().recordException(throwable);
+      this.endAllPublishSpans();
     }
   }
 
