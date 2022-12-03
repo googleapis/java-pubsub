@@ -36,12 +36,7 @@ public class PubsubMessageWrapper {
   /**
    * Publish Spans are hierarchical - they must be open and closed in the following order:
    *
-   * <p><<<<<<< HEAD
-   *
-   * <p>Publish (optional) Flow Control (optional) Scheduler PublishRpc =======
-   *
-   * <p>Publish -> (optional) Flow Control -> (optional) Scheduler -> PublishRpc >>>>>>>
-   * open_telemetry
+   * <p>Publish -> (optional) Flow Control / (optional) Scheduler / PublishRpc
    */
   private static final String SEND = "send";
 
@@ -72,8 +67,8 @@ public class PubsubMessageWrapper {
   /**
    * Subscribe Spans are hierarchical - they must be open and closed in the following order:
    *
-   * <p>Receive -> (optional) Flow Control -> (optional) Scheduler -> Process -> ModifyAckDeadline
-   * -> Acknowledgement OR Negative Acknowledgement
+   * <p>Receive -> (optional) Flow Control / (optional) Scheduler -> Process -> ModifyAckDeadline ->
+   * Acknowledgement OR Negative Acknowledgement
    */
   private static final String RECEIVE = "receive";
 

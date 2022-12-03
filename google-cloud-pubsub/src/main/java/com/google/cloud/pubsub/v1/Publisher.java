@@ -130,9 +130,6 @@ public class Publisher implements PublisherInterface {
   private final GrpcCallContext publishContextWithCompression;
   private Optional<Tracer> tracer = Optional.empty();
 
-  private OpenTelemetry openTelemetry;
-  private Tracer openTelemetryTracer;
-
   /** The maximum number of messages in one request. Defined by the API. */
   public static long getApiMaxRequestElementCount() {
     return 1000L;
