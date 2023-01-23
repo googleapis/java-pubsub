@@ -276,7 +276,7 @@ public class SchemaIT {
     assertThat(bout.toString()).contains("Received a JSON-formatted message:");
     assertThat(bout.toString()).contains("Ack'ed the message");
 
-        bout.reset();
+    bout.reset();
     // Test updating a topic schema settings
     CreateTopicWithSchemaRevisionsExample.createTopicWithSchemaRevisionsExample(
         projectId,
