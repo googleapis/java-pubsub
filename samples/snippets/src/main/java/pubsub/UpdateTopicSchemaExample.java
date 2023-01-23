@@ -41,8 +41,7 @@ public class UpdateTopicSchemaExample {
   }
 
   public static void updateTopicSchemaExample(
-      String projectId, String topicId, String firstRevisionid,
-      String lastRevisionId)
+      String projectId, String topicId, String firstRevisionid, String lastRevisionId)
       throws IOException {
     try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
 
@@ -50,10 +49,10 @@ public class UpdateTopicSchemaExample {
 
       // Construct the dead letter policy you expect to have after the update.
       SchemaSettings schemaSettings =
-        SchemaSettings.newBuilder()
-            .setFirstRevisionId(firstRevisionid)
-            .setLastRevisionId(lastRevisionId)
-            .build();
+          SchemaSettings.newBuilder()
+              .setFirstRevisionId(firstRevisionid)
+              .setLastRevisionId(lastRevisionId)
+              .build();
 
       // Construct the subscription with the dead letter policy you expect to have
       // after the update. Here, values in the required fields (name, topic) help
@@ -66,13 +65,13 @@ public class UpdateTopicSchemaExample {
 
       // Construct a field mask to indicate which field to update in the subscription.
       FieldMask updateMask =
-          FieldMask.newBuilder().addPaths("schema_settings.first_revision_id").addPaths("schema_settings.last_revision_id").build();
+          FieldMask.newBuilder()
+              .addPaths("schema_settings.first_revision_id")
+              .addPaths("schema_settings.last_revision_id")
+              .build();
 
       UpdateTopicRequest request =
-          UpdateTopicRequest.newBuilder()
-              .setTopic(topic)
-              .setUpdateMask(updateMask)
-              .build();
+          UpdateTopicRequest.newBuilder().setTopic(topic).setUpdateMask(updateMask).build();
 
       Topic response = topicAdminClient.updateTopic(request);
 
