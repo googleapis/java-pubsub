@@ -168,7 +168,7 @@ public class SchemaIT {
     CommitAvroSchemaExample.commitAvroSchemaExample(
         projectId, avroSchemaId, absoluteAvscRevisionFilePath);
     assertThat(bout.toString()).contains("Committed a schema using an Avro schema:");
-    // ADD BACK ONCE FIXED assertThat(bout.toString()).contains(avroSchemaName.toString());
+    assertThat(bout.toString()).contains(avroSchemaName.toString());
 
     bout.reset();
     // Test creating Proto schema.
@@ -184,7 +184,7 @@ public class SchemaIT {
         CommitProtoSchemaExample.commitProtoSchemaExample(
             projectId, protoSchemaId, absoluteProtoRevisionFilePath);
     assertThat(bout.toString()).contains("Committed a schema using a protobuf schema:");
-    // ADD BACK ONCE FIXED assertThat(bout.toString()).contains(protoSchemaName.toString());
+    assertThat(bout.toString()).contains(protoSchemaName.toString());
 
     bout.reset();
     // Test rolling back a schema.
@@ -193,7 +193,7 @@ public class SchemaIT {
         protoSchemaId + "@" + protoSchema.getRevisionId(),
         protoSchemaRevision.getRevisionId());
     assertThat(bout.toString()).contains("Rolled back a schema:");
-    // ADD BACK ONCE FIXED assertThat(bout.toString()).contains(protoSchemaName.toString());
+    assertThat(bout.toString()).contains(protoSchemaName.toString());
 
     bout.reset();
     // Test getting a schema.
@@ -278,13 +278,11 @@ public class SchemaIT {
 
     bout.reset();
     // Test updating a topic schema settings
-    CreateTopicWithSchemaRevisionsExample.createTopicWithSchemaRevisionsExample(
+    UpdateTopicSchemaExample.updateTopicSchemaExample(
         projectId,
         protoTopicWithRevisionsId,
-        protoSchemaId,
         protoSchemaRevision.getRevisionId(),
-        protoSchemaRevision.getRevisionId(),
-        Encoding.BINARY);
+        protoSchemaRevision.getRevisionId());
     assertThat(bout.toString())
         .contains("Updated topic with schema: " + protoTopicWithRevisionsName.toString());
 
