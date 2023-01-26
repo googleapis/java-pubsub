@@ -172,7 +172,7 @@ public class SchemaIT {
 
     bout.reset();
     // Test creating Proto schema.
-    Schema protoSchema =
+    final Schema protoSchema =
         CreateProtoSchemaExample.createProtoSchemaExample(
             projectId, protoSchemaId, absoluteProtoFilePath);
     assertThat(bout.toString()).contains("Created a schema using a protobuf schema:");
@@ -180,7 +180,7 @@ public class SchemaIT {
 
     bout.reset();
     // Test committing Proto schema.
-    Schema protoSchemaRevision =
+    final Schema protoSchemaRevision =
         CommitProtoSchemaExample.commitProtoSchemaExample(
             projectId, protoSchemaId, absoluteProtoRevisionFilePath);
     assertThat(bout.toString()).contains("Committed a schema using a protobuf schema:");
