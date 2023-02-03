@@ -20,14 +20,17 @@
     <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-api</artifactId>
+      <version>1.45.4</version>
     </dependency>
     <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-stub</artifactId>
+      <version>1.45.4</version>
     </dependency>
     <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-protobuf</artifactId>
+      <version>1.45.4</version>
     </dependency>
     <dependency>
       <groupId>com.google.api</groupId>
@@ -80,6 +83,7 @@
     <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-core</artifactId>
+      <version>1.45.4</version>
     </dependency>
     <dependency>
       <groupId>com.google.errorprone</groupId>
