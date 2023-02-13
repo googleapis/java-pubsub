@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2017 Google LLC
  *
@@ -40,7 +39,6 @@ public class UsePubSubEmulatorExample {
   public static void main(String... args) throws IOException {
     // [START pubsub_use_emulator]
     String hostport = System.getenv("PUBSUB_EMULATOR_HOST");
-    System.out.println(hostport);
     ManagedChannel channel = ManagedChannelBuilder.forTarget(hostport).usePlaintext().build();
     try {
       TransportChannelProvider channelProvider =
