@@ -20,6 +20,7 @@ package pubsub;
 
 import com.google.api.gax.rpc.NotFoundException;
 import com.google.cloud.pubsub.v1.SchemaServiceClient;
+import com.google.pubsub.v1.DeleteSchemaRevisionRequest;
 import com.google.pubsub.v1.SchemaName;
 import java.io.IOException;
 
@@ -39,7 +40,10 @@ public class DeleteSchemaRevisionExample {
 
     try (SchemaServiceClient schemaServiceClient = SchemaServiceClient.create()) {
 
-      schemaServiceClient.deleteSchema(schemaName);
+      DeleteSchemaRevisionRequest request =
+          DeleteSchemaRevisionRequest.newBuilder().setName(schemaName.toString()).build();
+
+      schemaServiceClient.deleteSchemaRevision(request);
 
       System.out.println("Deleted a schema revision:" + schemaName);
 
