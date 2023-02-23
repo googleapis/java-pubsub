@@ -30,7 +30,6 @@ public class GetSchemaRevisionExample {
     // TODO(developer): Replace these variables before running the sample.
     String projectId = "your-project-id";
     String schemaId = "your-schema-id[@your-schema-revision]";
-
     getSchemaRevisionExample(projectId, schemaId);
   }
 
