@@ -47,16 +47,14 @@ public class UpdateTopicSchemaExample {
 
       TopicName topicName = TopicName.of(projectId, topicId);
 
-      // Construct the dead letter policy you expect to have after the update.
+      // Construct the schema settings with the changes you want to make.
       SchemaSettings schemaSettings =
           SchemaSettings.newBuilder()
               .setFirstRevisionId(firstRevisionid)
               .setLastRevisionId(lastRevisionId)
               .build();
 
-      // Construct the subscription with the dead letter policy you expect to have
-      // after the update. Here, values in the required fields (name, topic) help
-      // identify the subscription.
+      // Construct the subscription with the schema settings you want to change.
       Topic topic =
           Topic.newBuilder()
               .setName(topicName.toString())
