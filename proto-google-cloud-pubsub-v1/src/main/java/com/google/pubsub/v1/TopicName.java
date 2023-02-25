@@ -118,7 +118,8 @@ public class TopicName implements ResourceName {
     } else if (DELETED_TOPIC.equals(formattedString)) {
       return new TopicName("_deleted-topic_");
     }
-    throw new ValidationException("TopicName.parse: formattedString not in valid format");
+    throw new ValidationException(
+        "TopicName.parse: formattedString (%s) not in valid format", formattedString);
   }
 
   public static List<TopicName> parseList(List<String> formattedStrings) {
