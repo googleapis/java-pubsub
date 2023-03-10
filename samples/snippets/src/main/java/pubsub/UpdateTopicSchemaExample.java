@@ -54,14 +54,14 @@ public class UpdateTopicSchemaExample {
               .setLastRevisionId(lastRevisionId)
               .build();
 
-      // Construct the subscription with the schema settings you want to change.
+      // Construct the topic with the schema settings you want to change.
       Topic topic =
           Topic.newBuilder()
               .setName(topicName.toString())
               .setSchemaSettings(schemaSettings)
               .build();
 
-      // Construct a field mask to indicate which field to update in the subscription.
+      // Construct a field mask to indicate which field to update in the topic.
       FieldMask updateMask =
           FieldMask.newBuilder()
               .addPaths("schema_settings.first_revision_id")

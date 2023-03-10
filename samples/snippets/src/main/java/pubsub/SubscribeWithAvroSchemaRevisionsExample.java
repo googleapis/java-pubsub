@@ -87,7 +87,7 @@ public class SubscribeWithAvroSchemaRevisionsExample {
           if (reader == null) {
             // This is the first time we are seeing this revision. We need to
             // fetch the schema and cache its decoder. It would be more typical
-            // to do this asynchronously, but it shown here in a synchronous
+            // to do this asynchronously, but is shown here in a synchronous
             // way to ease readability.
             try {
               Schema schema = schemaServiceClient.getSchema(name + "@" + revision);

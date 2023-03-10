@@ -269,6 +269,18 @@ public class SchemaIT {
     assertThat(bout.toString()).contains(" is abbreviated as ");
 
     bout.reset();
+    // Test publishing BINARY-encoded Avro records.
+    PublishAvroRecordsExample.publishAvroRecordsExample(projectId, avroTopicId);
+    assertThat(bout.toString()).contains("Preparing a BINARY encoder...");
+    assertThat(bout.toString()).contains("Published message ID:");
+
+    bout.reset();
+    // Test receiving BINARY-encoded Avro records.
+    SubscribeWithAvroSchemaExample.subscribeWithAvroSchemaExample(projectId, avroSubscriptionId);
+    assertThat(bout.toString()).contains("Receiving a binary-encoded message:");
+    assertThat(bout.toString()).contains(" is abbreviated as ");
+
+    bout.reset();
     // Test receiving JSON-encoded proto messages.
     SubscribeWithProtoSchemaExample.subscribeWithProtoSchemaExample(projectId, protoSubscriptionId);
     assertThat(bout.toString()).contains("Received a JSON-formatted message:");
