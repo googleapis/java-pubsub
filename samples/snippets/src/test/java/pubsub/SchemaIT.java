@@ -189,9 +189,7 @@ public class SchemaIT {
     bout.reset();
     // Test rolling back a schema.
     RollbackSchemaExample.rollbackSchemaExample(
-        projectId,
-        protoSchemaId,
-        protoSchema.getRevisionId());
+        projectId, protoSchemaId, protoSchema.getRevisionId());
     assertThat(bout.toString()).contains("Rolled back a schema:");
     assertThat(bout.toString()).contains(protoSchemaName.toString());
 
