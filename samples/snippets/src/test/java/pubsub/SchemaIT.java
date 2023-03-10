@@ -59,9 +59,9 @@ public class SchemaIT {
   File avscRevisionFile = new File(classLoader.getResource("us-states-plus.avsc").getFile());
   String absoluteAvscRevisionFilePath = avscRevisionFile.getAbsolutePath();
 
-  File protoFile = new File(classLoader.getResource("us-states.proto").getFile());
+  File protoFile = new File(classLoader.getResource("us-states-plus.proto").getFile());
   String absoluteProtoFilePath = protoFile.getAbsolutePath();
-  File protoRevisionFile = new File(classLoader.getResource("us-states-plus.proto").getFile());
+  File protoRevisionFile = new File(classLoader.getResource("us-states.proto").getFile());
   String absoluteProtoRevisionFilePath = protoFile.getAbsolutePath();
 
   private static TopicName avroTopicName;
@@ -190,8 +190,8 @@ public class SchemaIT {
     // Test rolling back a schema.
     RollbackSchemaExample.rollbackSchemaExample(
         projectId,
-        protoSchemaId + "@" + protoSchema.getRevisionId(),
-        protoSchemaRevision.getRevisionId());
+        protoSchemaId,
+        protoSchema.getRevisionId());
     assertThat(bout.toString()).contains("Rolled back a schema:");
     assertThat(bout.toString()).contains(protoSchemaName.toString());
 
