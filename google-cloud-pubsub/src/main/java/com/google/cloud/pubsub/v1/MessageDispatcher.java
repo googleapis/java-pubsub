@@ -374,28 +374,30 @@ class MessageDispatcher {
       }
       if (this.exactlyOnceDeliveryEnabled.get()) {
         pendingReceipts.add(ackRequestData);
-        List<ModackRequestData> modackRequestData = new ArrayList<ModackRequestData>();
-        List<AckRequestData> ackRequestDataReceipts = new ArrayList<AckRequestData>();
-        pendingReceipts.drainTo(ackRequestDataReceipts);
-        if (!ackRequestDataReceipts.isEmpty()) {
-          modackRequestData.add(
-              new ModackRequestData(this.getMessageDeadlineSeconds(), ackRequestDataReceipts));
-        }
-        ackProcessor.sendModackOperations(modackRequestData);
-        ApiFuture.addCallback(ackReqData.messageFuture, new ApiFutureCallback<string>() {
-          @Override
-          public void onFailure(Throwable throwable) {
-            System.out.println("Error with receipt modack");
-          }
-          @Override
-          public void onSuccess() {
-            outstandingBatch.add(new OutstandingMessage(message, ackHandler));
-          }
-        }, MoreExecutors.directExecutor());
       } else {
         outstandingBatch.add(new OutstandingMessage(message, ackHandler));
         pendingReceipts.add(ackRequestData);
       }
+    }
+    if (this.exactlyOnceDeliveryEnabled.get()) {
+      List<ModackRequestData> modackRequestData = new ArrayList<ModackRequestData>();
+      List<AckRequestData> ackRequestDataReceipts = new ArrayList<AckRequestData>();
+      pendingReceipts.drainTo(ackRequestDataReceipts);
+      if (!ackRequestDataReceipts.isEmpty()) {
+        modackRequestData.add(
+            new ModackRequestData(this.getMessageDeadlineSeconds(), ackRequestDataReceipts));
+      }
+      ackProcessor.sendModackOperations(modackRequestData);
+      ApiFuture.addCallback(ackReqData.messageFuture, new ApiFutureCallback<string>() {
+        @Override
+        public void onFailure(Throwable throwable) {
+          System.out.println("Error with receipt modack");
+        }
+        @Override
+        public void onSuccess() {
+          outstandingBatch.add(new OutstandingMessage(message, ackHandler));
+        }
+      }, MoreExecutors.directExecutor());
     }
     processBatch(outstandingBatch);
   }
