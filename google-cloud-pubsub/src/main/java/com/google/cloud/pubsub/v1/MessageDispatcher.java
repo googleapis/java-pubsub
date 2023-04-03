@@ -89,6 +89,7 @@ class MessageDispatcher {
   private final LinkedBlockingQueue<AckRequestData> pendingAcks = new LinkedBlockingQueue<>();
   private final LinkedBlockingQueue<AckRequestData> pendingNacks = new LinkedBlockingQueue<>();
   private final LinkedBlockingQueue<AckRequestData> pendingReceipts = new LinkedBlockingQueue<>();
+  private final LinkedBlockingQueue<AckRequestData> exactlyOncePendingReceipts = new LinkedBlockingQueue<>();
 
   private final AtomicInteger messageDeadlineSeconds = new AtomicInteger();
   private final AtomicBoolean extendDeadline = new AtomicBoolean(true);
@@ -373,7 +374,7 @@ class MessageDispatcher {
         continue;
       }
       if (this.exactlyOnceDeliveryEnabled.get()) {
-        pendingReceipts.add(ackRequestData);
+        exactlyOncePendingReceipts.add(ackRequestData);
       } else {
         outstandingBatch.add(new OutstandingMessage(message, ackHandler));
         pendingReceipts.add(ackRequestData);
@@ -382,7 +383,7 @@ class MessageDispatcher {
     if (this.exactlyOnceDeliveryEnabled.get()) {
       List<ModackRequestData> modackRequestData = new ArrayList<ModackRequestData>();
       List<AckRequestData> ackRequestDataReceipts = new ArrayList<AckRequestData>();
-      pendingReceipts.drainTo(ackRequestDataReceipts);
+      exactlyOncePendingReceipts.drainTo(ackRequestDataReceipts);
       if (!ackRequestDataReceipts.isEmpty()) {
         modackRequestData.add(
             new ModackRequestData(this.getMessageDeadlineSeconds(), ackRequestDataReceipts));
@@ -395,11 +396,20 @@ class MessageDispatcher {
         }
         @Override
         public void onSuccess() {
-          outstandingBatch.add(new OutstandingMessage(message, ackHandler));
+          // outstandingBatch.add(new OutstandingMessage(message, ackHandler));
+          // processBatch(outstandingBatch);
+          try {
+            flowController.reserve(1, message.receivedMessage.getMessage().getSerializedSize());
+          } catch (FlowControlException unexpectedException) {
+            // This should be a blocking flow controller and never throw an exception.
+            throw new IllegalStateException("Flow control unexpected exception", unexpectedException);
+          }
+          processOutstandingMessage(addDeliveryInfoCount(message.receivedMessage), message.ackHandler);
         }
       }, MoreExecutors.directExecutor());
+    } else {
+      processBatch(outstandingBatch);
     }
-    processBatch(outstandingBatch);
   }
 
 
