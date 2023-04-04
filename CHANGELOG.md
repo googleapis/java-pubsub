@@ -1,5 +1,34 @@
 # Changelog
 
+## [1.123.7](https://github.com/googleapis/java-pubsub/compare/v1.123.6...v1.123.7) (2023-03-21)
+
+
+### Dependencies
+
+* Update dependency com.google.cloud:google-cloud-shared-dependencies to v3.5.0 ([#1532](https://github.com/googleapis/java-pubsub/issues/1532)) ([d63fba7](https://github.com/googleapis/java-pubsub/commit/d63fba73d5ea445144f625f7b67622351694c818))
+
+## [1.123.6](https://github.com/googleapis/java-pubsub/compare/v1.123.5...v1.123.6) (2023-03-14)
+
+
+### Dependencies
+
+* Update dependency com.google.cloud:google-cloud-bigquery to v2.23.2 ([#1512](https://github.com/googleapis/java-pubsub/issues/1512)) ([60e889e](https://github.com/googleapis/java-pubsub/commit/60e889e587511cc948af440be7733dc4af531dd1))
+
+## [1.123.5](https://github.com/googleapis/java-pubsub/compare/v1.123.4...v1.123.5) (2023-03-03)
+
+
+### Dependencies
+
+* Update dependency com.google.cloud:google-cloud-core to v2.12.0 ([#1509](https://github.com/googleapis/java-pubsub/issues/1509)) ([6f70d8a](https://github.com/googleapis/java-pubsub/commit/6f70d8a96577ac93647f4d13adc6b31889efeddf))
+* Update dependency com.google.cloud:google-cloud-shared-dependencies to v3.4.0 ([#1510](https://github.com/googleapis/java-pubsub/issues/1510)) ([0d0ece7](https://github.com/googleapis/java-pubsub/commit/0d0ece70f1527932abb04d9719de68a1367c5881))
+
+## [1.123.4](https://github.com/googleapis/java-pubsub/compare/v1.123.3...v1.123.4) (2023-02-22)
+
+
+### Dependencies
+
+* Update dependency com.google.cloud:google-cloud-bigquery to v2.23.0 ([#1496](https://github.com/googleapis/java-pubsub/issues/1496)) ([713d727](https://github.com/googleapis/java-pubsub/commit/713d727db447f02e3c6cc7dfbb656fcebba54121))
+
 ## [1.123.3](https://github.com/googleapis/java-pubsub/compare/v1.123.2...v1.123.3) (2023-02-22)
 
 
