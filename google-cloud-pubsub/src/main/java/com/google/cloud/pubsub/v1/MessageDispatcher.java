@@ -380,36 +380,7 @@ class MessageDispatcher {
         pendingReceipts.add(ackRequestData);
       }
     }
-    if (this.exactlyOnceDeliveryEnabled.get()) {
-      List<ModackRequestData> modackRequestData = new ArrayList<ModackRequestData>();
-      List<AckRequestData> ackRequestDataReceipts = new ArrayList<AckRequestData>();
-      exactlyOncePendingReceipts.drainTo(ackRequestDataReceipts);
-      if (!ackRequestDataReceipts.isEmpty()) {
-        modackRequestData.add(
-            new ModackRequestData(this.getMessageDeadlineSeconds(), ackRequestDataReceipts));
-      }
-      ackProcessor.sendModackOperations(modackRequestData);
-      ApiFuture.addCallback(ackReqData.messageFuture, new ApiFutureCallback<string>() {
-        @Override
-        public void onFailure(Throwable throwable) {
-          System.out.println("Error with receipt modack");
-        }
-        @Override
-        public void onSuccess() {
-          // outstandingBatch.add(new OutstandingMessage(message, ackHandler));
-          // processBatch(outstandingBatch);
-          try {
-            flowController.reserve(1, message.receivedMessage.getMessage().getSerializedSize());
-          } catch (FlowControlException unexpectedException) {
-            // This should be a blocking flow controller and never throw an exception.
-            throw new IllegalStateException("Flow control unexpected exception", unexpectedException);
-          }
-          processOutstandingMessage(addDeliveryInfoCount(message.receivedMessage), message.ackHandler);
-        }
-      }, MoreExecutors.directExecutor());
-    } else {
-      processBatch(outstandingBatch);
-    }
+    processBatch(outstandingBatch);
   }
 
 
@@ -566,6 +537,8 @@ class MessageDispatcher {
 
     List<AckRequestData> ackRequestDataReceipts = new ArrayList<AckRequestData>();
     pendingReceipts.drainTo(ackRequestDataReceipts);
+    exactlyOncePendingReceipts.drainTo(ackRequestDataReceipts);
+
     if (!ackRequestDataReceipts.isEmpty()) {
       modackRequestData.add(
           new ModackRequestData(this.getMessageDeadlineSeconds(), ackRequestDataReceipts));
