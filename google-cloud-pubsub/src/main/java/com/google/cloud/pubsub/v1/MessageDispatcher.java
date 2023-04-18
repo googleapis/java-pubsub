@@ -392,6 +392,7 @@ class MessageDispatcher {
             logger.log(
                 Level.WARNING,
                 "Pending Receipt Processing Failed");
+            exactlyOncePendingBatch.remove(outstandingMessage);
           }
 
           @Override
