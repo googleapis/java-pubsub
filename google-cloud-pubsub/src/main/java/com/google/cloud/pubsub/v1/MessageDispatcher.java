@@ -90,7 +90,7 @@ class MessageDispatcher {
   private final LinkedBlockingQueue<AckRequestData> pendingNacks = new LinkedBlockingQueue<>();
   private final LinkedBlockingQueue<AckRequestData> pendingReceipts = new LinkedBlockingQueue<>();
   private final LinkedBlockingQueue<OutstandingMessage> exactlyOncePendingBatch = new LinkedBlockingQueue<>();
-  private final LinkedBlockingQueue<OutstandingMessage> exactlyOnceOutstandingBatch = new LinkedBlockingQueue<>();
+  private final List<OutstandingMessage> exactlyOnceOutstandingBatch = new ArrayList<>();
   private final AtomicInteger messageDeadlineSeconds = new AtomicInteger();
   private final AtomicBoolean extendDeadline = new AtomicBoolean(true);
   private final Lock jobLock;
@@ -263,13 +263,14 @@ class MessageDispatcher {
                     }
                     processOutstandingOperations();
                     List<OutstandingMessage> outstandingBatch = new ArrayList<>();
-                    if(!exactlyOnceOutstandingBatch.isEmpty() && !exactlyOncePendingBatch.isEmpty() &&
-                        exactlyOnceOutstandingBatch.peek().getIsMessageReadyForDelivery() &&
-                        (exactlyOnceOutstandingBatch.peek().receivedMessage.getAckId() ==
-                            exactlyOncePendingBatch.peek().receivedMessage.getAckId())){
-                      outstandingBatch.add(exactlyOnceOutstandingBatch.peek());
-                      exactlyOncePendingBatch.poll();
-                      exactlyOnceOutstandingBatch.poll();
+                    for(OutstandingMessage message: exactlyOnceOutstandingBatch){
+                      if(!exactlyOncePendingBatch.isEmpty() &&
+                          message.getIsMessageReadyForDelivery() &&
+                          message.receivedMessage.getAckId() == exactlyOncePendingBatch.peek().receivedMessage.getAckId()){
+                            outstandingBatch.add(message);
+                            exactlyOncePendingBatch.poll();
+                            exactlyOnceOutstandingBatch.remove(message);
+                      }
                     }
                     processBatch(outstandingBatch);
                   } catch (Throwable t) {
