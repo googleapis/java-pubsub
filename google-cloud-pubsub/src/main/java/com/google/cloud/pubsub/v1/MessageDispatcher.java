@@ -91,6 +91,8 @@ class MessageDispatcher {
   private final LinkedBlockingQueue<AckRequestData> pendingReceipts = new LinkedBlockingQueue<>();
   private final LinkedBlockingQueue<AckRequestData> exactlyOncePendingReceipts = new LinkedBlockingQueue<>();
 
+  private final LinkedBlockingQueue<OutstandingMessage> exactlyOncePendingBatch = new LinkedBlockingQueue<>();
+  private final LinkedBlockingQueue<OutstandingMessage> exactlyOnceOutstandingBatch = new LinkedBlockingQueue<>();
   private final AtomicInteger messageDeadlineSeconds = new AtomicInteger();
   private final AtomicBoolean extendDeadline = new AtomicBoolean(true);
   private final Lock jobLock;
@@ -104,6 +106,10 @@ class MessageDispatcher {
   public enum AckReply {
     ACK,
     NACK
+  }
+
+  private class OutstandingExactlyOnceBatch {
+
   }
 
   /** Handles callbacks for acking/nacking messages from the {@link MessageReceiver}. */
@@ -262,6 +268,15 @@ class MessageDispatcher {
                               TimeUnit.SECONDS);
                     }
                     processOutstandingOperations();
+                    List<OutstandingMessage> outstandingBatch = new ArrayList<>();
+                    if(exactlyOnceOutstandingBatch.peek().isMessageReadyForDelivery &&
+                        (exactlyOnceOutstandingBatch.peek().receivedMessage.getAckId() ==
+                            exactlyOncePendingBatch.peek().receivedMessage.getAckId())){
+                      outstandingBatch.add(exactlyOnceOutstandingBatch.peek());
+                      exactlyOncePendingBatch.poll();
+                      exactlyOnceOutstandingBatch.poll();
+                    }
+                    processBatch(outstandingBatch);
                   } catch (Throwable t) {
                     // Catch everything so that one run failing doesn't prevent subsequent runs.
                     logger.log(Level.WARNING, "failed to run periodic job", t);
@@ -345,6 +360,8 @@ class MessageDispatcher {
     private final ReceivedMessage receivedMessage;
     private final AckHandler ackHandler;
 
+    private boolean isMessageReadyForDelivery;
+
     private OutstandingMessage(ReceivedMessage receivedMessage, AckHandler ackHandler) {
       this.receivedMessage = receivedMessage;
       this.ackHandler = ackHandler;
@@ -373,10 +390,27 @@ class MessageDispatcher {
         // totally expire so that pubsub service sends us the message again.
         continue;
       }
+      OutstandingMessage outstandingMessage = new OutstandingMessage(message, ackHandler);
       if (this.exactlyOnceDeliveryEnabled.get()) {
-        exactlyOncePendingReceipts.add(ackRequestData);
+        ApiFutureCallback<AckResponse> callback = new ApiFutureCallback<AckResponse>() {
+          @Override
+          public void onFailure(Throwable throwable) {
+            System.out.println("Error with receipt modack");
+          }
+
+          @Override
+          public void onSuccess(AckResponse ackResponse){
+            if(ackResponse == AckResponse.SUCCESSFUL){
+              outstandingMessage.isMessageReadyForDelivery = true;
+              exactlyOnceOutstandingBatch.add(outstandingMessage);
+            }
+          }
+        };
+        exactlyOncePendingBatch.add(outstandingMessage);
+        ApiFutures.addCallback(ackRequestData.getMessageFutureIfExists(), callback, MoreExecutors.directExecutor());
+        pendingReceipts.add(ackRequestData);
       } else {
-        outstandingBatch.add(new OutstandingMessage(message, ackHandler));
+        outstandingBatch.add(outstandingMessage);
         pendingReceipts.add(ackRequestData);
       }
     }
@@ -524,7 +558,9 @@ class MessageDispatcher {
 
   @InternalApi
   void processOutstandingOperations() {
+
     List<ModackRequestData> modackRequestData = new ArrayList<ModackRequestData>();
+    List<ModackRequestData> exactlyOnceModackRequestData = new ArrayList<ModackRequestData>();
 
     // Nacks are modacks with an expiration of 0
     List<AckRequestData> nackRequestDataList = new ArrayList<AckRequestData>();
@@ -537,8 +573,6 @@ class MessageDispatcher {
 
     List<AckRequestData> ackRequestDataReceipts = new ArrayList<AckRequestData>();
     pendingReceipts.drainTo(ackRequestDataReceipts);
-    exactlyOncePendingReceipts.drainTo(ackRequestDataReceipts);
-
     if (!ackRequestDataReceipts.isEmpty()) {
       modackRequestData.add(
           new ModackRequestData(this.getMessageDeadlineSeconds(), ackRequestDataReceipts));
