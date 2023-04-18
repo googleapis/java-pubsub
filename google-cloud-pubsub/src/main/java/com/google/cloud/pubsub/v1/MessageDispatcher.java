@@ -263,7 +263,8 @@ class MessageDispatcher {
                     }
                     processOutstandingOperations();
                     List<OutstandingMessage> outstandingBatch = new ArrayList<>();
-                    if(exactlyOnceOutstandingBatch.peek().getIsMessageReadyForDelivery() &&
+                    if(!exactlyOnceOutstandingBatch.isEmpty() && !exactlyOncePendingBatch.isEmpty() &&
+                        exactlyOnceOutstandingBatch.peek().getIsMessageReadyForDelivery() &&
                         (exactlyOnceOutstandingBatch.peek().receivedMessage.getAckId() ==
                             exactlyOncePendingBatch.peek().receivedMessage.getAckId())){
                       outstandingBatch.add(exactlyOnceOutstandingBatch.peek());
@@ -564,7 +565,6 @@ class MessageDispatcher {
   void processOutstandingOperations() {
 
     List<ModackRequestData> modackRequestData = new ArrayList<ModackRequestData>();
-    List<ModackRequestData> exactlyOnceModackRequestData = new ArrayList<ModackRequestData>();
 
     // Nacks are modacks with an expiration of 0
     List<AckRequestData> nackRequestDataList = new ArrayList<AckRequestData>();
