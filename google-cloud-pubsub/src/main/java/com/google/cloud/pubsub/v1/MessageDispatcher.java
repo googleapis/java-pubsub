@@ -89,8 +89,6 @@ class MessageDispatcher {
   private final LinkedBlockingQueue<AckRequestData> pendingAcks = new LinkedBlockingQueue<>();
   private final LinkedBlockingQueue<AckRequestData> pendingNacks = new LinkedBlockingQueue<>();
   private final LinkedBlockingQueue<AckRequestData> pendingReceipts = new LinkedBlockingQueue<>();
-  private final LinkedBlockingQueue<AckRequestData> exactlyOncePendingReceipts = new LinkedBlockingQueue<>();
-
   private final LinkedBlockingQueue<OutstandingMessage> exactlyOncePendingBatch = new LinkedBlockingQueue<>();
   private final LinkedBlockingQueue<OutstandingMessage> exactlyOnceOutstandingBatch = new LinkedBlockingQueue<>();
   private final AtomicInteger messageDeadlineSeconds = new AtomicInteger();
@@ -106,10 +104,6 @@ class MessageDispatcher {
   public enum AckReply {
     ACK,
     NACK
-  }
-
-  private class OutstandingExactlyOnceBatch {
-
   }
 
   /** Handles callbacks for acking/nacking messages from the {@link MessageReceiver}. */
@@ -269,7 +263,7 @@ class MessageDispatcher {
                     }
                     processOutstandingOperations();
                     List<OutstandingMessage> outstandingBatch = new ArrayList<>();
-                    if(exactlyOnceOutstandingBatch.peek().isMessageReadyForDelivery &&
+                    if(exactlyOnceOutstandingBatch.peek().getIsMessageReadyForDelivery &&
                         (exactlyOnceOutstandingBatch.peek().receivedMessage.getAckId() ==
                             exactlyOncePendingBatch.peek().receivedMessage.getAckId())){
                       outstandingBatch.add(exactlyOnceOutstandingBatch.peek());
@@ -366,6 +360,14 @@ class MessageDispatcher {
       this.receivedMessage = receivedMessage;
       this.ackHandler = ackHandler;
     }
+
+    private boolean getIsMessageReadyForDelivery(){
+      return this.isMessageReadyForDelivery;
+    }
+
+    private void setIsMessageReadyForDelivery(boolean isReady){
+      this.isMessageReadyForDelivery = isReady;
+    }
   }
 
   void processReceivedMessages(List<ReceivedMessage> messages) {
@@ -401,7 +403,7 @@ class MessageDispatcher {
           @Override
           public void onSuccess(AckResponse ackResponse){
             if(ackResponse == AckResponse.SUCCESSFUL){
-              outstandingMessage.isMessageReadyForDelivery = true;
+              outstandingMessage.setIsMessageReadyForDelivery(true);
               exactlyOnceOutstandingBatch.add(outstandingMessage);
             }
           }
