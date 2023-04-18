@@ -90,6 +90,7 @@ class MessageDispatcher {
   private final LinkedBlockingQueue<AckRequestData> pendingNacks = new LinkedBlockingQueue<>();
   private final LinkedBlockingQueue<AckRequestData> pendingReceipts = new LinkedBlockingQueue<>();
   private final LinkedBlockingQueue<OutstandingMessage> exactlyOncePendingBatch = new LinkedBlockingQueue<>();
+  private final List<OutstandingMessage> exactlyOnceOutstandingBatch = new ArrayList<>();
   private final AtomicInteger messageDeadlineSeconds = new AtomicInteger();
   private final AtomicBoolean extendDeadline = new AtomicBoolean(true);
   private final Lock jobLock;
@@ -262,9 +263,13 @@ class MessageDispatcher {
                     }
                     processOutstandingOperations();
                     List<OutstandingMessage> outstandingBatch = new ArrayList<>();
-                    while(!exactlyOncePendingBatch.isEmpty()
-                        && exactlyOncePendingBatch.peek().getIsMessageReadyForDelivery()){
-                      outstandingBatch.add(exactlyOncePendingBatch.poll());
+                    for(OutstandingMessage message: exactlyOnceOutstandingBatch){
+                      if(!exactlyOncePendingBatch.isEmpty() &&
+                          message.receivedMessage.getAckId() == exactlyOncePendingBatch.peek().receivedMessage.getAckId()){
+                            outstandingBatch.add(message);
+                            exactlyOncePendingBatch.poll();
+                            exactlyOnceOutstandingBatch.remove(message);
+                      }
                     }
                     processBatch(outstandingBatch);
                   } catch (Throwable t) {
@@ -350,20 +355,11 @@ class MessageDispatcher {
     private final ReceivedMessage receivedMessage;
     private final AckHandler ackHandler;
 
-    private boolean isMessageReadyForDelivery;
-
     private OutstandingMessage(ReceivedMessage receivedMessage, AckHandler ackHandler) {
       this.receivedMessage = receivedMessage;
       this.ackHandler = ackHandler;
     }
 
-    private boolean getIsMessageReadyForDelivery(){
-      return this.isMessageReadyForDelivery;
-    }
-
-    private void setIsMessageReadyForDelivery(boolean isReady){
-      this.isMessageReadyForDelivery = isReady;
-    }
   }
 
   void processReceivedMessages(List<ReceivedMessage> messages) {
@@ -401,7 +397,7 @@ class MessageDispatcher {
           @Override
           public void onSuccess(AckResponse ackResponse){
             if(ackResponse == AckResponse.SUCCESSFUL){
-              outstandingMessage.setIsMessageReadyForDelivery(true);
+              exactlyOnceOutstandingBatch.add(outstandingMessage);
             }
           }
         };
