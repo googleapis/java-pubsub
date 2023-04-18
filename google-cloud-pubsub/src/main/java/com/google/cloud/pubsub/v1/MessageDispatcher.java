@@ -263,7 +263,7 @@ class MessageDispatcher {
                     }
                     processOutstandingOperations();
                     List<OutstandingMessage> outstandingBatch = new ArrayList<>();
-                    if(exactlyOnceOutstandingBatch.peek().getIsMessageReadyForDelivery &&
+                    if(exactlyOnceOutstandingBatch.peek().getIsMessageReadyForDelivery() &&
                         (exactlyOnceOutstandingBatch.peek().receivedMessage.getAckId() ==
                             exactlyOncePendingBatch.peek().receivedMessage.getAckId())){
                       outstandingBatch.add(exactlyOnceOutstandingBatch.peek());
@@ -397,7 +397,9 @@ class MessageDispatcher {
         ApiFutureCallback<AckResponse> callback = new ApiFutureCallback<AckResponse>() {
           @Override
           public void onFailure(Throwable throwable) {
-            System.out.println("Error with receipt modack");
+            logger.log(
+                Level.WARNING,
+                "Pending Receipt Processing Failed");
           }
 
           @Override
