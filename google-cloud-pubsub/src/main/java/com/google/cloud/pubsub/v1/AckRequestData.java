@@ -21,11 +21,11 @@ import java.util.Optional;
 
 public class AckRequestData {
   private final String ackId;
-  private final Optional<SettableApiFuture<AckResponse>> messageFuture;
+  private final Optional<SettableApiFuture<AckResponse>> ackResponseFuture;
 
   protected AckRequestData(Builder builder) {
     this.ackId = builder.ackId;
-    this.messageFuture = builder.messageFuture;
+    this.ackResponseFuture = builder.ackResponseFuture;
   }
 
   public String getAckId() {
@@ -33,31 +33,18 @@ public class AckRequestData {
   }
 
   public SettableApiFuture<AckResponse> getMessageFutureIfExists() {
-    return this.messageFuture.orElse(null);
+    return this.ackResponseFuture.orElse(null);
   }
 
-  public AckRequestData setResponse(AckResponse ackResponse, boolean setResponseOnSuccess) {
-    if (this.messageFuture.isPresent() && !this.messageFuture.get().isDone()) {
-      switch (ackResponse) {
-        case SUCCESSFUL:
-          if (setResponseOnSuccess) {
-            this.messageFuture.get().set(ackResponse);
-          }
-          break;
-        case INVALID:
-        case OTHER:
-        case PERMISSION_DENIED:
-        case FAILED_PRECONDITION:
-          // Non-succesful messages will get set for both acks, nacks, and modacks
-          this.messageFuture.get().set(ackResponse);
-          break;
-      }
+  public AckRequestData setResponse(AckResponse ackResponse) {
+    if (this.ackResponseFuture.isPresent() && !this.ackResponseFuture.get().isDone()) {
+      this.ackResponseFuture.get().set(ackResponse);
     }
     return this;
   }
 
   public boolean hasMessageFuture() {
-    return this.messageFuture.isPresent();
+    return this.ackResponseFuture.isPresent();
   }
 
   public static Builder newBuilder(String ackId) {
@@ -67,14 +54,14 @@ public class AckRequestData {
   /** Builder of {@link AckRequestData AckRequestData}. */
   protected static final class Builder {
     private final String ackId;
-    private Optional<SettableApiFuture<AckResponse>> messageFuture = Optional.empty();
+    private Optional<SettableApiFuture<AckResponse>> ackResponseFuture = Optional.empty();
 
     protected Builder(String ackId) {
       this.ackId = ackId;
     }
 
-    public Builder setMessageFuture(SettableApiFuture<AckResponse> messageFuture) {
-      this.messageFuture = Optional.of(messageFuture);
+    public Builder setMessageFuture(SettableApiFuture<AckResponse> ackResponseFuture) {
+      this.ackResponseFuture = Optional.of(ackResponseFuture);
       return this;
     }
 
