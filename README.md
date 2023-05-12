@@ -51,20 +51,20 @@ If you are using Maven without BOM, add this to your dependencies:
 If you are using Gradle 5.x or later, add this to your dependencies:
 
 ```Groovy
-implementation platform('com.google.cloud:libraries-bom:26.1.5')
+implementation platform('com.google.cloud:libraries-bom:26.14.0')
 
 implementation 'com.google.cloud:google-cloud-pubsub'
 ```
 If you are using Gradle without BOM, add this to your dependencies:
 
 ```Groovy
-implementation 'com.google.cloud:google-cloud-pubsub:1.122.1'
+implementation 'com.google.cloud:google-cloud-pubsub:1.123.11'
 ```
 
 If you are using SBT, add this to your dependencies:
 
 ```Scala
-libraryDependencies += "com.google.cloud" % "google-cloud-pubsub" % "1.122.1"
+libraryDependencies += "com.google.cloud" % "google-cloud-pubsub" % "1.123.11"
 ```
 
 ## Authentication
@@ -294,6 +294,7 @@ Samples are in the [`samples/`](https://github.com/googleapis/java-pubsub/tree/m
 | Test Topic Permissions Example | [source code](https://github.com/googleapis/java-pubsub/blob/main/samples/snippets/src/main/java/pubsub/TestTopicPermissionsExample.java) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/java-pubsub&page=editor&open_in_editor=samples/snippets/src/main/java/pubsub/TestTopicPermissionsExample.java) |
 | Update Dead Letter Policy Example | [source code](https://github.com/googleapis/java-pubsub/blob/main/samples/snippets/src/main/java/pubsub/UpdateDeadLetterPolicyExample.java) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/java-pubsub&page=editor&open_in_editor=samples/snippets/src/main/java/pubsub/UpdateDeadLetterPolicyExample.java) |
 | Update Push Configuration Example | [source code](https://github.com/googleapis/java-pubsub/blob/main/samples/snippets/src/main/java/pubsub/UpdatePushConfigurationExample.java) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/java-pubsub&page=editor&open_in_editor=samples/snippets/src/main/java/pubsub/UpdatePushConfigurationExample.java) |
+| Use Pub Sub Emulator Example | [source code](https://github.com/googleapis/java-pubsub/blob/main/samples/snippets/src/main/java/pubsub/UsePubSubEmulatorExample.java) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/java-pubsub&page=editor&open_in_editor=samples/snippets/src/main/java/pubsub/UsePubSubEmulatorExample.java) |
 | State | [source code](https://github.com/googleapis/java-pubsub/blob/main/samples/snippets/src/main/java/utilities/State.java) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/java-pubsub&page=editor&open_in_editor=samples/snippets/src/main/java/utilities/State.java) |
 | State Proto | [source code](https://github.com/googleapis/java-pubsub/blob/main/samples/snippets/src/main/java/utilities/StateProto.java) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/java-pubsub&page=editor&open_in_editor=samples/snippets/src/main/java/utilities/StateProto.java) |
 
