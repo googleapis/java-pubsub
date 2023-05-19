@@ -519,6 +519,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
         for (AckRequestData ackRequestData : ackRequestDataList) {
           // This will check if a response is needed, and if it has already been set
           ackRequestData.setResponse(AckResponse.SUCCESSFUL, setResponseOnSuccess);
+          messageDispatcher.modackCompleted();
           // Remove from our pending operations
           pendingRequests.remove(ackRequestData);
         }

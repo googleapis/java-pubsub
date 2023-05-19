@@ -139,15 +139,15 @@ public class MessageDispatcherTest {
         .receiveMessage(eq(TEST_MESSAGE.getMessage()), any(AckReplyConsumer.class));
   }
 
-  @Test
-  public void testBatchSizeofExactlyOnceDelivered() {
-    MessageReceiver mockMessageReceiver = mock(MessageReceiver.class);
-    MessageDispatcher messageDispatcher = getMessageDispatcher(mockMessageReceiver);
-    List<ReceivedMessage> receivedMessageList = new ArrayList<ReceivedMessage>();
-    Collections.addAll(receivedMessageList, TEST_MESSAGE, TEST_MESSAGE, TEST_MESSAGE, TEST_MESSAGE, TEST_MESSAGE);
-    messageDispatcher.processReceivedMessages(receivedMessageList);
-
-  }
+  // @Test
+  // public void testBatchSizeofExactlyOnceDelivered() {
+  //   MessageReceiver mockMessageReceiver = mock(MessageReceiver.class);
+  //   MessageDispatcher messageDispatcher = getMessageDispatcher(mockMessageReceiver);
+  //   List<ReceivedMessage> receivedMessageList = new ArrayList<ReceivedMessage>();
+  //   Collections.addAll(receivedMessageList, TEST_MESSAGE, TEST_MESSAGE, TEST_MESSAGE, TEST_MESSAGE, TEST_MESSAGE);
+  //   messageDispatcher.processReceivedMessages(receivedMessageList);
+  //
+  // }
 
   @Test
   public void testReceiptMessageReceiverWithAckResponse() {

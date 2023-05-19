@@ -386,26 +386,26 @@ class MessageDispatcher {
       }
       OutstandingMessage outstandingMessage = new OutstandingMessage(message, ackHandler);
       if (this.exactlyOnceDeliveryEnabled.get()) {
-        ApiFutureCallback<AckResponse> callback = new ApiFutureCallback<AckResponse>() {
-          @Override
-          public void onFailure(Throwable throwable) {
-            logger.log(
-                Level.WARNING,
-                "Pending Receipt Processing Failed");
-            exactlyOncePendingBatch.remove(outstandingMessage);
-          }
-
-          @Override
-          public void onSuccess(AckResponse ackResponse){
-            if(ackResponse == AckResponse.SUCCESSFUL){
-              exactlyOnceOutstandingBatch.add(outstandingMessage);
-            } else {
-              exactlyOncePendingBatch.remove(outstandingMessage);
-            }
-          }
-        };
+        // ApiFutureCallback<AckResponse> callback = new ApiFutureCallback<AckResponse>() {
+        //   @Override
+        //   public void onFailure(Throwable throwable) {
+        //     logger.log(
+        //         Level.WARNING,
+        //         "Pending Receipt Processing Failed");
+        //     exactlyOncePendingBatch.remove(outstandingMessage);
+        //   }
+        //
+        //   @Override
+        //   public void onSuccess(AckResponse ackResponse){
+        //     if(ackResponse == AckResponse.SUCCESSFUL){
+        //       exactlyOnceOutstandingBatch.add(outstandingMessage);
+        //     } else {
+        //       exactlyOncePendingBatch.remove(outstandingMessage);
+        //     }
+        //   }
+        // };
         exactlyOncePendingBatch.add(outstandingMessage);
-        ApiFutures.addCallback(ackRequestData.getMessageFutureIfExists(), callback, MoreExecutors.directExecutor();
+        // ApiFutures.addCallback(checkIfModackCompleted(), callback, MoreExecutors.directExecutor());
       } else {
         outstandingBatch.add(outstandingMessage);
       }
@@ -414,6 +414,20 @@ class MessageDispatcher {
     processBatch(outstandingBatch);
   }
 
+  void modackCompleted() {
+    OutstandingMessage outstandingMessage = new OutstandingMessage(message, ackHandler);
+    exactlyOnceOutstandingBatch.add(outstandingMessage);
+    List<OutstandingMessage> outstandingBatch = new ArrayList<>();
+    for(OutstandingMessage message: exactlyOnceOutstandingBatch){
+      if(!exactlyOncePendingBatch.isEmpty() &&
+          message.receivedMessage.getAckId() == exactlyOncePendingBatch.peek().receivedMessage.getAckId()){
+        outstandingBatch.add(message);
+        exactlyOncePendingBatch.poll();
+        exactlyOnceOutstandingBatch.remove(message);
+      }
+    }
+    processBatch(outstandingBatch);
+  }
 
   private void processBatch(List<OutstandingMessage> batch) {
     messagesWaiter.incrementPendingCount(batch.size());
