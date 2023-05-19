@@ -399,16 +399,17 @@ class MessageDispatcher {
           public void onSuccess(AckResponse ackResponse){
             if(ackResponse == AckResponse.SUCCESSFUL){
               exactlyOnceOutstandingBatch.add(outstandingMessage);
+            } else {
+              exactlyOncePendingBatch.remove(outstandingMessage);
             }
           }
         };
         exactlyOncePendingBatch.add(outstandingMessage);
-        ApiFutures.addCallback(ackRequestData.getMessageFutureIfExists(), callback, MoreExecutors.directExecutor());
-        pendingReceipts.add(ackRequestData);
+        ApiFutures.addCallback(ackRequestData.getMessageFutureIfExists(), callback, MoreExecutors.directExecutor();
       } else {
         outstandingBatch.add(outstandingMessage);
-        pendingReceipts.add(ackRequestData);
       }
+      pendingReceipts.add(ackRequestData);
     }
     processBatch(outstandingBatch);
   }

@@ -140,6 +140,16 @@ public class MessageDispatcherTest {
   }
 
   @Test
+  public void testBatchSizeofExactlyOnceDelivered() {
+    MessageReceiver mockMessageReceiver = mock(MessageReceiver.class);
+    MessageDispatcher messageDispatcher = getMessageDispatcher(mockMessageReceiver);
+    List<ReceivedMessage> receivedMessageList = new ArrayList<ReceivedMessage>();
+    Collections.addAll(receivedMessageList, TEST_MESSAGE, TEST_MESSAGE, TEST_MESSAGE, TEST_MESSAGE, TEST_MESSAGE);
+    messageDispatcher.processReceivedMessages(receivedMessageList);
+
+  }
+
+  @Test
   public void testReceiptMessageReceiverWithAckResponse() {
     MessageReceiverWithAckResponse mockMessageReceiverWithAckResponse =
         mock(MessageReceiverWithAckResponse.class);
