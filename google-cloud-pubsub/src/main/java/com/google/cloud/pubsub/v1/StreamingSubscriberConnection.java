@@ -519,7 +519,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
         for (AckRequestData ackRequestData : ackRequestDataList) {
           // This will check if a response is needed, and if it has already been set
           ackRequestData.setResponse(AckResponse.SUCCESSFUL, setResponseOnSuccess);
-          messageDispatcher.modackCompleted();
+          messageDispatcher.notifyAckSuccess(ackRequestData);
           // Remove from our pending operations
           pendingRequests.remove(ackRequestData);
         }
@@ -542,6 +542,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
           Map<String, String> metadataMap = getMetadataMapFromThrowable(t);
           ackRequestDataList.forEach(
               ackRequestData -> {
+                messageDispatcher.notifyAckFailed(ackRequestData);
                 String ackId = ackRequestData.getAckId();
                 if (metadataMap.containsKey(ackId)) {
                   // An error occured

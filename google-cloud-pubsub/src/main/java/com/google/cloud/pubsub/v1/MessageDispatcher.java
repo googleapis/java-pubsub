@@ -28,6 +28,7 @@ import com.google.common.primitives.Ints;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.pubsub.v1.PubsubMessage;
 import com.google.pubsub.v1.ReceivedMessage;
+import io.opencensus.trace.Link;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -89,8 +90,9 @@ class MessageDispatcher {
   private final LinkedBlockingQueue<AckRequestData> pendingAcks = new LinkedBlockingQueue<>();
   private final LinkedBlockingQueue<AckRequestData> pendingNacks = new LinkedBlockingQueue<>();
   private final LinkedBlockingQueue<AckRequestData> pendingReceipts = new LinkedBlockingQueue<>();
-  private final LinkedBlockingQueue<OutstandingMessage> exactlyOncePendingBatch = new LinkedBlockingQueue<>();
+  private final ConcurrentMap<String, OutstandingMessage> outstandingReceipts = new ConcurrentHashMap<>();
   private final List<OutstandingMessage> exactlyOnceOutstandingBatch = new ArrayList<>();
+  private final LinkedBlockingQueue<OutstandingMessage> exactlyOncePendingBatch = new LinkedBlockingQueue<>();
   private final AtomicInteger messageDeadlineSeconds = new AtomicInteger();
   private final AtomicBoolean extendDeadline = new AtomicBoolean(true);
   private final Lock jobLock;
@@ -373,7 +375,7 @@ class MessageDispatcher {
       AckRequestData ackRequestData = builder.build();
       AckHandler ackHandler =
           new AckHandler(ackRequestData, message.getMessage().getSerializedSize(), totalExpiration);
-      if (pendingMessages.putIfAbsent(message.getAckId(), ackHandler) != null) {
+      if (!this.exactlyOnceDeliveryEnabled.get() && pendingMessages.putIfAbsent(message.getAckId(), ackHandler) != null) {
         // putIfAbsent puts ackHandler if ackID isn't previously mapped, then return the
         // previously-mapped element.
         // If the previous element is not null, we already have the message and the new one is
@@ -386,26 +388,8 @@ class MessageDispatcher {
       }
       OutstandingMessage outstandingMessage = new OutstandingMessage(message, ackHandler);
       if (this.exactlyOnceDeliveryEnabled.get()) {
-        // ApiFutureCallback<AckResponse> callback = new ApiFutureCallback<AckResponse>() {
-        //   @Override
-        //   public void onFailure(Throwable throwable) {
-        //     logger.log(
-        //         Level.WARNING,
-        //         "Pending Receipt Processing Failed");
-        //     exactlyOncePendingBatch.remove(outstandingMessage);
-        //   }
-        //
-        //   @Override
-        //   public void onSuccess(AckResponse ackResponse){
-        //     if(ackResponse == AckResponse.SUCCESSFUL){
-        //       exactlyOnceOutstandingBatch.add(outstandingMessage);
-        //     } else {
-        //       exactlyOncePendingBatch.remove(outstandingMessage);
-        //     }
-        //   }
-        // };
         exactlyOncePendingBatch.add(outstandingMessage);
-        // ApiFutures.addCallback(checkIfModackCompleted(), callback, MoreExecutors.directExecutor());
+        outstandingReceipts.put(message.getAckId(), outstandingMessage);
       } else {
         outstandingBatch.add(outstandingMessage);
       }
@@ -414,19 +398,34 @@ class MessageDispatcher {
     processBatch(outstandingBatch);
   }
 
-  void modackCompleted() {
-    OutstandingMessage outstandingMessage = new OutstandingMessage(message, ackHandler);
-    exactlyOnceOutstandingBatch.add(outstandingMessage);
-    List<OutstandingMessage> outstandingBatch = new ArrayList<>();
-    for(OutstandingMessage message: exactlyOnceOutstandingBatch){
-      if(!exactlyOncePendingBatch.isEmpty() &&
-          message.receivedMessage.getAckId() == exactlyOncePendingBatch.peek().receivedMessage.getAckId()){
-        outstandingBatch.add(message);
-        exactlyOncePendingBatch.poll();
-        exactlyOnceOutstandingBatch.remove(message);
+  void notifyAckSuccess(AckRequestData ackRequestData) {
+
+    if(outstandingReceipts.containsKey(ackRequestData.getAckId())) {
+      OutstandingMessage outstandingMessage = outstandingReceipts.get(ackRequestData.getAckId());
+      pendingMessages.putIfAbsent(outstandingMessage.receivedMessage.getAckId(),
+          outstandingMessage.ackHandler);
+
+      exactlyOnceOutstandingBatch.add(outstandingMessage);
+      List<OutstandingMessage> outstandingBatch = new ArrayList<>();
+      for (OutstandingMessage message : exactlyOnceOutstandingBatch) {
+        if (!exactlyOncePendingBatch.isEmpty() &&
+            message.receivedMessage.getAckId()
+                == exactlyOncePendingBatch.peek().receivedMessage.getAckId()) {
+          outstandingBatch.add(message);
+          exactlyOncePendingBatch.poll();
+          exactlyOnceOutstandingBatch.remove(message);
+        }
       }
+      processBatch(outstandingBatch);
     }
-    processBatch(outstandingBatch);
+  }
+
+  void notifyAckFailed(AckRequestData ackRequestData) {
+    if(outstandingReceipts.containsKey(ackRequestData.getAckId())){
+      outstandingReceipts.remove(ackRequestData);
+      OutstandingMessage outstandingMessage = outstandingReceipts.get(ackRequestData.getAckId());
+      exactlyOncePendingBatch.remove(outstandingMessage);
+    }
   }
 
   private void processBatch(List<OutstandingMessage> batch) {
