@@ -542,7 +542,6 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
           Map<String, String> metadataMap = getMetadataMapFromThrowable(t);
           ackRequestDataList.forEach(
               ackRequestData -> {
-                messageDispatcher.notifyAckFailed(ackRequestData);
                 String ackId = ackRequestData.getAckId();
                 if (metadataMap.containsKey(ackId)) {
                   // An error occured
@@ -558,12 +557,15 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
                         "Permanent error invalid ack id message, will not resend",
                         errorMessage);
                     ackRequestData.setResponse(AckResponse.INVALID, setResponseOnSuccess);
+                    messageDispatcher.notifyAckFailed(ackRequestData);
                   } else {
                     logger.log(Level.INFO, "Unknown error message, will not resend", errorMessage);
                     ackRequestData.setResponse(AckResponse.OTHER, setResponseOnSuccess);
+                    messageDispatcher.notifyAckFailed(ackRequestData);
                   }
                 } else {
                   ackRequestData.setResponse(AckResponse.SUCCESSFUL, setResponseOnSuccess);
+                  messageDispatcher.notifyAckSuccess(ackRequestData);
                 }
                 // Remove from our pending
                 pendingRequests.remove(ackRequestData);
