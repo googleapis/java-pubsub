@@ -31,6 +31,7 @@ import com.google.pubsub.v1.ReceivedMessage;
 import io.opencensus.trace.Link;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -90,7 +91,7 @@ class MessageDispatcher {
   private final LinkedBlockingQueue<AckRequestData> pendingAcks = new LinkedBlockingQueue<>();
   private final LinkedBlockingQueue<AckRequestData> pendingNacks = new LinkedBlockingQueue<>();
   private final LinkedBlockingQueue<AckRequestData> pendingReceipts = new LinkedBlockingQueue<>();
-  private final ConcurrentMap<String, OutstandingMessage> outstandingReceipts = new ConcurrentHashMap<>();
+  private final LinkedHashMap<String, Pair<OutstandingMessage, Boolean>> outstandingReceipts = new LinkedHashMap<String, Pair<OutstandingMessage, Boolean>>();
   private final List<OutstandingMessage> exactlyOnceOutstandingBatch = new ArrayList<>();
   private final LinkedBlockingQueue<OutstandingMessage> exactlyOncePendingBatch = new LinkedBlockingQueue<>();
   private final AtomicInteger messageDeadlineSeconds = new AtomicInteger();
@@ -379,7 +380,7 @@ class MessageDispatcher {
       OutstandingMessage outstandingMessage = new OutstandingMessage(message, ackHandler);
       if (this.exactlyOnceDeliveryEnabled.get()) {
         exactlyOncePendingBatch.add(outstandingMessage);
-        outstandingReceipts.put(message.getAckId(), outstandingMessage);
+        outstandingReceipts.put(message.getAckId(), new Pair<>(outstandingMessage, false));
       } else {
         outstandingBatch.add(outstandingMessage);
       }
@@ -391,22 +392,34 @@ class MessageDispatcher {
   void notifyAckSuccess(AckRequestData ackRequestData) {
 
     if(outstandingReceipts.containsKey(ackRequestData.getAckId())) {
-      OutstandingMessage outstandingMessage = outstandingReceipts.get(ackRequestData.getAckId());
-      if (pendingMessages.putIfAbsent(outstandingMessage.receivedMessage.getAckId(),
-          outstandingMessage.ackHandler) == null) {
-        exactlyOnceOutstandingBatch.add(outstandingMessage);
-        List<OutstandingMessage> outstandingBatch = new ArrayList<>();
-        for (OutstandingMessage message : exactlyOnceOutstandingBatch) {
-          if (!exactlyOncePendingBatch.isEmpty() &&
-              message.receivedMessage.getAckId()
-                  == exactlyOncePendingBatch.peek().receivedMessage.getAckId()) {
-            outstandingBatch.add(message);
-            exactlyOncePendingBatch.poll();
-            exactlyOnceOutstandingBatch.remove(message);
+      OutstandingMessage outstandingMessage = outstandingReceipts.get(ackRequestData.getAckId()).get(0);
+      // if (pendingMessages.putIfAbsent(outstandingMessage.receivedMessage.getAckId(), outstandingMessage.ackHandler) == null) {
+      //   exactlyOnceOutstandingBatch.add(outstandingMessage);
+      //   List<OutstandingMessage> outstandingBatch = new ArrayList<>();
+      //   for (OutstandingMessage message : exactlyOnceOutstandingBatch) {
+      //     if (!exactlyOncePendingBatch.isEmpty() &&
+      //         message.receivedMessage.getAckId()
+      //             == exactlyOncePendingBatch.peek().receivedMessage.getAckId()) {
+      //       outstandingBatch.add(message);
+      //       exactlyOncePendingBatch.poll();
+      //       exactlyOnceOutstandingBatch.remove(message);
+      //     }
+      //   }
+      // Setting to true means that the receipt is complete
+      outstandingReceipts.get(ackRequestData.getAckId()).set(1, true);
+      List<OutstandingMessage> completedReceipts = new ArrayList<>();
+      if (pendingMessages.putIfAbsent(outstandingMessage.receivedMessage.getAckId(), outstandingMessage.ackHandler) == null) {
+        for(Map.Entry<String, Pair<OutstandingMessage, Boolean>> pr: outstandingReceipts.entrySet()){
+          String ackId = pr.getKey();
+          if(pr.getValue().get(1)){
+            outstandingReceipts.remove(ackId);
+            completedReceipts.add(pr.getValue().get(0));
+          } else {
+            break;
           }
         }
-        processBatch(outstandingBatch);
       }
+      processBatch(completedReceipts);
     }
   }
 
