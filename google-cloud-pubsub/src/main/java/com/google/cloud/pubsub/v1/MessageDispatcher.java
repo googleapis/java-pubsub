@@ -264,16 +264,6 @@ class MessageDispatcher {
                               TimeUnit.SECONDS);
                     }
                     processOutstandingOperations();
-                    // List<OutstandingMessage> outstandingBatch = new ArrayList<>();
-                    // for(OutstandingMessage message: exactlyOnceOutstandingBatch){
-                    //   if(!exactlyOncePendingBatch.isEmpty() &&
-                    //       message.receivedMessage.getAckId() == exactlyOncePendingBatch.peek().receivedMessage.getAckId()){
-                    //         outstandingBatch.add(message);
-                    //         exactlyOncePendingBatch.poll();
-                    //         exactlyOnceOutstandingBatch.remove(message);
-                    //   }
-                    // }
-                    // processBatch(outstandingBatch);
                   } catch (Throwable t) {
                     // Catch everything so that one run failing doesn't prevent subsequent runs.
                     logger.log(Level.WARNING, "failed to run periodic job", t);
@@ -402,21 +392,21 @@ class MessageDispatcher {
 
     if(outstandingReceipts.containsKey(ackRequestData.getAckId())) {
       OutstandingMessage outstandingMessage = outstandingReceipts.get(ackRequestData.getAckId());
-      pendingMessages.putIfAbsent(outstandingMessage.receivedMessage.getAckId(),
-          outstandingMessage.ackHandler);
-
-      exactlyOnceOutstandingBatch.add(outstandingMessage);
-      List<OutstandingMessage> outstandingBatch = new ArrayList<>();
-      for (OutstandingMessage message : exactlyOnceOutstandingBatch) {
-        if (!exactlyOncePendingBatch.isEmpty() &&
-            message.receivedMessage.getAckId()
-                == exactlyOncePendingBatch.peek().receivedMessage.getAckId()) {
-          outstandingBatch.add(message);
-          exactlyOncePendingBatch.poll();
-          exactlyOnceOutstandingBatch.remove(message);
+      if (pendingMessages.putIfAbsent(outstandingMessage.receivedMessage.getAckId(),
+          outstandingMessage.ackHandler) == null) {
+        exactlyOnceOutstandingBatch.add(outstandingMessage);
+        List<OutstandingMessage> outstandingBatch = new ArrayList<>();
+        for (OutstandingMessage message : exactlyOnceOutstandingBatch) {
+          if (!exactlyOncePendingBatch.isEmpty() &&
+              message.receivedMessage.getAckId()
+                  == exactlyOncePendingBatch.peek().receivedMessage.getAckId()) {
+            outstandingBatch.add(message);
+            exactlyOncePendingBatch.poll();
+            exactlyOnceOutstandingBatch.remove(message);
+          }
         }
+        processBatch(outstandingBatch);
       }
-      processBatch(outstandingBatch);
     }
   }
 
