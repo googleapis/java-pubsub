@@ -59,8 +59,7 @@ public interface GetSchemaRequestOrBuilder
    *
    * <pre>
    * The set of fields to return in the response. If not set, returns a Schema
-   * with `name` and `type`, but not `definition`. Set to `FULL` to retrieve all
-   * fields.
+   * with all fields filled out. Set to `BASIC` to omit the `definition`.
    * </pre>
    *
    * <code>.google.pubsub.v1.SchemaView view = 2;</code>
@@ -73,8 +72,7 @@ public interface GetSchemaRequestOrBuilder
    *
    * <pre>
    * The set of fields to return in the response. If not set, returns a Schema
-   * with `name` and `type`, but not `definition`. Set to `FULL` to retrieve all
-   * fields.
+   * with all fields filled out. Set to `BASIC` to omit the `definition`.
    * </pre>
    *
    * <code>.google.pubsub.v1.SchemaView view = 2;</code>
