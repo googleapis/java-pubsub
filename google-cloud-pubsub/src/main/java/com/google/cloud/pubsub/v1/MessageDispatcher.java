@@ -50,6 +50,7 @@ import java.util.logging.Logger;
 import org.threeten.bp.Duration;
 import org.threeten.bp.Instant;
 import org.threeten.bp.temporal.ChronoUnit;
+import com.google.common.base.Pair;
 
 /**
  * Dispatches messages to a message receiver while handling the messages acking and lease
@@ -390,17 +391,18 @@ class MessageDispatcher {
   void notifyAckSuccess(AckRequestData ackRequestData) {
 
     if(outstandingReceipts.containsKey(ackRequestData.getAckId())) {
-      OutstandingMessage outstandingMessage = outstandingReceipts.get(ackRequestData.getAckId()).get(0);
+      OutstandingMessage outstandingMessage = outstandingReceipts.get(ackRequestData.getAckId()).getFirst();
       // Setting to true means that the receipt is complete
-      outstandingReceipts.get(ackRequestData.getAckId()).set(1, true);
+      Pair receiptInfo = Pair.of(1,true);
+      outstandingReceipts.get(ackRequestData.getAckId()).set(receiptInfo);
       List<OutstandingMessage> completedReceipts = new ArrayList<>();
       if (pendingMessages.putIfAbsent(outstandingMessage.receivedMessage.getAckId(), outstandingMessage.ackHandler) == null) {
         for(Map.Entry<String, Pair<OutstandingMessage, Boolean>> pr: outstandingReceipts.entrySet()){
           String ackId = pr.getKey();
           // If receipt is complete then add to completedReceipts to process the batch
-          if(pr.getValue().get(1)){
+          if(pr.getValue().getSecond()){
             outstandingReceipts.remove(ackId);
-            completedReceipts.add(pr.getValue().get(0));
+            completedReceipts.add(pr.getValue().getFirst());
           } else {
             break;
           }
