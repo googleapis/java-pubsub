@@ -87,10 +87,6 @@ To run formatting on your project, you can run:
 mvn com.coveo:fmt-maven-plugin:format
 ```
 
-### Commit message format
-
-Commit messages are supposed to follow the guidelines of [Conventional Commits](https://www.conventionalcommits.org/).
-
 [1]: https://cloud.google.com/docs/authentication/getting-started#creating_a_service_account
 [2]: https://maven.apache.org/settings.html#Active_Profiles
 [3]: https://github.com/GoogleCloudPlatform/java-docs-samples/blob/main/SAMPLE_FORMAT.md
