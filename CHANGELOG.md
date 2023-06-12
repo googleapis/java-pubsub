@@ -1,5 +1,105 @@
 # Changelog
 
+## [1.123.13](https://github.com/googleapis/java-pubsub/compare/v1.123.12...v1.123.13) (2023-05-30)
+
+
+### Dependencies
+
+* Update dependency com.google.cloud:google-cloud-bigquery to v2.26.0 ([#1582](https://github.com/googleapis/java-pubsub/issues/1582)) ([a7c09b7](https://github.com/googleapis/java-pubsub/commit/a7c09b763845fc78e5382f79365467d4bdb8a24d))
+* Update dependency com.google.cloud:google-cloud-bigquery to v2.26.1 ([#1585](https://github.com/googleapis/java-pubsub/issues/1585)) ([e2c37bf](https://github.com/googleapis/java-pubsub/commit/e2c37bfcee74a6f95cc3c15cf1f9d3d1602b77ff))
+* Update dependency com.google.cloud:google-cloud-core to v2.18.1 ([#1591](https://github.com/googleapis/java-pubsub/issues/1591)) ([1637f0d](https://github.com/googleapis/java-pubsub/commit/1637f0db2a89b20d28a6812b6abb4f36bfd46f80))
+* Update dependency com.google.cloud:google-cloud-shared-dependencies to v3.10.0 ([#1592](https://github.com/googleapis/java-pubsub/issues/1592)) ([a6be7b7](https://github.com/googleapis/java-pubsub/commit/a6be7b7870ba776fd9b39a0b16d45ba51fcc8ad6))
+* Update dependency com.google.cloud:google-cloud-shared-dependencies to v3.10.1 ([#1594](https://github.com/googleapis/java-pubsub/issues/1594)) ([52263ce](https://github.com/googleapis/java-pubsub/commit/52263ce63d4cbda649121e465f4bdc78bbfa8e44))
+* Update dependency org.xerial.snappy:snappy-java to v1.1.10.0 ([#1590](https://github.com/googleapis/java-pubsub/issues/1590)) ([338f31f](https://github.com/googleapis/java-pubsub/commit/338f31f96deb09fe93e1306986a7887d285a9d06))
+
+## [1.123.12](https://github.com/googleapis/java-pubsub/compare/v1.123.11...v1.123.12) (2023-05-12)
+
+
+### Dependencies
+
+* Update dependency com.google.cloud:google-cloud-bigquery to v2.25.0 ([#1566](https://github.com/googleapis/java-pubsub/issues/1566)) ([7e63280](https://github.com/googleapis/java-pubsub/commit/7e632806b83b5c849ea50fdf3085b2db7bdbeff3))
+* Update dependency com.google.cloud:google-cloud-core to v2.17.0 ([#1574](https://github.com/googleapis/java-pubsub/issues/1574)) ([9c80f14](https://github.com/googleapis/java-pubsub/commit/9c80f1493a5149a76b55d9f1d178684e1b5dde80))
+* Update dependency com.google.cloud:google-cloud-shared-dependencies to v3.9.0 ([#1576](https://github.com/googleapis/java-pubsub/issues/1576)) ([03a027f](https://github.com/googleapis/java-pubsub/commit/03a027fb2619444511d25ef7100c7ac850c1dca1))
+* Update dependency org.easymock:easymock to v5.1.0 ([#1448](https://github.com/googleapis/java-pubsub/issues/1448)) ([5ad86fe](https://github.com/googleapis/java-pubsub/commit/5ad86fe783a2fcdfe6102a9916c65b1c4139b3da))
+* Update dependency org.graalvm.buildtools:junit-platform-native to v0.9.22 ([#1570](https://github.com/googleapis/java-pubsub/issues/1570)) ([bbe9a8b](https://github.com/googleapis/java-pubsub/commit/bbe9a8b6594a0e6b777ceb3b97e8d625446e34e4))
+* Update dependency org.graalvm.buildtools:native-maven-plugin to v0.9.22 ([#1571](https://github.com/googleapis/java-pubsub/issues/1571)) ([e7b62d3](https://github.com/googleapis/java-pubsub/commit/e7b62d35aa3c73f55a474d406da094ded02d07f1))
+* Update dependency org.xerial.snappy:snappy-java to v1.1.9.0 - abandoned ([#1471](https://github.com/googleapis/java-pubsub/issues/1471)) ([1620e00](https://github.com/googleapis/java-pubsub/commit/1620e00cf1632699fa37a78059dfb86e707dbccc))
+* Update dependency org.xerial.snappy:snappy-java to v1.1.9.1 ([#1572](https://github.com/googleapis/java-pubsub/issues/1572)) ([1ec2fec](https://github.com/googleapis/java-pubsub/commit/1ec2feca66ab8b29edf8f9dd0d4b8df8261e709a))
+
+## [1.123.11](https://github.com/googleapis/java-pubsub/compare/v1.123.10...v1.123.11) (2023-04-27)
+
+
+### Dependencies
+
+* Update dependency com.google.cloud:google-cloud-core to v2.15.0 ([#1558](https://github.com/googleapis/java-pubsub/issues/1558)) ([acf0a4f](https://github.com/googleapis/java-pubsub/commit/acf0a4f1b893b5be19167e87b958e722e53b2aee))
+* Update dependency com.google.cloud:google-cloud-shared-dependencies to v3.8.0 ([#1561](https://github.com/googleapis/java-pubsub/issues/1561)) ([13bfd09](https://github.com/googleapis/java-pubsub/commit/13bfd09a9ba81e725a61f2b36c5d38fabcd8df56))
+* Update dependency org.junit.vintage:junit-vintage-engine to v5.9.3 ([#1563](https://github.com/googleapis/java-pubsub/issues/1563)) ([c2329d2](https://github.com/googleapis/java-pubsub/commit/c2329d289d3447e72904d20e9c89065b59d7e6de))
+
+## [1.123.10](https://github.com/googleapis/java-pubsub/compare/v1.123.9...v1.123.10) (2023-04-17)
+
+
+### Dependencies
+
+* Update dependency com.google.cloud:google-cloud-bigquery to v2.24.5 ([#1555](https://github.com/googleapis/java-pubsub/issues/1555)) ([7d81b06](https://github.com/googleapis/java-pubsub/commit/7d81b063465f23b1779c2137bc1706dafdaea042))
+* Update dependency com.google.cloud:google-cloud-shared-dependencies to v3.7.0 ([#1551](https://github.com/googleapis/java-pubsub/issues/1551)) ([bccf566](https://github.com/googleapis/java-pubsub/commit/bccf566c6072aa34ebad451880835625217f9fe4))
+
+## [1.123.9](https://github.com/googleapis/java-pubsub/compare/v1.123.8...v1.123.9) (2023-04-13)
+
+
+### Dependencies
+
+* Update dependency org.graalvm.buildtools:junit-platform-native to v0.9.21 ([#1547](https://github.com/googleapis/java-pubsub/issues/1547)) ([e78f210](https://github.com/googleapis/java-pubsub/commit/e78f210c9b72b0b9fb561ef8f41eb1aa2d8be4d7))
+* Update dependency org.graalvm.buildtools:native-maven-plugin to v0.9.21 ([#1548](https://github.com/googleapis/java-pubsub/issues/1548)) ([42957f8](https://github.com/googleapis/java-pubsub/commit/42957f8c93a07c7db5e3f007644b9508ef9dfe73))
+
+## [1.123.8](https://github.com/googleapis/java-pubsub/compare/v1.123.7...v1.123.8) (2023-04-04)
+
+
+### Dependencies
+
+* Update dependency com.google.cloud:google-cloud-shared-dependencies to v3.6.0 ([#1541](https://github.com/googleapis/java-pubsub/issues/1541)) ([828db7c](https://github.com/googleapis/java-pubsub/commit/828db7cfde91284db019b85552d64ca92e8ebe07))
+
+## [1.123.7](https://github.com/googleapis/java-pubsub/compare/v1.123.6...v1.123.7) (2023-03-21)
+
+
+### Dependencies
+
+* Update dependency com.google.cloud:google-cloud-shared-dependencies to v3.5.0 ([#1532](https://github.com/googleapis/java-pubsub/issues/1532)) ([d63fba7](https://github.com/googleapis/java-pubsub/commit/d63fba73d5ea445144f625f7b67622351694c818))
+
+## [1.123.6](https://github.com/googleapis/java-pubsub/compare/v1.123.5...v1.123.6) (2023-03-14)
+
+
+### Dependencies
+
+* Update dependency com.google.cloud:google-cloud-bigquery to v2.23.2 ([#1512](https://github.com/googleapis/java-pubsub/issues/1512)) ([60e889e](https://github.com/googleapis/java-pubsub/commit/60e889e587511cc948af440be7733dc4af531dd1))
+
+## [1.123.5](https://github.com/googleapis/java-pubsub/compare/v1.123.4...v1.123.5) (2023-03-03)
+
+
+### Dependencies
+
+* Update dependency com.google.cloud:google-cloud-core to v2.12.0 ([#1509](https://github.com/googleapis/java-pubsub/issues/1509)) ([6f70d8a](https://github.com/googleapis/java-pubsub/commit/6f70d8a96577ac93647f4d13adc6b31889efeddf))
+* Update dependency com.google.cloud:google-cloud-shared-dependencies to v3.4.0 ([#1510](https://github.com/googleapis/java-pubsub/issues/1510)) ([0d0ece7](https://github.com/googleapis/java-pubsub/commit/0d0ece70f1527932abb04d9719de68a1367c5881))
+
+## [1.123.4](https://github.com/googleapis/java-pubsub/compare/v1.123.3...v1.123.4) (2023-02-22)
+
+
+### Dependencies
+
+* Update dependency com.google.cloud:google-cloud-bigquery to v2.23.0 ([#1496](https://github.com/googleapis/java-pubsub/issues/1496)) ([713d727](https://github.com/googleapis/java-pubsub/commit/713d727db447f02e3c6cc7dfbb656fcebba54121))
+
+## [1.123.3](https://github.com/googleapis/java-pubsub/compare/v1.123.2...v1.123.3) (2023-02-22)
+
+
+### Dependencies
+
+* Update dependency com.google.cloud:google-cloud-bigquery to v2.21.0 ([#1470](https://github.com/googleapis/java-pubsub/issues/1470)) ([105c293](https://github.com/googleapis/java-pubsub/commit/105c2933d3f71389e2629e4871767199fe53f7f4))
+* Update dependency com.google.cloud:google-cloud-bigquery to v2.22.0 ([#1489](https://github.com/googleapis/java-pubsub/issues/1489)) ([665436c](https://github.com/googleapis/java-pubsub/commit/665436cb9a0900fd62a6197e73baecf13de21597))
+* Update dependency com.google.cloud:google-cloud-core to v2.10.0 ([#1464](https://github.com/googleapis/java-pubsub/issues/1464)) ([8cab4e2](https://github.com/googleapis/java-pubsub/commit/8cab4e2f0b8455a30aa71a7915a836730ee7f059))
+* Update dependency com.google.cloud:google-cloud-core to v2.11.0 ([#1490](https://github.com/googleapis/java-pubsub/issues/1490)) ([c42474a](https://github.com/googleapis/java-pubsub/commit/c42474a8c1a98e7533edef47acf9c7210b99a56e))
+* Update dependency com.google.cloud:google-cloud-shared-dependencies to v3.3.0 ([#1491](https://github.com/googleapis/java-pubsub/issues/1491)) ([e5e3227](https://github.com/googleapis/java-pubsub/commit/e5e32273a515cf9ce22ffffb58a8f7a252556526))
+* Update dependency org.graalvm.buildtools:junit-platform-native to v0.9.20 ([#1484](https://github.com/googleapis/java-pubsub/issues/1484)) ([8206d12](https://github.com/googleapis/java-pubsub/commit/8206d129d819617a3dd8ebdab531d3fc7b7289f1))
+* Update dependency org.graalvm.buildtools:native-maven-plugin to v0.9.20 ([#1485](https://github.com/googleapis/java-pubsub/issues/1485)) ([d0e9b2a](https://github.com/googleapis/java-pubsub/commit/d0e9b2a8197f91029ae26fdec7e88f7ca38dab79))
+
 ## [1.123.2](https://github.com/googleapis/java-pubsub/compare/v1.123.1...v1.123.2) (2023-02-06)
 
 
