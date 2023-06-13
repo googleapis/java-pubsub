@@ -191,8 +191,6 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
 
   @Override
   protected void doStop() {
-    runShutdown();
-
     lock.lock();
     try {
       clientStream.closeSendWithError(Status.CANCELLED.asException());
@@ -200,6 +198,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
       lock.unlock();
       notifyStopped();
     }
+    runShutdown();
   }
 
   private void runShutdown() {
