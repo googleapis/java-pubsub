@@ -196,9 +196,9 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
       clientStream.closeSendWithError(Status.CANCELLED.asException());
     } finally {
       lock.unlock();
-      notifyStopped();
     }
     runShutdown();
+    notifyStopped();
   }
 
   private void runShutdown() {
