@@ -26,7 +26,7 @@ import com.google.pubsub.v1.SubscriptionName;
 import com.google.pubsub.v1.TopicName;
 import java.io.IOException;
 
-public class CreatePushSubscriptionExample {
+public class CreatePushNoWrapperSubscriptionExample {
   public static void main(String... args) throws Exception {
     // TODO(developer): Replace these variables before running the sample.
     String projectId = "your-project-id";
