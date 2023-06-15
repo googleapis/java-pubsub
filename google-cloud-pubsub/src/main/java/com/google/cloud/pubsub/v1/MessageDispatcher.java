@@ -50,7 +50,6 @@ import java.util.logging.Logger;
 import org.threeten.bp.Duration;
 import org.threeten.bp.Instant;
 import org.threeten.bp.temporal.ChronoUnit;
-import com.google.common.base.Pair;
 
 /**
  * Dispatches messages to a message receiver while handling the messages acking and lease
@@ -92,7 +91,7 @@ class MessageDispatcher {
   private final LinkedBlockingQueue<AckRequestData> pendingAcks = new LinkedBlockingQueue<>();
   private final LinkedBlockingQueue<AckRequestData> pendingNacks = new LinkedBlockingQueue<>();
   private final LinkedBlockingQueue<AckRequestData> pendingReceipts = new LinkedBlockingQueue<>();
-  private final LinkedHashMap<String, Pair<OutstandingMessage, Boolean>> outstandingReceipts = new LinkedHashMap<String, Pair<OutstandingMessage, Boolean>>();
+  private final LinkedHashMap<String, ReceiptCompleteData> outstandingReceipts = new LinkedHashMap<String, ReceiptCompleteData>();
   private final List<OutstandingMessage> exactlyOnceOutstandingBatch = new ArrayList<>();
   private final AtomicInteger messageDeadlineSeconds = new AtomicInteger();
   private final AtomicBoolean extendDeadline = new AtomicBoolean(true);
@@ -355,6 +354,31 @@ class MessageDispatcher {
 
   }
 
+  private static class ReceiptCompleteData{
+    private OutstandingMessage outstandingMessage;
+    private Boolean receiptComplete;
+
+    private ReceiptCompleteData(OutstandingMessage outstandingMessage, Boolean receiptComplete){
+      this.outstandingMessage = outstandingMessage;
+      this.receiptComplete = receiptComplete;
+    }
+
+    private OutstandingMessage getOutstandingMessage(){
+      return this.outstandingMessage;
+    }
+    private Boolean getReceiptComplete(){
+      return this.receiptComplete;
+    }
+
+    private void setOutstandingMessage(OutstandingMessage outstandingMessage){
+      this.outstandingMessage = outstandingMessage;
+    }
+    private void setReceiptComplete(Boolean receiptComplete){
+      this.receiptComplete = receiptComplete;
+    }
+
+  }
+
   void processReceivedMessages(List<ReceivedMessage> messages) {
     Instant totalExpiration = now().plus(maxAckExtensionPeriod);
     List<OutstandingMessage> outstandingBatch = new ArrayList<>(messages.size());
@@ -379,7 +403,7 @@ class MessageDispatcher {
       }
       OutstandingMessage outstandingMessage = new OutstandingMessage(message, ackHandler);
       if (this.exactlyOnceDeliveryEnabled.get()) {
-        outstandingReceipts.put(message.getAckId(), new Pair<>(outstandingMessage, false));
+        outstandingReceipts.put(message.getAckId(), new ReceiptCompleteData(outstandingMessage, false));
       } else {
         outstandingBatch.add(outstandingMessage);
       }
@@ -391,18 +415,19 @@ class MessageDispatcher {
   void notifyAckSuccess(AckRequestData ackRequestData) {
 
     if(outstandingReceipts.containsKey(ackRequestData.getAckId())) {
-      OutstandingMessage outstandingMessage = outstandingReceipts.get(ackRequestData.getAckId()).getFirst();
+      ReceiptCompleteData receiptCompleteData = outstandingReceipts.get(ackRequestData.getAckId());
+      OutstandingMessage outstandingMessage = receiptCompleteData.getOutstandingMessage();
       // Setting to true means that the receipt is complete
-      Pair receiptInfo = Pair.of(1,true);
-      outstandingReceipts.get(ackRequestData.getAckId()).set(receiptInfo);
+      receiptCompleteData.setReceiptComplete(true);
+      outstandingReceipts.put(ackRequestData.getAckId(), receiptCompleteData);
       List<OutstandingMessage> completedReceipts = new ArrayList<>();
       if (pendingMessages.putIfAbsent(outstandingMessage.receivedMessage.getAckId(), outstandingMessage.ackHandler) == null) {
-        for(Map.Entry<String, Pair<OutstandingMessage, Boolean>> pr: outstandingReceipts.entrySet()){
-          String ackId = pr.getKey();
+        for(Map.Entry<String, ReceiptCompleteData> receipts: outstandingReceipts.entrySet()){
+          String ackId = receipts.getKey();
           // If receipt is complete then add to completedReceipts to process the batch
-          if(pr.getValue().getSecond()){
+          if(receipts.getValue().getReceiptComplete()){
             outstandingReceipts.remove(ackId);
-            completedReceipts.add(pr.getValue().getFirst());
+            completedReceipts.add(receipts.getValue().getOutstandingMessage());
           } else {
             break;
           }
