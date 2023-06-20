@@ -44,16 +44,13 @@ public class CreatePushNoWrapperSubscriptionExample {
       TopicName topicName = TopicName.of(projectId, topicId);
       SubscriptionName subscriptionName = SubscriptionName.of(projectId, subscriptionId);
       NoWrapper noWrapper =
-              NoWrapper.newBuilder()
-                      // Determines if message metadata is added to the HTTP headers of
-                      // the delivered message.
-                      .setWriteMetadata(true)
-                      .build();
+          NoWrapper.newBuilder()
+              // Determines if message metadata is added to the HTTP headers of
+              // the delivered message.
+              .setWriteMetadata(true)
+              .build();
       PushConfig pushConfig =
-              PushConfig.newBuilder()
-                      .setPushEndpoint(pushEndpoint)
-                      .setNoWrapper(noWrapper)
-                      .build();
+          PushConfig.newBuilder().setPushEndpoint(pushEndpoint).setNoWrapper(noWrapper).build();
 
       // Create a push subscription with default acknowledgement deadline of 10 seconds.
       // Messages not successfully acknowledged within 10 seconds will get resent by the server.
