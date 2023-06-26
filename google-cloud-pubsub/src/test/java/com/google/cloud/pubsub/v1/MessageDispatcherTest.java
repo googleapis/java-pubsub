@@ -155,8 +155,23 @@ public class MessageDispatcherTest {
     AckRequestData ackRequestData = AckRequestData.newBuilder(TEST_MESSAGE.getAckId()).build();
     messageDispatcher.notifyAckSuccess(ackRequestData);
     messageDispatcher.processOutstandingOperations();
-    verify(mockMessageReceiverWithAckResponse, times(1))
-        .receiveMessage(eq(TEST_MESSAGE.getMessage()), any(AckReplyConsumerWithResponse.class));
+
+    List<AckRequestData> ackRequestDataList = new ArrayList<AckRequestData>();
+    ackRequestDataList.add(ackRequestData);
+    List<ModackRequestData> modackRequestDataList = new ArrayList<ModackRequestData>();
+    modackRequestDataList.add(new ModackRequestData(MIN_ACK_DEADLINE_SECONDS, ackRequestData));
+
+    verify(mockAckProcessor, times(1))
+        .sendModackOperations(
+            argThat(
+                new CustomArgumentMatchers.ModackRequestDataListMatcher(modackRequestDataList)));
+    verify(mockAckProcessor, times(1))
+        .sendAckOperations(
+            argThat(new CustomArgumentMatchers.AckRequestDataListMatcher(ackRequestDataList)));
+
+    //
+    // verify(mockMessageReceiverWithAckResponse, times(1))
+    //     .receiveMessage(eq(TEST_MESSAGE.getMessage()), any(AckReplyConsumerWithResponse.class));
 
   }
 
