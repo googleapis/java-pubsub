@@ -92,7 +92,6 @@ class MessageDispatcher {
   private final LinkedBlockingQueue<AckRequestData> pendingNacks = new LinkedBlockingQueue<>();
   private final LinkedBlockingQueue<AckRequestData> pendingReceipts = new LinkedBlockingQueue<>();
   private final LinkedHashMap<String, ReceiptCompleteData> outstandingReceipts = new LinkedHashMap<String, ReceiptCompleteData>();
-  private final List<OutstandingMessage> exactlyOnceOutstandingBatch = new ArrayList<>();
   private final AtomicInteger messageDeadlineSeconds = new AtomicInteger();
   private final AtomicBoolean extendDeadline = new AtomicBoolean(true);
   private final Lock jobLock;
