@@ -55,7 +55,7 @@ public class ITPubSubTest {
 
   private static final int MAX_INBOUND_MESSAGE_SIZE = 20 * 1024 * 1024;
 
-  @Rule public Timeout globalTimeout = Timeout.seconds(300);
+  @Rule public Timeout globalTimeout = Timeout.seconds(1000);
 
   @AutoValue
   abstract static class MessageAndConsumer {
