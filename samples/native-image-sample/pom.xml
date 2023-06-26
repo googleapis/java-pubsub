@@ -56,7 +56,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <dependency>
       <groupId>com.google.truth</groupId>
       <artifactId>truth</artifactId>
-      <version>1.1.3</version>
+      <version>1.1.5</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -79,7 +79,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
-        <version>3.5.0</version>
+        <version>3.6.0</version>
         <executions>
           <execution>
             <id>copy-dependencies</id>
@@ -113,7 +113,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
         <dependency>
           <groupId>org.graalvm.buildtools</groupId>
           <artifactId>junit-platform-native</artifactId>
-          <version>0.9.22</version>
+          <version>0.9.23</version>
           <scope>test</scope>
         </dependency>
       </dependencies>
@@ -124,7 +124,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-surefire-plugin
             </artifactId> <!-- Must use older version of surefire plugin for native-image testing. -->
-            <version>3.1.0</version>
+            <version>3.1.2</version>
             <configuration>
               <includes>
                 <include>**/*IT</include>
@@ -134,7 +134,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
           <plugin>
             <groupId>org.graalvm.buildtools</groupId>
             <artifactId>native-maven-plugin</artifactId>
-            <version>0.9.22</version>
+            <version>0.9.23</version>
             <extensions>true</extensions>
             <configuration>
               <mainClass>pubsub.NativeImagePubSubSample
