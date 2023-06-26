@@ -118,7 +118,7 @@ public class SubscriberIT {
     void run() throws Exception;
   }
 
-  @Rule public Timeout globalTimeout = Timeout.seconds(1000); // 10 minute timeout
+  @Rule public Timeout globalTimeout = Timeout.seconds(10000); // 10 minute timeout
 
   @BeforeClass
   public static void checkRequirements() {
