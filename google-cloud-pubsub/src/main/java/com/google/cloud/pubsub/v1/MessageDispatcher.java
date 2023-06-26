@@ -28,7 +28,6 @@ import com.google.common.primitives.Ints;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.pubsub.v1.PubsubMessage;
 import com.google.pubsub.v1.ReceivedMessage;
-import io.opencensus.trace.Link;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -91,7 +90,8 @@ class MessageDispatcher {
   private final LinkedBlockingQueue<AckRequestData> pendingAcks = new LinkedBlockingQueue<>();
   private final LinkedBlockingQueue<AckRequestData> pendingNacks = new LinkedBlockingQueue<>();
   private final LinkedBlockingQueue<AckRequestData> pendingReceipts = new LinkedBlockingQueue<>();
-  private final LinkedHashMap<String, ReceiptCompleteData> outstandingReceipts = new LinkedHashMap<String, ReceiptCompleteData>();
+  private final LinkedHashMap<String, ReceiptCompleteData> outstandingReceipts =
+      new LinkedHashMap<String, ReceiptCompleteData>();
   private final AtomicInteger messageDeadlineSeconds = new AtomicInteger();
   private final AtomicBoolean extendDeadline = new AtomicBoolean(true);
   private final Lock jobLock;
@@ -350,32 +350,32 @@ class MessageDispatcher {
       this.receivedMessage = receivedMessage;
       this.ackHandler = ackHandler;
     }
-
   }
 
-  private static class ReceiptCompleteData{
+  private static class ReceiptCompleteData {
     private OutstandingMessage outstandingMessage;
     private Boolean receiptComplete;
 
-    private ReceiptCompleteData(OutstandingMessage outstandingMessage, Boolean receiptComplete){
+    private ReceiptCompleteData(OutstandingMessage outstandingMessage, Boolean receiptComplete) {
       this.outstandingMessage = outstandingMessage;
       this.receiptComplete = receiptComplete;
     }
 
-    private OutstandingMessage getOutstandingMessage(){
+    private OutstandingMessage getOutstandingMessage() {
       return this.outstandingMessage;
     }
-    private Boolean getReceiptComplete(){
+
+    private Boolean getReceiptComplete() {
       return this.receiptComplete;
     }
 
-    private void setOutstandingMessage(OutstandingMessage outstandingMessage){
+    private void setOutstandingMessage(OutstandingMessage outstandingMessage) {
       this.outstandingMessage = outstandingMessage;
     }
-    private void setReceiptComplete(Boolean receiptComplete){
+
+    private void setReceiptComplete(Boolean receiptComplete) {
       this.receiptComplete = receiptComplete;
     }
-
   }
 
   void processReceivedMessages(List<ReceivedMessage> messages) {
@@ -389,7 +389,8 @@ class MessageDispatcher {
       AckRequestData ackRequestData = builder.build();
       AckHandler ackHandler =
           new AckHandler(ackRequestData, message.getMessage().getSerializedSize(), totalExpiration);
-      if (!this.exactlyOnceDeliveryEnabled.get() && pendingMessages.putIfAbsent(message.getAckId(), ackHandler) != null) {
+      if (!this.exactlyOnceDeliveryEnabled.get()
+          && pendingMessages.putIfAbsent(message.getAckId(), ackHandler) != null) {
         // putIfAbsent puts ackHandler if ackID isn't previously mapped, then return the
         // previously-mapped element.
         // If the previous element is not null, we already have the message and the new one is
@@ -402,7 +403,8 @@ class MessageDispatcher {
       }
       OutstandingMessage outstandingMessage = new OutstandingMessage(message, ackHandler);
       if (this.exactlyOnceDeliveryEnabled.get()) {
-        outstandingReceipts.put(message.getAckId(), new ReceiptCompleteData(outstandingMessage, false));
+        outstandingReceipts.put(
+            message.getAckId(), new ReceiptCompleteData(outstandingMessage, false));
       } else {
         outstandingBatch.add(outstandingMessage);
       }
@@ -413,18 +415,20 @@ class MessageDispatcher {
 
   void notifyAckSuccess(AckRequestData ackRequestData) {
 
-    if(outstandingReceipts.containsKey(ackRequestData.getAckId())) {
+    if (outstandingReceipts.containsKey(ackRequestData.getAckId())) {
       ReceiptCompleteData receiptCompleteData = outstandingReceipts.get(ackRequestData.getAckId());
       OutstandingMessage outstandingMessage = receiptCompleteData.getOutstandingMessage();
       // Setting to true means that the receipt is complete
       receiptCompleteData.setReceiptComplete(true);
       outstandingReceipts.put(ackRequestData.getAckId(), receiptCompleteData);
       List<OutstandingMessage> completedReceipts = new ArrayList<>();
-      if (pendingMessages.putIfAbsent(outstandingMessage.receivedMessage.getAckId(), outstandingMessage.ackHandler) == null) {
-        for(Map.Entry<String, ReceiptCompleteData> receipts: outstandingReceipts.entrySet()){
+      if (pendingMessages.putIfAbsent(
+              outstandingMessage.receivedMessage.getAckId(), outstandingMessage.ackHandler)
+          == null) {
+        for (Map.Entry<String, ReceiptCompleteData> receipts : outstandingReceipts.entrySet()) {
           String ackId = receipts.getKey();
           // If receipt is complete then add to completedReceipts to process the batch
-          if(receipts.getValue().getReceiptComplete()){
+          if (receipts.getValue().getReceiptComplete()) {
             outstandingReceipts.remove(ackId);
             completedReceipts.add(receipts.getValue().getOutstandingMessage());
           } else {
@@ -437,7 +441,7 @@ class MessageDispatcher {
   }
 
   void notifyAckFailed(AckRequestData ackRequestData) {
-    if(outstandingReceipts.containsKey(ackRequestData.getAckId())){
+    if (outstandingReceipts.containsKey(ackRequestData.getAckId())) {
       outstandingReceipts.remove(ackRequestData.getAckId());
     }
   }

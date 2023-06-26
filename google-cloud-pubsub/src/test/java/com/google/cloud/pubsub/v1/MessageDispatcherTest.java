@@ -164,7 +164,6 @@ public class MessageDispatcherTest {
         .sendModackOperations(
             argThat(
                 new CustomArgumentMatchers.ModackRequestDataListMatcher(modackRequestDataList)));
-
   }
 
   @Test
