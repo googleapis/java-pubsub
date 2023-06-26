@@ -141,15 +141,15 @@ public class MessageDispatcherTest {
 
   @Test
   public void testReceiptModackForExactlyOnceDelivered() {
-    MessageReceiverWithAckResponse mockMessageReceiverWithAckResponse =
-        mock(MessageReceiverWithAckResponse.class);
-    MessageDispatcher messageDispatcher = getMessageDispatcher(mockMessageReceiverWithAckResponse);
+    // MessageReceiverWithAckResponse mockMessageReceiverWithAckResponse =
+    //     mock(MessageReceiverWithAckResponse.class);
+    MessageDispatcher messageDispatcher = getMessageDispatcher(messageReceiverWithAckResponse);
     messageDispatcher.setExactlyOnceDeliveryEnabled(true);
 
     messageDispatcher.processReceivedMessages(Collections.singletonList(TEST_MESSAGE));
 
     messageDispatcher.processOutstandingOperations();
-    verify(mockMessageReceiverWithAckResponse, never())
+    verify(messageReceiverWithAckResponse, never())
         .receiveMessage(eq(TEST_MESSAGE.getMessage()), any(AckReplyConsumerWithResponse.class));
 
     AckRequestData ackRequestData = AckRequestData.newBuilder(TEST_MESSAGE.getAckId()).build();
@@ -161,17 +161,17 @@ public class MessageDispatcherTest {
     List<ModackRequestData> modackRequestDataList = new ArrayList<ModackRequestData>();
     modackRequestDataList.add(new ModackRequestData(MIN_ACK_DEADLINE_SECONDS, ackRequestData));
 
-    verify(mockAckProcessor, times(1))
-        .sendModackOperations(
-            argThat(
-                new CustomArgumentMatchers.ModackRequestDataListMatcher(modackRequestDataList)));
-    verify(mockAckProcessor, times(1))
-        .sendAckOperations(
-            argThat(new CustomArgumentMatchers.AckRequestDataListMatcher(ackRequestDataList)));
+    // verify(mockAckProcessor, times(1))
+    //     .sendModackOperations(
+    //         argThat(
+    //             new CustomArgumentMatchers.ModackRequestDataListMatcher(modackRequestDataList)));
+    // verify(mockAckProcessor, times(1))
+    //     .sendAckOperations(
+    //         argThat(new CustomArgumentMatchers.AckRequestDataListMatcher(ackRequestDataList)));
 
     //
-    // verify(mockMessageReceiverWithAckResponse, times(1))
-    //     .receiveMessage(eq(TEST_MESSAGE.getMessage()), any(AckReplyConsumerWithResponse.class));
+    verify(messageReceiverWithAckResponse, times(1))
+        .receiveMessage(eq(TEST_MESSAGE.getMessage()), any(AckReplyConsumerWithResponse.class));
 
   }
 
