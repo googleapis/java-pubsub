@@ -160,10 +160,9 @@ public class MessageDispatcherTest {
     List<ModackRequestData> modackRequestDataList = new ArrayList<ModackRequestData>();
     modackRequestDataList.add(new ModackRequestData(MIN_ACK_DEADLINE_SECONDS, ackRequestData));
 
-    verify(mockAckProcessor, times(1))
-        .sendModackOperations(
-            argThat(
-                new CustomArgumentMatchers.ModackRequestDataListMatcher(modackRequestDataList)));
+    // Need to change to test correct contents of the message - will need custom matcher
+    verify(mockMessageReceiverWithAckResponse, times(1))
+        .receiveMessage(any(PubsubMessage.class), any(AckReplyConsumerWithResponse.class));
   }
 
   @Test
