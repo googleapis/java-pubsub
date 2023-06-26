@@ -157,8 +157,6 @@ public class MessageDispatcherTest {
     messageDispatcher.notifyAckSuccess(ackRequestData);
     messageDispatcher.processOutstandingOperations();
 
-    List<AckRequestData> ackRequestDataList = new ArrayList<AckRequestData>();
-    ackRequestDataList.add(ackRequestData);
     List<ModackRequestData> modackRequestDataList = new ArrayList<ModackRequestData>();
     modackRequestDataList.add(new ModackRequestData(MIN_ACK_DEADLINE_SECONDS, ackRequestData));
 
