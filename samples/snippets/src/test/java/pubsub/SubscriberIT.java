@@ -238,8 +238,8 @@ public class SubscriberIT {
         .subscribeWithExactlyOnceConsumerWithResponseExample(projectId, subscriptionEodId);
     int i = 0;
     for (String messageId : messageIds) {
-      assertThat(bout.toString()).contains("Message received: " + i + "/n" +
-          "Message successfully acked: " + messageId);
+      assertThat(bout.toString()).contains("Message received: " + i + "/n"
+          + "Message successfully acked: " + messageId);
       i++;
     }
   }
