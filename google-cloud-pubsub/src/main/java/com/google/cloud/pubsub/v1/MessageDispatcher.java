@@ -419,7 +419,8 @@ class MessageDispatcher {
     if (outstandingReceipts.containsKey(ackRequestData.getAckId())) {
       ReceiptCompleteData receiptCompleteData = outstandingReceipts.get(ackRequestData.getAckId());
       OutstandingMessage outstandingMessage = receiptCompleteData.getOutstandingMessage();
-      System.out.println("Message Dispatche, ack successful: " + outstandingMessage.receivedMessage);
+      System.out.println(
+          "Message Dispatche, ack successful: " + outstandingMessage.receivedMessage);
       // Setting to true means that the receipt is complete
       receiptCompleteData.setReceiptComplete(true);
       outstandingReceipts.put(ackRequestData.getAckId(), receiptCompleteData);
@@ -433,7 +434,9 @@ class MessageDispatcher {
           if (receipts.getValue().getReceiptComplete()) {
             outstandingReceipts.remove(ackId);
             completedReceipts.add(receipts.getValue().getOutstandingMessage());
-            System.out.println("Message Dispatche, adding to completed receipts: " + receipts.getValue().getOutstandingMessage().receivedMessage);
+            System.out.println(
+                "Message Dispatche, adding to completed receipts: "
+                    + receipts.getValue().getOutstandingMessage().receivedMessage);
           } else {
             break;
           }
@@ -445,7 +448,12 @@ class MessageDispatcher {
 
   void notifyAckFailed(AckRequestData ackRequestData) {
     if (outstandingReceipts.containsKey(ackRequestData.getAckId())) {
-      System.out.println("Message Dispatcher, failed: " + outstandingReceipts.get(ackRequestData.getAckId()).getOutstandingMessage().receivedMessage);
+      System.out.println(
+          "Message Dispatcher, failed: "
+              + outstandingReceipts
+                  .get(ackRequestData.getAckId())
+                  .getOutstandingMessage()
+                  .receivedMessage);
       outstandingReceipts.remove(ackRequestData.getAckId());
     }
   }
