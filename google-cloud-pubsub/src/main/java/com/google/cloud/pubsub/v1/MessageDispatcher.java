@@ -420,7 +420,7 @@ class MessageDispatcher {
       ReceiptCompleteData receiptCompleteData = outstandingReceipts.get(ackRequestData.getAckId());
       OutstandingMessage outstandingMessage = receiptCompleteData.getOutstandingMessage();
       System.out.println(
-          "Message Dispatche, ack successful: " + outstandingMessage.receivedMessage);
+          "Message Dispatcher, ack successful: " + outstandingMessage.receivedMessage);
       // Setting to true means that the receipt is complete
       receiptCompleteData.setReceiptComplete(true);
       outstandingReceipts.put(ackRequestData.getAckId(), receiptCompleteData);
@@ -435,7 +435,7 @@ class MessageDispatcher {
             outstandingReceipts.remove(ackId);
             completedReceipts.add(receipts.getValue().getOutstandingMessage());
             System.out.println(
-                "Message Dispatche, adding to completed receipts: "
+                "Message Dispatcher, adding to completed receipts: "
                     + receipts.getValue().getOutstandingMessage().receivedMessage);
           } else {
             break;
@@ -463,6 +463,7 @@ class MessageDispatcher {
     for (OutstandingMessage message : batch) {
       // This is a blocking flow controller.  We have already incremented messagesWaiter, so
       // shutdown will block on processing of all these messages anyway.
+      System.out.println("Processing batch message: " + message.receivedMessage);
       try {
         flowController.reserve(1, message.receivedMessage.getMessage().getSerializedSize());
       } catch (FlowControlException unexpectedException) {
@@ -504,10 +505,12 @@ class MessageDispatcher {
                 // Message expired while waiting. We don't extend these messages anymore,
                 // so it was probably sent to someone else. Don't work on it.
                 // Don't nack it either, because we'd be nacking someone else's message.
+                System.out.println("Message exprited: " + message);
                 ackHandler.forget();
                 return;
               }
               if (shouldSetMessageFuture()) {
+                System.out.println("Message setting future on: " + message);
                 // This is the message future that is propagated to the user
                 SettableApiFuture<AckResponse> messageFuture =
                     ackHandler.getMessageFutureIfExists();
@@ -515,6 +518,7 @@ class MessageDispatcher {
                     new AckReplyConsumerWithResponseImpl(ackReplySettableApiFuture, messageFuture);
                 receiverWithAckResponse.receiveMessage(message, ackReplyConsumerWithResponse);
               } else {
+                System.out.println("Message NOT setting future on: " + message);
                 final AckReplyConsumer ackReplyConsumer =
                     new AckReplyConsumerImpl(ackReplySettableApiFuture);
                 receiver.receiveMessage(message, ackReplyConsumer);
@@ -525,8 +529,10 @@ class MessageDispatcher {
           }
         };
     if (message.getOrderingKey().isEmpty()) {
+      System.out.println("Delivering Message");
       executor.execute(deliverMessageTask);
     } else {
+      System.out.println("Delivering Ordered Message");
       sequentialExecutor.submit(message.getOrderingKey(), deliverMessageTask);
     }
   }
