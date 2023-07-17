@@ -414,7 +414,7 @@ class MessageDispatcher {
     processBatch(outstandingBatch);
   }
 
-  void notifyAckSuccess(AckRequestData ackRequestData) {
+  synchronized void notifyAckSuccess(AckRequestData ackRequestData) {
 
     if (outstandingReceipts.containsKey(ackRequestData.getAckId())) {
       ReceiptCompleteData receiptCompleteData = outstandingReceipts.get(ackRequestData.getAckId());
