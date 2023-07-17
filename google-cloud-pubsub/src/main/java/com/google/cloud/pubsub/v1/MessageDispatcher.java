@@ -459,6 +459,7 @@ class MessageDispatcher {
   }
 
   private void processBatch(List<OutstandingMessage> batch) {
+    System.out.println("Processing batch size: " + batch.size());
     messagesWaiter.incrementPendingCount(batch.size());
     for (OutstandingMessage message : batch) {
       // This is a blocking flow controller.  We have already incremented messagesWaiter, so
