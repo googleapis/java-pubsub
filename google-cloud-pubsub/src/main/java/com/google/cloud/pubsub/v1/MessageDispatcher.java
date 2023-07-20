@@ -90,8 +90,8 @@ class MessageDispatcher {
   private final LinkedBlockingQueue<AckRequestData> pendingAcks = new LinkedBlockingQueue<>();
   private final LinkedBlockingQueue<AckRequestData> pendingNacks = new LinkedBlockingQueue<>();
   private final LinkedBlockingQueue<AckRequestData> pendingReceipts = new LinkedBlockingQueue<>();
-  private final LinkedHashMap<String, ReceiptCompleteData> outstandingReceipts =
-      new LinkedHashMap<String, ReceiptCompleteData>();
+  private final ConcurrentHashMap<String, ReceiptCompleteData> outstandingReceipts =
+      new ConcurrentHashMap<String, ReceiptCompleteData>();
   private final AtomicInteger messageDeadlineSeconds = new AtomicInteger();
   private final AtomicBoolean extendDeadline = new AtomicBoolean(true);
   private final Lock jobLock;
@@ -428,7 +428,7 @@ class MessageDispatcher {
       if (pendingMessages.putIfAbsent(
               outstandingMessage.receivedMessage.getAckId(), outstandingMessage.ackHandler)
           == null) {
-        LinkedHashMap<String, ReceiptCompleteData> outstandingReceiptsCopy = outstandingReceipts;
+        ConcurrentHashMap<String, ReceiptCompleteData> outstandingReceiptsCopy = outstandingReceipts;
 
         for (Map.Entry<String, ReceiptCompleteData> receipts : outstandingReceiptsCopy.entrySet()) {
           String ackId = receipts.getKey();
