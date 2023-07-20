@@ -428,7 +428,9 @@ class MessageDispatcher {
       if (pendingMessages.putIfAbsent(
               outstandingMessage.receivedMessage.getAckId(), outstandingMessage.ackHandler)
           == null) {
-        for (Map.Entry<String, ReceiptCompleteData> receipts : outstandingReceipts.entrySet()) {
+        LinkedHashMap<String, ReceiptCompleteData> outstandingReceiptsCopy = outstandingReceipts;
+
+        for (Map.Entry<String, ReceiptCompleteData> receipts : outstandingReceiptsCopy.entrySet()) {
           String ackId = receipts.getKey();
           // If receipt is complete then add to completedReceipts to process the batch
           if (receipts.getValue().getReceiptComplete()) {
