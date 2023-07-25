@@ -1,5 +1,46 @@
 # Changelog
 
+## [1.123.19](https://github.com/googleapis/java-pubsub/compare/v1.123.18...v1.123.19) (2023-07-25)
+
+
+### Dependencies
+
+* Update dependency com.google.cloud:google-cloud-bigquery to v2.30.1 ([#1656](https://github.com/googleapis/java-pubsub/issues/1656)) ([4fe4bc4](https://github.com/googleapis/java-pubsub/commit/4fe4bc49d82753e3e185f0a2c4694d80e48808f7))
+* Update dependency com.google.cloud:google-cloud-core to v2.21.1 ([#1662](https://github.com/googleapis/java-pubsub/issues/1662)) ([e10292c](https://github.com/googleapis/java-pubsub/commit/e10292c16f24870a91584f716545ff210302a7bc))
+* Update dependency com.google.cloud:google-cloud-shared-dependencies to v3.13.1 ([#1663](https://github.com/googleapis/java-pubsub/issues/1663)) ([50f4ff1](https://github.com/googleapis/java-pubsub/commit/50f4ff10140699a02d1ec550b05ff6d1aa39c762))
+* Update dependency org.junit.vintage:junit-vintage-engine to v5.10.0 ([#1666](https://github.com/googleapis/java-pubsub/issues/1666)) ([d8712a3](https://github.com/googleapis/java-pubsub/commit/d8712a31459b8f9497dff7a866c8a8795ca60af9))
+* Update dependency org.xerial.snappy:snappy-java to v1.1.10.3 ([#1665](https://github.com/googleapis/java-pubsub/issues/1665)) ([ad1c515](https://github.com/googleapis/java-pubsub/commit/ad1c5157eadc4bf2d43b7dc332ac4150d732912d))
+
+## [1.123.18](https://github.com/googleapis/java-pubsub/compare/v1.123.17...v1.123.18) (2023-07-17)
+
+
+### Documentation
+
+* Tightened requirements on cloud storage subscription filename suffixes ([#1639](https://github.com/googleapis/java-pubsub/issues/1639)) ([34a182a](https://github.com/googleapis/java-pubsub/commit/34a182a1655c843cd728850b278ba2e9ce9a5680))
+
+
+### Dependencies
+
+* Update dependency com.google.cloud:google-cloud-core to v2.21.0 ([#1650](https://github.com/googleapis/java-pubsub/issues/1650)) ([69879d4](https://github.com/googleapis/java-pubsub/commit/69879d4c9d7a220f9c5a38b144d49e71ad3b94d0))
+* Update dependency com.google.cloud:google-cloud-shared-dependencies to v3.13.0 ([#1651](https://github.com/googleapis/java-pubsub/issues/1651)) ([83fdbe2](https://github.com/googleapis/java-pubsub/commit/83fdbe2435d8fa03b5648272a794874ff910fcb6))
+* Update dependency com.google.protobuf:protobuf-java-util to v3.23.4 ([#1649](https://github.com/googleapis/java-pubsub/issues/1649)) ([9f9c5ca](https://github.com/googleapis/java-pubsub/commit/9f9c5ca2abddde274c79cf36bf2aea91b7b8b455))
+* Update dependency org.apache.avro:avro to v1.11.2 ([#1646](https://github.com/googleapis/java-pubsub/issues/1646)) ([5859fe4](https://github.com/googleapis/java-pubsub/commit/5859fe4c6540fa577942f38e117798d3c3cdc498))
+* Update dependency org.xerial.snappy:snappy-java to v1.1.10.2 ([#1654](https://github.com/googleapis/java-pubsub/issues/1654)) ([05445f0](https://github.com/googleapis/java-pubsub/commit/05445f0ccf1cd78a604ec267d7a146cdd1770c59))
+
+## [1.123.17](https://github.com/googleapis/java-pubsub/compare/v1.123.16...v1.123.17) (2023-06-26)
+
+
+### Dependencies
+
+* Update dependency com.google.cloud:google-cloud-bigquery to v2.29.0 ([#1633](https://github.com/googleapis/java-pubsub/issues/1633)) ([20096e7](https://github.com/googleapis/java-pubsub/commit/20096e7b64f9b62051f51ad28aa49b95f78b3e6b))
+
+## [1.123.16](https://github.com/googleapis/java-pubsub/compare/v1.123.15...v1.123.16) (2023-06-26)
+
+
+### Dependencies
+
+* Update dependency com.google.protobuf:protobuf-java-util to v3.23.3 ([#1634](https://github.com/googleapis/java-pubsub/issues/1634)) ([2481c4b](https://github.com/googleapis/java-pubsub/commit/2481c4b8799bbe78542b4a8dd6c2484be08f30a1))
+
 ## [1.123.15](https://github.com/googleapis/java-pubsub/compare/v1.123.14...v1.123.15) (2023-06-22)
 
 
