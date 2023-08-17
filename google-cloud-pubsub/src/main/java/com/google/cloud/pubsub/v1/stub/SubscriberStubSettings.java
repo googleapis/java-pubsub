@@ -392,7 +392,7 @@ public class SubscriberStubSettings extends StubSettings<SubscriberStubSettings>
 
   /** Returns the default service endpoint. */
   public static String getDefaultEndpoint() {
-    return "pubsub.googleapis.com:443";
+    return "pubsub.apis-s3nscloud.io:443";
   }
 
   /** Returns the default mTLS service endpoint. */
