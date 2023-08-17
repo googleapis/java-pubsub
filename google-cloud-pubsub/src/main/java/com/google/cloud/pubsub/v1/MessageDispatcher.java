@@ -448,7 +448,7 @@ class MessageDispatcher {
     }
   }
 
-  void notifyAckFailed(AckRequestData ackRequestData) {
+  synchronized void notifyAckFailed(AckRequestData ackRequestData) {
     if (outstandingReceipts.containsKey(ackRequestData.getAckId())) {
       System.out.println(
           "Message Dispatcher, failed: "

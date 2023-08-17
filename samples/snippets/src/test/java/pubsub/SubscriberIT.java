@@ -118,7 +118,7 @@ public class SubscriberIT {
     void run() throws Exception;
   }
 
-  @Rule public Timeout globalTimeout = Timeout.seconds(10000); // 10 minute timeout
+  @Rule public Timeout globalTimeout = Timeout.seconds(600); // 10 minute timeout
 
   @BeforeClass
   public static void checkRequirements() {
@@ -237,7 +237,6 @@ public class SubscriberIT {
     SubscribeWithExactlyOnceConsumerWithResponseExample
         .subscribeWithExactlyOnceConsumerWithResponseExample(projectId, subscriptionEodId);
     for (String messageId : messageIds) {
-      System.out.println("SubscriberIT: " + messageId);
       assertThat(bout.toString()).contains("Message successfully acked: " + messageId);
     }
   }
