@@ -427,7 +427,8 @@ class MessageDispatcher {
       if (pendingMessages.putIfAbsent(
               outstandingMessage.receivedMessage.getAckId(), outstandingMessage.ackHandler)
           == null) {
-        ConcurrentHashMap<String, ReceiptCompleteData> outstandingReceiptsCopy = outstandingReceipts;
+        ConcurrentHashMap<String, ReceiptCompleteData> outstandingReceiptsCopy =
+            outstandingReceipts;
 
         for (Map.Entry<String, ReceiptCompleteData> receipts : outstandingReceiptsCopy.entrySet()) {
           String ackId = receipts.getKey();
