@@ -30,8 +30,11 @@ import com.google.pubsub.v1.PubsubMessage;
 import com.google.pubsub.v1.ReceivedMessage;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Executor;
@@ -89,8 +92,8 @@ class MessageDispatcher {
   private final LinkedBlockingQueue<AckRequestData> pendingAcks = new LinkedBlockingQueue<>();
   private final LinkedBlockingQueue<AckRequestData> pendingNacks = new LinkedBlockingQueue<>();
   private final LinkedBlockingQueue<AckRequestData> pendingReceipts = new LinkedBlockingQueue<>();
-  private final ConcurrentHashMap<String, ReceiptCompleteData> outstandingReceipts =
-      new ConcurrentHashMap<String, ReceiptCompleteData>();
+  private final LinkedHashMap<String, ReceiptCompleteData> outstandingReceipts =
+      new LinkedHashMap<String, ReceiptCompleteData>();
   private final AtomicInteger messageDeadlineSeconds = new AtomicInteger();
   private final AtomicBoolean extendDeadline = new AtomicBoolean(true);
   private final Lock jobLock;
@@ -419,24 +422,24 @@ class MessageDispatcher {
       OutstandingMessage outstandingMessage = receiptCompleteData.getOutstandingMessage();
       // Setting to true means that the receipt is complete
       receiptCompleteData.setReceiptComplete(true);
-      outstandingReceipts.put(ackRequestData.getAckId(), receiptCompleteData);
       List<OutstandingMessage> completedReceipts = new ArrayList<>();
-      if (pendingMessages.putIfAbsent(
-              outstandingMessage.receivedMessage.getAckId(), outstandingMessage.ackHandler)
-          == null) {
-        ConcurrentHashMap<String, ReceiptCompleteData> outstandingReceiptsCopy =
-            outstandingReceipts;
+      // if (pendingMessages.putIfAbsent(
+      //         outstandingMessage.receivedMessage.getAckId(), outstandingMessage.ackHandler)
+      //     == null) {
 
-        for (Map.Entry<String, ReceiptCompleteData> receipts : outstandingReceiptsCopy.entrySet()) {
-          String ackId = receipts.getKey();
-          // If receipt is complete then add to completedReceipts to process the batch
-          if (receipts.getValue().getReceiptComplete()) {
-            outstandingReceipts.remove(ackId);
-            completedReceipts.add(receipts.getValue().getOutstandingMessage());
-          } else {
-            break;
-          }
+      for (Iterator<Entry<String, ReceiptCompleteData>> it = outstandingReceipts.entrySet().iterator(); it.hasNext();) {
+        Map.Entry<String, ReceiptCompleteData> receipt = it.next();
+        String ackId = receipt.getKey();
+        // If receipt is complete then add to completedReceipts to process the batch
+        if (receipt.getValue().getReceiptComplete()) {
+          it.remove();
+          pendingMessages.putIfAbsent(outstandingMessage.receivedMessage.getAckId(), outstandingMessage.ackHandler);
+          completedReceipts.add(receipt.getValue().getOutstandingMessage());
+        } else {
+          break;
         }
+        // }
+
       }
       processBatch(completedReceipts);
     }
