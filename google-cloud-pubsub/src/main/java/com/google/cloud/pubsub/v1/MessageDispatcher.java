@@ -427,13 +427,16 @@ class MessageDispatcher {
       //         outstandingMessage.receivedMessage.getAckId(), outstandingMessage.ackHandler)
       //     == null) {
 
-      for (Iterator<Entry<String, ReceiptCompleteData>> it = outstandingReceipts.entrySet().iterator(); it.hasNext();) {
+      for (Iterator<Entry<String, ReceiptCompleteData>> it =
+              outstandingReceipts.entrySet().iterator();
+          it.hasNext(); ) {
         Map.Entry<String, ReceiptCompleteData> receipt = it.next();
         String ackId = receipt.getKey();
         // If receipt is complete then add to completedReceipts to process the batch
         if (receipt.getValue().getReceiptComplete()) {
           it.remove();
-          pendingMessages.putIfAbsent(outstandingMessage.receivedMessage.getAckId(), outstandingMessage.ackHandler);
+          pendingMessages.putIfAbsent(
+              outstandingMessage.receivedMessage.getAckId(), outstandingMessage.ackHandler);
           completedReceipts.add(receipt.getValue().getOutstandingMessage());
         } else {
           break;
