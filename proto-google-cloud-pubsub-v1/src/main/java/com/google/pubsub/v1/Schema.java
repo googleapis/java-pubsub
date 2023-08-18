@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,17 +41,13 @@ public final class Schema extends com.google.protobuf.GeneratedMessageV3
     name_ = "";
     type_ = 0;
     definition_ = "";
+    revisionId_ = "";
   }
 
   @java.lang.Override
   @SuppressWarnings({"unused"})
   protected java.lang.Object newInstance(UnusedPrivateParameter unused) {
     return new Schema();
-  }
-
-  @java.lang.Override
-  public final com.google.protobuf.UnknownFieldSet getUnknownFields() {
-    return this.unknownFields;
   }
 
   public static final com.google.protobuf.Descriptors.Descriptor getDescriptor() {
@@ -225,7 +221,9 @@ public final class Schema extends com.google.protobuf.GeneratedMessageV3
   }
 
   public static final int NAME_FIELD_NUMBER = 1;
-  private volatile java.lang.Object name_;
+
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object name_ = "";
   /**
    *
    *
@@ -276,7 +274,7 @@ public final class Schema extends com.google.protobuf.GeneratedMessageV3
   }
 
   public static final int TYPE_FIELD_NUMBER = 2;
-  private int type_;
+  private int type_ = 0;
   /**
    *
    *
@@ -305,13 +303,14 @@ public final class Schema extends com.google.protobuf.GeneratedMessageV3
    */
   @java.lang.Override
   public com.google.pubsub.v1.Schema.Type getType() {
-    @SuppressWarnings("deprecation")
-    com.google.pubsub.v1.Schema.Type result = com.google.pubsub.v1.Schema.Type.valueOf(type_);
+    com.google.pubsub.v1.Schema.Type result = com.google.pubsub.v1.Schema.Type.forNumber(type_);
     return result == null ? com.google.pubsub.v1.Schema.Type.UNRECOGNIZED : result;
   }
 
   public static final int DEFINITION_FIELD_NUMBER = 3;
-  private volatile java.lang.Object definition_;
+
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object definition_ = "";
   /**
    *
    *
@@ -363,6 +362,117 @@ public final class Schema extends com.google.protobuf.GeneratedMessageV3
     }
   }
 
+  public static final int REVISION_ID_FIELD_NUMBER = 4;
+
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object revisionId_ = "";
+  /**
+   *
+   *
+   * <pre>
+   * Output only. Immutable. The revision ID of the schema.
+   * </pre>
+   *
+   * <code>
+   * string revision_id = 4 [(.google.api.field_behavior) = IMMUTABLE, (.google.api.field_behavior) = OUTPUT_ONLY];
+   * </code>
+   *
+   * @return The revisionId.
+   */
+  @java.lang.Override
+  public java.lang.String getRevisionId() {
+    java.lang.Object ref = revisionId_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      revisionId_ = s;
+      return s;
+    }
+  }
+  /**
+   *
+   *
+   * <pre>
+   * Output only. Immutable. The revision ID of the schema.
+   * </pre>
+   *
+   * <code>
+   * string revision_id = 4 [(.google.api.field_behavior) = IMMUTABLE, (.google.api.field_behavior) = OUTPUT_ONLY];
+   * </code>
+   *
+   * @return The bytes for revisionId.
+   */
+  @java.lang.Override
+  public com.google.protobuf.ByteString getRevisionIdBytes() {
+    java.lang.Object ref = revisionId_;
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b =
+          com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
+      revisionId_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
+  }
+
+  public static final int REVISION_CREATE_TIME_FIELD_NUMBER = 6;
+  private com.google.protobuf.Timestamp revisionCreateTime_;
+  /**
+   *
+   *
+   * <pre>
+   * Output only. The timestamp that the revision was created.
+   * </pre>
+   *
+   * <code>
+   * .google.protobuf.Timestamp revision_create_time = 6 [(.google.api.field_behavior) = OUTPUT_ONLY];
+   * </code>
+   *
+   * @return Whether the revisionCreateTime field is set.
+   */
+  @java.lang.Override
+  public boolean hasRevisionCreateTime() {
+    return revisionCreateTime_ != null;
+  }
+  /**
+   *
+   *
+   * <pre>
+   * Output only. The timestamp that the revision was created.
+   * </pre>
+   *
+   * <code>
+   * .google.protobuf.Timestamp revision_create_time = 6 [(.google.api.field_behavior) = OUTPUT_ONLY];
+   * </code>
+   *
+   * @return The revisionCreateTime.
+   */
+  @java.lang.Override
+  public com.google.protobuf.Timestamp getRevisionCreateTime() {
+    return revisionCreateTime_ == null
+        ? com.google.protobuf.Timestamp.getDefaultInstance()
+        : revisionCreateTime_;
+  }
+  /**
+   *
+   *
+   * <pre>
+   * Output only. The timestamp that the revision was created.
+   * </pre>
+   *
+   * <code>
+   * .google.protobuf.Timestamp revision_create_time = 6 [(.google.api.field_behavior) = OUTPUT_ONLY];
+   * </code>
+   */
+  @java.lang.Override
+  public com.google.protobuf.TimestampOrBuilder getRevisionCreateTimeOrBuilder() {
+    return revisionCreateTime_ == null
+        ? com.google.protobuf.Timestamp.getDefaultInstance()
+        : revisionCreateTime_;
+  }
+
   private byte memoizedIsInitialized = -1;
 
   @java.lang.Override
@@ -386,6 +496,12 @@ public final class Schema extends com.google.protobuf.GeneratedMessageV3
     if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(definition_)) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 3, definition_);
     }
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(revisionId_)) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 4, revisionId_);
+    }
+    if (revisionCreateTime_ != null) {
+      output.writeMessage(6, getRevisionCreateTime());
+    }
     getUnknownFields().writeTo(output);
   }
 
@@ -403,6 +519,12 @@ public final class Schema extends com.google.protobuf.GeneratedMessageV3
     }
     if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(definition_)) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, definition_);
+    }
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(revisionId_)) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, revisionId_);
+    }
+    if (revisionCreateTime_ != null) {
+      size += com.google.protobuf.CodedOutputStream.computeMessageSize(6, getRevisionCreateTime());
     }
     size += getUnknownFields().getSerializedSize();
     memoizedSize = size;
@@ -422,6 +544,11 @@ public final class Schema extends com.google.protobuf.GeneratedMessageV3
     if (!getName().equals(other.getName())) return false;
     if (type_ != other.type_) return false;
     if (!getDefinition().equals(other.getDefinition())) return false;
+    if (!getRevisionId().equals(other.getRevisionId())) return false;
+    if (hasRevisionCreateTime() != other.hasRevisionCreateTime()) return false;
+    if (hasRevisionCreateTime()) {
+      if (!getRevisionCreateTime().equals(other.getRevisionCreateTime())) return false;
+    }
     if (!getUnknownFields().equals(other.getUnknownFields())) return false;
     return true;
   }
@@ -439,6 +566,12 @@ public final class Schema extends com.google.protobuf.GeneratedMessageV3
     hash = (53 * hash) + type_;
     hash = (37 * hash) + DEFINITION_FIELD_NUMBER;
     hash = (53 * hash) + getDefinition().hashCode();
+    hash = (37 * hash) + REVISION_ID_FIELD_NUMBER;
+    hash = (53 * hash) + getRevisionId().hashCode();
+    if (hasRevisionCreateTime()) {
+      hash = (37 * hash) + REVISION_CREATE_TIME_FIELD_NUMBER;
+      hash = (53 * hash) + getRevisionCreateTime().hashCode();
+    }
     hash = (29 * hash) + getUnknownFields().hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -574,12 +707,16 @@ public final class Schema extends com.google.protobuf.GeneratedMessageV3
     @java.lang.Override
     public Builder clear() {
       super.clear();
+      bitField0_ = 0;
       name_ = "";
-
       type_ = 0;
-
       definition_ = "";
-
+      revisionId_ = "";
+      revisionCreateTime_ = null;
+      if (revisionCreateTimeBuilder_ != null) {
+        revisionCreateTimeBuilder_.dispose();
+        revisionCreateTimeBuilder_ = null;
+      }
       return this;
     }
 
@@ -605,11 +742,33 @@ public final class Schema extends com.google.protobuf.GeneratedMessageV3
     @java.lang.Override
     public com.google.pubsub.v1.Schema buildPartial() {
       com.google.pubsub.v1.Schema result = new com.google.pubsub.v1.Schema(this);
-      result.name_ = name_;
-      result.type_ = type_;
-      result.definition_ = definition_;
+      if (bitField0_ != 0) {
+        buildPartial0(result);
+      }
       onBuilt();
       return result;
+    }
+
+    private void buildPartial0(com.google.pubsub.v1.Schema result) {
+      int from_bitField0_ = bitField0_;
+      if (((from_bitField0_ & 0x00000001) != 0)) {
+        result.name_ = name_;
+      }
+      if (((from_bitField0_ & 0x00000002) != 0)) {
+        result.type_ = type_;
+      }
+      if (((from_bitField0_ & 0x00000004) != 0)) {
+        result.definition_ = definition_;
+      }
+      if (((from_bitField0_ & 0x00000008) != 0)) {
+        result.revisionId_ = revisionId_;
+      }
+      if (((from_bitField0_ & 0x00000010) != 0)) {
+        result.revisionCreateTime_ =
+            revisionCreateTimeBuilder_ == null
+                ? revisionCreateTime_
+                : revisionCreateTimeBuilder_.build();
+      }
     }
 
     @java.lang.Override
@@ -659,6 +818,7 @@ public final class Schema extends com.google.protobuf.GeneratedMessageV3
       if (other == com.google.pubsub.v1.Schema.getDefaultInstance()) return this;
       if (!other.getName().isEmpty()) {
         name_ = other.name_;
+        bitField0_ |= 0x00000001;
         onChanged();
       }
       if (other.type_ != 0) {
@@ -666,7 +826,16 @@ public final class Schema extends com.google.protobuf.GeneratedMessageV3
       }
       if (!other.getDefinition().isEmpty()) {
         definition_ = other.definition_;
+        bitField0_ |= 0x00000004;
         onChanged();
+      }
+      if (!other.getRevisionId().isEmpty()) {
+        revisionId_ = other.revisionId_;
+        bitField0_ |= 0x00000008;
+        onChanged();
+      }
+      if (other.hasRevisionCreateTime()) {
+        mergeRevisionCreateTime(other.getRevisionCreateTime());
       }
       this.mergeUnknownFields(other.getUnknownFields());
       onChanged();
@@ -697,21 +866,34 @@ public final class Schema extends com.google.protobuf.GeneratedMessageV3
             case 10:
               {
                 name_ = input.readStringRequireUtf8();
-
+                bitField0_ |= 0x00000001;
                 break;
               } // case 10
             case 16:
               {
                 type_ = input.readEnum();
-
+                bitField0_ |= 0x00000002;
                 break;
               } // case 16
             case 26:
               {
                 definition_ = input.readStringRequireUtf8();
-
+                bitField0_ |= 0x00000004;
                 break;
               } // case 26
+            case 34:
+              {
+                revisionId_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000008;
+                break;
+              } // case 34
+            case 50:
+              {
+                input.readMessage(
+                    getRevisionCreateTimeFieldBuilder().getBuilder(), extensionRegistry);
+                bitField0_ |= 0x00000010;
+                break;
+              } // case 50
             default:
               {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
@@ -728,6 +910,8 @@ public final class Schema extends com.google.protobuf.GeneratedMessageV3
       } // finally
       return this;
     }
+
+    private int bitField0_;
 
     private java.lang.Object name_ = "";
     /**
@@ -793,8 +977,8 @@ public final class Schema extends com.google.protobuf.GeneratedMessageV3
       if (value == null) {
         throw new NullPointerException();
       }
-
       name_ = value;
+      bitField0_ |= 0x00000001;
       onChanged();
       return this;
     }
@@ -811,8 +995,8 @@ public final class Schema extends com.google.protobuf.GeneratedMessageV3
      * @return This builder for chaining.
      */
     public Builder clearName() {
-
       name_ = getDefaultInstance().getName();
+      bitField0_ = (bitField0_ & ~0x00000001);
       onChanged();
       return this;
     }
@@ -834,8 +1018,8 @@ public final class Schema extends com.google.protobuf.GeneratedMessageV3
         throw new NullPointerException();
       }
       checkByteStringIsUtf8(value);
-
       name_ = value;
+      bitField0_ |= 0x00000001;
       onChanged();
       return this;
     }
@@ -869,8 +1053,8 @@ public final class Schema extends com.google.protobuf.GeneratedMessageV3
      * @return This builder for chaining.
      */
     public Builder setTypeValue(int value) {
-
       type_ = value;
+      bitField0_ |= 0x00000002;
       onChanged();
       return this;
     }
@@ -887,8 +1071,7 @@ public final class Schema extends com.google.protobuf.GeneratedMessageV3
      */
     @java.lang.Override
     public com.google.pubsub.v1.Schema.Type getType() {
-      @SuppressWarnings("deprecation")
-      com.google.pubsub.v1.Schema.Type result = com.google.pubsub.v1.Schema.Type.valueOf(type_);
+      com.google.pubsub.v1.Schema.Type result = com.google.pubsub.v1.Schema.Type.forNumber(type_);
       return result == null ? com.google.pubsub.v1.Schema.Type.UNRECOGNIZED : result;
     }
     /**
@@ -907,7 +1090,7 @@ public final class Schema extends com.google.protobuf.GeneratedMessageV3
       if (value == null) {
         throw new NullPointerException();
       }
-
+      bitField0_ |= 0x00000002;
       type_ = value.getNumber();
       onChanged();
       return this;
@@ -924,7 +1107,7 @@ public final class Schema extends com.google.protobuf.GeneratedMessageV3
      * @return This builder for chaining.
      */
     public Builder clearType() {
-
+      bitField0_ = (bitField0_ & ~0x00000002);
       type_ = 0;
       onChanged();
       return this;
@@ -997,8 +1180,8 @@ public final class Schema extends com.google.protobuf.GeneratedMessageV3
       if (value == null) {
         throw new NullPointerException();
       }
-
       definition_ = value;
+      bitField0_ |= 0x00000004;
       onChanged();
       return this;
     }
@@ -1016,8 +1199,8 @@ public final class Schema extends com.google.protobuf.GeneratedMessageV3
      * @return This builder for chaining.
      */
     public Builder clearDefinition() {
-
       definition_ = getDefaultInstance().getDefinition();
+      bitField0_ = (bitField0_ & ~0x00000004);
       onChanged();
       return this;
     }
@@ -1040,10 +1223,327 @@ public final class Schema extends com.google.protobuf.GeneratedMessageV3
         throw new NullPointerException();
       }
       checkByteStringIsUtf8(value);
-
       definition_ = value;
+      bitField0_ |= 0x00000004;
       onChanged();
       return this;
+    }
+
+    private java.lang.Object revisionId_ = "";
+    /**
+     *
+     *
+     * <pre>
+     * Output only. Immutable. The revision ID of the schema.
+     * </pre>
+     *
+     * <code>
+     * string revision_id = 4 [(.google.api.field_behavior) = IMMUTABLE, (.google.api.field_behavior) = OUTPUT_ONLY];
+     * </code>
+     *
+     * @return The revisionId.
+     */
+    public java.lang.String getRevisionId() {
+      java.lang.Object ref = revisionId_;
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        revisionId_ = s;
+        return s;
+      } else {
+        return (java.lang.String) ref;
+      }
+    }
+    /**
+     *
+     *
+     * <pre>
+     * Output only. Immutable. The revision ID of the schema.
+     * </pre>
+     *
+     * <code>
+     * string revision_id = 4 [(.google.api.field_behavior) = IMMUTABLE, (.google.api.field_behavior) = OUTPUT_ONLY];
+     * </code>
+     *
+     * @return The bytes for revisionId.
+     */
+    public com.google.protobuf.ByteString getRevisionIdBytes() {
+      java.lang.Object ref = revisionId_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b =
+            com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
+        revisionId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    /**
+     *
+     *
+     * <pre>
+     * Output only. Immutable. The revision ID of the schema.
+     * </pre>
+     *
+     * <code>
+     * string revision_id = 4 [(.google.api.field_behavior) = IMMUTABLE, (.google.api.field_behavior) = OUTPUT_ONLY];
+     * </code>
+     *
+     * @param value The revisionId to set.
+     * @return This builder for chaining.
+     */
+    public Builder setRevisionId(java.lang.String value) {
+      if (value == null) {
+        throw new NullPointerException();
+      }
+      revisionId_ = value;
+      bitField0_ |= 0x00000008;
+      onChanged();
+      return this;
+    }
+    /**
+     *
+     *
+     * <pre>
+     * Output only. Immutable. The revision ID of the schema.
+     * </pre>
+     *
+     * <code>
+     * string revision_id = 4 [(.google.api.field_behavior) = IMMUTABLE, (.google.api.field_behavior) = OUTPUT_ONLY];
+     * </code>
+     *
+     * @return This builder for chaining.
+     */
+    public Builder clearRevisionId() {
+      revisionId_ = getDefaultInstance().getRevisionId();
+      bitField0_ = (bitField0_ & ~0x00000008);
+      onChanged();
+      return this;
+    }
+    /**
+     *
+     *
+     * <pre>
+     * Output only. Immutable. The revision ID of the schema.
+     * </pre>
+     *
+     * <code>
+     * string revision_id = 4 [(.google.api.field_behavior) = IMMUTABLE, (.google.api.field_behavior) = OUTPUT_ONLY];
+     * </code>
+     *
+     * @param value The bytes for revisionId to set.
+     * @return This builder for chaining.
+     */
+    public Builder setRevisionIdBytes(com.google.protobuf.ByteString value) {
+      if (value == null) {
+        throw new NullPointerException();
+      }
+      checkByteStringIsUtf8(value);
+      revisionId_ = value;
+      bitField0_ |= 0x00000008;
+      onChanged();
+      return this;
+    }
+
+    private com.google.protobuf.Timestamp revisionCreateTime_;
+    private com.google.protobuf.SingleFieldBuilderV3<
+            com.google.protobuf.Timestamp,
+            com.google.protobuf.Timestamp.Builder,
+            com.google.protobuf.TimestampOrBuilder>
+        revisionCreateTimeBuilder_;
+    /**
+     *
+     *
+     * <pre>
+     * Output only. The timestamp that the revision was created.
+     * </pre>
+     *
+     * <code>
+     * .google.protobuf.Timestamp revision_create_time = 6 [(.google.api.field_behavior) = OUTPUT_ONLY];
+     * </code>
+     *
+     * @return Whether the revisionCreateTime field is set.
+     */
+    public boolean hasRevisionCreateTime() {
+      return ((bitField0_ & 0x00000010) != 0);
+    }
+    /**
+     *
+     *
+     * <pre>
+     * Output only. The timestamp that the revision was created.
+     * </pre>
+     *
+     * <code>
+     * .google.protobuf.Timestamp revision_create_time = 6 [(.google.api.field_behavior) = OUTPUT_ONLY];
+     * </code>
+     *
+     * @return The revisionCreateTime.
+     */
+    public com.google.protobuf.Timestamp getRevisionCreateTime() {
+      if (revisionCreateTimeBuilder_ == null) {
+        return revisionCreateTime_ == null
+            ? com.google.protobuf.Timestamp.getDefaultInstance()
+            : revisionCreateTime_;
+      } else {
+        return revisionCreateTimeBuilder_.getMessage();
+      }
+    }
+    /**
+     *
+     *
+     * <pre>
+     * Output only. The timestamp that the revision was created.
+     * </pre>
+     *
+     * <code>
+     * .google.protobuf.Timestamp revision_create_time = 6 [(.google.api.field_behavior) = OUTPUT_ONLY];
+     * </code>
+     */
+    public Builder setRevisionCreateTime(com.google.protobuf.Timestamp value) {
+      if (revisionCreateTimeBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        revisionCreateTime_ = value;
+      } else {
+        revisionCreateTimeBuilder_.setMessage(value);
+      }
+      bitField0_ |= 0x00000010;
+      onChanged();
+      return this;
+    }
+    /**
+     *
+     *
+     * <pre>
+     * Output only. The timestamp that the revision was created.
+     * </pre>
+     *
+     * <code>
+     * .google.protobuf.Timestamp revision_create_time = 6 [(.google.api.field_behavior) = OUTPUT_ONLY];
+     * </code>
+     */
+    public Builder setRevisionCreateTime(com.google.protobuf.Timestamp.Builder builderForValue) {
+      if (revisionCreateTimeBuilder_ == null) {
+        revisionCreateTime_ = builderForValue.build();
+      } else {
+        revisionCreateTimeBuilder_.setMessage(builderForValue.build());
+      }
+      bitField0_ |= 0x00000010;
+      onChanged();
+      return this;
+    }
+    /**
+     *
+     *
+     * <pre>
+     * Output only. The timestamp that the revision was created.
+     * </pre>
+     *
+     * <code>
+     * .google.protobuf.Timestamp revision_create_time = 6 [(.google.api.field_behavior) = OUTPUT_ONLY];
+     * </code>
+     */
+    public Builder mergeRevisionCreateTime(com.google.protobuf.Timestamp value) {
+      if (revisionCreateTimeBuilder_ == null) {
+        if (((bitField0_ & 0x00000010) != 0)
+            && revisionCreateTime_ != null
+            && revisionCreateTime_ != com.google.protobuf.Timestamp.getDefaultInstance()) {
+          getRevisionCreateTimeBuilder().mergeFrom(value);
+        } else {
+          revisionCreateTime_ = value;
+        }
+      } else {
+        revisionCreateTimeBuilder_.mergeFrom(value);
+      }
+      bitField0_ |= 0x00000010;
+      onChanged();
+      return this;
+    }
+    /**
+     *
+     *
+     * <pre>
+     * Output only. The timestamp that the revision was created.
+     * </pre>
+     *
+     * <code>
+     * .google.protobuf.Timestamp revision_create_time = 6 [(.google.api.field_behavior) = OUTPUT_ONLY];
+     * </code>
+     */
+    public Builder clearRevisionCreateTime() {
+      bitField0_ = (bitField0_ & ~0x00000010);
+      revisionCreateTime_ = null;
+      if (revisionCreateTimeBuilder_ != null) {
+        revisionCreateTimeBuilder_.dispose();
+        revisionCreateTimeBuilder_ = null;
+      }
+      onChanged();
+      return this;
+    }
+    /**
+     *
+     *
+     * <pre>
+     * Output only. The timestamp that the revision was created.
+     * </pre>
+     *
+     * <code>
+     * .google.protobuf.Timestamp revision_create_time = 6 [(.google.api.field_behavior) = OUTPUT_ONLY];
+     * </code>
+     */
+    public com.google.protobuf.Timestamp.Builder getRevisionCreateTimeBuilder() {
+      bitField0_ |= 0x00000010;
+      onChanged();
+      return getRevisionCreateTimeFieldBuilder().getBuilder();
+    }
+    /**
+     *
+     *
+     * <pre>
+     * Output only. The timestamp that the revision was created.
+     * </pre>
+     *
+     * <code>
+     * .google.protobuf.Timestamp revision_create_time = 6 [(.google.api.field_behavior) = OUTPUT_ONLY];
+     * </code>
+     */
+    public com.google.protobuf.TimestampOrBuilder getRevisionCreateTimeOrBuilder() {
+      if (revisionCreateTimeBuilder_ != null) {
+        return revisionCreateTimeBuilder_.getMessageOrBuilder();
+      } else {
+        return revisionCreateTime_ == null
+            ? com.google.protobuf.Timestamp.getDefaultInstance()
+            : revisionCreateTime_;
+      }
+    }
+    /**
+     *
+     *
+     * <pre>
+     * Output only. The timestamp that the revision was created.
+     * </pre>
+     *
+     * <code>
+     * .google.protobuf.Timestamp revision_create_time = 6 [(.google.api.field_behavior) = OUTPUT_ONLY];
+     * </code>
+     */
+    private com.google.protobuf.SingleFieldBuilderV3<
+            com.google.protobuf.Timestamp,
+            com.google.protobuf.Timestamp.Builder,
+            com.google.protobuf.TimestampOrBuilder>
+        getRevisionCreateTimeFieldBuilder() {
+      if (revisionCreateTimeBuilder_ == null) {
+        revisionCreateTimeBuilder_ =
+            new com.google.protobuf.SingleFieldBuilderV3<
+                com.google.protobuf.Timestamp,
+                com.google.protobuf.Timestamp.Builder,
+                com.google.protobuf.TimestampOrBuilder>(
+                getRevisionCreateTime(), getParentForChildren(), isClean());
+        revisionCreateTime_ = null;
+      }
+      return revisionCreateTimeBuilder_;
     }
 
     @java.lang.Override

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,11 +48,6 @@ public final class GetSchemaRequest extends com.google.protobuf.GeneratedMessage
     return new GetSchemaRequest();
   }
 
-  @java.lang.Override
-  public final com.google.protobuf.UnknownFieldSet getUnknownFields() {
-    return this.unknownFields;
-  }
-
   public static final com.google.protobuf.Descriptors.Descriptor getDescriptor() {
     return com.google.pubsub.v1.SchemaProto
         .internal_static_google_pubsub_v1_GetSchemaRequest_descriptor;
@@ -69,7 +64,9 @@ public final class GetSchemaRequest extends com.google.protobuf.GeneratedMessage
   }
 
   public static final int NAME_FIELD_NUMBER = 1;
-  private volatile java.lang.Object name_;
+
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object name_ = "";
   /**
    *
    *
@@ -124,14 +121,13 @@ public final class GetSchemaRequest extends com.google.protobuf.GeneratedMessage
   }
 
   public static final int VIEW_FIELD_NUMBER = 2;
-  private int view_;
+  private int view_ = 0;
   /**
    *
    *
    * <pre>
    * The set of fields to return in the response. If not set, returns a Schema
-   * with `name` and `type`, but not `definition`. Set to `FULL` to retrieve all
-   * fields.
+   * with all fields filled out. Set to `BASIC` to omit the `definition`.
    * </pre>
    *
    * <code>.google.pubsub.v1.SchemaView view = 2;</code>
@@ -147,8 +143,7 @@ public final class GetSchemaRequest extends com.google.protobuf.GeneratedMessage
    *
    * <pre>
    * The set of fields to return in the response. If not set, returns a Schema
-   * with `name` and `type`, but not `definition`. Set to `FULL` to retrieve all
-   * fields.
+   * with all fields filled out. Set to `BASIC` to omit the `definition`.
    * </pre>
    *
    * <code>.google.pubsub.v1.SchemaView view = 2;</code>
@@ -157,8 +152,7 @@ public final class GetSchemaRequest extends com.google.protobuf.GeneratedMessage
    */
   @java.lang.Override
   public com.google.pubsub.v1.SchemaView getView() {
-    @SuppressWarnings("deprecation")
-    com.google.pubsub.v1.SchemaView result = com.google.pubsub.v1.SchemaView.valueOf(view_);
+    com.google.pubsub.v1.SchemaView result = com.google.pubsub.v1.SchemaView.forNumber(view_);
     return result == null ? com.google.pubsub.v1.SchemaView.UNRECOGNIZED : result;
   }
 
@@ -366,10 +360,9 @@ public final class GetSchemaRequest extends com.google.protobuf.GeneratedMessage
     @java.lang.Override
     public Builder clear() {
       super.clear();
+      bitField0_ = 0;
       name_ = "";
-
       view_ = 0;
-
       return this;
     }
 
@@ -397,10 +390,21 @@ public final class GetSchemaRequest extends com.google.protobuf.GeneratedMessage
     public com.google.pubsub.v1.GetSchemaRequest buildPartial() {
       com.google.pubsub.v1.GetSchemaRequest result =
           new com.google.pubsub.v1.GetSchemaRequest(this);
-      result.name_ = name_;
-      result.view_ = view_;
+      if (bitField0_ != 0) {
+        buildPartial0(result);
+      }
       onBuilt();
       return result;
+    }
+
+    private void buildPartial0(com.google.pubsub.v1.GetSchemaRequest result) {
+      int from_bitField0_ = bitField0_;
+      if (((from_bitField0_ & 0x00000001) != 0)) {
+        result.name_ = name_;
+      }
+      if (((from_bitField0_ & 0x00000002) != 0)) {
+        result.view_ = view_;
+      }
     }
 
     @java.lang.Override
@@ -450,6 +454,7 @@ public final class GetSchemaRequest extends com.google.protobuf.GeneratedMessage
       if (other == com.google.pubsub.v1.GetSchemaRequest.getDefaultInstance()) return this;
       if (!other.getName().isEmpty()) {
         name_ = other.name_;
+        bitField0_ |= 0x00000001;
         onChanged();
       }
       if (other.view_ != 0) {
@@ -484,13 +489,13 @@ public final class GetSchemaRequest extends com.google.protobuf.GeneratedMessage
             case 10:
               {
                 name_ = input.readStringRequireUtf8();
-
+                bitField0_ |= 0x00000001;
                 break;
               } // case 10
             case 16:
               {
                 view_ = input.readEnum();
-
+                bitField0_ |= 0x00000002;
                 break;
               } // case 16
             default:
@@ -509,6 +514,8 @@ public final class GetSchemaRequest extends com.google.protobuf.GeneratedMessage
       } // finally
       return this;
     }
+
+    private int bitField0_;
 
     private java.lang.Object name_ = "";
     /**
@@ -580,8 +587,8 @@ public final class GetSchemaRequest extends com.google.protobuf.GeneratedMessage
       if (value == null) {
         throw new NullPointerException();
       }
-
       name_ = value;
+      bitField0_ |= 0x00000001;
       onChanged();
       return this;
     }
@@ -600,8 +607,8 @@ public final class GetSchemaRequest extends com.google.protobuf.GeneratedMessage
      * @return This builder for chaining.
      */
     public Builder clearName() {
-
       name_ = getDefaultInstance().getName();
+      bitField0_ = (bitField0_ & ~0x00000001);
       onChanged();
       return this;
     }
@@ -625,8 +632,8 @@ public final class GetSchemaRequest extends com.google.protobuf.GeneratedMessage
         throw new NullPointerException();
       }
       checkByteStringIsUtf8(value);
-
       name_ = value;
+      bitField0_ |= 0x00000001;
       onChanged();
       return this;
     }
@@ -637,8 +644,7 @@ public final class GetSchemaRequest extends com.google.protobuf.GeneratedMessage
      *
      * <pre>
      * The set of fields to return in the response. If not set, returns a Schema
-     * with `name` and `type`, but not `definition`. Set to `FULL` to retrieve all
-     * fields.
+     * with all fields filled out. Set to `BASIC` to omit the `definition`.
      * </pre>
      *
      * <code>.google.pubsub.v1.SchemaView view = 2;</code>
@@ -654,8 +660,7 @@ public final class GetSchemaRequest extends com.google.protobuf.GeneratedMessage
      *
      * <pre>
      * The set of fields to return in the response. If not set, returns a Schema
-     * with `name` and `type`, but not `definition`. Set to `FULL` to retrieve all
-     * fields.
+     * with all fields filled out. Set to `BASIC` to omit the `definition`.
      * </pre>
      *
      * <code>.google.pubsub.v1.SchemaView view = 2;</code>
@@ -664,8 +669,8 @@ public final class GetSchemaRequest extends com.google.protobuf.GeneratedMessage
      * @return This builder for chaining.
      */
     public Builder setViewValue(int value) {
-
       view_ = value;
+      bitField0_ |= 0x00000002;
       onChanged();
       return this;
     }
@@ -674,8 +679,7 @@ public final class GetSchemaRequest extends com.google.protobuf.GeneratedMessage
      *
      * <pre>
      * The set of fields to return in the response. If not set, returns a Schema
-     * with `name` and `type`, but not `definition`. Set to `FULL` to retrieve all
-     * fields.
+     * with all fields filled out. Set to `BASIC` to omit the `definition`.
      * </pre>
      *
      * <code>.google.pubsub.v1.SchemaView view = 2;</code>
@@ -684,8 +688,7 @@ public final class GetSchemaRequest extends com.google.protobuf.GeneratedMessage
      */
     @java.lang.Override
     public com.google.pubsub.v1.SchemaView getView() {
-      @SuppressWarnings("deprecation")
-      com.google.pubsub.v1.SchemaView result = com.google.pubsub.v1.SchemaView.valueOf(view_);
+      com.google.pubsub.v1.SchemaView result = com.google.pubsub.v1.SchemaView.forNumber(view_);
       return result == null ? com.google.pubsub.v1.SchemaView.UNRECOGNIZED : result;
     }
     /**
@@ -693,8 +696,7 @@ public final class GetSchemaRequest extends com.google.protobuf.GeneratedMessage
      *
      * <pre>
      * The set of fields to return in the response. If not set, returns a Schema
-     * with `name` and `type`, but not `definition`. Set to `FULL` to retrieve all
-     * fields.
+     * with all fields filled out. Set to `BASIC` to omit the `definition`.
      * </pre>
      *
      * <code>.google.pubsub.v1.SchemaView view = 2;</code>
@@ -706,7 +708,7 @@ public final class GetSchemaRequest extends com.google.protobuf.GeneratedMessage
       if (value == null) {
         throw new NullPointerException();
       }
-
+      bitField0_ |= 0x00000002;
       view_ = value.getNumber();
       onChanged();
       return this;
@@ -716,8 +718,7 @@ public final class GetSchemaRequest extends com.google.protobuf.GeneratedMessage
      *
      * <pre>
      * The set of fields to return in the response. If not set, returns a Schema
-     * with `name` and `type`, but not `definition`. Set to `FULL` to retrieve all
-     * fields.
+     * with all fields filled out. Set to `BASIC` to omit the `definition`.
      * </pre>
      *
      * <code>.google.pubsub.v1.SchemaView view = 2;</code>
@@ -725,7 +726,7 @@ public final class GetSchemaRequest extends com.google.protobuf.GeneratedMessage
      * @return This builder for chaining.
      */
     public Builder clearView() {
-
+      bitField0_ = (bitField0_ & ~0x00000002);
       view_ = 0;
       onChanged();
       return this;

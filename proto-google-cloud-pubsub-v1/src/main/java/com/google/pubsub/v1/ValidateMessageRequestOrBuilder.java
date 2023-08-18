@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,6 +59,7 @@ public interface ValidateMessageRequestOrBuilder
    *
    * <pre>
    * Name of the schema against which to validate.
+   *
    * Format is `projects/{project}/schemas/{schema}`.
    * </pre>
    *
@@ -72,6 +73,7 @@ public interface ValidateMessageRequestOrBuilder
    *
    * <pre>
    * Name of the schema against which to validate.
+   *
    * Format is `projects/{project}/schemas/{schema}`.
    * </pre>
    *
@@ -85,6 +87,7 @@ public interface ValidateMessageRequestOrBuilder
    *
    * <pre>
    * Name of the schema against which to validate.
+   *
    * Format is `projects/{project}/schemas/{schema}`.
    * </pre>
    *
@@ -167,5 +170,5 @@ public interface ValidateMessageRequestOrBuilder
    */
   com.google.pubsub.v1.Encoding getEncoding();
 
-  public com.google.pubsub.v1.ValidateMessageRequest.SchemaSpecCase getSchemaSpecCase();
+  com.google.pubsub.v1.ValidateMessageRequest.SchemaSpecCase getSchemaSpecCase();
 }

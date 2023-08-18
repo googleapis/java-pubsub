@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,6 +59,7 @@ public interface ModifyPushConfigRequestOrBuilder
    *
    * <pre>
    * Required. The push configuration for future deliveries.
+   *
    * An empty `pushConfig` indicates that the Pub/Sub system should
    * stop pushing messages from the given subscription and allow
    * messages to be pulled and acknowledged - effectively pausing
@@ -76,6 +77,7 @@ public interface ModifyPushConfigRequestOrBuilder
    *
    * <pre>
    * Required. The push configuration for future deliveries.
+   *
    * An empty `pushConfig` indicates that the Pub/Sub system should
    * stop pushing messages from the given subscription and allow
    * messages to be pulled and acknowledged - effectively pausing
@@ -93,6 +95,7 @@ public interface ModifyPushConfigRequestOrBuilder
    *
    * <pre>
    * Required. The push configuration for future deliveries.
+   *
    * An empty `pushConfig` indicates that the Pub/Sub system should
    * stop pushing messages from the given subscription and allow
    * messages to be pulled and acknowledged - effectively pausing

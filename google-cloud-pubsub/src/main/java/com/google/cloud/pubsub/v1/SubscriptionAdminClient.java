@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ import com.google.iam.v1.SetIamPolicyRequest;
 import com.google.iam.v1.TestIamPermissionsRequest;
 import com.google.iam.v1.TestIamPermissionsResponse;
 import com.google.protobuf.Empty;
+import com.google.protobuf.FieldMask;
 import com.google.pubsub.v1.AcknowledgeRequest;
 import com.google.pubsub.v1.CreateSnapshotRequest;
 import com.google.pubsub.v1.DeleteSnapshotRequest;
@@ -161,10 +162,7 @@ import javax.annotation.Generated;
  * // - It may require specifying regional endpoints when creating the service client as shown in
  * // https://cloud.google.com/java/docs/setup#configure_endpoints_for_the_client_library
  * SubscriptionAdminSettings subscriptionAdminSettings =
- *     SubscriptionAdminSettings.newBuilder()
- *         .setTransportChannelProvider(
- *             SubscriptionAdminSettings.defaultHttpJsonTransportProviderBuilder().build())
- *         .build();
+ *     SubscriptionAdminSettings.newHttpJsonBuilder().build();
  * SubscriptionAdminClient subscriptionAdminClient =
  *     SubscriptionAdminClient.create(subscriptionAdminSettings);
  * }</pre>
@@ -261,13 +259,12 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *     messages. Format is `projects/{project}/topics/{topic}`. The value of this field will be
    *     `_deleted-topic_` if the topic has been deleted.
    * @param pushConfig If push delivery is used with this subscription, this field is used to
-   *     configure it. Either `pushConfig` or `bigQueryConfig` can be set, but not both. If both are
-   *     empty, then the subscriber will pull and ack messages using API methods.
+   *     configure it.
    * @param ackDeadlineSeconds The approximate amount of time (on a best-effort basis) Pub/Sub waits
    *     for the subscriber to acknowledge receipt before resending the message. In the interval
    *     after the message is delivered and before it is acknowledged, it is considered to be
-   *     &lt;i&gt;outstanding&lt;/i&gt;. During that time period, the message will not be
-   *     redelivered (on a best-effort basis).
+   *     _outstanding_. During that time period, the message will not be redelivered (on a
+   *     best-effort basis).
    *     <p>For pull subscriptions, this value is used as the initial value for the ack deadline. To
    *     override this value for a given message, call `ModifyAckDeadline` with the corresponding
    *     `ack_id` if using non-streaming pull or send the `ack_id` in a
@@ -332,13 +329,12 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *     messages. Format is `projects/{project}/topics/{topic}`. The value of this field will be
    *     `_deleted-topic_` if the topic has been deleted.
    * @param pushConfig If push delivery is used with this subscription, this field is used to
-   *     configure it. Either `pushConfig` or `bigQueryConfig` can be set, but not both. If both are
-   *     empty, then the subscriber will pull and ack messages using API methods.
+   *     configure it.
    * @param ackDeadlineSeconds The approximate amount of time (on a best-effort basis) Pub/Sub waits
    *     for the subscriber to acknowledge receipt before resending the message. In the interval
    *     after the message is delivered and before it is acknowledged, it is considered to be
-   *     &lt;i&gt;outstanding&lt;/i&gt;. During that time period, the message will not be
-   *     redelivered (on a best-effort basis).
+   *     _outstanding_. During that time period, the message will not be redelivered (on a
+   *     best-effort basis).
    *     <p>For pull subscriptions, this value is used as the initial value for the ack deadline. To
    *     override this value for a given message, call `ModifyAckDeadline` with the corresponding
    *     `ack_id` if using non-streaming pull or send the `ack_id` in a
@@ -403,13 +399,12 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *     messages. Format is `projects/{project}/topics/{topic}`. The value of this field will be
    *     `_deleted-topic_` if the topic has been deleted.
    * @param pushConfig If push delivery is used with this subscription, this field is used to
-   *     configure it. Either `pushConfig` or `bigQueryConfig` can be set, but not both. If both are
-   *     empty, then the subscriber will pull and ack messages using API methods.
+   *     configure it.
    * @param ackDeadlineSeconds The approximate amount of time (on a best-effort basis) Pub/Sub waits
    *     for the subscriber to acknowledge receipt before resending the message. In the interval
    *     after the message is delivered and before it is acknowledged, it is considered to be
-   *     &lt;i&gt;outstanding&lt;/i&gt;. During that time period, the message will not be
-   *     redelivered (on a best-effort basis).
+   *     _outstanding_. During that time period, the message will not be redelivered (on a
+   *     best-effort basis).
    *     <p>For pull subscriptions, this value is used as the initial value for the ack deadline. To
    *     override this value for a given message, call `ModifyAckDeadline` with the corresponding
    *     `ack_id` if using non-streaming pull or send the `ack_id` in a
@@ -474,13 +469,12 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *     messages. Format is `projects/{project}/topics/{topic}`. The value of this field will be
    *     `_deleted-topic_` if the topic has been deleted.
    * @param pushConfig If push delivery is used with this subscription, this field is used to
-   *     configure it. Either `pushConfig` or `bigQueryConfig` can be set, but not both. If both are
-   *     empty, then the subscriber will pull and ack messages using API methods.
+   *     configure it.
    * @param ackDeadlineSeconds The approximate amount of time (on a best-effort basis) Pub/Sub waits
    *     for the subscriber to acknowledge receipt before resending the message. In the interval
    *     after the message is delivered and before it is acknowledged, it is considered to be
-   *     &lt;i&gt;outstanding&lt;/i&gt;. During that time period, the message will not be
-   *     redelivered (on a best-effort basis).
+   *     _outstanding_. During that time period, the message will not be redelivered (on a
+   *     best-effort basis).
    *     <p>For pull subscriptions, this value is used as the initial value for the ack deadline. To
    *     override this value for a given message, call `ModifyAckDeadline` with the corresponding
    *     `ack_id` if using non-streaming pull or send the `ack_id` in a
@@ -533,6 +527,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *           .setTopic(TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]").toString())
    *           .setPushConfig(PushConfig.newBuilder().build())
    *           .setBigqueryConfig(BigQueryConfig.newBuilder().build())
+   *           .setCloudStorageConfig(CloudStorageConfig.newBuilder().build())
    *           .setAckDeadlineSeconds(2135351438)
    *           .setRetainAckedMessages(true)
    *           .setMessageRetentionDuration(Duration.newBuilder().build())
@@ -795,6 +790,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *           .setTopic(TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]").toString())
    *           .setPushConfig(PushConfig.newBuilder().build())
    *           .setBigqueryConfig(BigQueryConfig.newBuilder().build())
+   *           .setCloudStorageConfig(CloudStorageConfig.newBuilder().build())
    *           .setAckDeadlineSeconds(2135351438)
    *           .setRetainAckedMessages(true)
    *           .setMessageRetentionDuration(Duration.newBuilder().build())
@@ -958,6 +954,40 @@ public class SubscriptionAdminClient implements BackgroundResource {
    */
   public final UnaryCallable<GetSubscriptionRequest, Subscription> getSubscriptionCallable() {
     return stub.getSubscriptionCallable();
+  }
+
+  // AUTO-GENERATED DOCUMENTATION AND METHOD.
+  /**
+   * Updates an existing subscription. Note that certain properties of a subscription, such as its
+   * topic, are not modifiable.
+   *
+   * <p>Sample code:
+   *
+   * <pre>{@code
+   * // This snippet has been automatically generated and should be regarded as a code template only.
+   * // It will require modifications to work:
+   * // - It may require correct/in-range values for request initialization.
+   * // - It may require specifying regional endpoints when creating the service client as shown in
+   * // https://cloud.google.com/java/docs/setup#configure_endpoints_for_the_client_library
+   * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
+   *   Subscription subscription = Subscription.newBuilder().build();
+   *   FieldMask updateMask = FieldMask.newBuilder().build();
+   *   Subscription response = subscriptionAdminClient.updateSubscription(subscription, updateMask);
+   * }
+   * }</pre>
+   *
+   * @param subscription Required. The updated subscription object.
+   * @param updateMask Required. Indicates which fields in the provided subscription to update. Must
+   *     be specified and non-empty.
+   * @throws com.google.api.gax.rpc.ApiException if the remote call fails
+   */
+  public final Subscription updateSubscription(Subscription subscription, FieldMask updateMask) {
+    UpdateSubscriptionRequest request =
+        UpdateSubscriptionRequest.newBuilder()
+            .setSubscription(subscription)
+            .setUpdateMask(updateMask)
+            .build();
+    return updateSubscription(request);
   }
 
   // AUTO-GENERATED DOCUMENTATION AND METHOD.
@@ -1719,8 +1749,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
 
   // AUTO-GENERATED DOCUMENTATION AND METHOD.
   /**
-   * Pulls messages from the server. The server may return `UNAVAILABLE` if there are too many
-   * concurrent pull requests pending for the given subscription.
+   * Pulls messages from the server.
    *
    * <p>Sample code:
    *
@@ -1754,8 +1783,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
 
   // AUTO-GENERATED DOCUMENTATION AND METHOD.
   /**
-   * Pulls messages from the server. The server may return `UNAVAILABLE` if there are too many
-   * concurrent pull requests pending for the given subscription.
+   * Pulls messages from the server.
    *
    * <p>Sample code:
    *
@@ -1786,8 +1814,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
 
   // AUTO-GENERATED DOCUMENTATION AND METHOD.
   /**
-   * Pulls messages from the server. The server may return `UNAVAILABLE` if there are too many
-   * concurrent pull requests pending for the given subscription.
+   * Pulls messages from the server.
    *
    * <p>Sample code:
    *
@@ -1831,8 +1858,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
 
   // AUTO-GENERATED DOCUMENTATION AND METHOD.
   /**
-   * Pulls messages from the server. The server may return `UNAVAILABLE` if there are too many
-   * concurrent pull requests pending for the given subscription.
+   * Pulls messages from the server.
    *
    * <p>Sample code:
    *
@@ -1875,8 +1901,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
 
   // AUTO-GENERATED DOCUMENTATION AND METHOD.
   /**
-   * Pulls messages from the server. The server may return `UNAVAILABLE` if there are too many
-   * concurrent pull requests pending for the given subscription.
+   * Pulls messages from the server.
    *
    * <p>Sample code:
    *
@@ -1980,8 +2005,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
 
   // AUTO-GENERATED DOCUMENTATION AND METHOD.
   /**
-   * Pulls messages from the server. The server may return `UNAVAILABLE` if there are too many
-   * concurrent pull requests pending for the given subscription.
+   * Pulls messages from the server.
    *
    * <p>Sample code:
    *
@@ -2241,10 +2265,10 @@ public class SubscriptionAdminClient implements BackgroundResource {
 
   // AUTO-GENERATED DOCUMENTATION AND METHOD.
   /**
-   * Gets the configuration details of a snapshot. Snapshots are used in &lt;a
-   * href="https://cloud.google.com/pubsub/docs/replay-overview"&gt;Seek&lt;/a&gt; operations, which
-   * allow you to manage message acknowledgments in bulk. That is, you can set the acknowledgment
-   * state of messages in an existing subscription to the state captured by a snapshot.
+   * Gets the configuration details of a snapshot. Snapshots are used in
+   * [Seek](https://cloud.google.com/pubsub/docs/replay-overview) operations, which allow you to
+   * manage message acknowledgments in bulk. That is, you can set the acknowledgment state of
+   * messages in an existing subscription to the state captured by a snapshot.
    *
    * <p>Sample code:
    *
@@ -2274,10 +2298,10 @@ public class SubscriptionAdminClient implements BackgroundResource {
 
   // AUTO-GENERATED DOCUMENTATION AND METHOD.
   /**
-   * Gets the configuration details of a snapshot. Snapshots are used in &lt;a
-   * href="https://cloud.google.com/pubsub/docs/replay-overview"&gt;Seek&lt;/a&gt; operations, which
-   * allow you to manage message acknowledgments in bulk. That is, you can set the acknowledgment
-   * state of messages in an existing subscription to the state captured by a snapshot.
+   * Gets the configuration details of a snapshot. Snapshots are used in
+   * [Seek](https://cloud.google.com/pubsub/docs/replay-overview) operations, which allow you to
+   * manage message acknowledgments in bulk. That is, you can set the acknowledgment state of
+   * messages in an existing subscription to the state captured by a snapshot.
    *
    * <p>Sample code:
    *
@@ -2304,10 +2328,10 @@ public class SubscriptionAdminClient implements BackgroundResource {
 
   // AUTO-GENERATED DOCUMENTATION AND METHOD.
   /**
-   * Gets the configuration details of a snapshot. Snapshots are used in &lt;a
-   * href="https://cloud.google.com/pubsub/docs/replay-overview"&gt;Seek&lt;/a&gt; operations, which
-   * allow you to manage message acknowledgments in bulk. That is, you can set the acknowledgment
-   * state of messages in an existing subscription to the state captured by a snapshot.
+   * Gets the configuration details of a snapshot. Snapshots are used in
+   * [Seek](https://cloud.google.com/pubsub/docs/replay-overview) operations, which allow you to
+   * manage message acknowledgments in bulk. That is, you can set the acknowledgment state of
+   * messages in an existing subscription to the state captured by a snapshot.
    *
    * <p>Sample code:
    *
@@ -2365,10 +2389,10 @@ public class SubscriptionAdminClient implements BackgroundResource {
 
   // AUTO-GENERATED DOCUMENTATION AND METHOD.
   /**
-   * Gets the configuration details of a snapshot. Snapshots are used in &lt;a
-   * href="https://cloud.google.com/pubsub/docs/replay-overview"&gt;Seek&lt;/a&gt; operations, which
-   * allow you to manage message acknowledgments in bulk. That is, you can set the acknowledgment
-   * state of messages in an existing subscription to the state captured by a snapshot.
+   * Gets the configuration details of a snapshot. Snapshots are used in
+   * [Seek](https://cloud.google.com/pubsub/docs/replay-overview) operations, which allow you to
+   * manage message acknowledgments in bulk. That is, you can set the acknowledgment state of
+   * messages in an existing subscription to the state captured by a snapshot.
    *
    * <p>Sample code:
    *
@@ -2606,9 +2630,9 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *
    * @param name Required. User-provided name for this snapshot. If the name is not provided in the
    *     request, the server will assign a random name for this snapshot on the same project as the
-   *     subscription. Note that for REST API requests, you must specify a name. See the &lt;a
-   *     href="https://cloud.google.com/pubsub/docs/admin#resource_names"&gt; resource name
-   *     rules&lt;/a&gt;. Format is `projects/{project}/snapshots/{snap}`.
+   *     subscription. Note that for REST API requests, you must specify a name. See the [resource
+   *     name rules](https://cloud.google.com/pubsub/docs/admin#resource_names). Format is
+   *     `projects/{project}/snapshots/{snap}`.
    * @param subscription Required. The subscription whose backlog the snapshot retains.
    *     Specifically, the created snapshot is guaranteed to retain: (a) The existing backlog on the
    *     subscription. More precisely, this is defined as the messages in the subscription's backlog
@@ -2659,9 +2683,9 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *
    * @param name Required. User-provided name for this snapshot. If the name is not provided in the
    *     request, the server will assign a random name for this snapshot on the same project as the
-   *     subscription. Note that for REST API requests, you must specify a name. See the &lt;a
-   *     href="https://cloud.google.com/pubsub/docs/admin#resource_names"&gt; resource name
-   *     rules&lt;/a&gt;. Format is `projects/{project}/snapshots/{snap}`.
+   *     subscription. Note that for REST API requests, you must specify a name. See the [resource
+   *     name rules](https://cloud.google.com/pubsub/docs/admin#resource_names). Format is
+   *     `projects/{project}/snapshots/{snap}`.
    * @param subscription Required. The subscription whose backlog the snapshot retains.
    *     Specifically, the created snapshot is guaranteed to retain: (a) The existing backlog on the
    *     subscription. More precisely, this is defined as the messages in the subscription's backlog
@@ -2712,9 +2736,9 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *
    * @param name Required. User-provided name for this snapshot. If the name is not provided in the
    *     request, the server will assign a random name for this snapshot on the same project as the
-   *     subscription. Note that for REST API requests, you must specify a name. See the &lt;a
-   *     href="https://cloud.google.com/pubsub/docs/admin#resource_names"&gt; resource name
-   *     rules&lt;/a&gt;. Format is `projects/{project}/snapshots/{snap}`.
+   *     subscription. Note that for REST API requests, you must specify a name. See the [resource
+   *     name rules](https://cloud.google.com/pubsub/docs/admin#resource_names). Format is
+   *     `projects/{project}/snapshots/{snap}`.
    * @param subscription Required. The subscription whose backlog the snapshot retains.
    *     Specifically, the created snapshot is guaranteed to retain: (a) The existing backlog on the
    *     subscription. More precisely, this is defined as the messages in the subscription's backlog
@@ -2765,9 +2789,9 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *
    * @param name Required. User-provided name for this snapshot. If the name is not provided in the
    *     request, the server will assign a random name for this snapshot on the same project as the
-   *     subscription. Note that for REST API requests, you must specify a name. See the &lt;a
-   *     href="https://cloud.google.com/pubsub/docs/admin#resource_names"&gt; resource name
-   *     rules&lt;/a&gt;. Format is `projects/{project}/snapshots/{snap}`.
+   *     subscription. Note that for REST API requests, you must specify a name. See the [resource
+   *     name rules](https://cloud.google.com/pubsub/docs/admin#resource_names). Format is
+   *     `projects/{project}/snapshots/{snap}`.
    * @param subscription Required. The subscription whose backlog the snapshot retains.
    *     Specifically, the created snapshot is guaranteed to retain: (a) The existing backlog on the
    *     subscription. More precisely, this is defined as the messages in the subscription's backlog
@@ -3018,10 +3042,43 @@ public class SubscriptionAdminClient implements BackgroundResource {
 
   // AUTO-GENERATED DOCUMENTATION AND METHOD.
   /**
-   * Updates an existing snapshot. Snapshots are used in &lt;a
-   * href="https://cloud.google.com/pubsub/docs/replay-overview"&gt;Seek&lt;/a&gt; operations, which
-   * allow you to manage message acknowledgments in bulk. That is, you can set the acknowledgment
-   * state of messages in an existing subscription to the state captured by a snapshot.
+   * Updates an existing snapshot. Snapshots are used in
+   * [Seek](https://cloud.google.com/pubsub/docs/replay-overview) operations, which allow you to
+   * manage message acknowledgments in bulk. That is, you can set the acknowledgment state of
+   * messages in an existing subscription to the state captured by a snapshot.
+   *
+   * <p>Sample code:
+   *
+   * <pre>{@code
+   * // This snippet has been automatically generated and should be regarded as a code template only.
+   * // It will require modifications to work:
+   * // - It may require correct/in-range values for request initialization.
+   * // - It may require specifying regional endpoints when creating the service client as shown in
+   * // https://cloud.google.com/java/docs/setup#configure_endpoints_for_the_client_library
+   * try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
+   *   Snapshot snapshot = Snapshot.newBuilder().build();
+   *   FieldMask updateMask = FieldMask.newBuilder().build();
+   *   Snapshot response = subscriptionAdminClient.updateSnapshot(snapshot, updateMask);
+   * }
+   * }</pre>
+   *
+   * @param snapshot Required. The updated snapshot object.
+   * @param updateMask Required. Indicates which fields in the provided snapshot to update. Must be
+   *     specified and non-empty.
+   * @throws com.google.api.gax.rpc.ApiException if the remote call fails
+   */
+  public final Snapshot updateSnapshot(Snapshot snapshot, FieldMask updateMask) {
+    UpdateSnapshotRequest request =
+        UpdateSnapshotRequest.newBuilder().setSnapshot(snapshot).setUpdateMask(updateMask).build();
+    return updateSnapshot(request);
+  }
+
+  // AUTO-GENERATED DOCUMENTATION AND METHOD.
+  /**
+   * Updates an existing snapshot. Snapshots are used in
+   * [Seek](https://cloud.google.com/pubsub/docs/replay-overview) operations, which allow you to
+   * manage message acknowledgments in bulk. That is, you can set the acknowledgment state of
+   * messages in an existing subscription to the state captured by a snapshot.
    *
    * <p>Sample code:
    *
@@ -3050,10 +3107,10 @@ public class SubscriptionAdminClient implements BackgroundResource {
 
   // AUTO-GENERATED DOCUMENTATION AND METHOD.
   /**
-   * Updates an existing snapshot. Snapshots are used in &lt;a
-   * href="https://cloud.google.com/pubsub/docs/replay-overview"&gt;Seek&lt;/a&gt; operations, which
-   * allow you to manage message acknowledgments in bulk. That is, you can set the acknowledgment
-   * state of messages in an existing subscription to the state captured by a snapshot.
+   * Updates an existing snapshot. Snapshots are used in
+   * [Seek](https://cloud.google.com/pubsub/docs/replay-overview) operations, which allow you to
+   * manage message acknowledgments in bulk. That is, you can set the acknowledgment state of
+   * messages in an existing subscription to the state captured by a snapshot.
    *
    * <p>Sample code:
    *

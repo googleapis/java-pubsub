@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ public interface BigQueryConfigOrBuilder
    *
    * <pre>
    * The name of the table to which to write data, of the form
-   * {projectId}:{datasetId}.{tableId}
+   * {projectId}.{datasetId}.{tableId}
    * </pre>
    *
    * <code>string table = 1;</code>
@@ -41,7 +41,7 @@ public interface BigQueryConfigOrBuilder
    *
    * <pre>
    * The name of the table to which to write data, of the form
-   * {projectId}:{datasetId}.{tableId}
+   * {projectId}.{datasetId}.{tableId}
    * </pre>
    *
    * <code>string table = 1;</code>
@@ -102,8 +102,8 @@ public interface BigQueryConfigOrBuilder
    *
    *
    * <pre>
-   * Output only. An output-only field that indicates whether or not the subscription can
-   * receive messages.
+   * Output only. An output-only field that indicates whether or not the
+   * subscription can receive messages.
    * </pre>
    *
    * <code>
@@ -117,8 +117,8 @@ public interface BigQueryConfigOrBuilder
    *
    *
    * <pre>
-   * Output only. An output-only field that indicates whether or not the subscription can
-   * receive messages.
+   * Output only. An output-only field that indicates whether or not the
+   * subscription can receive messages.
    * </pre>
    *
    * <code>

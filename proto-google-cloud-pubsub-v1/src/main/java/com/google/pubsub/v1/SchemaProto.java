@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,6 +48,26 @@ public final class SchemaProto {
   static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_google_pubsub_v1_ListSchemasResponse_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor
+      internal_static_google_pubsub_v1_ListSchemaRevisionsRequest_descriptor;
+  static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_google_pubsub_v1_ListSchemaRevisionsRequest_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
+      internal_static_google_pubsub_v1_ListSchemaRevisionsResponse_descriptor;
+  static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_google_pubsub_v1_ListSchemaRevisionsResponse_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
+      internal_static_google_pubsub_v1_CommitSchemaRequest_descriptor;
+  static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_google_pubsub_v1_CommitSchemaRequest_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
+      internal_static_google_pubsub_v1_RollbackSchemaRequest_descriptor;
+  static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_google_pubsub_v1_RollbackSchemaRequest_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
+      internal_static_google_pubsub_v1_DeleteSchemaRevisionRequest_descriptor;
+  static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_google_pubsub_v1_DeleteSchemaRevisionRequest_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
       internal_static_google_pubsub_v1_DeleteSchemaRequest_descriptor;
   static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_google_pubsub_v1_DeleteSchemaRequest_fieldAccessorTable;
@@ -80,73 +100,108 @@ public final class SchemaProto {
           + "pubsub.v1\032\034google/api/annotations.proto\032"
           + "\027google/api/client.proto\032\037google/api/fie"
           + "ld_behavior.proto\032\031google/api/resource.p"
-          + "roto\032\033google/protobuf/empty.proto\"\341\001\n\006Sc"
-          + "hema\022\021\n\004name\030\001 \001(\tB\003\340A\002\022+\n\004type\030\002 \001(\0162\035."
-          + "google.pubsub.v1.Schema.Type\022\022\n\ndefiniti"
-          + "on\030\003 \001(\t\";\n\004Type\022\024\n\020TYPE_UNSPECIFIED\020\000\022\023"
-          + "\n\017PROTOCOL_BUFFER\020\001\022\010\n\004AVRO\020\002:F\352AC\n\034pubs"
-          + "ub.googleapis.com/Schema\022#projects/{proj"
-          + "ect}/schemas/{schema}\"\215\001\n\023CreateSchemaRe"
-          + "quest\0224\n\006parent\030\001 \001(\tB$\340A\002\372A\036\022\034pubsub.go"
-          + "ogleapis.com/Schema\022-\n\006schema\030\002 \001(\0132\030.go"
-          + "ogle.pubsub.v1.SchemaB\003\340A\002\022\021\n\tschema_id\030"
-          + "\003 \001(\t\"r\n\020GetSchemaRequest\0222\n\004name\030\001 \001(\tB"
-          + "$\340A\002\372A\036\n\034pubsub.googleapis.com/Schema\022*\n"
-          + "\004view\030\002 \001(\0162\034.google.pubsub.v1.SchemaVie"
-          + "w\"\254\001\n\022ListSchemasRequest\022C\n\006parent\030\001 \001(\t"
-          + "B3\340A\002\372A-\n+cloudresourcemanager.googleapi"
-          + "s.com/Project\022*\n\004view\030\002 \001(\0162\034.google.pub"
-          + "sub.v1.SchemaView\022\021\n\tpage_size\030\003 \001(\005\022\022\n\n"
-          + "page_token\030\004 \001(\t\"Y\n\023ListSchemasResponse\022"
-          + ")\n\007schemas\030\001 \003(\0132\030.google.pubsub.v1.Sche"
-          + "ma\022\027\n\017next_page_token\030\002 \001(\t\"I\n\023DeleteSch"
-          + "emaRequest\0222\n\004name\030\001 \001(\tB$\340A\002\372A\036\n\034pubsub"
-          + ".googleapis.com/Schema\"\213\001\n\025ValidateSchem"
-          + "aRequest\022C\n\006parent\030\001 \001(\tB3\340A\002\372A-\n+cloudr"
-          + "esourcemanager.googleapis.com/Project\022-\n"
-          + "\006schema\030\002 \001(\0132\030.google.pubsub.v1.SchemaB"
-          + "\003\340A\002\"\030\n\026ValidateSchemaResponse\"\212\002\n\026Valid"
-          + "ateMessageRequest\022C\n\006parent\030\001 \001(\tB3\340A\002\372A"
-          + "-\n+cloudresourcemanager.googleapis.com/P"
-          + "roject\0221\n\004name\030\002 \001(\tB!\372A\036\n\034pubsub.google"
-          + "apis.com/SchemaH\000\022*\n\006schema\030\003 \001(\0132\030.goog"
-          + "le.pubsub.v1.SchemaH\000\022\017\n\007message\030\004 \001(\014\022,"
-          + "\n\010encoding\030\005 \001(\0162\032.google.pubsub.v1.Enco"
-          + "dingB\r\n\013schema_spec\"\031\n\027ValidateMessageRe"
-          + "sponse*>\n\nSchemaView\022\033\n\027SCHEMA_VIEW_UNSP"
-          + "ECIFIED\020\000\022\t\n\005BASIC\020\001\022\010\n\004FULL\020\002*:\n\010Encodi"
-          + "ng\022\030\n\024ENCODING_UNSPECIFIED\020\000\022\010\n\004JSON\020\001\022\n"
-          + "\n\006BINARY\020\0022\367\007\n\rSchemaService\022\232\001\n\014CreateS"
-          + "chema\022%.google.pubsub.v1.CreateSchemaReq"
-          + "uest\032\030.google.pubsub.v1.Schema\"I\202\323\344\223\002)\"\037"
-          + "/v1/{parent=projects/*}/schemas:\006schema\332"
-          + "A\027parent,schema,schema_id\022y\n\tGetSchema\022\""
-          + ".google.pubsub.v1.GetSchemaRequest\032\030.goo"
-          + "gle.pubsub.v1.Schema\".\202\323\344\223\002!\022\037/v1/{name="
-          + "projects/*/schemas/*}\332A\004name\022\214\001\n\013ListSch"
-          + "emas\022$.google.pubsub.v1.ListSchemasReque"
-          + "st\032%.google.pubsub.v1.ListSchemasRespons"
-          + "e\"0\202\323\344\223\002!\022\037/v1/{parent=projects/*}/schem"
-          + "as\332A\006parent\022}\n\014DeleteSchema\022%.google.pub"
-          + "sub.v1.DeleteSchemaRequest\032\026.google.prot"
-          + "obuf.Empty\".\202\323\344\223\002!*\037/v1/{name=projects/*"
-          + "/schemas/*}\332A\004name\022\250\001\n\016ValidateSchema\022\'."
-          + "google.pubsub.v1.ValidateSchemaRequest\032("
-          + ".google.pubsub.v1.ValidateSchemaResponse"
-          + "\"C\202\323\344\223\002-\"(/v1/{parent=projects/*}/schema"
-          + "s:validate:\001*\332A\rparent,schema\022\242\001\n\017Valida"
-          + "teMessage\022(.google.pubsub.v1.ValidateMes"
-          + "sageRequest\032).google.pubsub.v1.ValidateM"
-          + "essageResponse\":\202\323\344\223\0024\"//v1/{parent=proj"
-          + "ects/*}/schemas:validateMessage:\001*\032p\312A\025p"
-          + "ubsub.googleapis.com\322AUhttps://www.googl"
-          + "eapis.com/auth/cloud-platform,https://ww"
-          + "w.googleapis.com/auth/pubsubB\256\001\n\024com.goo"
-          + "gle.pubsub.v1B\013SchemaProtoP\001Z6google.gol"
-          + "ang.org/genproto/googleapis/pubsub/v1;pu"
-          + "bsub\370\001\001\252\002\026Google.Cloud.PubSub.V1\312\002\026Googl"
-          + "e\\Cloud\\PubSub\\V1\352\002\031Google::Cloud::PubSu"
-          + "b::V1b\006proto3"
+          + "roto\032\033google/protobuf/empty.proto\032\037googl"
+          + "e/protobuf/timestamp.proto\"\276\002\n\006Schema\022\022\n"
+          + "\004name\030\001 \001(\tB\004\342A\001\002\022+\n\004type\030\002 \001(\0162\035.google"
+          + ".pubsub.v1.Schema.Type\022\022\n\ndefinition\030\003 \001"
+          + "(\t\022\032\n\013revision_id\030\004 \001(\tB\005\342A\002\005\003\022>\n\024revisi"
+          + "on_create_time\030\006 \001(\0132\032.google.protobuf.T"
+          + "imestampB\004\342A\001\003\";\n\004Type\022\024\n\020TYPE_UNSPECIFI"
+          + "ED\020\000\022\023\n\017PROTOCOL_BUFFER\020\001\022\010\n\004AVRO\020\002:F\352AC"
+          + "\n\034pubsub.googleapis.com/Schema\022#projects"
+          + "/{project}/schemas/{schema}\"\217\001\n\023CreateSc"
+          + "hemaRequest\0225\n\006parent\030\001 \001(\tB%\342A\001\002\372A\036\022\034pu"
+          + "bsub.googleapis.com/Schema\022.\n\006schema\030\002 \001"
+          + "(\0132\030.google.pubsub.v1.SchemaB\004\342A\001\002\022\021\n\tsc"
+          + "hema_id\030\003 \001(\t\"s\n\020GetSchemaRequest\0223\n\004nam"
+          + "e\030\001 \001(\tB%\342A\001\002\372A\036\n\034pubsub.googleapis.com/"
+          + "Schema\022*\n\004view\030\002 \001(\0162\034.google.pubsub.v1."
+          + "SchemaView\"\255\001\n\022ListSchemasRequest\022D\n\006par"
+          + "ent\030\001 \001(\tB4\342A\001\002\372A-\n+cloudresourcemanager"
+          + ".googleapis.com/Project\022*\n\004view\030\002 \001(\0162\034."
+          + "google.pubsub.v1.SchemaView\022\021\n\tpage_size"
+          + "\030\003 \001(\005\022\022\n\npage_token\030\004 \001(\t\"Y\n\023ListSchema"
+          + "sResponse\022)\n\007schemas\030\001 \003(\0132\030.google.pubs"
+          + "ub.v1.Schema\022\027\n\017next_page_token\030\002 \001(\t\"\244\001"
+          + "\n\032ListSchemaRevisionsRequest\0223\n\004name\030\001 \001"
+          + "(\tB%\342A\001\002\372A\036\n\034pubsub.googleapis.com/Schem"
+          + "a\022*\n\004view\030\002 \001(\0162\034.google.pubsub.v1.Schem"
+          + "aView\022\021\n\tpage_size\030\003 \001(\005\022\022\n\npage_token\030\004"
+          + " \001(\t\"a\n\033ListSchemaRevisionsResponse\022)\n\007s"
+          + "chemas\030\001 \003(\0132\030.google.pubsub.v1.Schema\022\027"
+          + "\n\017next_page_token\030\002 \001(\t\"z\n\023CommitSchemaR"
+          + "equest\0223\n\004name\030\001 \001(\tB%\342A\001\002\372A\036\n\034pubsub.go"
+          + "ogleapis.com/Schema\022.\n\006schema\030\002 \001(\0132\030.go"
+          + "ogle.pubsub.v1.SchemaB\004\342A\001\002\"g\n\025RollbackS"
+          + "chemaRequest\0223\n\004name\030\001 \001(\tB%\342A\001\002\372A\036\n\034pub"
+          + "sub.googleapis.com/Schema\022\031\n\013revision_id"
+          + "\030\002 \001(\tB\004\342A\001\002\"o\n\033DeleteSchemaRevisionRequ"
+          + "est\0223\n\004name\030\001 \001(\tB%\342A\001\002\372A\036\n\034pubsub.googl"
+          + "eapis.com/Schema\022\033\n\013revision_id\030\002 \001(\tB\006\030"
+          + "\001\342A\001\001\"J\n\023DeleteSchemaRequest\0223\n\004name\030\001 \001"
+          + "(\tB%\342A\001\002\372A\036\n\034pubsub.googleapis.com/Schem"
+          + "a\"\215\001\n\025ValidateSchemaRequest\022D\n\006parent\030\001 "
+          + "\001(\tB4\342A\001\002\372A-\n+cloudresourcemanager.googl"
+          + "eapis.com/Project\022.\n\006schema\030\002 \001(\0132\030.goog"
+          + "le.pubsub.v1.SchemaB\004\342A\001\002\"\030\n\026ValidateSch"
+          + "emaResponse\"\213\002\n\026ValidateMessageRequest\022D"
+          + "\n\006parent\030\001 \001(\tB4\342A\001\002\372A-\n+cloudresourcema"
+          + "nager.googleapis.com/Project\0221\n\004name\030\002 \001"
+          + "(\tB!\372A\036\n\034pubsub.googleapis.com/SchemaH\000\022"
+          + "*\n\006schema\030\003 \001(\0132\030.google.pubsub.v1.Schem"
+          + "aH\000\022\017\n\007message\030\004 \001(\014\022,\n\010encoding\030\005 \001(\0162\032"
+          + ".google.pubsub.v1.EncodingB\r\n\013schema_spe"
+          + "c\"\031\n\027ValidateMessageResponse*>\n\nSchemaVi"
+          + "ew\022\033\n\027SCHEMA_VIEW_UNSPECIFIED\020\000\022\t\n\005BASIC"
+          + "\020\001\022\010\n\004FULL\020\002*:\n\010Encoding\022\030\n\024ENCODING_UNS"
+          + "PECIFIED\020\000\022\010\n\004JSON\020\001\022\n\n\006BINARY\020\0022\210\r\n\rSch"
+          + "emaService\022\232\001\n\014CreateSchema\022%.google.pub"
+          + "sub.v1.CreateSchemaRequest\032\030.google.pubs"
+          + "ub.v1.Schema\"I\332A\027parent,schema,schema_id"
+          + "\202\323\344\223\002)\"\037/v1/{parent=projects/*}/schemas:"
+          + "\006schema\022y\n\tGetSchema\022\".google.pubsub.v1."
+          + "GetSchemaRequest\032\030.google.pubsub.v1.Sche"
+          + "ma\".\332A\004name\202\323\344\223\002!\022\037/v1/{name=projects/*/"
+          + "schemas/*}\022\214\001\n\013ListSchemas\022$.google.pubs"
+          + "ub.v1.ListSchemasRequest\032%.google.pubsub"
+          + ".v1.ListSchemasResponse\"0\332A\006parent\202\323\344\223\002!"
+          + "\022\037/v1/{parent=projects/*}/schemas\022\260\001\n\023Li"
+          + "stSchemaRevisions\022,.google.pubsub.v1.Lis"
+          + "tSchemaRevisionsRequest\032-.google.pubsub."
+          + "v1.ListSchemaRevisionsResponse\"<\332A\004name\202"
+          + "\323\344\223\002/\022-/v1/{name=projects/*/schemas/*}:l"
+          + "istRevisions\022\220\001\n\014CommitSchema\022%.google.p"
+          + "ubsub.v1.CommitSchemaRequest\032\030.google.pu"
+          + "bsub.v1.Schema\"?\332A\013name,schema\202\323\344\223\002+\"&/v"
+          + "1/{name=projects/*/schemas/*}:commit:\001*\022"
+          + "\233\001\n\016RollbackSchema\022\'.google.pubsub.v1.Ro"
+          + "llbackSchemaRequest\032\030.google.pubsub.v1.S"
+          + "chema\"F\332A\020name,revision_id\202\323\344\223\002-\"(/v1/{n"
+          + "ame=projects/*/schemas/*}:rollback:\001*\022\252\001"
+          + "\n\024DeleteSchemaRevision\022-.google.pubsub.v"
+          + "1.DeleteSchemaRevisionRequest\032\030.google.p"
+          + "ubsub.v1.Schema\"I\332A\020name,revision_id\202\323\344\223"
+          + "\0020*./v1/{name=projects/*/schemas/*}:dele"
+          + "teRevision\022}\n\014DeleteSchema\022%.google.pubs"
+          + "ub.v1.DeleteSchemaRequest\032\026.google.proto"
+          + "buf.Empty\".\332A\004name\202\323\344\223\002!*\037/v1/{name=proj"
+          + "ects/*/schemas/*}\022\250\001\n\016ValidateSchema\022\'.g"
+          + "oogle.pubsub.v1.ValidateSchemaRequest\032(."
+          + "google.pubsub.v1.ValidateSchemaResponse\""
+          + "C\332A\rparent,schema\202\323\344\223\002-\"(/v1/{parent=pro"
+          + "jects/*}/schemas:validate:\001*\022\242\001\n\017Validat"
+          + "eMessage\022(.google.pubsub.v1.ValidateMess"
+          + "ageRequest\032).google.pubsub.v1.ValidateMe"
+          + "ssageResponse\":\202\323\344\223\0024\"//v1/{parent=proje"
+          + "cts/*}/schemas:validateMessage:\001*\032p\312A\025pu"
+          + "bsub.googleapis.com\322AUhttps://www.google"
+          + "apis.com/auth/cloud-platform,https://www"
+          + ".googleapis.com/auth/pubsubB\252\001\n\024com.goog"
+          + "le.pubsub.v1B\013SchemaProtoP\001Z2cloud.googl"
+          + "e.com/go/pubsub/apiv1/pubsubpb;pubsubpb\370"
+          + "\001\001\252\002\026Google.Cloud.PubSub.V1\312\002\026Google\\Clo"
+          + "ud\\PubSub\\V1\352\002\031Google::Cloud::PubSub::V1"
+          + "b\006proto3"
     };
     descriptor =
         com.google.protobuf.Descriptors.FileDescriptor.internalBuildGeneratedFileFrom(
@@ -157,13 +212,14 @@ public final class SchemaProto {
               com.google.api.FieldBehaviorProto.getDescriptor(),
               com.google.api.ResourceProto.getDescriptor(),
               com.google.protobuf.EmptyProto.getDescriptor(),
+              com.google.protobuf.TimestampProto.getDescriptor(),
             });
     internal_static_google_pubsub_v1_Schema_descriptor = getDescriptor().getMessageTypes().get(0);
     internal_static_google_pubsub_v1_Schema_fieldAccessorTable =
         new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
             internal_static_google_pubsub_v1_Schema_descriptor,
             new java.lang.String[] {
-              "Name", "Type", "Definition",
+              "Name", "Type", "Definition", "RevisionId", "RevisionCreateTime",
             });
     internal_static_google_pubsub_v1_CreateSchemaRequest_descriptor =
         getDescriptor().getMessageTypes().get(1);
@@ -197,8 +253,48 @@ public final class SchemaProto {
             new java.lang.String[] {
               "Schemas", "NextPageToken",
             });
-    internal_static_google_pubsub_v1_DeleteSchemaRequest_descriptor =
+    internal_static_google_pubsub_v1_ListSchemaRevisionsRequest_descriptor =
         getDescriptor().getMessageTypes().get(5);
+    internal_static_google_pubsub_v1_ListSchemaRevisionsRequest_fieldAccessorTable =
+        new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+            internal_static_google_pubsub_v1_ListSchemaRevisionsRequest_descriptor,
+            new java.lang.String[] {
+              "Name", "View", "PageSize", "PageToken",
+            });
+    internal_static_google_pubsub_v1_ListSchemaRevisionsResponse_descriptor =
+        getDescriptor().getMessageTypes().get(6);
+    internal_static_google_pubsub_v1_ListSchemaRevisionsResponse_fieldAccessorTable =
+        new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+            internal_static_google_pubsub_v1_ListSchemaRevisionsResponse_descriptor,
+            new java.lang.String[] {
+              "Schemas", "NextPageToken",
+            });
+    internal_static_google_pubsub_v1_CommitSchemaRequest_descriptor =
+        getDescriptor().getMessageTypes().get(7);
+    internal_static_google_pubsub_v1_CommitSchemaRequest_fieldAccessorTable =
+        new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+            internal_static_google_pubsub_v1_CommitSchemaRequest_descriptor,
+            new java.lang.String[] {
+              "Name", "Schema",
+            });
+    internal_static_google_pubsub_v1_RollbackSchemaRequest_descriptor =
+        getDescriptor().getMessageTypes().get(8);
+    internal_static_google_pubsub_v1_RollbackSchemaRequest_fieldAccessorTable =
+        new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+            internal_static_google_pubsub_v1_RollbackSchemaRequest_descriptor,
+            new java.lang.String[] {
+              "Name", "RevisionId",
+            });
+    internal_static_google_pubsub_v1_DeleteSchemaRevisionRequest_descriptor =
+        getDescriptor().getMessageTypes().get(9);
+    internal_static_google_pubsub_v1_DeleteSchemaRevisionRequest_fieldAccessorTable =
+        new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+            internal_static_google_pubsub_v1_DeleteSchemaRevisionRequest_descriptor,
+            new java.lang.String[] {
+              "Name", "RevisionId",
+            });
+    internal_static_google_pubsub_v1_DeleteSchemaRequest_descriptor =
+        getDescriptor().getMessageTypes().get(10);
     internal_static_google_pubsub_v1_DeleteSchemaRequest_fieldAccessorTable =
         new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
             internal_static_google_pubsub_v1_DeleteSchemaRequest_descriptor,
@@ -206,7 +302,7 @@ public final class SchemaProto {
               "Name",
             });
     internal_static_google_pubsub_v1_ValidateSchemaRequest_descriptor =
-        getDescriptor().getMessageTypes().get(6);
+        getDescriptor().getMessageTypes().get(11);
     internal_static_google_pubsub_v1_ValidateSchemaRequest_fieldAccessorTable =
         new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
             internal_static_google_pubsub_v1_ValidateSchemaRequest_descriptor,
@@ -214,13 +310,13 @@ public final class SchemaProto {
               "Parent", "Schema",
             });
     internal_static_google_pubsub_v1_ValidateSchemaResponse_descriptor =
-        getDescriptor().getMessageTypes().get(7);
+        getDescriptor().getMessageTypes().get(12);
     internal_static_google_pubsub_v1_ValidateSchemaResponse_fieldAccessorTable =
         new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
             internal_static_google_pubsub_v1_ValidateSchemaResponse_descriptor,
             new java.lang.String[] {});
     internal_static_google_pubsub_v1_ValidateMessageRequest_descriptor =
-        getDescriptor().getMessageTypes().get(8);
+        getDescriptor().getMessageTypes().get(13);
     internal_static_google_pubsub_v1_ValidateMessageRequest_fieldAccessorTable =
         new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
             internal_static_google_pubsub_v1_ValidateMessageRequest_descriptor,
@@ -228,7 +324,7 @@ public final class SchemaProto {
               "Parent", "Name", "Schema", "Message", "Encoding", "SchemaSpec",
             });
     internal_static_google_pubsub_v1_ValidateMessageResponse_descriptor =
-        getDescriptor().getMessageTypes().get(9);
+        getDescriptor().getMessageTypes().get(14);
     internal_static_google_pubsub_v1_ValidateMessageResponse_fieldAccessorTable =
         new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
             internal_static_google_pubsub_v1_ValidateMessageResponse_descriptor,
@@ -249,6 +345,7 @@ public final class SchemaProto {
     com.google.api.FieldBehaviorProto.getDescriptor();
     com.google.api.ResourceProto.getDescriptor();
     com.google.protobuf.EmptyProto.getDescriptor();
+    com.google.protobuf.TimestampProto.getDescriptor();
   }
 
   // @@protoc_insertion_point(outer_class_scope)

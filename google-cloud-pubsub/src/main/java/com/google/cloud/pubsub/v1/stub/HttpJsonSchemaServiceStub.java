@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package com.google.cloud.pubsub.v1.stub;
 
+import static com.google.cloud.pubsub.v1.SchemaServiceClient.ListSchemaRevisionsPagedResponse;
 import static com.google.cloud.pubsub.v1.SchemaServiceClient.ListSchemasPagedResponse;
 
 import com.google.api.core.BetaApi;
@@ -29,6 +30,7 @@ import com.google.api.gax.httpjson.ProtoMessageRequestFormatter;
 import com.google.api.gax.httpjson.ProtoMessageResponseParser;
 import com.google.api.gax.httpjson.ProtoRestSerializer;
 import com.google.api.gax.rpc.ClientContext;
+import com.google.api.gax.rpc.RequestParamsBuilder;
 import com.google.api.gax.rpc.UnaryCallable;
 import com.google.iam.v1.GetIamPolicyRequest;
 import com.google.iam.v1.Policy;
@@ -37,11 +39,16 @@ import com.google.iam.v1.TestIamPermissionsRequest;
 import com.google.iam.v1.TestIamPermissionsResponse;
 import com.google.protobuf.Empty;
 import com.google.protobuf.TypeRegistry;
+import com.google.pubsub.v1.CommitSchemaRequest;
 import com.google.pubsub.v1.CreateSchemaRequest;
 import com.google.pubsub.v1.DeleteSchemaRequest;
+import com.google.pubsub.v1.DeleteSchemaRevisionRequest;
 import com.google.pubsub.v1.GetSchemaRequest;
+import com.google.pubsub.v1.ListSchemaRevisionsRequest;
+import com.google.pubsub.v1.ListSchemaRevisionsResponse;
 import com.google.pubsub.v1.ListSchemasRequest;
 import com.google.pubsub.v1.ListSchemasResponse;
+import com.google.pubsub.v1.RollbackSchemaRequest;
 import com.google.pubsub.v1.Schema;
 import com.google.pubsub.v1.ValidateMessageRequest;
 import com.google.pubsub.v1.ValidateMessageResponse;
@@ -89,12 +96,13 @@ public class HttpJsonSchemaServiceStub extends SchemaServiceStub {
                             ProtoRestSerializer<CreateSchemaRequest> serializer =
                                 ProtoRestSerializer.create();
                             serializer.putQueryParam(fields, "schemaId", request.getSchemaId());
+                            serializer.putQueryParam(fields, "$alt", "json;enum-encoding=int");
                             return fields;
                           })
                       .setRequestBodyExtractor(
                           request ->
                               ProtoRestSerializer.create()
-                                  .toBody("schema", request.getSchema(), false))
+                                  .toBody("schema", request.getSchema(), true))
                       .build())
               .setResponseParser(
                   ProtoMessageResponseParser.<Schema>newBuilder()
@@ -125,6 +133,7 @@ public class HttpJsonSchemaServiceStub extends SchemaServiceStub {
                         ProtoRestSerializer<GetSchemaRequest> serializer =
                             ProtoRestSerializer.create();
                         serializer.putQueryParam(fields, "view", request.getViewValue());
+                        serializer.putQueryParam(fields, "$alt", "json;enum-encoding=int");
                         return fields;
                       })
                   .setRequestBodyExtractor(request -> null)
@@ -161,6 +170,7 @@ public class HttpJsonSchemaServiceStub extends SchemaServiceStub {
                             serializer.putQueryParam(fields, "pageSize", request.getPageSize());
                             serializer.putQueryParam(fields, "pageToken", request.getPageToken());
                             serializer.putQueryParam(fields, "view", request.getViewValue());
+                            serializer.putQueryParam(fields, "$alt", "json;enum-encoding=int");
                             return fields;
                           })
                       .setRequestBodyExtractor(request -> null)
@@ -168,6 +178,152 @@ public class HttpJsonSchemaServiceStub extends SchemaServiceStub {
               .setResponseParser(
                   ProtoMessageResponseParser.<ListSchemasResponse>newBuilder()
                       .setDefaultInstance(ListSchemasResponse.getDefaultInstance())
+                      .setDefaultTypeRegistry(typeRegistry)
+                      .build())
+              .build();
+
+  private static final ApiMethodDescriptor<ListSchemaRevisionsRequest, ListSchemaRevisionsResponse>
+      listSchemaRevisionsMethodDescriptor =
+          ApiMethodDescriptor.<ListSchemaRevisionsRequest, ListSchemaRevisionsResponse>newBuilder()
+              .setFullMethodName("google.pubsub.v1.SchemaService/ListSchemaRevisions")
+              .setHttpMethod("GET")
+              .setType(ApiMethodDescriptor.MethodType.UNARY)
+              .setRequestFormatter(
+                  ProtoMessageRequestFormatter.<ListSchemaRevisionsRequest>newBuilder()
+                      .setPath(
+                          "/v1/{name=projects/*/schemas/*}:listRevisions",
+                          request -> {
+                            Map<String, String> fields = new HashMap<>();
+                            ProtoRestSerializer<ListSchemaRevisionsRequest> serializer =
+                                ProtoRestSerializer.create();
+                            serializer.putPathParam(fields, "name", request.getName());
+                            return fields;
+                          })
+                      .setQueryParamsExtractor(
+                          request -> {
+                            Map<String, List<String>> fields = new HashMap<>();
+                            ProtoRestSerializer<ListSchemaRevisionsRequest> serializer =
+                                ProtoRestSerializer.create();
+                            serializer.putQueryParam(fields, "pageSize", request.getPageSize());
+                            serializer.putQueryParam(fields, "pageToken", request.getPageToken());
+                            serializer.putQueryParam(fields, "view", request.getViewValue());
+                            serializer.putQueryParam(fields, "$alt", "json;enum-encoding=int");
+                            return fields;
+                          })
+                      .setRequestBodyExtractor(request -> null)
+                      .build())
+              .setResponseParser(
+                  ProtoMessageResponseParser.<ListSchemaRevisionsResponse>newBuilder()
+                      .setDefaultInstance(ListSchemaRevisionsResponse.getDefaultInstance())
+                      .setDefaultTypeRegistry(typeRegistry)
+                      .build())
+              .build();
+
+  private static final ApiMethodDescriptor<CommitSchemaRequest, Schema>
+      commitSchemaMethodDescriptor =
+          ApiMethodDescriptor.<CommitSchemaRequest, Schema>newBuilder()
+              .setFullMethodName("google.pubsub.v1.SchemaService/CommitSchema")
+              .setHttpMethod("POST")
+              .setType(ApiMethodDescriptor.MethodType.UNARY)
+              .setRequestFormatter(
+                  ProtoMessageRequestFormatter.<CommitSchemaRequest>newBuilder()
+                      .setPath(
+                          "/v1/{name=projects/*/schemas/*}:commit",
+                          request -> {
+                            Map<String, String> fields = new HashMap<>();
+                            ProtoRestSerializer<CommitSchemaRequest> serializer =
+                                ProtoRestSerializer.create();
+                            serializer.putPathParam(fields, "name", request.getName());
+                            return fields;
+                          })
+                      .setQueryParamsExtractor(
+                          request -> {
+                            Map<String, List<String>> fields = new HashMap<>();
+                            ProtoRestSerializer<CommitSchemaRequest> serializer =
+                                ProtoRestSerializer.create();
+                            serializer.putQueryParam(fields, "$alt", "json;enum-encoding=int");
+                            return fields;
+                          })
+                      .setRequestBodyExtractor(
+                          request ->
+                              ProtoRestSerializer.create()
+                                  .toBody("*", request.toBuilder().clearName().build(), true))
+                      .build())
+              .setResponseParser(
+                  ProtoMessageResponseParser.<Schema>newBuilder()
+                      .setDefaultInstance(Schema.getDefaultInstance())
+                      .setDefaultTypeRegistry(typeRegistry)
+                      .build())
+              .build();
+
+  private static final ApiMethodDescriptor<RollbackSchemaRequest, Schema>
+      rollbackSchemaMethodDescriptor =
+          ApiMethodDescriptor.<RollbackSchemaRequest, Schema>newBuilder()
+              .setFullMethodName("google.pubsub.v1.SchemaService/RollbackSchema")
+              .setHttpMethod("POST")
+              .setType(ApiMethodDescriptor.MethodType.UNARY)
+              .setRequestFormatter(
+                  ProtoMessageRequestFormatter.<RollbackSchemaRequest>newBuilder()
+                      .setPath(
+                          "/v1/{name=projects/*/schemas/*}:rollback",
+                          request -> {
+                            Map<String, String> fields = new HashMap<>();
+                            ProtoRestSerializer<RollbackSchemaRequest> serializer =
+                                ProtoRestSerializer.create();
+                            serializer.putPathParam(fields, "name", request.getName());
+                            return fields;
+                          })
+                      .setQueryParamsExtractor(
+                          request -> {
+                            Map<String, List<String>> fields = new HashMap<>();
+                            ProtoRestSerializer<RollbackSchemaRequest> serializer =
+                                ProtoRestSerializer.create();
+                            serializer.putQueryParam(fields, "$alt", "json;enum-encoding=int");
+                            return fields;
+                          })
+                      .setRequestBodyExtractor(
+                          request ->
+                              ProtoRestSerializer.create()
+                                  .toBody("*", request.toBuilder().clearName().build(), true))
+                      .build())
+              .setResponseParser(
+                  ProtoMessageResponseParser.<Schema>newBuilder()
+                      .setDefaultInstance(Schema.getDefaultInstance())
+                      .setDefaultTypeRegistry(typeRegistry)
+                      .build())
+              .build();
+
+  private static final ApiMethodDescriptor<DeleteSchemaRevisionRequest, Schema>
+      deleteSchemaRevisionMethodDescriptor =
+          ApiMethodDescriptor.<DeleteSchemaRevisionRequest, Schema>newBuilder()
+              .setFullMethodName("google.pubsub.v1.SchemaService/DeleteSchemaRevision")
+              .setHttpMethod("DELETE")
+              .setType(ApiMethodDescriptor.MethodType.UNARY)
+              .setRequestFormatter(
+                  ProtoMessageRequestFormatter.<DeleteSchemaRevisionRequest>newBuilder()
+                      .setPath(
+                          "/v1/{name=projects/*/schemas/*}:deleteRevision",
+                          request -> {
+                            Map<String, String> fields = new HashMap<>();
+                            ProtoRestSerializer<DeleteSchemaRevisionRequest> serializer =
+                                ProtoRestSerializer.create();
+                            serializer.putPathParam(fields, "name", request.getName());
+                            return fields;
+                          })
+                      .setQueryParamsExtractor(
+                          request -> {
+                            Map<String, List<String>> fields = new HashMap<>();
+                            ProtoRestSerializer<DeleteSchemaRevisionRequest> serializer =
+                                ProtoRestSerializer.create();
+                            serializer.putQueryParam(fields, "revisionId", request.getRevisionId());
+                            serializer.putQueryParam(fields, "$alt", "json;enum-encoding=int");
+                            return fields;
+                          })
+                      .setRequestBodyExtractor(request -> null)
+                      .build())
+              .setResponseParser(
+                  ProtoMessageResponseParser.<Schema>newBuilder()
+                      .setDefaultInstance(Schema.getDefaultInstance())
                       .setDefaultTypeRegistry(typeRegistry)
                       .build())
               .build();
@@ -194,6 +350,7 @@ public class HttpJsonSchemaServiceStub extends SchemaServiceStub {
                             Map<String, List<String>> fields = new HashMap<>();
                             ProtoRestSerializer<DeleteSchemaRequest> serializer =
                                 ProtoRestSerializer.create();
+                            serializer.putQueryParam(fields, "$alt", "json;enum-encoding=int");
                             return fields;
                           })
                       .setRequestBodyExtractor(request -> null)
@@ -227,12 +384,13 @@ public class HttpJsonSchemaServiceStub extends SchemaServiceStub {
                             Map<String, List<String>> fields = new HashMap<>();
                             ProtoRestSerializer<ValidateSchemaRequest> serializer =
                                 ProtoRestSerializer.create();
+                            serializer.putQueryParam(fields, "$alt", "json;enum-encoding=int");
                             return fields;
                           })
                       .setRequestBodyExtractor(
                           request ->
                               ProtoRestSerializer.create()
-                                  .toBody("*", request.toBuilder().clearParent().build(), false))
+                                  .toBody("*", request.toBuilder().clearParent().build(), true))
                       .build())
               .setResponseParser(
                   ProtoMessageResponseParser.<ValidateSchemaResponse>newBuilder()
@@ -263,12 +421,13 @@ public class HttpJsonSchemaServiceStub extends SchemaServiceStub {
                             Map<String, List<String>> fields = new HashMap<>();
                             ProtoRestSerializer<ValidateMessageRequest> serializer =
                                 ProtoRestSerializer.create();
+                            serializer.putQueryParam(fields, "$alt", "json;enum-encoding=int");
                             return fields;
                           })
                       .setRequestBodyExtractor(
                           request ->
                               ProtoRestSerializer.create()
-                                  .toBody("*", request.toBuilder().clearParent().build(), false))
+                                  .toBody("*", request.toBuilder().clearParent().build(), true))
                       .build())
               .setResponseParser(
                   ProtoMessageResponseParser.<ValidateMessageResponse>newBuilder()
@@ -303,12 +462,13 @@ public class HttpJsonSchemaServiceStub extends SchemaServiceStub {
                             Map<String, List<String>> fields = new HashMap<>();
                             ProtoRestSerializer<SetIamPolicyRequest> serializer =
                                 ProtoRestSerializer.create();
+                            serializer.putQueryParam(fields, "$alt", "json;enum-encoding=int");
                             return fields;
                           })
                       .setRequestBodyExtractor(
                           request ->
                               ProtoRestSerializer.create()
-                                  .toBody("*", request.toBuilder().clearResource().build(), false))
+                                  .toBody("*", request.toBuilder().clearResource().build(), true))
                       .build())
               .setResponseParser(
                   ProtoMessageResponseParser.<Policy>newBuilder()
@@ -343,6 +503,7 @@ public class HttpJsonSchemaServiceStub extends SchemaServiceStub {
                             Map<String, List<String>> fields = new HashMap<>();
                             ProtoRestSerializer<GetIamPolicyRequest> serializer =
                                 ProtoRestSerializer.create();
+                            serializer.putQueryParam(fields, "$alt", "json;enum-encoding=int");
                             return fields;
                           })
                       .setRequestBodyExtractor(request -> null)
@@ -380,12 +541,13 @@ public class HttpJsonSchemaServiceStub extends SchemaServiceStub {
                             Map<String, List<String>> fields = new HashMap<>();
                             ProtoRestSerializer<TestIamPermissionsRequest> serializer =
                                 ProtoRestSerializer.create();
+                            serializer.putQueryParam(fields, "$alt", "json;enum-encoding=int");
                             return fields;
                           })
                       .setRequestBodyExtractor(
                           request ->
                               ProtoRestSerializer.create()
-                                  .toBody("*", request.toBuilder().clearResource().build(), false))
+                                  .toBody("*", request.toBuilder().clearResource().build(), true))
                       .build())
               .setResponseParser(
                   ProtoMessageResponseParser.<TestIamPermissionsResponse>newBuilder()
@@ -399,6 +561,13 @@ public class HttpJsonSchemaServiceStub extends SchemaServiceStub {
   private final UnaryCallable<ListSchemasRequest, ListSchemasResponse> listSchemasCallable;
   private final UnaryCallable<ListSchemasRequest, ListSchemasPagedResponse>
       listSchemasPagedCallable;
+  private final UnaryCallable<ListSchemaRevisionsRequest, ListSchemaRevisionsResponse>
+      listSchemaRevisionsCallable;
+  private final UnaryCallable<ListSchemaRevisionsRequest, ListSchemaRevisionsPagedResponse>
+      listSchemaRevisionsPagedCallable;
+  private final UnaryCallable<CommitSchemaRequest, Schema> commitSchemaCallable;
+  private final UnaryCallable<RollbackSchemaRequest, Schema> rollbackSchemaCallable;
+  private final UnaryCallable<DeleteSchemaRevisionRequest, Schema> deleteSchemaRevisionCallable;
   private final UnaryCallable<DeleteSchemaRequest, Empty> deleteSchemaCallable;
   private final UnaryCallable<ValidateSchemaRequest, ValidateSchemaResponse> validateSchemaCallable;
   private final UnaryCallable<ValidateMessageRequest, ValidateMessageResponse>
@@ -454,49 +623,150 @@ public class HttpJsonSchemaServiceStub extends SchemaServiceStub {
         HttpJsonCallSettings.<CreateSchemaRequest, Schema>newBuilder()
             .setMethodDescriptor(createSchemaMethodDescriptor)
             .setTypeRegistry(typeRegistry)
+            .setParamsExtractor(
+                request -> {
+                  RequestParamsBuilder builder = RequestParamsBuilder.create();
+                  builder.add("parent", String.valueOf(request.getParent()));
+                  return builder.build();
+                })
             .build();
     HttpJsonCallSettings<GetSchemaRequest, Schema> getSchemaTransportSettings =
         HttpJsonCallSettings.<GetSchemaRequest, Schema>newBuilder()
             .setMethodDescriptor(getSchemaMethodDescriptor)
             .setTypeRegistry(typeRegistry)
+            .setParamsExtractor(
+                request -> {
+                  RequestParamsBuilder builder = RequestParamsBuilder.create();
+                  builder.add("name", String.valueOf(request.getName()));
+                  return builder.build();
+                })
             .build();
     HttpJsonCallSettings<ListSchemasRequest, ListSchemasResponse> listSchemasTransportSettings =
         HttpJsonCallSettings.<ListSchemasRequest, ListSchemasResponse>newBuilder()
             .setMethodDescriptor(listSchemasMethodDescriptor)
             .setTypeRegistry(typeRegistry)
+            .setParamsExtractor(
+                request -> {
+                  RequestParamsBuilder builder = RequestParamsBuilder.create();
+                  builder.add("parent", String.valueOf(request.getParent()));
+                  return builder.build();
+                })
             .build();
+    HttpJsonCallSettings<ListSchemaRevisionsRequest, ListSchemaRevisionsResponse>
+        listSchemaRevisionsTransportSettings =
+            HttpJsonCallSettings
+                .<ListSchemaRevisionsRequest, ListSchemaRevisionsResponse>newBuilder()
+                .setMethodDescriptor(listSchemaRevisionsMethodDescriptor)
+                .setTypeRegistry(typeRegistry)
+                .setParamsExtractor(
+                    request -> {
+                      RequestParamsBuilder builder = RequestParamsBuilder.create();
+                      builder.add("name", String.valueOf(request.getName()));
+                      return builder.build();
+                    })
+                .build();
+    HttpJsonCallSettings<CommitSchemaRequest, Schema> commitSchemaTransportSettings =
+        HttpJsonCallSettings.<CommitSchemaRequest, Schema>newBuilder()
+            .setMethodDescriptor(commitSchemaMethodDescriptor)
+            .setTypeRegistry(typeRegistry)
+            .setParamsExtractor(
+                request -> {
+                  RequestParamsBuilder builder = RequestParamsBuilder.create();
+                  builder.add("name", String.valueOf(request.getName()));
+                  return builder.build();
+                })
+            .build();
+    HttpJsonCallSettings<RollbackSchemaRequest, Schema> rollbackSchemaTransportSettings =
+        HttpJsonCallSettings.<RollbackSchemaRequest, Schema>newBuilder()
+            .setMethodDescriptor(rollbackSchemaMethodDescriptor)
+            .setTypeRegistry(typeRegistry)
+            .setParamsExtractor(
+                request -> {
+                  RequestParamsBuilder builder = RequestParamsBuilder.create();
+                  builder.add("name", String.valueOf(request.getName()));
+                  return builder.build();
+                })
+            .build();
+    HttpJsonCallSettings<DeleteSchemaRevisionRequest, Schema>
+        deleteSchemaRevisionTransportSettings =
+            HttpJsonCallSettings.<DeleteSchemaRevisionRequest, Schema>newBuilder()
+                .setMethodDescriptor(deleteSchemaRevisionMethodDescriptor)
+                .setTypeRegistry(typeRegistry)
+                .setParamsExtractor(
+                    request -> {
+                      RequestParamsBuilder builder = RequestParamsBuilder.create();
+                      builder.add("name", String.valueOf(request.getName()));
+                      return builder.build();
+                    })
+                .build();
     HttpJsonCallSettings<DeleteSchemaRequest, Empty> deleteSchemaTransportSettings =
         HttpJsonCallSettings.<DeleteSchemaRequest, Empty>newBuilder()
             .setMethodDescriptor(deleteSchemaMethodDescriptor)
             .setTypeRegistry(typeRegistry)
+            .setParamsExtractor(
+                request -> {
+                  RequestParamsBuilder builder = RequestParamsBuilder.create();
+                  builder.add("name", String.valueOf(request.getName()));
+                  return builder.build();
+                })
             .build();
     HttpJsonCallSettings<ValidateSchemaRequest, ValidateSchemaResponse>
         validateSchemaTransportSettings =
             HttpJsonCallSettings.<ValidateSchemaRequest, ValidateSchemaResponse>newBuilder()
                 .setMethodDescriptor(validateSchemaMethodDescriptor)
                 .setTypeRegistry(typeRegistry)
+                .setParamsExtractor(
+                    request -> {
+                      RequestParamsBuilder builder = RequestParamsBuilder.create();
+                      builder.add("parent", String.valueOf(request.getParent()));
+                      return builder.build();
+                    })
                 .build();
     HttpJsonCallSettings<ValidateMessageRequest, ValidateMessageResponse>
         validateMessageTransportSettings =
             HttpJsonCallSettings.<ValidateMessageRequest, ValidateMessageResponse>newBuilder()
                 .setMethodDescriptor(validateMessageMethodDescriptor)
                 .setTypeRegistry(typeRegistry)
+                .setParamsExtractor(
+                    request -> {
+                      RequestParamsBuilder builder = RequestParamsBuilder.create();
+                      builder.add("parent", String.valueOf(request.getParent()));
+                      return builder.build();
+                    })
                 .build();
     HttpJsonCallSettings<SetIamPolicyRequest, Policy> setIamPolicyTransportSettings =
         HttpJsonCallSettings.<SetIamPolicyRequest, Policy>newBuilder()
             .setMethodDescriptor(setIamPolicyMethodDescriptor)
             .setTypeRegistry(typeRegistry)
+            .setParamsExtractor(
+                request -> {
+                  RequestParamsBuilder builder = RequestParamsBuilder.create();
+                  builder.add("resource", String.valueOf(request.getResource()));
+                  return builder.build();
+                })
             .build();
     HttpJsonCallSettings<GetIamPolicyRequest, Policy> getIamPolicyTransportSettings =
         HttpJsonCallSettings.<GetIamPolicyRequest, Policy>newBuilder()
             .setMethodDescriptor(getIamPolicyMethodDescriptor)
             .setTypeRegistry(typeRegistry)
+            .setParamsExtractor(
+                request -> {
+                  RequestParamsBuilder builder = RequestParamsBuilder.create();
+                  builder.add("resource", String.valueOf(request.getResource()));
+                  return builder.build();
+                })
             .build();
     HttpJsonCallSettings<TestIamPermissionsRequest, TestIamPermissionsResponse>
         testIamPermissionsTransportSettings =
             HttpJsonCallSettings.<TestIamPermissionsRequest, TestIamPermissionsResponse>newBuilder()
                 .setMethodDescriptor(testIamPermissionsMethodDescriptor)
                 .setTypeRegistry(typeRegistry)
+                .setParamsExtractor(
+                    request -> {
+                      RequestParamsBuilder builder = RequestParamsBuilder.create();
+                      builder.add("resource", String.valueOf(request.getResource()));
+                      return builder.build();
+                    })
                 .build();
 
     this.createSchemaCallable =
@@ -511,6 +781,27 @@ public class HttpJsonSchemaServiceStub extends SchemaServiceStub {
     this.listSchemasPagedCallable =
         callableFactory.createPagedCallable(
             listSchemasTransportSettings, settings.listSchemasSettings(), clientContext);
+    this.listSchemaRevisionsCallable =
+        callableFactory.createUnaryCallable(
+            listSchemaRevisionsTransportSettings,
+            settings.listSchemaRevisionsSettings(),
+            clientContext);
+    this.listSchemaRevisionsPagedCallable =
+        callableFactory.createPagedCallable(
+            listSchemaRevisionsTransportSettings,
+            settings.listSchemaRevisionsSettings(),
+            clientContext);
+    this.commitSchemaCallable =
+        callableFactory.createUnaryCallable(
+            commitSchemaTransportSettings, settings.commitSchemaSettings(), clientContext);
+    this.rollbackSchemaCallable =
+        callableFactory.createUnaryCallable(
+            rollbackSchemaTransportSettings, settings.rollbackSchemaSettings(), clientContext);
+    this.deleteSchemaRevisionCallable =
+        callableFactory.createUnaryCallable(
+            deleteSchemaRevisionTransportSettings,
+            settings.deleteSchemaRevisionSettings(),
+            clientContext);
     this.deleteSchemaCallable =
         callableFactory.createUnaryCallable(
             deleteSchemaTransportSettings, settings.deleteSchemaSettings(), clientContext);
@@ -542,6 +833,10 @@ public class HttpJsonSchemaServiceStub extends SchemaServiceStub {
     methodDescriptors.add(createSchemaMethodDescriptor);
     methodDescriptors.add(getSchemaMethodDescriptor);
     methodDescriptors.add(listSchemasMethodDescriptor);
+    methodDescriptors.add(listSchemaRevisionsMethodDescriptor);
+    methodDescriptors.add(commitSchemaMethodDescriptor);
+    methodDescriptors.add(rollbackSchemaMethodDescriptor);
+    methodDescriptors.add(deleteSchemaRevisionMethodDescriptor);
     methodDescriptors.add(deleteSchemaMethodDescriptor);
     methodDescriptors.add(validateSchemaMethodDescriptor);
     methodDescriptors.add(validateMessageMethodDescriptor);
@@ -569,6 +864,33 @@ public class HttpJsonSchemaServiceStub extends SchemaServiceStub {
   @Override
   public UnaryCallable<ListSchemasRequest, ListSchemasPagedResponse> listSchemasPagedCallable() {
     return listSchemasPagedCallable;
+  }
+
+  @Override
+  public UnaryCallable<ListSchemaRevisionsRequest, ListSchemaRevisionsResponse>
+      listSchemaRevisionsCallable() {
+    return listSchemaRevisionsCallable;
+  }
+
+  @Override
+  public UnaryCallable<ListSchemaRevisionsRequest, ListSchemaRevisionsPagedResponse>
+      listSchemaRevisionsPagedCallable() {
+    return listSchemaRevisionsPagedCallable;
+  }
+
+  @Override
+  public UnaryCallable<CommitSchemaRequest, Schema> commitSchemaCallable() {
+    return commitSchemaCallable;
+  }
+
+  @Override
+  public UnaryCallable<RollbackSchemaRequest, Schema> rollbackSchemaCallable() {
+    return rollbackSchemaCallable;
+  }
+
+  @Override
+  public UnaryCallable<DeleteSchemaRevisionRequest, Schema> deleteSchemaRevisionCallable() {
+    return deleteSchemaRevisionCallable;
   }
 
   @Override

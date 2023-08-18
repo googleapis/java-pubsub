@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,17 +40,14 @@ public final class SchemaSettings extends com.google.protobuf.GeneratedMessageV3
   private SchemaSettings() {
     schema_ = "";
     encoding_ = 0;
+    firstRevisionId_ = "";
+    lastRevisionId_ = "";
   }
 
   @java.lang.Override
   @SuppressWarnings({"unused"})
   protected java.lang.Object newInstance(UnusedPrivateParameter unused) {
     return new SchemaSettings();
-  }
-
-  @java.lang.Override
-  public final com.google.protobuf.UnknownFieldSet getUnknownFields() {
-    return this.unknownFields;
   }
 
   public static final com.google.protobuf.Descriptors.Descriptor getDescriptor() {
@@ -69,7 +66,9 @@ public final class SchemaSettings extends com.google.protobuf.GeneratedMessageV3
   }
 
   public static final int SCHEMA_FIELD_NUMBER = 1;
-  private volatile java.lang.Object schema_;
+
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object schema_ = "";
   /**
    *
    *
@@ -128,7 +127,7 @@ public final class SchemaSettings extends com.google.protobuf.GeneratedMessageV3
   }
 
   public static final int ENCODING_FIELD_NUMBER = 2;
-  private int encoding_;
+  private int encoding_ = 0;
   /**
    *
    *
@@ -157,9 +156,118 @@ public final class SchemaSettings extends com.google.protobuf.GeneratedMessageV3
    */
   @java.lang.Override
   public com.google.pubsub.v1.Encoding getEncoding() {
-    @SuppressWarnings("deprecation")
-    com.google.pubsub.v1.Encoding result = com.google.pubsub.v1.Encoding.valueOf(encoding_);
+    com.google.pubsub.v1.Encoding result = com.google.pubsub.v1.Encoding.forNumber(encoding_);
     return result == null ? com.google.pubsub.v1.Encoding.UNRECOGNIZED : result;
+  }
+
+  public static final int FIRST_REVISION_ID_FIELD_NUMBER = 3;
+
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object firstRevisionId_ = "";
+  /**
+   *
+   *
+   * <pre>
+   * The minimum (inclusive) revision allowed for validating messages. If empty
+   * or not present, allow any revision to be validated against last_revision or
+   * any revision created before.
+   * </pre>
+   *
+   * <code>string first_revision_id = 3;</code>
+   *
+   * @return The firstRevisionId.
+   */
+  @java.lang.Override
+  public java.lang.String getFirstRevisionId() {
+    java.lang.Object ref = firstRevisionId_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      firstRevisionId_ = s;
+      return s;
+    }
+  }
+  /**
+   *
+   *
+   * <pre>
+   * The minimum (inclusive) revision allowed for validating messages. If empty
+   * or not present, allow any revision to be validated against last_revision or
+   * any revision created before.
+   * </pre>
+   *
+   * <code>string first_revision_id = 3;</code>
+   *
+   * @return The bytes for firstRevisionId.
+   */
+  @java.lang.Override
+  public com.google.protobuf.ByteString getFirstRevisionIdBytes() {
+    java.lang.Object ref = firstRevisionId_;
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b =
+          com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
+      firstRevisionId_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
+  }
+
+  public static final int LAST_REVISION_ID_FIELD_NUMBER = 4;
+
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object lastRevisionId_ = "";
+  /**
+   *
+   *
+   * <pre>
+   * The maximum (inclusive) revision allowed for validating messages. If empty
+   * or not present, allow any revision to be validated against first_revision
+   * or any revision created after.
+   * </pre>
+   *
+   * <code>string last_revision_id = 4;</code>
+   *
+   * @return The lastRevisionId.
+   */
+  @java.lang.Override
+  public java.lang.String getLastRevisionId() {
+    java.lang.Object ref = lastRevisionId_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      lastRevisionId_ = s;
+      return s;
+    }
+  }
+  /**
+   *
+   *
+   * <pre>
+   * The maximum (inclusive) revision allowed for validating messages. If empty
+   * or not present, allow any revision to be validated against first_revision
+   * or any revision created after.
+   * </pre>
+   *
+   * <code>string last_revision_id = 4;</code>
+   *
+   * @return The bytes for lastRevisionId.
+   */
+  @java.lang.Override
+  public com.google.protobuf.ByteString getLastRevisionIdBytes() {
+    java.lang.Object ref = lastRevisionId_;
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b =
+          com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
+      lastRevisionId_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
   }
 
   private byte memoizedIsInitialized = -1;
@@ -182,6 +290,12 @@ public final class SchemaSettings extends com.google.protobuf.GeneratedMessageV3
     if (encoding_ != com.google.pubsub.v1.Encoding.ENCODING_UNSPECIFIED.getNumber()) {
       output.writeEnum(2, encoding_);
     }
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(firstRevisionId_)) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 3, firstRevisionId_);
+    }
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(lastRevisionId_)) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 4, lastRevisionId_);
+    }
     getUnknownFields().writeTo(output);
   }
 
@@ -196,6 +310,12 @@ public final class SchemaSettings extends com.google.protobuf.GeneratedMessageV3
     }
     if (encoding_ != com.google.pubsub.v1.Encoding.ENCODING_UNSPECIFIED.getNumber()) {
       size += com.google.protobuf.CodedOutputStream.computeEnumSize(2, encoding_);
+    }
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(firstRevisionId_)) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, firstRevisionId_);
+    }
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(lastRevisionId_)) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, lastRevisionId_);
     }
     size += getUnknownFields().getSerializedSize();
     memoizedSize = size;
@@ -214,6 +334,8 @@ public final class SchemaSettings extends com.google.protobuf.GeneratedMessageV3
 
     if (!getSchema().equals(other.getSchema())) return false;
     if (encoding_ != other.encoding_) return false;
+    if (!getFirstRevisionId().equals(other.getFirstRevisionId())) return false;
+    if (!getLastRevisionId().equals(other.getLastRevisionId())) return false;
     if (!getUnknownFields().equals(other.getUnknownFields())) return false;
     return true;
   }
@@ -229,6 +351,10 @@ public final class SchemaSettings extends com.google.protobuf.GeneratedMessageV3
     hash = (53 * hash) + getSchema().hashCode();
     hash = (37 * hash) + ENCODING_FIELD_NUMBER;
     hash = (53 * hash) + encoding_;
+    hash = (37 * hash) + FIRST_REVISION_ID_FIELD_NUMBER;
+    hash = (53 * hash) + getFirstRevisionId().hashCode();
+    hash = (37 * hash) + LAST_REVISION_ID_FIELD_NUMBER;
+    hash = (53 * hash) + getLastRevisionId().hashCode();
     hash = (29 * hash) + getUnknownFields().hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -366,10 +492,11 @@ public final class SchemaSettings extends com.google.protobuf.GeneratedMessageV3
     @java.lang.Override
     public Builder clear() {
       super.clear();
+      bitField0_ = 0;
       schema_ = "";
-
       encoding_ = 0;
-
+      firstRevisionId_ = "";
+      lastRevisionId_ = "";
       return this;
     }
 
@@ -396,10 +523,27 @@ public final class SchemaSettings extends com.google.protobuf.GeneratedMessageV3
     @java.lang.Override
     public com.google.pubsub.v1.SchemaSettings buildPartial() {
       com.google.pubsub.v1.SchemaSettings result = new com.google.pubsub.v1.SchemaSettings(this);
-      result.schema_ = schema_;
-      result.encoding_ = encoding_;
+      if (bitField0_ != 0) {
+        buildPartial0(result);
+      }
       onBuilt();
       return result;
+    }
+
+    private void buildPartial0(com.google.pubsub.v1.SchemaSettings result) {
+      int from_bitField0_ = bitField0_;
+      if (((from_bitField0_ & 0x00000001) != 0)) {
+        result.schema_ = schema_;
+      }
+      if (((from_bitField0_ & 0x00000002) != 0)) {
+        result.encoding_ = encoding_;
+      }
+      if (((from_bitField0_ & 0x00000004) != 0)) {
+        result.firstRevisionId_ = firstRevisionId_;
+      }
+      if (((from_bitField0_ & 0x00000008) != 0)) {
+        result.lastRevisionId_ = lastRevisionId_;
+      }
     }
 
     @java.lang.Override
@@ -449,10 +593,21 @@ public final class SchemaSettings extends com.google.protobuf.GeneratedMessageV3
       if (other == com.google.pubsub.v1.SchemaSettings.getDefaultInstance()) return this;
       if (!other.getSchema().isEmpty()) {
         schema_ = other.schema_;
+        bitField0_ |= 0x00000001;
         onChanged();
       }
       if (other.encoding_ != 0) {
         setEncodingValue(other.getEncodingValue());
+      }
+      if (!other.getFirstRevisionId().isEmpty()) {
+        firstRevisionId_ = other.firstRevisionId_;
+        bitField0_ |= 0x00000004;
+        onChanged();
+      }
+      if (!other.getLastRevisionId().isEmpty()) {
+        lastRevisionId_ = other.lastRevisionId_;
+        bitField0_ |= 0x00000008;
+        onChanged();
       }
       this.mergeUnknownFields(other.getUnknownFields());
       onChanged();
@@ -483,15 +638,27 @@ public final class SchemaSettings extends com.google.protobuf.GeneratedMessageV3
             case 10:
               {
                 schema_ = input.readStringRequireUtf8();
-
+                bitField0_ |= 0x00000001;
                 break;
               } // case 10
             case 16:
               {
                 encoding_ = input.readEnum();
-
+                bitField0_ |= 0x00000002;
                 break;
               } // case 16
+            case 26:
+              {
+                firstRevisionId_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000004;
+                break;
+              } // case 26
+            case 34:
+              {
+                lastRevisionId_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000008;
+                break;
+              } // case 34
             default:
               {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
@@ -508,6 +675,8 @@ public final class SchemaSettings extends com.google.protobuf.GeneratedMessageV3
       } // finally
       return this;
     }
+
+    private int bitField0_;
 
     private java.lang.Object schema_ = "";
     /**
@@ -585,8 +754,8 @@ public final class SchemaSettings extends com.google.protobuf.GeneratedMessageV3
       if (value == null) {
         throw new NullPointerException();
       }
-
       schema_ = value;
+      bitField0_ |= 0x00000001;
       onChanged();
       return this;
     }
@@ -607,8 +776,8 @@ public final class SchemaSettings extends com.google.protobuf.GeneratedMessageV3
      * @return This builder for chaining.
      */
     public Builder clearSchema() {
-
       schema_ = getDefaultInstance().getSchema();
+      bitField0_ = (bitField0_ & ~0x00000001);
       onChanged();
       return this;
     }
@@ -634,8 +803,8 @@ public final class SchemaSettings extends com.google.protobuf.GeneratedMessageV3
         throw new NullPointerException();
       }
       checkByteStringIsUtf8(value);
-
       schema_ = value;
+      bitField0_ |= 0x00000001;
       onChanged();
       return this;
     }
@@ -669,8 +838,8 @@ public final class SchemaSettings extends com.google.protobuf.GeneratedMessageV3
      * @return This builder for chaining.
      */
     public Builder setEncodingValue(int value) {
-
       encoding_ = value;
+      bitField0_ |= 0x00000002;
       onChanged();
       return this;
     }
@@ -687,8 +856,7 @@ public final class SchemaSettings extends com.google.protobuf.GeneratedMessageV3
      */
     @java.lang.Override
     public com.google.pubsub.v1.Encoding getEncoding() {
-      @SuppressWarnings("deprecation")
-      com.google.pubsub.v1.Encoding result = com.google.pubsub.v1.Encoding.valueOf(encoding_);
+      com.google.pubsub.v1.Encoding result = com.google.pubsub.v1.Encoding.forNumber(encoding_);
       return result == null ? com.google.pubsub.v1.Encoding.UNRECOGNIZED : result;
     }
     /**
@@ -707,7 +875,7 @@ public final class SchemaSettings extends com.google.protobuf.GeneratedMessageV3
       if (value == null) {
         throw new NullPointerException();
       }
-
+      bitField0_ |= 0x00000002;
       encoding_ = value.getNumber();
       onChanged();
       return this;
@@ -724,8 +892,240 @@ public final class SchemaSettings extends com.google.protobuf.GeneratedMessageV3
      * @return This builder for chaining.
      */
     public Builder clearEncoding() {
-
+      bitField0_ = (bitField0_ & ~0x00000002);
       encoding_ = 0;
+      onChanged();
+      return this;
+    }
+
+    private java.lang.Object firstRevisionId_ = "";
+    /**
+     *
+     *
+     * <pre>
+     * The minimum (inclusive) revision allowed for validating messages. If empty
+     * or not present, allow any revision to be validated against last_revision or
+     * any revision created before.
+     * </pre>
+     *
+     * <code>string first_revision_id = 3;</code>
+     *
+     * @return The firstRevisionId.
+     */
+    public java.lang.String getFirstRevisionId() {
+      java.lang.Object ref = firstRevisionId_;
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        firstRevisionId_ = s;
+        return s;
+      } else {
+        return (java.lang.String) ref;
+      }
+    }
+    /**
+     *
+     *
+     * <pre>
+     * The minimum (inclusive) revision allowed for validating messages. If empty
+     * or not present, allow any revision to be validated against last_revision or
+     * any revision created before.
+     * </pre>
+     *
+     * <code>string first_revision_id = 3;</code>
+     *
+     * @return The bytes for firstRevisionId.
+     */
+    public com.google.protobuf.ByteString getFirstRevisionIdBytes() {
+      java.lang.Object ref = firstRevisionId_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b =
+            com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
+        firstRevisionId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    /**
+     *
+     *
+     * <pre>
+     * The minimum (inclusive) revision allowed for validating messages. If empty
+     * or not present, allow any revision to be validated against last_revision or
+     * any revision created before.
+     * </pre>
+     *
+     * <code>string first_revision_id = 3;</code>
+     *
+     * @param value The firstRevisionId to set.
+     * @return This builder for chaining.
+     */
+    public Builder setFirstRevisionId(java.lang.String value) {
+      if (value == null) {
+        throw new NullPointerException();
+      }
+      firstRevisionId_ = value;
+      bitField0_ |= 0x00000004;
+      onChanged();
+      return this;
+    }
+    /**
+     *
+     *
+     * <pre>
+     * The minimum (inclusive) revision allowed for validating messages. If empty
+     * or not present, allow any revision to be validated against last_revision or
+     * any revision created before.
+     * </pre>
+     *
+     * <code>string first_revision_id = 3;</code>
+     *
+     * @return This builder for chaining.
+     */
+    public Builder clearFirstRevisionId() {
+      firstRevisionId_ = getDefaultInstance().getFirstRevisionId();
+      bitField0_ = (bitField0_ & ~0x00000004);
+      onChanged();
+      return this;
+    }
+    /**
+     *
+     *
+     * <pre>
+     * The minimum (inclusive) revision allowed for validating messages. If empty
+     * or not present, allow any revision to be validated against last_revision or
+     * any revision created before.
+     * </pre>
+     *
+     * <code>string first_revision_id = 3;</code>
+     *
+     * @param value The bytes for firstRevisionId to set.
+     * @return This builder for chaining.
+     */
+    public Builder setFirstRevisionIdBytes(com.google.protobuf.ByteString value) {
+      if (value == null) {
+        throw new NullPointerException();
+      }
+      checkByteStringIsUtf8(value);
+      firstRevisionId_ = value;
+      bitField0_ |= 0x00000004;
+      onChanged();
+      return this;
+    }
+
+    private java.lang.Object lastRevisionId_ = "";
+    /**
+     *
+     *
+     * <pre>
+     * The maximum (inclusive) revision allowed for validating messages. If empty
+     * or not present, allow any revision to be validated against first_revision
+     * or any revision created after.
+     * </pre>
+     *
+     * <code>string last_revision_id = 4;</code>
+     *
+     * @return The lastRevisionId.
+     */
+    public java.lang.String getLastRevisionId() {
+      java.lang.Object ref = lastRevisionId_;
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        lastRevisionId_ = s;
+        return s;
+      } else {
+        return (java.lang.String) ref;
+      }
+    }
+    /**
+     *
+     *
+     * <pre>
+     * The maximum (inclusive) revision allowed for validating messages. If empty
+     * or not present, allow any revision to be validated against first_revision
+     * or any revision created after.
+     * </pre>
+     *
+     * <code>string last_revision_id = 4;</code>
+     *
+     * @return The bytes for lastRevisionId.
+     */
+    public com.google.protobuf.ByteString getLastRevisionIdBytes() {
+      java.lang.Object ref = lastRevisionId_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b =
+            com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
+        lastRevisionId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    /**
+     *
+     *
+     * <pre>
+     * The maximum (inclusive) revision allowed for validating messages. If empty
+     * or not present, allow any revision to be validated against first_revision
+     * or any revision created after.
+     * </pre>
+     *
+     * <code>string last_revision_id = 4;</code>
+     *
+     * @param value The lastRevisionId to set.
+     * @return This builder for chaining.
+     */
+    public Builder setLastRevisionId(java.lang.String value) {
+      if (value == null) {
+        throw new NullPointerException();
+      }
+      lastRevisionId_ = value;
+      bitField0_ |= 0x00000008;
+      onChanged();
+      return this;
+    }
+    /**
+     *
+     *
+     * <pre>
+     * The maximum (inclusive) revision allowed for validating messages. If empty
+     * or not present, allow any revision to be validated against first_revision
+     * or any revision created after.
+     * </pre>
+     *
+     * <code>string last_revision_id = 4;</code>
+     *
+     * @return This builder for chaining.
+     */
+    public Builder clearLastRevisionId() {
+      lastRevisionId_ = getDefaultInstance().getLastRevisionId();
+      bitField0_ = (bitField0_ & ~0x00000008);
+      onChanged();
+      return this;
+    }
+    /**
+     *
+     *
+     * <pre>
+     * The maximum (inclusive) revision allowed for validating messages. If empty
+     * or not present, allow any revision to be validated against first_revision
+     * or any revision created after.
+     * </pre>
+     *
+     * <code>string last_revision_id = 4;</code>
+     *
+     * @param value The bytes for lastRevisionId to set.
+     * @return This builder for chaining.
+     */
+    public Builder setLastRevisionIdBytes(com.google.protobuf.ByteString value) {
+      if (value == null) {
+        throw new NullPointerException();
+      }
+      checkByteStringIsUtf8(value);
+      lastRevisionId_ = value;
+      bitField0_ |= 0x00000008;
       onChanged();
       return this;
     }

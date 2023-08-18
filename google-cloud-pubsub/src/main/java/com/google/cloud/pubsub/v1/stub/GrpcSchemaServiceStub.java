@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package com.google.cloud.pubsub.v1.stub;
 
+import static com.google.cloud.pubsub.v1.SchemaServiceClient.ListSchemaRevisionsPagedResponse;
 import static com.google.cloud.pubsub.v1.SchemaServiceClient.ListSchemasPagedResponse;
 
 import com.google.api.gax.core.BackgroundResource;
@@ -23,8 +24,8 @@ import com.google.api.gax.core.BackgroundResourceAggregation;
 import com.google.api.gax.grpc.GrpcCallSettings;
 import com.google.api.gax.grpc.GrpcStubCallableFactory;
 import com.google.api.gax.rpc.ClientContext;
+import com.google.api.gax.rpc.RequestParamsBuilder;
 import com.google.api.gax.rpc.UnaryCallable;
-import com.google.common.collect.ImmutableMap;
 import com.google.iam.v1.GetIamPolicyRequest;
 import com.google.iam.v1.Policy;
 import com.google.iam.v1.SetIamPolicyRequest;
@@ -32,11 +33,16 @@ import com.google.iam.v1.TestIamPermissionsRequest;
 import com.google.iam.v1.TestIamPermissionsResponse;
 import com.google.longrunning.stub.GrpcOperationsStub;
 import com.google.protobuf.Empty;
+import com.google.pubsub.v1.CommitSchemaRequest;
 import com.google.pubsub.v1.CreateSchemaRequest;
 import com.google.pubsub.v1.DeleteSchemaRequest;
+import com.google.pubsub.v1.DeleteSchemaRevisionRequest;
 import com.google.pubsub.v1.GetSchemaRequest;
+import com.google.pubsub.v1.ListSchemaRevisionsRequest;
+import com.google.pubsub.v1.ListSchemaRevisionsResponse;
 import com.google.pubsub.v1.ListSchemasRequest;
 import com.google.pubsub.v1.ListSchemasResponse;
+import com.google.pubsub.v1.RollbackSchemaRequest;
 import com.google.pubsub.v1.Schema;
 import com.google.pubsub.v1.ValidateMessageRequest;
 import com.google.pubsub.v1.ValidateMessageResponse;
@@ -80,6 +86,45 @@ public class GrpcSchemaServiceStub extends SchemaServiceStub {
               .setRequestMarshaller(ProtoUtils.marshaller(ListSchemasRequest.getDefaultInstance()))
               .setResponseMarshaller(
                   ProtoUtils.marshaller(ListSchemasResponse.getDefaultInstance()))
+              .build();
+
+  private static final MethodDescriptor<ListSchemaRevisionsRequest, ListSchemaRevisionsResponse>
+      listSchemaRevisionsMethodDescriptor =
+          MethodDescriptor.<ListSchemaRevisionsRequest, ListSchemaRevisionsResponse>newBuilder()
+              .setType(MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName("google.pubsub.v1.SchemaService/ListSchemaRevisions")
+              .setRequestMarshaller(
+                  ProtoUtils.marshaller(ListSchemaRevisionsRequest.getDefaultInstance()))
+              .setResponseMarshaller(
+                  ProtoUtils.marshaller(ListSchemaRevisionsResponse.getDefaultInstance()))
+              .build();
+
+  private static final MethodDescriptor<CommitSchemaRequest, Schema> commitSchemaMethodDescriptor =
+      MethodDescriptor.<CommitSchemaRequest, Schema>newBuilder()
+          .setType(MethodDescriptor.MethodType.UNARY)
+          .setFullMethodName("google.pubsub.v1.SchemaService/CommitSchema")
+          .setRequestMarshaller(ProtoUtils.marshaller(CommitSchemaRequest.getDefaultInstance()))
+          .setResponseMarshaller(ProtoUtils.marshaller(Schema.getDefaultInstance()))
+          .build();
+
+  private static final MethodDescriptor<RollbackSchemaRequest, Schema>
+      rollbackSchemaMethodDescriptor =
+          MethodDescriptor.<RollbackSchemaRequest, Schema>newBuilder()
+              .setType(MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName("google.pubsub.v1.SchemaService/RollbackSchema")
+              .setRequestMarshaller(
+                  ProtoUtils.marshaller(RollbackSchemaRequest.getDefaultInstance()))
+              .setResponseMarshaller(ProtoUtils.marshaller(Schema.getDefaultInstance()))
+              .build();
+
+  private static final MethodDescriptor<DeleteSchemaRevisionRequest, Schema>
+      deleteSchemaRevisionMethodDescriptor =
+          MethodDescriptor.<DeleteSchemaRevisionRequest, Schema>newBuilder()
+              .setType(MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName("google.pubsub.v1.SchemaService/DeleteSchemaRevision")
+              .setRequestMarshaller(
+                  ProtoUtils.marshaller(DeleteSchemaRevisionRequest.getDefaultInstance()))
+              .setResponseMarshaller(ProtoUtils.marshaller(Schema.getDefaultInstance()))
               .build();
 
   private static final MethodDescriptor<DeleteSchemaRequest, Empty> deleteSchemaMethodDescriptor =
@@ -144,6 +189,13 @@ public class GrpcSchemaServiceStub extends SchemaServiceStub {
   private final UnaryCallable<ListSchemasRequest, ListSchemasResponse> listSchemasCallable;
   private final UnaryCallable<ListSchemasRequest, ListSchemasPagedResponse>
       listSchemasPagedCallable;
+  private final UnaryCallable<ListSchemaRevisionsRequest, ListSchemaRevisionsResponse>
+      listSchemaRevisionsCallable;
+  private final UnaryCallable<ListSchemaRevisionsRequest, ListSchemaRevisionsPagedResponse>
+      listSchemaRevisionsPagedCallable;
+  private final UnaryCallable<CommitSchemaRequest, Schema> commitSchemaCallable;
+  private final UnaryCallable<RollbackSchemaRequest, Schema> rollbackSchemaCallable;
+  private final UnaryCallable<DeleteSchemaRevisionRequest, Schema> deleteSchemaRevisionCallable;
   private final UnaryCallable<DeleteSchemaRequest, Empty> deleteSchemaCallable;
   private final UnaryCallable<ValidateSchemaRequest, ValidateSchemaResponse> validateSchemaCallable;
   private final UnaryCallable<ValidateMessageRequest, ValidateMessageResponse>
@@ -200,9 +252,9 @@ public class GrpcSchemaServiceStub extends SchemaServiceStub {
             .setMethodDescriptor(createSchemaMethodDescriptor)
             .setParamsExtractor(
                 request -> {
-                  ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
-                  params.put("parent", String.valueOf(request.getParent()));
-                  return params.build();
+                  RequestParamsBuilder builder = RequestParamsBuilder.create();
+                  builder.add("parent", String.valueOf(request.getParent()));
+                  return builder.build();
                 })
             .build();
     GrpcCallSettings<GetSchemaRequest, Schema> getSchemaTransportSettings =
@@ -210,9 +262,9 @@ public class GrpcSchemaServiceStub extends SchemaServiceStub {
             .setMethodDescriptor(getSchemaMethodDescriptor)
             .setParamsExtractor(
                 request -> {
-                  ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
-                  params.put("name", String.valueOf(request.getName()));
-                  return params.build();
+                  RequestParamsBuilder builder = RequestParamsBuilder.create();
+                  builder.add("name", String.valueOf(request.getName()));
+                  return builder.build();
                 })
             .build();
     GrpcCallSettings<ListSchemasRequest, ListSchemasResponse> listSchemasTransportSettings =
@@ -220,9 +272,50 @@ public class GrpcSchemaServiceStub extends SchemaServiceStub {
             .setMethodDescriptor(listSchemasMethodDescriptor)
             .setParamsExtractor(
                 request -> {
-                  ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
-                  params.put("parent", String.valueOf(request.getParent()));
-                  return params.build();
+                  RequestParamsBuilder builder = RequestParamsBuilder.create();
+                  builder.add("parent", String.valueOf(request.getParent()));
+                  return builder.build();
+                })
+            .build();
+    GrpcCallSettings<ListSchemaRevisionsRequest, ListSchemaRevisionsResponse>
+        listSchemaRevisionsTransportSettings =
+            GrpcCallSettings.<ListSchemaRevisionsRequest, ListSchemaRevisionsResponse>newBuilder()
+                .setMethodDescriptor(listSchemaRevisionsMethodDescriptor)
+                .setParamsExtractor(
+                    request -> {
+                      RequestParamsBuilder builder = RequestParamsBuilder.create();
+                      builder.add("name", String.valueOf(request.getName()));
+                      return builder.build();
+                    })
+                .build();
+    GrpcCallSettings<CommitSchemaRequest, Schema> commitSchemaTransportSettings =
+        GrpcCallSettings.<CommitSchemaRequest, Schema>newBuilder()
+            .setMethodDescriptor(commitSchemaMethodDescriptor)
+            .setParamsExtractor(
+                request -> {
+                  RequestParamsBuilder builder = RequestParamsBuilder.create();
+                  builder.add("name", String.valueOf(request.getName()));
+                  return builder.build();
+                })
+            .build();
+    GrpcCallSettings<RollbackSchemaRequest, Schema> rollbackSchemaTransportSettings =
+        GrpcCallSettings.<RollbackSchemaRequest, Schema>newBuilder()
+            .setMethodDescriptor(rollbackSchemaMethodDescriptor)
+            .setParamsExtractor(
+                request -> {
+                  RequestParamsBuilder builder = RequestParamsBuilder.create();
+                  builder.add("name", String.valueOf(request.getName()));
+                  return builder.build();
+                })
+            .build();
+    GrpcCallSettings<DeleteSchemaRevisionRequest, Schema> deleteSchemaRevisionTransportSettings =
+        GrpcCallSettings.<DeleteSchemaRevisionRequest, Schema>newBuilder()
+            .setMethodDescriptor(deleteSchemaRevisionMethodDescriptor)
+            .setParamsExtractor(
+                request -> {
+                  RequestParamsBuilder builder = RequestParamsBuilder.create();
+                  builder.add("name", String.valueOf(request.getName()));
+                  return builder.build();
                 })
             .build();
     GrpcCallSettings<DeleteSchemaRequest, Empty> deleteSchemaTransportSettings =
@@ -230,9 +323,9 @@ public class GrpcSchemaServiceStub extends SchemaServiceStub {
             .setMethodDescriptor(deleteSchemaMethodDescriptor)
             .setParamsExtractor(
                 request -> {
-                  ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
-                  params.put("name", String.valueOf(request.getName()));
-                  return params.build();
+                  RequestParamsBuilder builder = RequestParamsBuilder.create();
+                  builder.add("name", String.valueOf(request.getName()));
+                  return builder.build();
                 })
             .build();
     GrpcCallSettings<ValidateSchemaRequest, ValidateSchemaResponse>
@@ -241,9 +334,9 @@ public class GrpcSchemaServiceStub extends SchemaServiceStub {
                 .setMethodDescriptor(validateSchemaMethodDescriptor)
                 .setParamsExtractor(
                     request -> {
-                      ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
-                      params.put("parent", String.valueOf(request.getParent()));
-                      return params.build();
+                      RequestParamsBuilder builder = RequestParamsBuilder.create();
+                      builder.add("parent", String.valueOf(request.getParent()));
+                      return builder.build();
                     })
                 .build();
     GrpcCallSettings<ValidateMessageRequest, ValidateMessageResponse>
@@ -252,9 +345,9 @@ public class GrpcSchemaServiceStub extends SchemaServiceStub {
                 .setMethodDescriptor(validateMessageMethodDescriptor)
                 .setParamsExtractor(
                     request -> {
-                      ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
-                      params.put("parent", String.valueOf(request.getParent()));
-                      return params.build();
+                      RequestParamsBuilder builder = RequestParamsBuilder.create();
+                      builder.add("parent", String.valueOf(request.getParent()));
+                      return builder.build();
                     })
                 .build();
     GrpcCallSettings<SetIamPolicyRequest, Policy> setIamPolicyTransportSettings =
@@ -262,9 +355,9 @@ public class GrpcSchemaServiceStub extends SchemaServiceStub {
             .setMethodDescriptor(setIamPolicyMethodDescriptor)
             .setParamsExtractor(
                 request -> {
-                  ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
-                  params.put("resource", String.valueOf(request.getResource()));
-                  return params.build();
+                  RequestParamsBuilder builder = RequestParamsBuilder.create();
+                  builder.add("resource", String.valueOf(request.getResource()));
+                  return builder.build();
                 })
             .build();
     GrpcCallSettings<GetIamPolicyRequest, Policy> getIamPolicyTransportSettings =
@@ -272,9 +365,9 @@ public class GrpcSchemaServiceStub extends SchemaServiceStub {
             .setMethodDescriptor(getIamPolicyMethodDescriptor)
             .setParamsExtractor(
                 request -> {
-                  ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
-                  params.put("resource", String.valueOf(request.getResource()));
-                  return params.build();
+                  RequestParamsBuilder builder = RequestParamsBuilder.create();
+                  builder.add("resource", String.valueOf(request.getResource()));
+                  return builder.build();
                 })
             .build();
     GrpcCallSettings<TestIamPermissionsRequest, TestIamPermissionsResponse>
@@ -283,9 +376,9 @@ public class GrpcSchemaServiceStub extends SchemaServiceStub {
                 .setMethodDescriptor(testIamPermissionsMethodDescriptor)
                 .setParamsExtractor(
                     request -> {
-                      ImmutableMap.Builder<String, String> params = ImmutableMap.builder();
-                      params.put("resource", String.valueOf(request.getResource()));
-                      return params.build();
+                      RequestParamsBuilder builder = RequestParamsBuilder.create();
+                      builder.add("resource", String.valueOf(request.getResource()));
+                      return builder.build();
                     })
                 .build();
 
@@ -301,6 +394,27 @@ public class GrpcSchemaServiceStub extends SchemaServiceStub {
     this.listSchemasPagedCallable =
         callableFactory.createPagedCallable(
             listSchemasTransportSettings, settings.listSchemasSettings(), clientContext);
+    this.listSchemaRevisionsCallable =
+        callableFactory.createUnaryCallable(
+            listSchemaRevisionsTransportSettings,
+            settings.listSchemaRevisionsSettings(),
+            clientContext);
+    this.listSchemaRevisionsPagedCallable =
+        callableFactory.createPagedCallable(
+            listSchemaRevisionsTransportSettings,
+            settings.listSchemaRevisionsSettings(),
+            clientContext);
+    this.commitSchemaCallable =
+        callableFactory.createUnaryCallable(
+            commitSchemaTransportSettings, settings.commitSchemaSettings(), clientContext);
+    this.rollbackSchemaCallable =
+        callableFactory.createUnaryCallable(
+            rollbackSchemaTransportSettings, settings.rollbackSchemaSettings(), clientContext);
+    this.deleteSchemaRevisionCallable =
+        callableFactory.createUnaryCallable(
+            deleteSchemaRevisionTransportSettings,
+            settings.deleteSchemaRevisionSettings(),
+            clientContext);
     this.deleteSchemaCallable =
         callableFactory.createUnaryCallable(
             deleteSchemaTransportSettings, settings.deleteSchemaSettings(), clientContext);
@@ -348,6 +462,33 @@ public class GrpcSchemaServiceStub extends SchemaServiceStub {
   @Override
   public UnaryCallable<ListSchemasRequest, ListSchemasPagedResponse> listSchemasPagedCallable() {
     return listSchemasPagedCallable;
+  }
+
+  @Override
+  public UnaryCallable<ListSchemaRevisionsRequest, ListSchemaRevisionsResponse>
+      listSchemaRevisionsCallable() {
+    return listSchemaRevisionsCallable;
+  }
+
+  @Override
+  public UnaryCallable<ListSchemaRevisionsRequest, ListSchemaRevisionsPagedResponse>
+      listSchemaRevisionsPagedCallable() {
+    return listSchemaRevisionsPagedCallable;
+  }
+
+  @Override
+  public UnaryCallable<CommitSchemaRequest, Schema> commitSchemaCallable() {
+    return commitSchemaCallable;
+  }
+
+  @Override
+  public UnaryCallable<RollbackSchemaRequest, Schema> rollbackSchemaCallable() {
+    return rollbackSchemaCallable;
+  }
+
+  @Override
+  public UnaryCallable<DeleteSchemaRevisionRequest, Schema> deleteSchemaRevisionCallable() {
+    return deleteSchemaRevisionCallable;
   }
 
   @Override

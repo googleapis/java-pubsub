@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,11 +48,6 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
     return new StreamingPullResponse();
   }
 
-  @java.lang.Override
-  public final com.google.protobuf.UnknownFieldSet getUnknownFields() {
-    return this.unknownFields;
-  }
-
   public static final com.google.protobuf.Descriptors.Descriptor getDescriptor() {
     return com.google.pubsub.v1.PubsubProto
         .internal_static_google_pubsub_v1_StreamingPullResponse_descriptor;
@@ -80,7 +75,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
      * Successfully processed acknowledgement IDs.
      * </pre>
      *
-     * <code>repeated string ack_ids = 1 [ctype = CORD];</code>
+     * <code>repeated string ack_ids = 1;</code>
      *
      * @return A list containing the ackIds.
      */
@@ -92,7 +87,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
      * Successfully processed acknowledgement IDs.
      * </pre>
      *
-     * <code>repeated string ack_ids = 1 [ctype = CORD];</code>
+     * <code>repeated string ack_ids = 1;</code>
      *
      * @return The count of ackIds.
      */
@@ -104,7 +99,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
      * Successfully processed acknowledgement IDs.
      * </pre>
      *
-     * <code>repeated string ack_ids = 1 [ctype = CORD];</code>
+     * <code>repeated string ack_ids = 1;</code>
      *
      * @param index The index of the element to return.
      * @return The ackIds at the given index.
@@ -117,7 +112,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
      * Successfully processed acknowledgement IDs.
      * </pre>
      *
-     * <code>repeated string ack_ids = 1 [ctype = CORD];</code>
+     * <code>repeated string ack_ids = 1;</code>
      *
      * @param index The index of the value to return.
      * @return The bytes of the ackIds at the given index.
@@ -132,7 +127,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
      * deadline has expired.
      * </pre>
      *
-     * <code>repeated string invalid_ack_ids = 2 [ctype = CORD];</code>
+     * <code>repeated string invalid_ack_ids = 2;</code>
      *
      * @return A list containing the invalidAckIds.
      */
@@ -145,7 +140,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
      * deadline has expired.
      * </pre>
      *
-     * <code>repeated string invalid_ack_ids = 2 [ctype = CORD];</code>
+     * <code>repeated string invalid_ack_ids = 2;</code>
      *
      * @return The count of invalidAckIds.
      */
@@ -158,7 +153,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
      * deadline has expired.
      * </pre>
      *
-     * <code>repeated string invalid_ack_ids = 2 [ctype = CORD];</code>
+     * <code>repeated string invalid_ack_ids = 2;</code>
      *
      * @param index The index of the element to return.
      * @return The invalidAckIds at the given index.
@@ -172,7 +167,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
      * deadline has expired.
      * </pre>
      *
-     * <code>repeated string invalid_ack_ids = 2 [ctype = CORD];</code>
+     * <code>repeated string invalid_ack_ids = 2;</code>
      *
      * @param index The index of the value to return.
      * @return The bytes of the invalidAckIds at the given index.
@@ -186,7 +181,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
      * List of acknowledgement IDs that were out of order.
      * </pre>
      *
-     * <code>repeated string unordered_ack_ids = 3 [ctype = CORD];</code>
+     * <code>repeated string unordered_ack_ids = 3;</code>
      *
      * @return A list containing the unorderedAckIds.
      */
@@ -198,7 +193,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
      * List of acknowledgement IDs that were out of order.
      * </pre>
      *
-     * <code>repeated string unordered_ack_ids = 3 [ctype = CORD];</code>
+     * <code>repeated string unordered_ack_ids = 3;</code>
      *
      * @return The count of unorderedAckIds.
      */
@@ -210,7 +205,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
      * List of acknowledgement IDs that were out of order.
      * </pre>
      *
-     * <code>repeated string unordered_ack_ids = 3 [ctype = CORD];</code>
+     * <code>repeated string unordered_ack_ids = 3;</code>
      *
      * @param index The index of the element to return.
      * @return The unorderedAckIds at the given index.
@@ -223,12 +218,63 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
      * List of acknowledgement IDs that were out of order.
      * </pre>
      *
-     * <code>repeated string unordered_ack_ids = 3 [ctype = CORD];</code>
+     * <code>repeated string unordered_ack_ids = 3;</code>
      *
      * @param index The index of the value to return.
      * @return The bytes of the unorderedAckIds at the given index.
      */
     com.google.protobuf.ByteString getUnorderedAckIdsBytes(int index);
+
+    /**
+     *
+     *
+     * <pre>
+     * List of acknowledgement IDs that failed processing with temporary issues.
+     * </pre>
+     *
+     * <code>repeated string temporary_failed_ack_ids = 4;</code>
+     *
+     * @return A list containing the temporaryFailedAckIds.
+     */
+    java.util.List<java.lang.String> getTemporaryFailedAckIdsList();
+    /**
+     *
+     *
+     * <pre>
+     * List of acknowledgement IDs that failed processing with temporary issues.
+     * </pre>
+     *
+     * <code>repeated string temporary_failed_ack_ids = 4;</code>
+     *
+     * @return The count of temporaryFailedAckIds.
+     */
+    int getTemporaryFailedAckIdsCount();
+    /**
+     *
+     *
+     * <pre>
+     * List of acknowledgement IDs that failed processing with temporary issues.
+     * </pre>
+     *
+     * <code>repeated string temporary_failed_ack_ids = 4;</code>
+     *
+     * @param index The index of the element to return.
+     * @return The temporaryFailedAckIds at the given index.
+     */
+    java.lang.String getTemporaryFailedAckIds(int index);
+    /**
+     *
+     *
+     * <pre>
+     * List of acknowledgement IDs that failed processing with temporary issues.
+     * </pre>
+     *
+     * <code>repeated string temporary_failed_ack_ids = 4;</code>
+     *
+     * @param index The index of the value to return.
+     * @return The bytes of the temporaryFailedAckIds at the given index.
+     */
+    com.google.protobuf.ByteString getTemporaryFailedAckIdsBytes(int index);
   }
   /**
    *
@@ -251,20 +297,16 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
     }
 
     private AcknowledgeConfirmation() {
-      ackIds_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-      invalidAckIds_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-      unorderedAckIds_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      ackIds_ = com.google.protobuf.LazyStringArrayList.emptyList();
+      invalidAckIds_ = com.google.protobuf.LazyStringArrayList.emptyList();
+      unorderedAckIds_ = com.google.protobuf.LazyStringArrayList.emptyList();
+      temporaryFailedAckIds_ = com.google.protobuf.LazyStringArrayList.emptyList();
     }
 
     @java.lang.Override
     @SuppressWarnings({"unused"})
     protected java.lang.Object newInstance(UnusedPrivateParameter unused) {
       return new AcknowledgeConfirmation();
-    }
-
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet getUnknownFields() {
-      return this.unknownFields;
     }
 
     public static final com.google.protobuf.Descriptors.Descriptor getDescriptor() {
@@ -283,7 +325,10 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
     }
 
     public static final int ACK_IDS_FIELD_NUMBER = 1;
-    private com.google.protobuf.LazyStringList ackIds_;
+
+    @SuppressWarnings("serial")
+    private com.google.protobuf.LazyStringArrayList ackIds_ =
+        com.google.protobuf.LazyStringArrayList.emptyList();
     /**
      *
      *
@@ -291,7 +336,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
      * Successfully processed acknowledgement IDs.
      * </pre>
      *
-     * <code>repeated string ack_ids = 1 [ctype = CORD];</code>
+     * <code>repeated string ack_ids = 1;</code>
      *
      * @return A list containing the ackIds.
      */
@@ -305,7 +350,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
      * Successfully processed acknowledgement IDs.
      * </pre>
      *
-     * <code>repeated string ack_ids = 1 [ctype = CORD];</code>
+     * <code>repeated string ack_ids = 1;</code>
      *
      * @return The count of ackIds.
      */
@@ -319,7 +364,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
      * Successfully processed acknowledgement IDs.
      * </pre>
      *
-     * <code>repeated string ack_ids = 1 [ctype = CORD];</code>
+     * <code>repeated string ack_ids = 1;</code>
      *
      * @param index The index of the element to return.
      * @return The ackIds at the given index.
@@ -334,7 +379,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
      * Successfully processed acknowledgement IDs.
      * </pre>
      *
-     * <code>repeated string ack_ids = 1 [ctype = CORD];</code>
+     * <code>repeated string ack_ids = 1;</code>
      *
      * @param index The index of the value to return.
      * @return The bytes of the ackIds at the given index.
@@ -344,7 +389,10 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
     }
 
     public static final int INVALID_ACK_IDS_FIELD_NUMBER = 2;
-    private com.google.protobuf.LazyStringList invalidAckIds_;
+
+    @SuppressWarnings("serial")
+    private com.google.protobuf.LazyStringArrayList invalidAckIds_ =
+        com.google.protobuf.LazyStringArrayList.emptyList();
     /**
      *
      *
@@ -353,7 +401,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
      * deadline has expired.
      * </pre>
      *
-     * <code>repeated string invalid_ack_ids = 2 [ctype = CORD];</code>
+     * <code>repeated string invalid_ack_ids = 2;</code>
      *
      * @return A list containing the invalidAckIds.
      */
@@ -368,7 +416,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
      * deadline has expired.
      * </pre>
      *
-     * <code>repeated string invalid_ack_ids = 2 [ctype = CORD];</code>
+     * <code>repeated string invalid_ack_ids = 2;</code>
      *
      * @return The count of invalidAckIds.
      */
@@ -383,7 +431,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
      * deadline has expired.
      * </pre>
      *
-     * <code>repeated string invalid_ack_ids = 2 [ctype = CORD];</code>
+     * <code>repeated string invalid_ack_ids = 2;</code>
      *
      * @param index The index of the element to return.
      * @return The invalidAckIds at the given index.
@@ -399,7 +447,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
      * deadline has expired.
      * </pre>
      *
-     * <code>repeated string invalid_ack_ids = 2 [ctype = CORD];</code>
+     * <code>repeated string invalid_ack_ids = 2;</code>
      *
      * @param index The index of the value to return.
      * @return The bytes of the invalidAckIds at the given index.
@@ -409,7 +457,10 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
     }
 
     public static final int UNORDERED_ACK_IDS_FIELD_NUMBER = 3;
-    private com.google.protobuf.LazyStringList unorderedAckIds_;
+
+    @SuppressWarnings("serial")
+    private com.google.protobuf.LazyStringArrayList unorderedAckIds_ =
+        com.google.protobuf.LazyStringArrayList.emptyList();
     /**
      *
      *
@@ -417,7 +468,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
      * List of acknowledgement IDs that were out of order.
      * </pre>
      *
-     * <code>repeated string unordered_ack_ids = 3 [ctype = CORD];</code>
+     * <code>repeated string unordered_ack_ids = 3;</code>
      *
      * @return A list containing the unorderedAckIds.
      */
@@ -431,7 +482,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
      * List of acknowledgement IDs that were out of order.
      * </pre>
      *
-     * <code>repeated string unordered_ack_ids = 3 [ctype = CORD];</code>
+     * <code>repeated string unordered_ack_ids = 3;</code>
      *
      * @return The count of unorderedAckIds.
      */
@@ -445,7 +496,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
      * List of acknowledgement IDs that were out of order.
      * </pre>
      *
-     * <code>repeated string unordered_ack_ids = 3 [ctype = CORD];</code>
+     * <code>repeated string unordered_ack_ids = 3;</code>
      *
      * @param index The index of the element to return.
      * @return The unorderedAckIds at the given index.
@@ -460,13 +511,77 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
      * List of acknowledgement IDs that were out of order.
      * </pre>
      *
-     * <code>repeated string unordered_ack_ids = 3 [ctype = CORD];</code>
+     * <code>repeated string unordered_ack_ids = 3;</code>
      *
      * @param index The index of the value to return.
      * @return The bytes of the unorderedAckIds at the given index.
      */
     public com.google.protobuf.ByteString getUnorderedAckIdsBytes(int index) {
       return unorderedAckIds_.getByteString(index);
+    }
+
+    public static final int TEMPORARY_FAILED_ACK_IDS_FIELD_NUMBER = 4;
+
+    @SuppressWarnings("serial")
+    private com.google.protobuf.LazyStringArrayList temporaryFailedAckIds_ =
+        com.google.protobuf.LazyStringArrayList.emptyList();
+    /**
+     *
+     *
+     * <pre>
+     * List of acknowledgement IDs that failed processing with temporary issues.
+     * </pre>
+     *
+     * <code>repeated string temporary_failed_ack_ids = 4;</code>
+     *
+     * @return A list containing the temporaryFailedAckIds.
+     */
+    public com.google.protobuf.ProtocolStringList getTemporaryFailedAckIdsList() {
+      return temporaryFailedAckIds_;
+    }
+    /**
+     *
+     *
+     * <pre>
+     * List of acknowledgement IDs that failed processing with temporary issues.
+     * </pre>
+     *
+     * <code>repeated string temporary_failed_ack_ids = 4;</code>
+     *
+     * @return The count of temporaryFailedAckIds.
+     */
+    public int getTemporaryFailedAckIdsCount() {
+      return temporaryFailedAckIds_.size();
+    }
+    /**
+     *
+     *
+     * <pre>
+     * List of acknowledgement IDs that failed processing with temporary issues.
+     * </pre>
+     *
+     * <code>repeated string temporary_failed_ack_ids = 4;</code>
+     *
+     * @param index The index of the element to return.
+     * @return The temporaryFailedAckIds at the given index.
+     */
+    public java.lang.String getTemporaryFailedAckIds(int index) {
+      return temporaryFailedAckIds_.get(index);
+    }
+    /**
+     *
+     *
+     * <pre>
+     * List of acknowledgement IDs that failed processing with temporary issues.
+     * </pre>
+     *
+     * <code>repeated string temporary_failed_ack_ids = 4;</code>
+     *
+     * @param index The index of the value to return.
+     * @return The bytes of the temporaryFailedAckIds at the given index.
+     */
+    public com.google.protobuf.ByteString getTemporaryFailedAckIdsBytes(int index) {
+      return temporaryFailedAckIds_.getByteString(index);
     }
 
     private byte memoizedIsInitialized = -1;
@@ -491,6 +606,10 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
       }
       for (int i = 0; i < unorderedAckIds_.size(); i++) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 3, unorderedAckIds_.getRaw(i));
+      }
+      for (int i = 0; i < temporaryFailedAckIds_.size(); i++) {
+        com.google.protobuf.GeneratedMessageV3.writeString(
+            output, 4, temporaryFailedAckIds_.getRaw(i));
       }
       getUnknownFields().writeTo(output);
     }
@@ -525,6 +644,14 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
         size += dataSize;
         size += 1 * getUnorderedAckIdsList().size();
       }
+      {
+        int dataSize = 0;
+        for (int i = 0; i < temporaryFailedAckIds_.size(); i++) {
+          dataSize += computeStringSizeNoTag(temporaryFailedAckIds_.getRaw(i));
+        }
+        size += dataSize;
+        size += 1 * getTemporaryFailedAckIdsList().size();
+      }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
@@ -544,6 +671,8 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
       if (!getAckIdsList().equals(other.getAckIdsList())) return false;
       if (!getInvalidAckIdsList().equals(other.getInvalidAckIdsList())) return false;
       if (!getUnorderedAckIdsList().equals(other.getUnorderedAckIdsList())) return false;
+      if (!getTemporaryFailedAckIdsList().equals(other.getTemporaryFailedAckIdsList()))
+        return false;
       if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
@@ -566,6 +695,10 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
       if (getUnorderedAckIdsCount() > 0) {
         hash = (37 * hash) + UNORDERED_ACK_IDS_FIELD_NUMBER;
         hash = (53 * hash) + getUnorderedAckIdsList().hashCode();
+      }
+      if (getTemporaryFailedAckIdsCount() > 0) {
+        hash = (37 * hash) + TEMPORARY_FAILED_ACK_IDS_FIELD_NUMBER;
+        hash = (53 * hash) + getTemporaryFailedAckIdsList().hashCode();
       }
       hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
@@ -711,12 +844,11 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        ackIds_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000001);
-        invalidAckIds_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000002);
-        unorderedAckIds_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000004);
+        bitField0_ = 0;
+        ackIds_ = com.google.protobuf.LazyStringArrayList.emptyList();
+        invalidAckIds_ = com.google.protobuf.LazyStringArrayList.emptyList();
+        unorderedAckIds_ = com.google.protobuf.LazyStringArrayList.emptyList();
+        temporaryFailedAckIds_ = com.google.protobuf.LazyStringArrayList.emptyList();
         return this;
       }
 
@@ -746,24 +878,32 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
       public com.google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation buildPartial() {
         com.google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation result =
             new com.google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation(this);
-        int from_bitField0_ = bitField0_;
-        if (((bitField0_ & 0x00000001) != 0)) {
-          ackIds_ = ackIds_.getUnmodifiableView();
-          bitField0_ = (bitField0_ & ~0x00000001);
+        if (bitField0_ != 0) {
+          buildPartial0(result);
         }
-        result.ackIds_ = ackIds_;
-        if (((bitField0_ & 0x00000002) != 0)) {
-          invalidAckIds_ = invalidAckIds_.getUnmodifiableView();
-          bitField0_ = (bitField0_ & ~0x00000002);
-        }
-        result.invalidAckIds_ = invalidAckIds_;
-        if (((bitField0_ & 0x00000004) != 0)) {
-          unorderedAckIds_ = unorderedAckIds_.getUnmodifiableView();
-          bitField0_ = (bitField0_ & ~0x00000004);
-        }
-        result.unorderedAckIds_ = unorderedAckIds_;
         onBuilt();
         return result;
+      }
+
+      private void buildPartial0(
+          com.google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          ackIds_.makeImmutable();
+          result.ackIds_ = ackIds_;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          invalidAckIds_.makeImmutable();
+          result.invalidAckIds_ = invalidAckIds_;
+        }
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          unorderedAckIds_.makeImmutable();
+          result.unorderedAckIds_ = unorderedAckIds_;
+        }
+        if (((from_bitField0_ & 0x00000008) != 0)) {
+          temporaryFailedAckIds_.makeImmutable();
+          result.temporaryFailedAckIds_ = temporaryFailedAckIds_;
+        }
       }
 
       @java.lang.Override
@@ -820,7 +960,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
         if (!other.ackIds_.isEmpty()) {
           if (ackIds_.isEmpty()) {
             ackIds_ = other.ackIds_;
-            bitField0_ = (bitField0_ & ~0x00000001);
+            bitField0_ |= 0x00000001;
           } else {
             ensureAckIdsIsMutable();
             ackIds_.addAll(other.ackIds_);
@@ -830,7 +970,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
         if (!other.invalidAckIds_.isEmpty()) {
           if (invalidAckIds_.isEmpty()) {
             invalidAckIds_ = other.invalidAckIds_;
-            bitField0_ = (bitField0_ & ~0x00000002);
+            bitField0_ |= 0x00000002;
           } else {
             ensureInvalidAckIdsIsMutable();
             invalidAckIds_.addAll(other.invalidAckIds_);
@@ -840,10 +980,20 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
         if (!other.unorderedAckIds_.isEmpty()) {
           if (unorderedAckIds_.isEmpty()) {
             unorderedAckIds_ = other.unorderedAckIds_;
-            bitField0_ = (bitField0_ & ~0x00000004);
+            bitField0_ |= 0x00000004;
           } else {
             ensureUnorderedAckIdsIsMutable();
             unorderedAckIds_.addAll(other.unorderedAckIds_);
+          }
+          onChanged();
+        }
+        if (!other.temporaryFailedAckIds_.isEmpty()) {
+          if (temporaryFailedAckIds_.isEmpty()) {
+            temporaryFailedAckIds_ = other.temporaryFailedAckIds_;
+            bitField0_ |= 0x00000008;
+          } else {
+            ensureTemporaryFailedAckIdsIsMutable();
+            temporaryFailedAckIds_.addAll(other.temporaryFailedAckIds_);
           }
           onChanged();
         }
@@ -894,6 +1044,13 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
                   unorderedAckIds_.add(s);
                   break;
                 } // case 26
+              case 34:
+                {
+                  java.lang.String s = input.readStringRequireUtf8();
+                  ensureTemporaryFailedAckIdsIsMutable();
+                  temporaryFailedAckIds_.add(s);
+                  break;
+                } // case 34
               default:
                 {
                   if (!super.parseUnknownField(input, extensionRegistry, tag)) {
@@ -913,14 +1070,14 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
 
       private int bitField0_;
 
-      private com.google.protobuf.LazyStringList ackIds_ =
-          com.google.protobuf.LazyStringArrayList.EMPTY;
+      private com.google.protobuf.LazyStringArrayList ackIds_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
 
       private void ensureAckIdsIsMutable() {
-        if (!((bitField0_ & 0x00000001) != 0)) {
+        if (!ackIds_.isModifiable()) {
           ackIds_ = new com.google.protobuf.LazyStringArrayList(ackIds_);
-          bitField0_ |= 0x00000001;
         }
+        bitField0_ |= 0x00000001;
       }
       /**
        *
@@ -929,12 +1086,13 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
        * Successfully processed acknowledgement IDs.
        * </pre>
        *
-       * <code>repeated string ack_ids = 1 [ctype = CORD];</code>
+       * <code>repeated string ack_ids = 1;</code>
        *
        * @return A list containing the ackIds.
        */
       public com.google.protobuf.ProtocolStringList getAckIdsList() {
-        return ackIds_.getUnmodifiableView();
+        ackIds_.makeImmutable();
+        return ackIds_;
       }
       /**
        *
@@ -943,7 +1101,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
        * Successfully processed acknowledgement IDs.
        * </pre>
        *
-       * <code>repeated string ack_ids = 1 [ctype = CORD];</code>
+       * <code>repeated string ack_ids = 1;</code>
        *
        * @return The count of ackIds.
        */
@@ -957,7 +1115,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
        * Successfully processed acknowledgement IDs.
        * </pre>
        *
-       * <code>repeated string ack_ids = 1 [ctype = CORD];</code>
+       * <code>repeated string ack_ids = 1;</code>
        *
        * @param index The index of the element to return.
        * @return The ackIds at the given index.
@@ -972,7 +1130,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
        * Successfully processed acknowledgement IDs.
        * </pre>
        *
-       * <code>repeated string ack_ids = 1 [ctype = CORD];</code>
+       * <code>repeated string ack_ids = 1;</code>
        *
        * @param index The index of the value to return.
        * @return The bytes of the ackIds at the given index.
@@ -987,7 +1145,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
        * Successfully processed acknowledgement IDs.
        * </pre>
        *
-       * <code>repeated string ack_ids = 1 [ctype = CORD];</code>
+       * <code>repeated string ack_ids = 1;</code>
        *
        * @param index The index to set the value at.
        * @param value The ackIds to set.
@@ -999,6 +1157,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
         }
         ensureAckIdsIsMutable();
         ackIds_.set(index, value);
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -1009,7 +1168,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
        * Successfully processed acknowledgement IDs.
        * </pre>
        *
-       * <code>repeated string ack_ids = 1 [ctype = CORD];</code>
+       * <code>repeated string ack_ids = 1;</code>
        *
        * @param value The ackIds to add.
        * @return This builder for chaining.
@@ -1020,6 +1179,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
         }
         ensureAckIdsIsMutable();
         ackIds_.add(value);
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -1030,7 +1190,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
        * Successfully processed acknowledgement IDs.
        * </pre>
        *
-       * <code>repeated string ack_ids = 1 [ctype = CORD];</code>
+       * <code>repeated string ack_ids = 1;</code>
        *
        * @param values The ackIds to add.
        * @return This builder for chaining.
@@ -1038,6 +1198,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
       public Builder addAllAckIds(java.lang.Iterable<java.lang.String> values) {
         ensureAckIdsIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(values, ackIds_);
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -1048,13 +1209,14 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
        * Successfully processed acknowledgement IDs.
        * </pre>
        *
-       * <code>repeated string ack_ids = 1 [ctype = CORD];</code>
+       * <code>repeated string ack_ids = 1;</code>
        *
        * @return This builder for chaining.
        */
       public Builder clearAckIds() {
-        ackIds_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        ackIds_ = com.google.protobuf.LazyStringArrayList.emptyList();
         bitField0_ = (bitField0_ & ~0x00000001);
+        ;
         onChanged();
         return this;
       }
@@ -1065,7 +1227,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
        * Successfully processed acknowledgement IDs.
        * </pre>
        *
-       * <code>repeated string ack_ids = 1 [ctype = CORD];</code>
+       * <code>repeated string ack_ids = 1;</code>
        *
        * @param value The bytes of the ackIds to add.
        * @return This builder for chaining.
@@ -1077,18 +1239,19 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
         checkByteStringIsUtf8(value);
         ensureAckIdsIsMutable();
         ackIds_.add(value);
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
 
-      private com.google.protobuf.LazyStringList invalidAckIds_ =
-          com.google.protobuf.LazyStringArrayList.EMPTY;
+      private com.google.protobuf.LazyStringArrayList invalidAckIds_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
 
       private void ensureInvalidAckIdsIsMutable() {
-        if (!((bitField0_ & 0x00000002) != 0)) {
+        if (!invalidAckIds_.isModifiable()) {
           invalidAckIds_ = new com.google.protobuf.LazyStringArrayList(invalidAckIds_);
-          bitField0_ |= 0x00000002;
         }
+        bitField0_ |= 0x00000002;
       }
       /**
        *
@@ -1098,12 +1261,13 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
        * deadline has expired.
        * </pre>
        *
-       * <code>repeated string invalid_ack_ids = 2 [ctype = CORD];</code>
+       * <code>repeated string invalid_ack_ids = 2;</code>
        *
        * @return A list containing the invalidAckIds.
        */
       public com.google.protobuf.ProtocolStringList getInvalidAckIdsList() {
-        return invalidAckIds_.getUnmodifiableView();
+        invalidAckIds_.makeImmutable();
+        return invalidAckIds_;
       }
       /**
        *
@@ -1113,7 +1277,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
        * deadline has expired.
        * </pre>
        *
-       * <code>repeated string invalid_ack_ids = 2 [ctype = CORD];</code>
+       * <code>repeated string invalid_ack_ids = 2;</code>
        *
        * @return The count of invalidAckIds.
        */
@@ -1128,7 +1292,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
        * deadline has expired.
        * </pre>
        *
-       * <code>repeated string invalid_ack_ids = 2 [ctype = CORD];</code>
+       * <code>repeated string invalid_ack_ids = 2;</code>
        *
        * @param index The index of the element to return.
        * @return The invalidAckIds at the given index.
@@ -1144,7 +1308,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
        * deadline has expired.
        * </pre>
        *
-       * <code>repeated string invalid_ack_ids = 2 [ctype = CORD];</code>
+       * <code>repeated string invalid_ack_ids = 2;</code>
        *
        * @param index The index of the value to return.
        * @return The bytes of the invalidAckIds at the given index.
@@ -1160,7 +1324,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
        * deadline has expired.
        * </pre>
        *
-       * <code>repeated string invalid_ack_ids = 2 [ctype = CORD];</code>
+       * <code>repeated string invalid_ack_ids = 2;</code>
        *
        * @param index The index to set the value at.
        * @param value The invalidAckIds to set.
@@ -1172,6 +1336,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
         }
         ensureInvalidAckIdsIsMutable();
         invalidAckIds_.set(index, value);
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -1183,7 +1348,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
        * deadline has expired.
        * </pre>
        *
-       * <code>repeated string invalid_ack_ids = 2 [ctype = CORD];</code>
+       * <code>repeated string invalid_ack_ids = 2;</code>
        *
        * @param value The invalidAckIds to add.
        * @return This builder for chaining.
@@ -1194,6 +1359,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
         }
         ensureInvalidAckIdsIsMutable();
         invalidAckIds_.add(value);
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -1205,7 +1371,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
        * deadline has expired.
        * </pre>
        *
-       * <code>repeated string invalid_ack_ids = 2 [ctype = CORD];</code>
+       * <code>repeated string invalid_ack_ids = 2;</code>
        *
        * @param values The invalidAckIds to add.
        * @return This builder for chaining.
@@ -1213,6 +1379,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
       public Builder addAllInvalidAckIds(java.lang.Iterable<java.lang.String> values) {
         ensureInvalidAckIdsIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(values, invalidAckIds_);
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -1224,13 +1391,14 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
        * deadline has expired.
        * </pre>
        *
-       * <code>repeated string invalid_ack_ids = 2 [ctype = CORD];</code>
+       * <code>repeated string invalid_ack_ids = 2;</code>
        *
        * @return This builder for chaining.
        */
       public Builder clearInvalidAckIds() {
-        invalidAckIds_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        invalidAckIds_ = com.google.protobuf.LazyStringArrayList.emptyList();
         bitField0_ = (bitField0_ & ~0x00000002);
+        ;
         onChanged();
         return this;
       }
@@ -1242,7 +1410,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
        * deadline has expired.
        * </pre>
        *
-       * <code>repeated string invalid_ack_ids = 2 [ctype = CORD];</code>
+       * <code>repeated string invalid_ack_ids = 2;</code>
        *
        * @param value The bytes of the invalidAckIds to add.
        * @return This builder for chaining.
@@ -1254,18 +1422,19 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
         checkByteStringIsUtf8(value);
         ensureInvalidAckIdsIsMutable();
         invalidAckIds_.add(value);
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
 
-      private com.google.protobuf.LazyStringList unorderedAckIds_ =
-          com.google.protobuf.LazyStringArrayList.EMPTY;
+      private com.google.protobuf.LazyStringArrayList unorderedAckIds_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
 
       private void ensureUnorderedAckIdsIsMutable() {
-        if (!((bitField0_ & 0x00000004) != 0)) {
+        if (!unorderedAckIds_.isModifiable()) {
           unorderedAckIds_ = new com.google.protobuf.LazyStringArrayList(unorderedAckIds_);
-          bitField0_ |= 0x00000004;
         }
+        bitField0_ |= 0x00000004;
       }
       /**
        *
@@ -1274,12 +1443,13 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
        * List of acknowledgement IDs that were out of order.
        * </pre>
        *
-       * <code>repeated string unordered_ack_ids = 3 [ctype = CORD];</code>
+       * <code>repeated string unordered_ack_ids = 3;</code>
        *
        * @return A list containing the unorderedAckIds.
        */
       public com.google.protobuf.ProtocolStringList getUnorderedAckIdsList() {
-        return unorderedAckIds_.getUnmodifiableView();
+        unorderedAckIds_.makeImmutable();
+        return unorderedAckIds_;
       }
       /**
        *
@@ -1288,7 +1458,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
        * List of acknowledgement IDs that were out of order.
        * </pre>
        *
-       * <code>repeated string unordered_ack_ids = 3 [ctype = CORD];</code>
+       * <code>repeated string unordered_ack_ids = 3;</code>
        *
        * @return The count of unorderedAckIds.
        */
@@ -1302,7 +1472,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
        * List of acknowledgement IDs that were out of order.
        * </pre>
        *
-       * <code>repeated string unordered_ack_ids = 3 [ctype = CORD];</code>
+       * <code>repeated string unordered_ack_ids = 3;</code>
        *
        * @param index The index of the element to return.
        * @return The unorderedAckIds at the given index.
@@ -1317,7 +1487,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
        * List of acknowledgement IDs that were out of order.
        * </pre>
        *
-       * <code>repeated string unordered_ack_ids = 3 [ctype = CORD];</code>
+       * <code>repeated string unordered_ack_ids = 3;</code>
        *
        * @param index The index of the value to return.
        * @return The bytes of the unorderedAckIds at the given index.
@@ -1332,7 +1502,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
        * List of acknowledgement IDs that were out of order.
        * </pre>
        *
-       * <code>repeated string unordered_ack_ids = 3 [ctype = CORD];</code>
+       * <code>repeated string unordered_ack_ids = 3;</code>
        *
        * @param index The index to set the value at.
        * @param value The unorderedAckIds to set.
@@ -1344,6 +1514,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
         }
         ensureUnorderedAckIdsIsMutable();
         unorderedAckIds_.set(index, value);
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -1354,7 +1525,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
        * List of acknowledgement IDs that were out of order.
        * </pre>
        *
-       * <code>repeated string unordered_ack_ids = 3 [ctype = CORD];</code>
+       * <code>repeated string unordered_ack_ids = 3;</code>
        *
        * @param value The unorderedAckIds to add.
        * @return This builder for chaining.
@@ -1365,6 +1536,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
         }
         ensureUnorderedAckIdsIsMutable();
         unorderedAckIds_.add(value);
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -1375,7 +1547,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
        * List of acknowledgement IDs that were out of order.
        * </pre>
        *
-       * <code>repeated string unordered_ack_ids = 3 [ctype = CORD];</code>
+       * <code>repeated string unordered_ack_ids = 3;</code>
        *
        * @param values The unorderedAckIds to add.
        * @return This builder for chaining.
@@ -1383,6 +1555,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
       public Builder addAllUnorderedAckIds(java.lang.Iterable<java.lang.String> values) {
         ensureUnorderedAckIdsIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(values, unorderedAckIds_);
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -1393,13 +1566,14 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
        * List of acknowledgement IDs that were out of order.
        * </pre>
        *
-       * <code>repeated string unordered_ack_ids = 3 [ctype = CORD];</code>
+       * <code>repeated string unordered_ack_ids = 3;</code>
        *
        * @return This builder for chaining.
        */
       public Builder clearUnorderedAckIds() {
-        unorderedAckIds_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        unorderedAckIds_ = com.google.protobuf.LazyStringArrayList.emptyList();
         bitField0_ = (bitField0_ & ~0x00000004);
+        ;
         onChanged();
         return this;
       }
@@ -1410,7 +1584,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
        * List of acknowledgement IDs that were out of order.
        * </pre>
        *
-       * <code>repeated string unordered_ack_ids = 3 [ctype = CORD];</code>
+       * <code>repeated string unordered_ack_ids = 3;</code>
        *
        * @param value The bytes of the unorderedAckIds to add.
        * @return This builder for chaining.
@@ -1422,6 +1596,182 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
         checkByteStringIsUtf8(value);
         ensureUnorderedAckIdsIsMutable();
         unorderedAckIds_.add(value);
+        bitField0_ |= 0x00000004;
+        onChanged();
+        return this;
+      }
+
+      private com.google.protobuf.LazyStringArrayList temporaryFailedAckIds_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
+
+      private void ensureTemporaryFailedAckIdsIsMutable() {
+        if (!temporaryFailedAckIds_.isModifiable()) {
+          temporaryFailedAckIds_ =
+              new com.google.protobuf.LazyStringArrayList(temporaryFailedAckIds_);
+        }
+        bitField0_ |= 0x00000008;
+      }
+      /**
+       *
+       *
+       * <pre>
+       * List of acknowledgement IDs that failed processing with temporary issues.
+       * </pre>
+       *
+       * <code>repeated string temporary_failed_ack_ids = 4;</code>
+       *
+       * @return A list containing the temporaryFailedAckIds.
+       */
+      public com.google.protobuf.ProtocolStringList getTemporaryFailedAckIdsList() {
+        temporaryFailedAckIds_.makeImmutable();
+        return temporaryFailedAckIds_;
+      }
+      /**
+       *
+       *
+       * <pre>
+       * List of acknowledgement IDs that failed processing with temporary issues.
+       * </pre>
+       *
+       * <code>repeated string temporary_failed_ack_ids = 4;</code>
+       *
+       * @return The count of temporaryFailedAckIds.
+       */
+      public int getTemporaryFailedAckIdsCount() {
+        return temporaryFailedAckIds_.size();
+      }
+      /**
+       *
+       *
+       * <pre>
+       * List of acknowledgement IDs that failed processing with temporary issues.
+       * </pre>
+       *
+       * <code>repeated string temporary_failed_ack_ids = 4;</code>
+       *
+       * @param index The index of the element to return.
+       * @return The temporaryFailedAckIds at the given index.
+       */
+      public java.lang.String getTemporaryFailedAckIds(int index) {
+        return temporaryFailedAckIds_.get(index);
+      }
+      /**
+       *
+       *
+       * <pre>
+       * List of acknowledgement IDs that failed processing with temporary issues.
+       * </pre>
+       *
+       * <code>repeated string temporary_failed_ack_ids = 4;</code>
+       *
+       * @param index The index of the value to return.
+       * @return The bytes of the temporaryFailedAckIds at the given index.
+       */
+      public com.google.protobuf.ByteString getTemporaryFailedAckIdsBytes(int index) {
+        return temporaryFailedAckIds_.getByteString(index);
+      }
+      /**
+       *
+       *
+       * <pre>
+       * List of acknowledgement IDs that failed processing with temporary issues.
+       * </pre>
+       *
+       * <code>repeated string temporary_failed_ack_ids = 4;</code>
+       *
+       * @param index The index to set the value at.
+       * @param value The temporaryFailedAckIds to set.
+       * @return This builder for chaining.
+       */
+      public Builder setTemporaryFailedAckIds(int index, java.lang.String value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureTemporaryFailedAckIdsIsMutable();
+        temporaryFailedAckIds_.set(index, value);
+        bitField0_ |= 0x00000008;
+        onChanged();
+        return this;
+      }
+      /**
+       *
+       *
+       * <pre>
+       * List of acknowledgement IDs that failed processing with temporary issues.
+       * </pre>
+       *
+       * <code>repeated string temporary_failed_ack_ids = 4;</code>
+       *
+       * @param value The temporaryFailedAckIds to add.
+       * @return This builder for chaining.
+       */
+      public Builder addTemporaryFailedAckIds(java.lang.String value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureTemporaryFailedAckIdsIsMutable();
+        temporaryFailedAckIds_.add(value);
+        bitField0_ |= 0x00000008;
+        onChanged();
+        return this;
+      }
+      /**
+       *
+       *
+       * <pre>
+       * List of acknowledgement IDs that failed processing with temporary issues.
+       * </pre>
+       *
+       * <code>repeated string temporary_failed_ack_ids = 4;</code>
+       *
+       * @param values The temporaryFailedAckIds to add.
+       * @return This builder for chaining.
+       */
+      public Builder addAllTemporaryFailedAckIds(java.lang.Iterable<java.lang.String> values) {
+        ensureTemporaryFailedAckIdsIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(values, temporaryFailedAckIds_);
+        bitField0_ |= 0x00000008;
+        onChanged();
+        return this;
+      }
+      /**
+       *
+       *
+       * <pre>
+       * List of acknowledgement IDs that failed processing with temporary issues.
+       * </pre>
+       *
+       * <code>repeated string temporary_failed_ack_ids = 4;</code>
+       *
+       * @return This builder for chaining.
+       */
+      public Builder clearTemporaryFailedAckIds() {
+        temporaryFailedAckIds_ = com.google.protobuf.LazyStringArrayList.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000008);
+        ;
+        onChanged();
+        return this;
+      }
+      /**
+       *
+       *
+       * <pre>
+       * List of acknowledgement IDs that failed processing with temporary issues.
+       * </pre>
+       *
+       * <code>repeated string temporary_failed_ack_ids = 4;</code>
+       *
+       * @param value The bytes of the temporaryFailedAckIds to add.
+       * @return This builder for chaining.
+       */
+      public Builder addTemporaryFailedAckIdsBytes(com.google.protobuf.ByteString value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        checkByteStringIsUtf8(value);
+        ensureTemporaryFailedAckIdsIsMutable();
+        temporaryFailedAckIds_.add(value);
+        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
@@ -1505,7 +1855,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
      * Successfully processed acknowledgement IDs.
      * </pre>
      *
-     * <code>repeated string ack_ids = 1 [ctype = CORD];</code>
+     * <code>repeated string ack_ids = 1;</code>
      *
      * @return A list containing the ackIds.
      */
@@ -1517,7 +1867,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
      * Successfully processed acknowledgement IDs.
      * </pre>
      *
-     * <code>repeated string ack_ids = 1 [ctype = CORD];</code>
+     * <code>repeated string ack_ids = 1;</code>
      *
      * @return The count of ackIds.
      */
@@ -1529,7 +1879,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
      * Successfully processed acknowledgement IDs.
      * </pre>
      *
-     * <code>repeated string ack_ids = 1 [ctype = CORD];</code>
+     * <code>repeated string ack_ids = 1;</code>
      *
      * @param index The index of the element to return.
      * @return The ackIds at the given index.
@@ -1542,7 +1892,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
      * Successfully processed acknowledgement IDs.
      * </pre>
      *
-     * <code>repeated string ack_ids = 1 [ctype = CORD];</code>
+     * <code>repeated string ack_ids = 1;</code>
      *
      * @param index The index of the value to return.
      * @return The bytes of the ackIds at the given index.
@@ -1557,7 +1907,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
      * deadline has expired.
      * </pre>
      *
-     * <code>repeated string invalid_ack_ids = 2 [ctype = CORD];</code>
+     * <code>repeated string invalid_ack_ids = 2;</code>
      *
      * @return A list containing the invalidAckIds.
      */
@@ -1570,7 +1920,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
      * deadline has expired.
      * </pre>
      *
-     * <code>repeated string invalid_ack_ids = 2 [ctype = CORD];</code>
+     * <code>repeated string invalid_ack_ids = 2;</code>
      *
      * @return The count of invalidAckIds.
      */
@@ -1583,7 +1933,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
      * deadline has expired.
      * </pre>
      *
-     * <code>repeated string invalid_ack_ids = 2 [ctype = CORD];</code>
+     * <code>repeated string invalid_ack_ids = 2;</code>
      *
      * @param index The index of the element to return.
      * @return The invalidAckIds at the given index.
@@ -1597,12 +1947,63 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
      * deadline has expired.
      * </pre>
      *
-     * <code>repeated string invalid_ack_ids = 2 [ctype = CORD];</code>
+     * <code>repeated string invalid_ack_ids = 2;</code>
      *
      * @param index The index of the value to return.
      * @return The bytes of the invalidAckIds at the given index.
      */
     com.google.protobuf.ByteString getInvalidAckIdsBytes(int index);
+
+    /**
+     *
+     *
+     * <pre>
+     * List of acknowledgement IDs that failed processing with temporary issues.
+     * </pre>
+     *
+     * <code>repeated string temporary_failed_ack_ids = 3;</code>
+     *
+     * @return A list containing the temporaryFailedAckIds.
+     */
+    java.util.List<java.lang.String> getTemporaryFailedAckIdsList();
+    /**
+     *
+     *
+     * <pre>
+     * List of acknowledgement IDs that failed processing with temporary issues.
+     * </pre>
+     *
+     * <code>repeated string temporary_failed_ack_ids = 3;</code>
+     *
+     * @return The count of temporaryFailedAckIds.
+     */
+    int getTemporaryFailedAckIdsCount();
+    /**
+     *
+     *
+     * <pre>
+     * List of acknowledgement IDs that failed processing with temporary issues.
+     * </pre>
+     *
+     * <code>repeated string temporary_failed_ack_ids = 3;</code>
+     *
+     * @param index The index of the element to return.
+     * @return The temporaryFailedAckIds at the given index.
+     */
+    java.lang.String getTemporaryFailedAckIds(int index);
+    /**
+     *
+     *
+     * <pre>
+     * List of acknowledgement IDs that failed processing with temporary issues.
+     * </pre>
+     *
+     * <code>repeated string temporary_failed_ack_ids = 3;</code>
+     *
+     * @param index The index of the value to return.
+     * @return The bytes of the temporaryFailedAckIds at the given index.
+     */
+    com.google.protobuf.ByteString getTemporaryFailedAckIdsBytes(int index);
   }
   /**
    *
@@ -1627,19 +2028,15 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
     }
 
     private ModifyAckDeadlineConfirmation() {
-      ackIds_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-      invalidAckIds_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      ackIds_ = com.google.protobuf.LazyStringArrayList.emptyList();
+      invalidAckIds_ = com.google.protobuf.LazyStringArrayList.emptyList();
+      temporaryFailedAckIds_ = com.google.protobuf.LazyStringArrayList.emptyList();
     }
 
     @java.lang.Override
     @SuppressWarnings({"unused"})
     protected java.lang.Object newInstance(UnusedPrivateParameter unused) {
       return new ModifyAckDeadlineConfirmation();
-    }
-
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet getUnknownFields() {
-      return this.unknownFields;
     }
 
     public static final com.google.protobuf.Descriptors.Descriptor getDescriptor() {
@@ -1659,7 +2056,10 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
     }
 
     public static final int ACK_IDS_FIELD_NUMBER = 1;
-    private com.google.protobuf.LazyStringList ackIds_;
+
+    @SuppressWarnings("serial")
+    private com.google.protobuf.LazyStringArrayList ackIds_ =
+        com.google.protobuf.LazyStringArrayList.emptyList();
     /**
      *
      *
@@ -1667,7 +2067,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
      * Successfully processed acknowledgement IDs.
      * </pre>
      *
-     * <code>repeated string ack_ids = 1 [ctype = CORD];</code>
+     * <code>repeated string ack_ids = 1;</code>
      *
      * @return A list containing the ackIds.
      */
@@ -1681,7 +2081,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
      * Successfully processed acknowledgement IDs.
      * </pre>
      *
-     * <code>repeated string ack_ids = 1 [ctype = CORD];</code>
+     * <code>repeated string ack_ids = 1;</code>
      *
      * @return The count of ackIds.
      */
@@ -1695,7 +2095,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
      * Successfully processed acknowledgement IDs.
      * </pre>
      *
-     * <code>repeated string ack_ids = 1 [ctype = CORD];</code>
+     * <code>repeated string ack_ids = 1;</code>
      *
      * @param index The index of the element to return.
      * @return The ackIds at the given index.
@@ -1710,7 +2110,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
      * Successfully processed acknowledgement IDs.
      * </pre>
      *
-     * <code>repeated string ack_ids = 1 [ctype = CORD];</code>
+     * <code>repeated string ack_ids = 1;</code>
      *
      * @param index The index of the value to return.
      * @return The bytes of the ackIds at the given index.
@@ -1720,7 +2120,10 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
     }
 
     public static final int INVALID_ACK_IDS_FIELD_NUMBER = 2;
-    private com.google.protobuf.LazyStringList invalidAckIds_;
+
+    @SuppressWarnings("serial")
+    private com.google.protobuf.LazyStringArrayList invalidAckIds_ =
+        com.google.protobuf.LazyStringArrayList.emptyList();
     /**
      *
      *
@@ -1729,7 +2132,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
      * deadline has expired.
      * </pre>
      *
-     * <code>repeated string invalid_ack_ids = 2 [ctype = CORD];</code>
+     * <code>repeated string invalid_ack_ids = 2;</code>
      *
      * @return A list containing the invalidAckIds.
      */
@@ -1744,7 +2147,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
      * deadline has expired.
      * </pre>
      *
-     * <code>repeated string invalid_ack_ids = 2 [ctype = CORD];</code>
+     * <code>repeated string invalid_ack_ids = 2;</code>
      *
      * @return The count of invalidAckIds.
      */
@@ -1759,7 +2162,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
      * deadline has expired.
      * </pre>
      *
-     * <code>repeated string invalid_ack_ids = 2 [ctype = CORD];</code>
+     * <code>repeated string invalid_ack_ids = 2;</code>
      *
      * @param index The index of the element to return.
      * @return The invalidAckIds at the given index.
@@ -1775,13 +2178,77 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
      * deadline has expired.
      * </pre>
      *
-     * <code>repeated string invalid_ack_ids = 2 [ctype = CORD];</code>
+     * <code>repeated string invalid_ack_ids = 2;</code>
      *
      * @param index The index of the value to return.
      * @return The bytes of the invalidAckIds at the given index.
      */
     public com.google.protobuf.ByteString getInvalidAckIdsBytes(int index) {
       return invalidAckIds_.getByteString(index);
+    }
+
+    public static final int TEMPORARY_FAILED_ACK_IDS_FIELD_NUMBER = 3;
+
+    @SuppressWarnings("serial")
+    private com.google.protobuf.LazyStringArrayList temporaryFailedAckIds_ =
+        com.google.protobuf.LazyStringArrayList.emptyList();
+    /**
+     *
+     *
+     * <pre>
+     * List of acknowledgement IDs that failed processing with temporary issues.
+     * </pre>
+     *
+     * <code>repeated string temporary_failed_ack_ids = 3;</code>
+     *
+     * @return A list containing the temporaryFailedAckIds.
+     */
+    public com.google.protobuf.ProtocolStringList getTemporaryFailedAckIdsList() {
+      return temporaryFailedAckIds_;
+    }
+    /**
+     *
+     *
+     * <pre>
+     * List of acknowledgement IDs that failed processing with temporary issues.
+     * </pre>
+     *
+     * <code>repeated string temporary_failed_ack_ids = 3;</code>
+     *
+     * @return The count of temporaryFailedAckIds.
+     */
+    public int getTemporaryFailedAckIdsCount() {
+      return temporaryFailedAckIds_.size();
+    }
+    /**
+     *
+     *
+     * <pre>
+     * List of acknowledgement IDs that failed processing with temporary issues.
+     * </pre>
+     *
+     * <code>repeated string temporary_failed_ack_ids = 3;</code>
+     *
+     * @param index The index of the element to return.
+     * @return The temporaryFailedAckIds at the given index.
+     */
+    public java.lang.String getTemporaryFailedAckIds(int index) {
+      return temporaryFailedAckIds_.get(index);
+    }
+    /**
+     *
+     *
+     * <pre>
+     * List of acknowledgement IDs that failed processing with temporary issues.
+     * </pre>
+     *
+     * <code>repeated string temporary_failed_ack_ids = 3;</code>
+     *
+     * @param index The index of the value to return.
+     * @return The bytes of the temporaryFailedAckIds at the given index.
+     */
+    public com.google.protobuf.ByteString getTemporaryFailedAckIdsBytes(int index) {
+      return temporaryFailedAckIds_.getByteString(index);
     }
 
     private byte memoizedIsInitialized = -1;
@@ -1803,6 +2270,10 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
       }
       for (int i = 0; i < invalidAckIds_.size(); i++) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 2, invalidAckIds_.getRaw(i));
+      }
+      for (int i = 0; i < temporaryFailedAckIds_.size(); i++) {
+        com.google.protobuf.GeneratedMessageV3.writeString(
+            output, 3, temporaryFailedAckIds_.getRaw(i));
       }
       getUnknownFields().writeTo(output);
     }
@@ -1829,6 +2300,14 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
         size += dataSize;
         size += 1 * getInvalidAckIdsList().size();
       }
+      {
+        int dataSize = 0;
+        for (int i = 0; i < temporaryFailedAckIds_.size(); i++) {
+          dataSize += computeStringSizeNoTag(temporaryFailedAckIds_.getRaw(i));
+        }
+        size += dataSize;
+        size += 1 * getTemporaryFailedAckIdsList().size();
+      }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
@@ -1848,6 +2327,8 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
 
       if (!getAckIdsList().equals(other.getAckIdsList())) return false;
       if (!getInvalidAckIdsList().equals(other.getInvalidAckIdsList())) return false;
+      if (!getTemporaryFailedAckIdsList().equals(other.getTemporaryFailedAckIdsList()))
+        return false;
       if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
@@ -1866,6 +2347,10 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
       if (getInvalidAckIdsCount() > 0) {
         hash = (37 * hash) + INVALID_ACK_IDS_FIELD_NUMBER;
         hash = (53 * hash) + getInvalidAckIdsList().hashCode();
+      }
+      if (getTemporaryFailedAckIdsCount() > 0) {
+        hash = (37 * hash) + TEMPORARY_FAILED_ACK_IDS_FIELD_NUMBER;
+        hash = (53 * hash) + getTemporaryFailedAckIdsList().hashCode();
       }
       hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
@@ -2017,10 +2502,10 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        ackIds_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000001);
-        invalidAckIds_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000002);
+        bitField0_ = 0;
+        ackIds_ = com.google.protobuf.LazyStringArrayList.emptyList();
+        invalidAckIds_ = com.google.protobuf.LazyStringArrayList.emptyList();
+        temporaryFailedAckIds_ = com.google.protobuf.LazyStringArrayList.emptyList();
         return this;
       }
 
@@ -2052,19 +2537,28 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
           buildPartial() {
         com.google.pubsub.v1.StreamingPullResponse.ModifyAckDeadlineConfirmation result =
             new com.google.pubsub.v1.StreamingPullResponse.ModifyAckDeadlineConfirmation(this);
-        int from_bitField0_ = bitField0_;
-        if (((bitField0_ & 0x00000001) != 0)) {
-          ackIds_ = ackIds_.getUnmodifiableView();
-          bitField0_ = (bitField0_ & ~0x00000001);
+        if (bitField0_ != 0) {
+          buildPartial0(result);
         }
-        result.ackIds_ = ackIds_;
-        if (((bitField0_ & 0x00000002) != 0)) {
-          invalidAckIds_ = invalidAckIds_.getUnmodifiableView();
-          bitField0_ = (bitField0_ & ~0x00000002);
-        }
-        result.invalidAckIds_ = invalidAckIds_;
         onBuilt();
         return result;
+      }
+
+      private void buildPartial0(
+          com.google.pubsub.v1.StreamingPullResponse.ModifyAckDeadlineConfirmation result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          ackIds_.makeImmutable();
+          result.ackIds_ = ackIds_;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          invalidAckIds_.makeImmutable();
+          result.invalidAckIds_ = invalidAckIds_;
+        }
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          temporaryFailedAckIds_.makeImmutable();
+          result.temporaryFailedAckIds_ = temporaryFailedAckIds_;
+        }
       }
 
       @java.lang.Override
@@ -2122,7 +2616,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
         if (!other.ackIds_.isEmpty()) {
           if (ackIds_.isEmpty()) {
             ackIds_ = other.ackIds_;
-            bitField0_ = (bitField0_ & ~0x00000001);
+            bitField0_ |= 0x00000001;
           } else {
             ensureAckIdsIsMutable();
             ackIds_.addAll(other.ackIds_);
@@ -2132,10 +2626,20 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
         if (!other.invalidAckIds_.isEmpty()) {
           if (invalidAckIds_.isEmpty()) {
             invalidAckIds_ = other.invalidAckIds_;
-            bitField0_ = (bitField0_ & ~0x00000002);
+            bitField0_ |= 0x00000002;
           } else {
             ensureInvalidAckIdsIsMutable();
             invalidAckIds_.addAll(other.invalidAckIds_);
+          }
+          onChanged();
+        }
+        if (!other.temporaryFailedAckIds_.isEmpty()) {
+          if (temporaryFailedAckIds_.isEmpty()) {
+            temporaryFailedAckIds_ = other.temporaryFailedAckIds_;
+            bitField0_ |= 0x00000004;
+          } else {
+            ensureTemporaryFailedAckIdsIsMutable();
+            temporaryFailedAckIds_.addAll(other.temporaryFailedAckIds_);
           }
           onChanged();
         }
@@ -2179,6 +2683,13 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
                   invalidAckIds_.add(s);
                   break;
                 } // case 18
+              case 26:
+                {
+                  java.lang.String s = input.readStringRequireUtf8();
+                  ensureTemporaryFailedAckIdsIsMutable();
+                  temporaryFailedAckIds_.add(s);
+                  break;
+                } // case 26
               default:
                 {
                   if (!super.parseUnknownField(input, extensionRegistry, tag)) {
@@ -2198,14 +2709,14 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
 
       private int bitField0_;
 
-      private com.google.protobuf.LazyStringList ackIds_ =
-          com.google.protobuf.LazyStringArrayList.EMPTY;
+      private com.google.protobuf.LazyStringArrayList ackIds_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
 
       private void ensureAckIdsIsMutable() {
-        if (!((bitField0_ & 0x00000001) != 0)) {
+        if (!ackIds_.isModifiable()) {
           ackIds_ = new com.google.protobuf.LazyStringArrayList(ackIds_);
-          bitField0_ |= 0x00000001;
         }
+        bitField0_ |= 0x00000001;
       }
       /**
        *
@@ -2214,12 +2725,13 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
        * Successfully processed acknowledgement IDs.
        * </pre>
        *
-       * <code>repeated string ack_ids = 1 [ctype = CORD];</code>
+       * <code>repeated string ack_ids = 1;</code>
        *
        * @return A list containing the ackIds.
        */
       public com.google.protobuf.ProtocolStringList getAckIdsList() {
-        return ackIds_.getUnmodifiableView();
+        ackIds_.makeImmutable();
+        return ackIds_;
       }
       /**
        *
@@ -2228,7 +2740,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
        * Successfully processed acknowledgement IDs.
        * </pre>
        *
-       * <code>repeated string ack_ids = 1 [ctype = CORD];</code>
+       * <code>repeated string ack_ids = 1;</code>
        *
        * @return The count of ackIds.
        */
@@ -2242,7 +2754,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
        * Successfully processed acknowledgement IDs.
        * </pre>
        *
-       * <code>repeated string ack_ids = 1 [ctype = CORD];</code>
+       * <code>repeated string ack_ids = 1;</code>
        *
        * @param index The index of the element to return.
        * @return The ackIds at the given index.
@@ -2257,7 +2769,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
        * Successfully processed acknowledgement IDs.
        * </pre>
        *
-       * <code>repeated string ack_ids = 1 [ctype = CORD];</code>
+       * <code>repeated string ack_ids = 1;</code>
        *
        * @param index The index of the value to return.
        * @return The bytes of the ackIds at the given index.
@@ -2272,7 +2784,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
        * Successfully processed acknowledgement IDs.
        * </pre>
        *
-       * <code>repeated string ack_ids = 1 [ctype = CORD];</code>
+       * <code>repeated string ack_ids = 1;</code>
        *
        * @param index The index to set the value at.
        * @param value The ackIds to set.
@@ -2284,6 +2796,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
         }
         ensureAckIdsIsMutable();
         ackIds_.set(index, value);
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -2294,7 +2807,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
        * Successfully processed acknowledgement IDs.
        * </pre>
        *
-       * <code>repeated string ack_ids = 1 [ctype = CORD];</code>
+       * <code>repeated string ack_ids = 1;</code>
        *
        * @param value The ackIds to add.
        * @return This builder for chaining.
@@ -2305,6 +2818,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
         }
         ensureAckIdsIsMutable();
         ackIds_.add(value);
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -2315,7 +2829,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
        * Successfully processed acknowledgement IDs.
        * </pre>
        *
-       * <code>repeated string ack_ids = 1 [ctype = CORD];</code>
+       * <code>repeated string ack_ids = 1;</code>
        *
        * @param values The ackIds to add.
        * @return This builder for chaining.
@@ -2323,6 +2837,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
       public Builder addAllAckIds(java.lang.Iterable<java.lang.String> values) {
         ensureAckIdsIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(values, ackIds_);
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -2333,13 +2848,14 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
        * Successfully processed acknowledgement IDs.
        * </pre>
        *
-       * <code>repeated string ack_ids = 1 [ctype = CORD];</code>
+       * <code>repeated string ack_ids = 1;</code>
        *
        * @return This builder for chaining.
        */
       public Builder clearAckIds() {
-        ackIds_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        ackIds_ = com.google.protobuf.LazyStringArrayList.emptyList();
         bitField0_ = (bitField0_ & ~0x00000001);
+        ;
         onChanged();
         return this;
       }
@@ -2350,7 +2866,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
        * Successfully processed acknowledgement IDs.
        * </pre>
        *
-       * <code>repeated string ack_ids = 1 [ctype = CORD];</code>
+       * <code>repeated string ack_ids = 1;</code>
        *
        * @param value The bytes of the ackIds to add.
        * @return This builder for chaining.
@@ -2362,18 +2878,19 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
         checkByteStringIsUtf8(value);
         ensureAckIdsIsMutable();
         ackIds_.add(value);
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
 
-      private com.google.protobuf.LazyStringList invalidAckIds_ =
-          com.google.protobuf.LazyStringArrayList.EMPTY;
+      private com.google.protobuf.LazyStringArrayList invalidAckIds_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
 
       private void ensureInvalidAckIdsIsMutable() {
-        if (!((bitField0_ & 0x00000002) != 0)) {
+        if (!invalidAckIds_.isModifiable()) {
           invalidAckIds_ = new com.google.protobuf.LazyStringArrayList(invalidAckIds_);
-          bitField0_ |= 0x00000002;
         }
+        bitField0_ |= 0x00000002;
       }
       /**
        *
@@ -2383,12 +2900,13 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
        * deadline has expired.
        * </pre>
        *
-       * <code>repeated string invalid_ack_ids = 2 [ctype = CORD];</code>
+       * <code>repeated string invalid_ack_ids = 2;</code>
        *
        * @return A list containing the invalidAckIds.
        */
       public com.google.protobuf.ProtocolStringList getInvalidAckIdsList() {
-        return invalidAckIds_.getUnmodifiableView();
+        invalidAckIds_.makeImmutable();
+        return invalidAckIds_;
       }
       /**
        *
@@ -2398,7 +2916,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
        * deadline has expired.
        * </pre>
        *
-       * <code>repeated string invalid_ack_ids = 2 [ctype = CORD];</code>
+       * <code>repeated string invalid_ack_ids = 2;</code>
        *
        * @return The count of invalidAckIds.
        */
@@ -2413,7 +2931,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
        * deadline has expired.
        * </pre>
        *
-       * <code>repeated string invalid_ack_ids = 2 [ctype = CORD];</code>
+       * <code>repeated string invalid_ack_ids = 2;</code>
        *
        * @param index The index of the element to return.
        * @return The invalidAckIds at the given index.
@@ -2429,7 +2947,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
        * deadline has expired.
        * </pre>
        *
-       * <code>repeated string invalid_ack_ids = 2 [ctype = CORD];</code>
+       * <code>repeated string invalid_ack_ids = 2;</code>
        *
        * @param index The index of the value to return.
        * @return The bytes of the invalidAckIds at the given index.
@@ -2445,7 +2963,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
        * deadline has expired.
        * </pre>
        *
-       * <code>repeated string invalid_ack_ids = 2 [ctype = CORD];</code>
+       * <code>repeated string invalid_ack_ids = 2;</code>
        *
        * @param index The index to set the value at.
        * @param value The invalidAckIds to set.
@@ -2457,6 +2975,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
         }
         ensureInvalidAckIdsIsMutable();
         invalidAckIds_.set(index, value);
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -2468,7 +2987,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
        * deadline has expired.
        * </pre>
        *
-       * <code>repeated string invalid_ack_ids = 2 [ctype = CORD];</code>
+       * <code>repeated string invalid_ack_ids = 2;</code>
        *
        * @param value The invalidAckIds to add.
        * @return This builder for chaining.
@@ -2479,6 +2998,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
         }
         ensureInvalidAckIdsIsMutable();
         invalidAckIds_.add(value);
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -2490,7 +3010,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
        * deadline has expired.
        * </pre>
        *
-       * <code>repeated string invalid_ack_ids = 2 [ctype = CORD];</code>
+       * <code>repeated string invalid_ack_ids = 2;</code>
        *
        * @param values The invalidAckIds to add.
        * @return This builder for chaining.
@@ -2498,6 +3018,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
       public Builder addAllInvalidAckIds(java.lang.Iterable<java.lang.String> values) {
         ensureInvalidAckIdsIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(values, invalidAckIds_);
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -2509,13 +3030,14 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
        * deadline has expired.
        * </pre>
        *
-       * <code>repeated string invalid_ack_ids = 2 [ctype = CORD];</code>
+       * <code>repeated string invalid_ack_ids = 2;</code>
        *
        * @return This builder for chaining.
        */
       public Builder clearInvalidAckIds() {
-        invalidAckIds_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        invalidAckIds_ = com.google.protobuf.LazyStringArrayList.emptyList();
         bitField0_ = (bitField0_ & ~0x00000002);
+        ;
         onChanged();
         return this;
       }
@@ -2527,7 +3049,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
        * deadline has expired.
        * </pre>
        *
-       * <code>repeated string invalid_ack_ids = 2 [ctype = CORD];</code>
+       * <code>repeated string invalid_ack_ids = 2;</code>
        *
        * @param value The bytes of the invalidAckIds to add.
        * @return This builder for chaining.
@@ -2539,6 +3061,182 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
         checkByteStringIsUtf8(value);
         ensureInvalidAckIdsIsMutable();
         invalidAckIds_.add(value);
+        bitField0_ |= 0x00000002;
+        onChanged();
+        return this;
+      }
+
+      private com.google.protobuf.LazyStringArrayList temporaryFailedAckIds_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
+
+      private void ensureTemporaryFailedAckIdsIsMutable() {
+        if (!temporaryFailedAckIds_.isModifiable()) {
+          temporaryFailedAckIds_ =
+              new com.google.protobuf.LazyStringArrayList(temporaryFailedAckIds_);
+        }
+        bitField0_ |= 0x00000004;
+      }
+      /**
+       *
+       *
+       * <pre>
+       * List of acknowledgement IDs that failed processing with temporary issues.
+       * </pre>
+       *
+       * <code>repeated string temporary_failed_ack_ids = 3;</code>
+       *
+       * @return A list containing the temporaryFailedAckIds.
+       */
+      public com.google.protobuf.ProtocolStringList getTemporaryFailedAckIdsList() {
+        temporaryFailedAckIds_.makeImmutable();
+        return temporaryFailedAckIds_;
+      }
+      /**
+       *
+       *
+       * <pre>
+       * List of acknowledgement IDs that failed processing with temporary issues.
+       * </pre>
+       *
+       * <code>repeated string temporary_failed_ack_ids = 3;</code>
+       *
+       * @return The count of temporaryFailedAckIds.
+       */
+      public int getTemporaryFailedAckIdsCount() {
+        return temporaryFailedAckIds_.size();
+      }
+      /**
+       *
+       *
+       * <pre>
+       * List of acknowledgement IDs that failed processing with temporary issues.
+       * </pre>
+       *
+       * <code>repeated string temporary_failed_ack_ids = 3;</code>
+       *
+       * @param index The index of the element to return.
+       * @return The temporaryFailedAckIds at the given index.
+       */
+      public java.lang.String getTemporaryFailedAckIds(int index) {
+        return temporaryFailedAckIds_.get(index);
+      }
+      /**
+       *
+       *
+       * <pre>
+       * List of acknowledgement IDs that failed processing with temporary issues.
+       * </pre>
+       *
+       * <code>repeated string temporary_failed_ack_ids = 3;</code>
+       *
+       * @param index The index of the value to return.
+       * @return The bytes of the temporaryFailedAckIds at the given index.
+       */
+      public com.google.protobuf.ByteString getTemporaryFailedAckIdsBytes(int index) {
+        return temporaryFailedAckIds_.getByteString(index);
+      }
+      /**
+       *
+       *
+       * <pre>
+       * List of acknowledgement IDs that failed processing with temporary issues.
+       * </pre>
+       *
+       * <code>repeated string temporary_failed_ack_ids = 3;</code>
+       *
+       * @param index The index to set the value at.
+       * @param value The temporaryFailedAckIds to set.
+       * @return This builder for chaining.
+       */
+      public Builder setTemporaryFailedAckIds(int index, java.lang.String value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureTemporaryFailedAckIdsIsMutable();
+        temporaryFailedAckIds_.set(index, value);
+        bitField0_ |= 0x00000004;
+        onChanged();
+        return this;
+      }
+      /**
+       *
+       *
+       * <pre>
+       * List of acknowledgement IDs that failed processing with temporary issues.
+       * </pre>
+       *
+       * <code>repeated string temporary_failed_ack_ids = 3;</code>
+       *
+       * @param value The temporaryFailedAckIds to add.
+       * @return This builder for chaining.
+       */
+      public Builder addTemporaryFailedAckIds(java.lang.String value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureTemporaryFailedAckIdsIsMutable();
+        temporaryFailedAckIds_.add(value);
+        bitField0_ |= 0x00000004;
+        onChanged();
+        return this;
+      }
+      /**
+       *
+       *
+       * <pre>
+       * List of acknowledgement IDs that failed processing with temporary issues.
+       * </pre>
+       *
+       * <code>repeated string temporary_failed_ack_ids = 3;</code>
+       *
+       * @param values The temporaryFailedAckIds to add.
+       * @return This builder for chaining.
+       */
+      public Builder addAllTemporaryFailedAckIds(java.lang.Iterable<java.lang.String> values) {
+        ensureTemporaryFailedAckIdsIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(values, temporaryFailedAckIds_);
+        bitField0_ |= 0x00000004;
+        onChanged();
+        return this;
+      }
+      /**
+       *
+       *
+       * <pre>
+       * List of acknowledgement IDs that failed processing with temporary issues.
+       * </pre>
+       *
+       * <code>repeated string temporary_failed_ack_ids = 3;</code>
+       *
+       * @return This builder for chaining.
+       */
+      public Builder clearTemporaryFailedAckIds() {
+        temporaryFailedAckIds_ = com.google.protobuf.LazyStringArrayList.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000004);
+        ;
+        onChanged();
+        return this;
+      }
+      /**
+       *
+       *
+       * <pre>
+       * List of acknowledgement IDs that failed processing with temporary issues.
+       * </pre>
+       *
+       * <code>repeated string temporary_failed_ack_ids = 3;</code>
+       *
+       * @param value The bytes of the temporaryFailedAckIds to add.
+       * @return This builder for chaining.
+       */
+      public Builder addTemporaryFailedAckIdsBytes(com.google.protobuf.ByteString value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        checkByteStringIsUtf8(value);
+        ensureTemporaryFailedAckIdsIsMutable();
+        temporaryFailedAckIds_.add(value);
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -2669,11 +3367,6 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
       return new SubscriptionProperties();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet getUnknownFields() {
-      return this.unknownFields;
-    }
-
     public static final com.google.protobuf.Descriptors.Descriptor getDescriptor() {
       return com.google.pubsub.v1.PubsubProto
           .internal_static_google_pubsub_v1_StreamingPullResponse_SubscriptionProperties_descriptor;
@@ -2690,7 +3383,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
     }
 
     public static final int EXACTLY_ONCE_DELIVERY_ENABLED_FIELD_NUMBER = 1;
-    private boolean exactlyOnceDeliveryEnabled_;
+    private boolean exactlyOnceDeliveryEnabled_ = false;
     /**
      *
      *
@@ -2708,7 +3401,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
     }
 
     public static final int MESSAGE_ORDERING_ENABLED_FIELD_NUMBER = 2;
-    private boolean messageOrderingEnabled_;
+    private boolean messageOrderingEnabled_ = false;
     /**
      *
      *
@@ -2938,10 +3631,9 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         exactlyOnceDeliveryEnabled_ = false;
-
         messageOrderingEnabled_ = false;
-
         return this;
       }
 
@@ -2971,10 +3663,22 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
       public com.google.pubsub.v1.StreamingPullResponse.SubscriptionProperties buildPartial() {
         com.google.pubsub.v1.StreamingPullResponse.SubscriptionProperties result =
             new com.google.pubsub.v1.StreamingPullResponse.SubscriptionProperties(this);
-        result.exactlyOnceDeliveryEnabled_ = exactlyOnceDeliveryEnabled_;
-        result.messageOrderingEnabled_ = messageOrderingEnabled_;
+        if (bitField0_ != 0) {
+          buildPartial0(result);
+        }
         onBuilt();
         return result;
+      }
+
+      private void buildPartial0(
+          com.google.pubsub.v1.StreamingPullResponse.SubscriptionProperties result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.exactlyOnceDeliveryEnabled_ = exactlyOnceDeliveryEnabled_;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.messageOrderingEnabled_ = messageOrderingEnabled_;
+        }
       }
 
       @java.lang.Override
@@ -3063,13 +3767,13 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
               case 8:
                 {
                   exactlyOnceDeliveryEnabled_ = input.readBool();
-
+                  bitField0_ |= 0x00000001;
                   break;
                 } // case 8
               case 16:
                 {
                   messageOrderingEnabled_ = input.readBool();
-
+                  bitField0_ |= 0x00000002;
                   break;
                 } // case 16
               default:
@@ -3088,6 +3792,8 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
         } // finally
         return this;
       }
+
+      private int bitField0_;
 
       private boolean exactlyOnceDeliveryEnabled_;
       /**
@@ -3120,6 +3826,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
       public Builder setExactlyOnceDeliveryEnabled(boolean value) {
 
         exactlyOnceDeliveryEnabled_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -3135,7 +3842,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
        * @return This builder for chaining.
        */
       public Builder clearExactlyOnceDeliveryEnabled() {
-
+        bitField0_ = (bitField0_ & ~0x00000001);
         exactlyOnceDeliveryEnabled_ = false;
         onChanged();
         return this;
@@ -3172,6 +3879,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
       public Builder setMessageOrderingEnabled(boolean value) {
 
         messageOrderingEnabled_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -3187,7 +3895,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
        * @return This builder for chaining.
        */
       public Builder clearMessageOrderingEnabled() {
-
+        bitField0_ = (bitField0_ & ~0x00000002);
         messageOrderingEnabled_ = false;
         onChanged();
         return this;
@@ -3261,6 +3969,8 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
   }
 
   public static final int RECEIVED_MESSAGES_FIELD_NUMBER = 1;
+
+  @SuppressWarnings("serial")
   private java.util.List<com.google.pubsub.v1.ReceivedMessage> receivedMessages_;
   /**
    *
@@ -3386,7 +4096,9 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
   @java.lang.Override
   public com.google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmationOrBuilder
       getAcknowledgeConfirmationOrBuilder() {
-    return getAcknowledgeConfirmation();
+    return acknowledgeConfirmation_ == null
+        ? com.google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation.getDefaultInstance()
+        : acknowledgeConfirmation_;
   }
 
   public static final int MODIFY_ACK_DEADLINE_CONFIRMATION_FIELD_NUMBER = 3;
@@ -3447,7 +4159,10 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
   @java.lang.Override
   public com.google.pubsub.v1.StreamingPullResponse.ModifyAckDeadlineConfirmationOrBuilder
       getModifyAckDeadlineConfirmationOrBuilder() {
-    return getModifyAckDeadlineConfirmation();
+    return modifyAckDeadlineConfirmation_ == null
+        ? com.google.pubsub.v1.StreamingPullResponse.ModifyAckDeadlineConfirmation
+            .getDefaultInstance()
+        : modifyAckDeadlineConfirmation_;
   }
 
   public static final int SUBSCRIPTION_PROPERTIES_FIELD_NUMBER = 4;
@@ -3503,7 +4218,9 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
   @java.lang.Override
   public com.google.pubsub.v1.StreamingPullResponse.SubscriptionPropertiesOrBuilder
       getSubscriptionPropertiesOrBuilder() {
-    return getSubscriptionProperties();
+    return subscriptionProperties_ == null
+        ? com.google.pubsub.v1.StreamingPullResponse.SubscriptionProperties.getDefaultInstance()
+        : subscriptionProperties_;
   }
 
   private byte memoizedIsInitialized = -1;
@@ -3754,6 +4471,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
     @java.lang.Override
     public Builder clear() {
       super.clear();
+      bitField0_ = 0;
       if (receivedMessagesBuilder_ == null) {
         receivedMessages_ = java.util.Collections.emptyList();
       } else {
@@ -3761,22 +4479,19 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
         receivedMessagesBuilder_.clear();
       }
       bitField0_ = (bitField0_ & ~0x00000001);
-      if (acknowledgeConfirmationBuilder_ == null) {
-        acknowledgeConfirmation_ = null;
-      } else {
-        acknowledgeConfirmation_ = null;
+      acknowledgeConfirmation_ = null;
+      if (acknowledgeConfirmationBuilder_ != null) {
+        acknowledgeConfirmationBuilder_.dispose();
         acknowledgeConfirmationBuilder_ = null;
       }
-      if (modifyAckDeadlineConfirmationBuilder_ == null) {
-        modifyAckDeadlineConfirmation_ = null;
-      } else {
-        modifyAckDeadlineConfirmation_ = null;
+      modifyAckDeadlineConfirmation_ = null;
+      if (modifyAckDeadlineConfirmationBuilder_ != null) {
+        modifyAckDeadlineConfirmationBuilder_.dispose();
         modifyAckDeadlineConfirmationBuilder_ = null;
       }
-      if (subscriptionPropertiesBuilder_ == null) {
-        subscriptionProperties_ = null;
-      } else {
-        subscriptionProperties_ = null;
+      subscriptionProperties_ = null;
+      if (subscriptionPropertiesBuilder_ != null) {
+        subscriptionPropertiesBuilder_.dispose();
         subscriptionPropertiesBuilder_ = null;
       }
       return this;
@@ -3806,7 +4521,15 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
     public com.google.pubsub.v1.StreamingPullResponse buildPartial() {
       com.google.pubsub.v1.StreamingPullResponse result =
           new com.google.pubsub.v1.StreamingPullResponse(this);
-      int from_bitField0_ = bitField0_;
+      buildPartialRepeatedFields(result);
+      if (bitField0_ != 0) {
+        buildPartial0(result);
+      }
+      onBuilt();
+      return result;
+    }
+
+    private void buildPartialRepeatedFields(com.google.pubsub.v1.StreamingPullResponse result) {
       if (receivedMessagesBuilder_ == null) {
         if (((bitField0_ & 0x00000001) != 0)) {
           receivedMessages_ = java.util.Collections.unmodifiableList(receivedMessages_);
@@ -3816,23 +4539,28 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
       } else {
         result.receivedMessages_ = receivedMessagesBuilder_.build();
       }
-      if (acknowledgeConfirmationBuilder_ == null) {
-        result.acknowledgeConfirmation_ = acknowledgeConfirmation_;
-      } else {
-        result.acknowledgeConfirmation_ = acknowledgeConfirmationBuilder_.build();
+    }
+
+    private void buildPartial0(com.google.pubsub.v1.StreamingPullResponse result) {
+      int from_bitField0_ = bitField0_;
+      if (((from_bitField0_ & 0x00000002) != 0)) {
+        result.acknowledgeConfirmation_ =
+            acknowledgeConfirmationBuilder_ == null
+                ? acknowledgeConfirmation_
+                : acknowledgeConfirmationBuilder_.build();
       }
-      if (modifyAckDeadlineConfirmationBuilder_ == null) {
-        result.modifyAckDeadlineConfirmation_ = modifyAckDeadlineConfirmation_;
-      } else {
-        result.modifyAckDeadlineConfirmation_ = modifyAckDeadlineConfirmationBuilder_.build();
+      if (((from_bitField0_ & 0x00000004) != 0)) {
+        result.modifyAckDeadlineConfirmation_ =
+            modifyAckDeadlineConfirmationBuilder_ == null
+                ? modifyAckDeadlineConfirmation_
+                : modifyAckDeadlineConfirmationBuilder_.build();
       }
-      if (subscriptionPropertiesBuilder_ == null) {
-        result.subscriptionProperties_ = subscriptionProperties_;
-      } else {
-        result.subscriptionProperties_ = subscriptionPropertiesBuilder_.build();
+      if (((from_bitField0_ & 0x00000008) != 0)) {
+        result.subscriptionProperties_ =
+            subscriptionPropertiesBuilder_ == null
+                ? subscriptionProperties_
+                : subscriptionPropertiesBuilder_.build();
       }
-      onBuilt();
-      return result;
     }
 
     @java.lang.Override
@@ -3959,21 +4687,21 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
               {
                 input.readMessage(
                     getModifyAckDeadlineConfirmationFieldBuilder().getBuilder(), extensionRegistry);
-
+                bitField0_ |= 0x00000004;
                 break;
               } // case 26
             case 34:
               {
                 input.readMessage(
                     getSubscriptionPropertiesFieldBuilder().getBuilder(), extensionRegistry);
-
+                bitField0_ |= 0x00000008;
                 break;
               } // case 34
             case 42:
               {
                 input.readMessage(
                     getAcknowledgeConfirmationFieldBuilder().getBuilder(), extensionRegistry);
-
+                bitField0_ |= 0x00000002;
                 break;
               } // case 42
             default:
@@ -4371,7 +5099,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
      * @return Whether the acknowledgeConfirmation field is set.
      */
     public boolean hasAcknowledgeConfirmation() {
-      return acknowledgeConfirmationBuilder_ != null || acknowledgeConfirmation_ != null;
+      return ((bitField0_ & 0x00000002) != 0);
     }
     /**
      *
@@ -4417,11 +5145,11 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
           throw new NullPointerException();
         }
         acknowledgeConfirmation_ = value;
-        onChanged();
       } else {
         acknowledgeConfirmationBuilder_.setMessage(value);
       }
-
+      bitField0_ |= 0x00000002;
+      onChanged();
       return this;
     }
     /**
@@ -4441,11 +5169,11 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
             builderForValue) {
       if (acknowledgeConfirmationBuilder_ == null) {
         acknowledgeConfirmation_ = builderForValue.build();
-        onChanged();
       } else {
         acknowledgeConfirmationBuilder_.setMessage(builderForValue.build());
       }
-
+      bitField0_ |= 0x00000002;
+      onChanged();
       return this;
     }
     /**
@@ -4463,20 +5191,20 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
     public Builder mergeAcknowledgeConfirmation(
         com.google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation value) {
       if (acknowledgeConfirmationBuilder_ == null) {
-        if (acknowledgeConfirmation_ != null) {
-          acknowledgeConfirmation_ =
-              com.google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation.newBuilder(
-                      acknowledgeConfirmation_)
-                  .mergeFrom(value)
-                  .buildPartial();
+        if (((bitField0_ & 0x00000002) != 0)
+            && acknowledgeConfirmation_ != null
+            && acknowledgeConfirmation_
+                != com.google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation
+                    .getDefaultInstance()) {
+          getAcknowledgeConfirmationBuilder().mergeFrom(value);
         } else {
           acknowledgeConfirmation_ = value;
         }
-        onChanged();
       } else {
         acknowledgeConfirmationBuilder_.mergeFrom(value);
       }
-
+      bitField0_ |= 0x00000002;
+      onChanged();
       return this;
     }
     /**
@@ -4492,14 +5220,13 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
      * </code>
      */
     public Builder clearAcknowledgeConfirmation() {
-      if (acknowledgeConfirmationBuilder_ == null) {
-        acknowledgeConfirmation_ = null;
-        onChanged();
-      } else {
-        acknowledgeConfirmation_ = null;
+      bitField0_ = (bitField0_ & ~0x00000002);
+      acknowledgeConfirmation_ = null;
+      if (acknowledgeConfirmationBuilder_ != null) {
+        acknowledgeConfirmationBuilder_.dispose();
         acknowledgeConfirmationBuilder_ = null;
       }
-
+      onChanged();
       return this;
     }
     /**
@@ -4516,7 +5243,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
      */
     public com.google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation.Builder
         getAcknowledgeConfirmationBuilder() {
-
+      bitField0_ |= 0x00000002;
       onChanged();
       return getAcknowledgeConfirmationFieldBuilder().getBuilder();
     }
@@ -4594,8 +5321,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
      * @return Whether the modifyAckDeadlineConfirmation field is set.
      */
     public boolean hasModifyAckDeadlineConfirmation() {
-      return modifyAckDeadlineConfirmationBuilder_ != null
-          || modifyAckDeadlineConfirmation_ != null;
+      return ((bitField0_ & 0x00000004) != 0);
     }
     /**
      *
@@ -4641,11 +5367,11 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
           throw new NullPointerException();
         }
         modifyAckDeadlineConfirmation_ = value;
-        onChanged();
       } else {
         modifyAckDeadlineConfirmationBuilder_.setMessage(value);
       }
-
+      bitField0_ |= 0x00000004;
+      onChanged();
       return this;
     }
     /**
@@ -4665,11 +5391,11 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
             builderForValue) {
       if (modifyAckDeadlineConfirmationBuilder_ == null) {
         modifyAckDeadlineConfirmation_ = builderForValue.build();
-        onChanged();
       } else {
         modifyAckDeadlineConfirmationBuilder_.setMessage(builderForValue.build());
       }
-
+      bitField0_ |= 0x00000004;
+      onChanged();
       return this;
     }
     /**
@@ -4687,20 +5413,20 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
     public Builder mergeModifyAckDeadlineConfirmation(
         com.google.pubsub.v1.StreamingPullResponse.ModifyAckDeadlineConfirmation value) {
       if (modifyAckDeadlineConfirmationBuilder_ == null) {
-        if (modifyAckDeadlineConfirmation_ != null) {
-          modifyAckDeadlineConfirmation_ =
-              com.google.pubsub.v1.StreamingPullResponse.ModifyAckDeadlineConfirmation.newBuilder(
-                      modifyAckDeadlineConfirmation_)
-                  .mergeFrom(value)
-                  .buildPartial();
+        if (((bitField0_ & 0x00000004) != 0)
+            && modifyAckDeadlineConfirmation_ != null
+            && modifyAckDeadlineConfirmation_
+                != com.google.pubsub.v1.StreamingPullResponse.ModifyAckDeadlineConfirmation
+                    .getDefaultInstance()) {
+          getModifyAckDeadlineConfirmationBuilder().mergeFrom(value);
         } else {
           modifyAckDeadlineConfirmation_ = value;
         }
-        onChanged();
       } else {
         modifyAckDeadlineConfirmationBuilder_.mergeFrom(value);
       }
-
+      bitField0_ |= 0x00000004;
+      onChanged();
       return this;
     }
     /**
@@ -4716,14 +5442,13 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
      * </code>
      */
     public Builder clearModifyAckDeadlineConfirmation() {
-      if (modifyAckDeadlineConfirmationBuilder_ == null) {
-        modifyAckDeadlineConfirmation_ = null;
-        onChanged();
-      } else {
-        modifyAckDeadlineConfirmation_ = null;
+      bitField0_ = (bitField0_ & ~0x00000004);
+      modifyAckDeadlineConfirmation_ = null;
+      if (modifyAckDeadlineConfirmationBuilder_ != null) {
+        modifyAckDeadlineConfirmationBuilder_.dispose();
         modifyAckDeadlineConfirmationBuilder_ = null;
       }
-
+      onChanged();
       return this;
     }
     /**
@@ -4740,7 +5465,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
      */
     public com.google.pubsub.v1.StreamingPullResponse.ModifyAckDeadlineConfirmation.Builder
         getModifyAckDeadlineConfirmationBuilder() {
-
+      bitField0_ |= 0x00000004;
       onChanged();
       return getModifyAckDeadlineConfirmationFieldBuilder().getBuilder();
     }
@@ -4817,7 +5542,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
      * @return Whether the subscriptionProperties field is set.
      */
     public boolean hasSubscriptionProperties() {
-      return subscriptionPropertiesBuilder_ != null || subscriptionProperties_ != null;
+      return ((bitField0_ & 0x00000008) != 0);
     }
     /**
      *
@@ -4860,11 +5585,11 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
           throw new NullPointerException();
         }
         subscriptionProperties_ = value;
-        onChanged();
       } else {
         subscriptionPropertiesBuilder_.setMessage(value);
       }
-
+      bitField0_ |= 0x00000008;
+      onChanged();
       return this;
     }
     /**
@@ -4882,11 +5607,11 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
         com.google.pubsub.v1.StreamingPullResponse.SubscriptionProperties.Builder builderForValue) {
       if (subscriptionPropertiesBuilder_ == null) {
         subscriptionProperties_ = builderForValue.build();
-        onChanged();
       } else {
         subscriptionPropertiesBuilder_.setMessage(builderForValue.build());
       }
-
+      bitField0_ |= 0x00000008;
+      onChanged();
       return this;
     }
     /**
@@ -4903,20 +5628,20 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
     public Builder mergeSubscriptionProperties(
         com.google.pubsub.v1.StreamingPullResponse.SubscriptionProperties value) {
       if (subscriptionPropertiesBuilder_ == null) {
-        if (subscriptionProperties_ != null) {
-          subscriptionProperties_ =
-              com.google.pubsub.v1.StreamingPullResponse.SubscriptionProperties.newBuilder(
-                      subscriptionProperties_)
-                  .mergeFrom(value)
-                  .buildPartial();
+        if (((bitField0_ & 0x00000008) != 0)
+            && subscriptionProperties_ != null
+            && subscriptionProperties_
+                != com.google.pubsub.v1.StreamingPullResponse.SubscriptionProperties
+                    .getDefaultInstance()) {
+          getSubscriptionPropertiesBuilder().mergeFrom(value);
         } else {
           subscriptionProperties_ = value;
         }
-        onChanged();
       } else {
         subscriptionPropertiesBuilder_.mergeFrom(value);
       }
-
+      bitField0_ |= 0x00000008;
+      onChanged();
       return this;
     }
     /**
@@ -4931,14 +5656,13 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
      * </code>
      */
     public Builder clearSubscriptionProperties() {
-      if (subscriptionPropertiesBuilder_ == null) {
-        subscriptionProperties_ = null;
-        onChanged();
-      } else {
-        subscriptionProperties_ = null;
+      bitField0_ = (bitField0_ & ~0x00000008);
+      subscriptionProperties_ = null;
+      if (subscriptionPropertiesBuilder_ != null) {
+        subscriptionPropertiesBuilder_.dispose();
         subscriptionPropertiesBuilder_ = null;
       }
-
+      onChanged();
       return this;
     }
     /**
@@ -4954,7 +5678,7 @@ public final class StreamingPullResponse extends com.google.protobuf.GeneratedMe
      */
     public com.google.pubsub.v1.StreamingPullResponse.SubscriptionProperties.Builder
         getSubscriptionPropertiesBuilder() {
-
+      bitField0_ |= 0x00000008;
       onChanged();
       return getSubscriptionPropertiesFieldBuilder().getBuilder();
     }

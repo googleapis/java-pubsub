@@ -38,7 +38,7 @@ public class CreateAvroSchemaExample {
     createAvroSchemaExample(projectId, schemaId, avscFile);
   }
 
-  public static void createAvroSchemaExample(String projectId, String schemaId, String avscFile)
+  public static Schema createAvroSchemaExample(String projectId, String schemaId, String avscFile)
       throws IOException {
 
     ProjectName projectName = ProjectName.of(projectId);
@@ -60,8 +60,10 @@ public class CreateAvroSchemaExample {
               schemaId);
 
       System.out.println("Created a schema using an Avro schema:\n" + schema);
+      return schema;
     } catch (AlreadyExistsException e) {
       System.out.println(schemaName + "already exists.");
+      return null;
     }
   }
 }
