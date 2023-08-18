@@ -402,7 +402,6 @@ class MessageDispatcher {
       }
       OutstandingMessage outstandingMessage = new OutstandingMessage(message, ackHandler);
       if (this.exactlyOnceDeliveryEnabled.get()) {
-        System.out.println("Process Received Message: " + message);
         outstandingReceipts.put(
             message.getAckId(), new ReceiptCompleteData(outstandingMessage, false));
       } else {
@@ -418,8 +417,6 @@ class MessageDispatcher {
     if (outstandingReceipts.containsKey(ackRequestData.getAckId())) {
       ReceiptCompleteData receiptCompleteData = outstandingReceipts.get(ackRequestData.getAckId());
       OutstandingMessage outstandingMessage = receiptCompleteData.getOutstandingMessage();
-      System.out.println(
-          "Message Dispatcher, ack successful: " + outstandingMessage.receivedMessage);
       // Setting to true means that the receipt is complete
       receiptCompleteData.setReceiptComplete(true);
       outstandingReceipts.put(ackRequestData.getAckId(), receiptCompleteData);
@@ -436,9 +433,6 @@ class MessageDispatcher {
           if (receipts.getValue().getReceiptComplete()) {
             outstandingReceipts.remove(ackId);
             completedReceipts.add(receipts.getValue().getOutstandingMessage());
-            System.out.println(
-                "Message Dispatcher, adding to completed receipts: "
-                    + receipts.getValue().getOutstandingMessage().receivedMessage);
           } else {
             break;
           }
@@ -450,23 +444,15 @@ class MessageDispatcher {
 
   synchronized void notifyAckFailed(AckRequestData ackRequestData) {
     if (outstandingReceipts.containsKey(ackRequestData.getAckId())) {
-      System.out.println(
-          "Message Dispatcher, failed: "
-              + outstandingReceipts
-                  .get(ackRequestData.getAckId())
-                  .getOutstandingMessage()
-                  .receivedMessage);
       outstandingReceipts.remove(ackRequestData.getAckId());
     }
   }
 
   private void processBatch(List<OutstandingMessage> batch) {
-    System.out.println("Processing batch size: " + batch.size());
     messagesWaiter.incrementPendingCount(batch.size());
     for (OutstandingMessage message : batch) {
       // This is a blocking flow controller.  We have already incremented messagesWaiter, so
       // shutdown will block on processing of all these messages anyway.
-      System.out.println("Processing batch message: " + message.receivedMessage);
       try {
         flowController.reserve(1, message.receivedMessage.getMessage().getSerializedSize());
       } catch (FlowControlException unexpectedException) {
@@ -508,12 +494,10 @@ class MessageDispatcher {
                 // Message expired while waiting. We don't extend these messages anymore,
                 // so it was probably sent to someone else. Don't work on it.
                 // Don't nack it either, because we'd be nacking someone else's message.
-                System.out.println("Message exprited: " + message);
                 ackHandler.forget();
                 return;
               }
               if (shouldSetMessageFuture()) {
-                System.out.println("Message setting future on: " + message);
                 // This is the message future that is propagated to the user
                 SettableApiFuture<AckResponse> messageFuture =
                     ackHandler.getMessageFutureIfExists();
@@ -521,7 +505,6 @@ class MessageDispatcher {
                     new AckReplyConsumerWithResponseImpl(ackReplySettableApiFuture, messageFuture);
                 receiverWithAckResponse.receiveMessage(message, ackReplyConsumerWithResponse);
               } else {
-                System.out.println("Message NOT setting future on: " + message);
                 final AckReplyConsumer ackReplyConsumer =
                     new AckReplyConsumerImpl(ackReplySettableApiFuture);
                 receiver.receiveMessage(message, ackReplyConsumer);
@@ -532,10 +515,8 @@ class MessageDispatcher {
           }
         };
     if (message.getOrderingKey().isEmpty()) {
-      System.out.println("Delivering Message");
       executor.execute(deliverMessageTask);
     } else {
-      System.out.println("Delivering Ordered Message");
       sequentialExecutor.submit(message.getOrderingKey(), deliverMessageTask);
     }
   }
