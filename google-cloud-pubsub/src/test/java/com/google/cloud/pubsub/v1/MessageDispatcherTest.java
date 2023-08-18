@@ -138,6 +138,7 @@ public class MessageDispatcherTest {
     verify(mockMessageReceiver, never())
         .receiveMessage(eq(TEST_MESSAGE.getMessage()), any(AckReplyConsumer.class));
   }
+
   @Test
   public void testReceiptModackWithOrderingForExactlyOnceDelivered() {
 
@@ -146,7 +147,8 @@ public class MessageDispatcherTest {
     MessageDispatcher messageDispatcher = getMessageDispatcher(mockMessageReceiverWithAckResponse);
     messageDispatcher.setExactlyOnceDeliveryEnabled(true);
 
-    messageDispatcher.processReceivedMessages(Arrays.asList(TEST_MESSAGE, TEST_MESSAGE, TEST_MESSAGE));
+    messageDispatcher.processReceivedMessages(
+        Arrays.asList(TEST_MESSAGE, TEST_MESSAGE, TEST_MESSAGE));
 
     messageDispatcher.processOutstandingOperations();
     verify(mockMessageReceiverWithAckResponse, never())
@@ -162,15 +164,15 @@ public class MessageDispatcherTest {
     verify(mockMessageReceiverWithAckResponse, times(1))
         .receiveMessage(any(PubsubMessage.class), any(AckReplyConsumerWithResponse.class));
 
-    messageDispatcher.notifyAckSuccess(ackRequestData1);
     messageDispatcher.notifyAckSuccess(ackRequestData);
+    messageDispatcher.notifyAckSuccess(ackRequestData1);
     messageDispatcher.processOutstandingOperations();
 
     // Need to change to test correct contents of the message - will need custom matcher
     verify(mockMessageReceiverWithAckResponse, times(2))
         .receiveMessage(any(PubsubMessage.class), any(AckReplyConsumerWithResponse.class));
-
   }
+
   @Test
   public void testReceiptModackForExactlyOnceDelivered() {
 
