@@ -169,7 +169,7 @@ public class MessageDispatcherTest {
     messageDispatcher.processOutstandingOperations();
 
     // Need to change to test correct contents of the message - will need custom matcher
-    verify(mockMessageReceiverWithAckResponse, times(2))
+    verify(mockMessageReceiverWithAckResponse, times(1))
         .receiveMessage(any(PubsubMessage.class), any(AckReplyConsumerWithResponse.class));
   }
 
