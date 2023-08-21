@@ -438,7 +438,6 @@ class MessageDispatcher {
         } else {
           break;
         }
-
       }
       processBatch(completedReceipts);
     }
