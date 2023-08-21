@@ -423,9 +423,6 @@ class MessageDispatcher {
       // Setting to true means that the receipt is complete
       receiptCompleteData.setReceiptComplete(true);
       List<OutstandingMessage> completedReceipts = new ArrayList<>();
-      // if (pendingMessages.putIfAbsent(
-      //         outstandingMessage.receivedMessage.getAckId(), outstandingMessage.ackHandler)
-      //     == null) {
 
       for (Iterator<Entry<String, ReceiptCompleteData>> it =
               outstandingReceipts.entrySet().iterator();
@@ -441,7 +438,6 @@ class MessageDispatcher {
         } else {
           break;
         }
-        // }
 
       }
       processBatch(completedReceipts);
