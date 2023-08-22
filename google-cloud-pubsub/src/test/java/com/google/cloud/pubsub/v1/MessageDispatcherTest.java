@@ -228,7 +228,9 @@ public class MessageDispatcherTest {
     modackRequestDataList.add(new ModackRequestData(MIN_ACK_DEADLINE_SECONDS, ackRequestData));
 
     verify(mockMessageReceiverWithAckResponse, times(1))
-        .receiveMessage(argThat(new MessageMatcher(TEST_MESSAGE.getMessage())), any(AckReplyConsumerWithResponse.class));
+        .receiveMessage(
+            argThat(new MessageMatcher(TEST_MESSAGE.getMessage())),
+            any(AckReplyConsumerWithResponse.class));
   }
 
   @Test
