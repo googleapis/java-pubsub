@@ -112,10 +112,6 @@ public class MessageDispatcherTest {
         };
   }
 
-  public boolean customMessageMatcher(ReceivedMessage receivedMessage, PubsubMessage message2) {
-    return (receivedMessage.getMessage() == message2);
-  }
-
   @Test
   public void testSetupAndTeardown() {
     MessageDispatcher messageDispatcher = getMessageDispatcher();
