@@ -169,7 +169,7 @@ public class MessageDispatcherTest {
             .build();
 
     messageDispatcher.processReceivedMessages(
-        Arrays.asList(TEST_MESSAGE2, TEST_MESSAGE1, TEST_MESSAGE3));
+        Arrays.asList(TEST_MESSAGE3, TEST_MESSAGE2, TEST_MESSAGE1));
 
     messageDispatcher.processOutstandingOperations();
     verify(mockMessageReceiverWithAckResponse, never())
