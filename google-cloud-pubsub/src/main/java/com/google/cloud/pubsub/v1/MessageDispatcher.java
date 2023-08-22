@@ -422,31 +422,28 @@ class MessageDispatcher {
       OutstandingMessage outstandingMessage = receiptCompleteData.getOutstandingMessage();
       // Setting to true means that the receipt is complete
       receiptCompleteData.setReceiptComplete(true);
-      List<OutstandingMessage> completedReceipts = new ArrayList<>();
+      List<OutstandingMessage> outstandingBatch = new ArrayList<>();
 
       for (Iterator<Entry<String, ReceiptCompleteData>> it =
               outstandingReceipts.entrySet().iterator();
           it.hasNext(); ) {
         Map.Entry<String, ReceiptCompleteData> receipt = it.next();
-        String ackId = receipt.getKey();
         // If receipt is complete then add to completedReceipts to process the batch
         if (receipt.getValue().getReceiptComplete()) {
           it.remove();
           pendingMessages.putIfAbsent(
-              outstandingMessage.receivedMessage.getAckId(), outstandingMessage.ackHandler);
-          completedReceipts.add(receipt.getValue().getOutstandingMessage());
+              receipt.getKey(), receipt.getValue().getOutstandingMessage().ackHandler);
+          outstandingBatch.add(receipt.getValue().getOutstandingMessage());
         } else {
           break;
         }
       }
-      processBatch(completedReceipts);
+      processBatch(outstandingBatch);
     }
   }
 
   synchronized void notifyAckFailed(AckRequestData ackRequestData) {
-    if (outstandingReceipts.containsKey(ackRequestData.getAckId())) {
-      outstandingReceipts.remove(ackRequestData.getAckId());
-    }
+    outstandingReceipts.remove(ackRequestData.getAckId());
   }
 
   private void processBatch(List<OutstandingMessage> batch) {
