@@ -347,7 +347,7 @@ public class SchemaServiceStubSettings extends StubSettings<SchemaServiceStubSet
 
   /** Returns the default service endpoint. */
   public static String getDefaultEndpoint() {
-    return "pubsub.test-endpoint:443";
+    return "pubsub.googleapis.com:443";
   }
 
   /** Returns the default mTLS service endpoint. */
@@ -585,7 +585,7 @@ public class SchemaServiceStubSettings extends StubSettings<SchemaServiceStubSet
       builder.setTransportChannelProvider(defaultTransportChannelProvider());
       builder.setCredentialsProvider(defaultCredentialsProviderBuilder().build());
       builder.setInternalHeaderProvider(defaultApiClientHeaderProviderBuilder().build());
-      builder.setEndpoint(getDefaultEndpoint());
+      builder.setEndpoint("test-endpoint");
       builder.setMtlsEndpoint(getDefaultMtlsEndpoint());
       builder.setSwitchToMtlsEndpointAllowed(true);
 
@@ -598,7 +598,7 @@ public class SchemaServiceStubSettings extends StubSettings<SchemaServiceStubSet
       builder.setTransportChannelProvider(defaultHttpJsonTransportProviderBuilder().build());
       builder.setCredentialsProvider(defaultCredentialsProviderBuilder().build());
       builder.setInternalHeaderProvider(defaultHttpJsonApiClientHeaderProviderBuilder().build());
-      builder.setEndpoint(getDefaultEndpoint());
+      builder.setEndpoint("test-endpoint");
       builder.setMtlsEndpoint(getDefaultMtlsEndpoint());
       builder.setSwitchToMtlsEndpointAllowed(true);
 
