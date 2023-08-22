@@ -428,7 +428,7 @@ class MessageDispatcher {
               outstandingReceipts.entrySet().iterator();
           it.hasNext(); ) {
         Map.Entry<String, ReceiptCompleteData> receipt = it.next();
-        // If receipt is complete then add to completedReceipts to process the batch
+        // If receipt is complete then add to outstandingBatch to process the batch
         if (receipt.getValue().getReceiptComplete()) {
           it.remove();
           pendingMessages.putIfAbsent(
