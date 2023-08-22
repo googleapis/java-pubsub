@@ -30,9 +30,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentMatcher;
 import org.threeten.bp.Duration;
-import com.google.cloud.pubsub.v1.MessageMatcher;
 
 public class MessageDispatcherTest {
   private static final ByteString MESSAGE_DATA = ByteString.copyFromUtf8("message-data");
@@ -152,19 +150,28 @@ public class MessageDispatcherTest {
     ReceivedMessage TEST_MESSAGE1 =
         ReceivedMessage.newBuilder()
             .setAckId("ACK_ID1")
-            .setMessage(PubsubMessage.newBuilder().setData(ByteString.copyFromUtf8("message-data1")).build())
+            .setMessage(
+                PubsubMessage.newBuilder()
+                    .setData(ByteString.copyFromUtf8("message-data1"))
+                    .build())
             .setDeliveryAttempt(DELIVERY_INFO_COUNT)
             .build();
     ReceivedMessage TEST_MESSAGE2 =
         ReceivedMessage.newBuilder()
             .setAckId("ACK_ID2")
-            .setMessage(PubsubMessage.newBuilder().setData(ByteString.copyFromUtf8("message-data2")).build())
+            .setMessage(
+                PubsubMessage.newBuilder()
+                    .setData(ByteString.copyFromUtf8("message-data2"))
+                    .build())
             .setDeliveryAttempt(DELIVERY_INFO_COUNT)
             .build();
     ReceivedMessage TEST_MESSAGE3 =
         ReceivedMessage.newBuilder()
             .setAckId("ACK_ID3")
-            .setMessage(PubsubMessage.newBuilder().setData(ByteString.copyFromUtf8("message-data3")).build())
+            .setMessage(
+                PubsubMessage.newBuilder()
+                    .setData(ByteString.copyFromUtf8("message-data3"))
+                    .build())
             .setDeliveryAttempt(DELIVERY_INFO_COUNT)
             .build();
 
@@ -189,11 +196,17 @@ public class MessageDispatcherTest {
 
     // Need to change to test correct contents of the message - will need custom matcher
     verify(mockMessageReceiverWithAckResponse, times(1))
-        .receiveMessage(argThat(new MessageMatcher(TEST_MESSAGE3.getMessage())), any(AckReplyConsumerWithResponse.class));
+        .receiveMessage(
+            argThat(new MessageMatcher(TEST_MESSAGE3.getMessage())),
+            any(AckReplyConsumerWithResponse.class));
     verify(mockMessageReceiverWithAckResponse, times(1))
-        .receiveMessage(argThat(new MessageMatcher(TEST_MESSAGE2.getMessage())), any(AckReplyConsumerWithResponse.class));
+        .receiveMessage(
+            argThat(new MessageMatcher(TEST_MESSAGE2.getMessage())),
+            any(AckReplyConsumerWithResponse.class));
     verify(mockMessageReceiverWithAckResponse, times(1))
-        .receiveMessage(argThat(new MessageMatcher(TEST_MESSAGE1.getMessage())), any(AckReplyConsumerWithResponse.class));
+        .receiveMessage(
+            argThat(new MessageMatcher(TEST_MESSAGE1.getMessage())),
+            any(AckReplyConsumerWithResponse.class));
   }
 
   @Test

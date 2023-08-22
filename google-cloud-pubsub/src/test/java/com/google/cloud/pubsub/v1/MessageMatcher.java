@@ -26,6 +26,7 @@ public class MessageMatcher implements ArgumentMatcher<PubsubMessage> {
   public MessageMatcher(PubsubMessage message) {
     message1 = message;
   }
+
   @Override
   public boolean matches(PubsubMessage message2) {
     return (message1.getData() == message2.getData());
