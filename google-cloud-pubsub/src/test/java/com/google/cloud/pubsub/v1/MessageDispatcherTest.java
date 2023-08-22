@@ -188,13 +188,10 @@ public class MessageDispatcherTest {
     messageDispatcher.notifyAckSuccess(ackRequestData2);
     messageDispatcher.processOutstandingOperations();
 
-    // Need to change to test correct contents of the message - will need custom matcher
-
     messageDispatcher.notifyAckSuccess(ackRequestData1);
     messageDispatcher.notifyAckSuccess(ackRequestData3);
     messageDispatcher.processOutstandingOperations();
 
-    // Need to change to test correct contents of the message - will need custom matcher
     verify(mockMessageReceiverWithAckResponse, times(1))
         .receiveMessage(
             argThat(new MessageMatcher(TEST_MESSAGE3.getMessage())),
@@ -230,9 +227,8 @@ public class MessageDispatcherTest {
     List<ModackRequestData> modackRequestDataList = new ArrayList<ModackRequestData>();
     modackRequestDataList.add(new ModackRequestData(MIN_ACK_DEADLINE_SECONDS, ackRequestData));
 
-    // Need to change to test correct contents of the message - will need custom matcher
     verify(mockMessageReceiverWithAckResponse, times(1))
-        .receiveMessage(any(PubsubMessage.class), any(AckReplyConsumerWithResponse.class));
+        .receiveMessage(argThat(new MessageMatcher(TEST_MESSAGE.getMessage())), any(AckReplyConsumerWithResponse.class));
   }
 
   @Test
