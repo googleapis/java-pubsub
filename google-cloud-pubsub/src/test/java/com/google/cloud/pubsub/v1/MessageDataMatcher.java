@@ -19,11 +19,11 @@ package com.google.cloud.pubsub.v1;
 import com.google.pubsub.v1.PubsubMessage;
 import org.mockito.ArgumentMatcher;
 
-public class MessageMatcher implements ArgumentMatcher<PubsubMessage> {
+public class MessageDataMatcher implements ArgumentMatcher<PubsubMessage> {
 
   private PubsubMessage message1;
 
-  public MessageMatcher(PubsubMessage message) {
+  public MessageDataMatcher(PubsubMessage message) {
     message1 = message;
   }
 

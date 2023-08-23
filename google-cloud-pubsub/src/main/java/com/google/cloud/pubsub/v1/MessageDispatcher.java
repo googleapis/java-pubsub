@@ -358,25 +358,21 @@ class MessageDispatcher {
     private OutstandingMessage outstandingMessage;
     private Boolean receiptComplete;
 
-    private ReceiptCompleteData(OutstandingMessage outstandingMessage, Boolean receiptComplete) {
+    private ReceiptCompleteData(OutstandingMessage outstandingMessage) {
       this.outstandingMessage = outstandingMessage;
-      this.receiptComplete = receiptComplete;
+      this.receiptComplete = false;
     }
 
     private OutstandingMessage getOutstandingMessage() {
       return this.outstandingMessage;
     }
 
-    private Boolean getReceiptComplete() {
+    private Boolean isReceiptComplete() {
       return this.receiptComplete;
     }
 
-    private void setOutstandingMessage(OutstandingMessage outstandingMessage) {
-      this.outstandingMessage = outstandingMessage;
-    }
-
-    private void setReceiptComplete(Boolean receiptComplete) {
-      this.receiptComplete = receiptComplete;
+    private void notifyReceiptComplete() {
+      this.receiptComplete = true;
     }
   }
 
@@ -391,8 +387,12 @@ class MessageDispatcher {
       AckRequestData ackRequestData = builder.build();
       AckHandler ackHandler =
           new AckHandler(ackRequestData, message.getMessage().getSerializedSize(), totalExpiration);
-      if (!this.exactlyOnceDeliveryEnabled.get()
-          && pendingMessages.putIfAbsent(message.getAckId(), ackHandler) != null) {
+      OutstandingMessage outstandingMessage = new OutstandingMessage(message, ackHandler);
+
+      if (this.exactlyOnceDeliveryEnabled.get()) {
+        outstandingReceipts.put(
+            message.getAckId(), new ReceiptCompleteData(outstandingMessage));
+      } else if (pendingMessages.putIfAbsent(message.getAckId(), ackHandler) != null) {
         // putIfAbsent puts ackHandler if ackID isn't previously mapped, then return the
         // previously-mapped element.
         // If the previous element is not null, we already have the message and the new one is
@@ -402,11 +402,6 @@ class MessageDispatcher {
         // we want to eventually
         // totally expire so that pubsub service sends us the message again.
         continue;
-      }
-      OutstandingMessage outstandingMessage = new OutstandingMessage(message, ackHandler);
-      if (this.exactlyOnceDeliveryEnabled.get()) {
-        outstandingReceipts.put(
-            message.getAckId(), new ReceiptCompleteData(outstandingMessage, false));
       } else {
         outstandingBatch.add(outstandingMessage);
       }
@@ -421,7 +416,7 @@ class MessageDispatcher {
       ReceiptCompleteData receiptCompleteData = outstandingReceipts.get(ackRequestData.getAckId());
       OutstandingMessage outstandingMessage = receiptCompleteData.getOutstandingMessage();
       // Setting to true means that the receipt is complete
-      receiptCompleteData.setReceiptComplete(true);
+      receiptCompleteData.notifyReceiptComplete();
       List<OutstandingMessage> outstandingBatch = new ArrayList<>();
 
       for (Iterator<Entry<String, ReceiptCompleteData>> it =
@@ -429,11 +424,12 @@ class MessageDispatcher {
           it.hasNext(); ) {
         Map.Entry<String, ReceiptCompleteData> receipt = it.next();
         // If receipt is complete then add to outstandingBatch to process the batch
-        if (receipt.getValue().getReceiptComplete()) {
+        if (receipt.getValue().isReceiptComplete()) {
           it.remove();
-          pendingMessages.putIfAbsent(
-              receipt.getKey(), receipt.getValue().getOutstandingMessage().ackHandler);
-          outstandingBatch.add(receipt.getValue().getOutstandingMessage());
+          if (pendingMessages.putIfAbsent(
+              receipt.getKey(), receipt.getValue().getOutstandingMessage().ackHandler) == null) { //msg2, msg1, msg3
+            outstandingBatch.add(receipt.getValue().getOutstandingMessage());
+          }
         } else {
           break;
         }
