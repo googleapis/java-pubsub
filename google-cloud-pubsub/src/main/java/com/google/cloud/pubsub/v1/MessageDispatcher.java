@@ -390,8 +390,7 @@ class MessageDispatcher {
       OutstandingMessage outstandingMessage = new OutstandingMessage(message, ackHandler);
 
       if (this.exactlyOnceDeliveryEnabled.get()) {
-        outstandingReceipts.put(
-            message.getAckId(), new ReceiptCompleteData(outstandingMessage));
+        outstandingReceipts.put(message.getAckId(), new ReceiptCompleteData(outstandingMessage));
       } else if (pendingMessages.putIfAbsent(message.getAckId(), ackHandler) != null) {
         // putIfAbsent puts ackHandler if ackID isn't previously mapped, then return the
         // previously-mapped element.
@@ -427,7 +426,8 @@ class MessageDispatcher {
         if (receipt.getValue().isReceiptComplete()) {
           it.remove();
           if (pendingMessages.putIfAbsent(
-              receipt.getKey(), receipt.getValue().getOutstandingMessage().ackHandler) == null) { //msg2, msg1, msg3
+                  receipt.getKey(), receipt.getValue().getOutstandingMessage().ackHandler)
+              == null) { // msg2, msg1, msg3
             outstandingBatch.add(receipt.getValue().getOutstandingMessage());
           }
         } else {
