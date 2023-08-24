@@ -194,15 +194,15 @@ public class MessageDispatcherTest {
 
     verify(mockMessageReceiverWithAckResponse, times(1))
         .receiveMessage(
-            argThat(new MessageDataMatcher(TEST_MESSAGE3.getMessage())),
+            argThat(new MessageDataMatcher(TEST_MESSAGE3.getMessage().getData())),
             any(AckReplyConsumerWithResponse.class));
     verify(mockMessageReceiverWithAckResponse, times(1))
         .receiveMessage(
-            argThat(new MessageDataMatcher(TEST_MESSAGE2.getMessage())),
+            argThat(new MessageDataMatcher(TEST_MESSAGE2.getMessage().getData())),
             any(AckReplyConsumerWithResponse.class));
     verify(mockMessageReceiverWithAckResponse, times(1))
         .receiveMessage(
-            argThat(new MessageDataMatcher(TEST_MESSAGE1.getMessage())),
+            argThat(new MessageDataMatcher(TEST_MESSAGE1.getMessage().getData())),
             any(AckReplyConsumerWithResponse.class));
   }
 
@@ -229,7 +229,7 @@ public class MessageDispatcherTest {
 
     verify(mockMessageReceiverWithAckResponse, times(1))
         .receiveMessage(
-            argThat(new MessageDataMatcher(TEST_MESSAGE.getMessage())),
+            argThat(new MessageDataMatcher(TEST_MESSAGE.getMessage().getData())),
             any(AckReplyConsumerWithResponse.class));
   }
 

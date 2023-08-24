@@ -16,19 +16,20 @@
 
 package com.google.cloud.pubsub.v1;
 
+import com.google.protobuf.ByteString;
 import com.google.pubsub.v1.PubsubMessage;
 import org.mockito.ArgumentMatcher;
 
 public class MessageDataMatcher implements ArgumentMatcher<PubsubMessage> {
 
-  private PubsubMessage message1;
+  private ByteString expectedData;
 
-  public MessageDataMatcher(PubsubMessage message) {
-    message1 = message;
+  public MessageDataMatcher(ByteString expectedData) {
+    this.expectedData = expectedData;
   }
 
   @Override
   public boolean matches(PubsubMessage message2) {
-    return (message1.getData() == message2.getData());
+    return (expectedData == message2.getData());
   }
 }

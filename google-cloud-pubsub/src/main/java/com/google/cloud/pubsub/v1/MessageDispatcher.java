@@ -390,6 +390,8 @@ class MessageDispatcher {
       OutstandingMessage outstandingMessage = new OutstandingMessage(message, ackHandler);
 
       if (this.exactlyOnceDeliveryEnabled.get()) {
+        // For exactly once deliveries we don't add to outstanding batch because we first
+        // process the receipt modack. If that is successful then we process the message.
         outstandingReceipts.put(message.getAckId(), new ReceiptCompleteData(outstandingMessage));
       } else if (pendingMessages.putIfAbsent(message.getAckId(), ackHandler) != null) {
         // putIfAbsent puts ackHandler if ackID isn't previously mapped, then return the
@@ -412,10 +414,7 @@ class MessageDispatcher {
   synchronized void notifyAckSuccess(AckRequestData ackRequestData) {
 
     if (outstandingReceipts.containsKey(ackRequestData.getAckId())) {
-      ReceiptCompleteData receiptCompleteData = outstandingReceipts.get(ackRequestData.getAckId());
-      OutstandingMessage outstandingMessage = receiptCompleteData.getOutstandingMessage();
-      // Setting to true means that the receipt is complete
-      receiptCompleteData.notifyReceiptComplete();
+      outstandingReceipts.get(ackRequestData.getAckId()).notifyReceiptComplete();
       List<OutstandingMessage> outstandingBatch = new ArrayList<>();
 
       for (Iterator<Entry<String, ReceiptCompleteData>> it =
@@ -427,7 +426,7 @@ class MessageDispatcher {
           it.remove();
           if (pendingMessages.putIfAbsent(
                   receipt.getKey(), receipt.getValue().getOutstandingMessage().ackHandler)
-              == null) { // msg2, msg1, msg3
+              == null) {
             outstandingBatch.add(receipt.getValue().getOutstandingMessage());
           }
         } else {
