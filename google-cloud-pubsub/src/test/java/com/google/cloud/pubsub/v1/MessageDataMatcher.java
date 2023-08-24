@@ -30,6 +30,6 @@ public class MessageDataMatcher implements ArgumentMatcher<PubsubMessage> {
 
   @Override
   public boolean matches(PubsubMessage message2) {
-    return (expectedData == message2.getData());
+    return (expectedData.equals(message2.getData()));
   }
 }
