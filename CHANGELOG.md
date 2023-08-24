@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.124.2](https://github.com/googleapis/java-pubsub/compare/v1.124.1...v1.124.2) (2023-08-15)
+
+
+### Bug Fixes
+
+* Update Publish retry backoff settings ([#1686](https://github.com/googleapis/java-pubsub/issues/1686)) ([63a74d9](https://github.com/googleapis/java-pubsub/commit/63a74d98fdee56a98819d135a676a67fcc24961a))
+
+
+### Dependencies
+
+* Update dependency com.google.cloud:google-cloud-bigquery to v2.31.1 ([#1697](https://github.com/googleapis/java-pubsub/issues/1697)) ([9e90790](https://github.com/googleapis/java-pubsub/commit/9e907901e0f5f78adfffb3e61974e9f8fd756f96))
+* Update dependency org.graalvm.buildtools:junit-platform-native to v0.9.24 ([#1695](https://github.com/googleapis/java-pubsub/issues/1695)) ([ec64036](https://github.com/googleapis/java-pubsub/commit/ec640361a471111001f22667fa7e38123b731025))
+* Update dependency org.graalvm.buildtools:native-maven-plugin to v0.9.24 ([#1696](https://github.com/googleapis/java-pubsub/issues/1696)) ([cc9ae19](https://github.com/googleapis/java-pubsub/commit/cc9ae19865c0ece3789a8c2fa22afb5fbd306dc9))
+
+## [1.124.1](https://github.com/googleapis/java-pubsub/compare/v1.124.0...v1.124.1) (2023-08-03)
+
+
+### Dependencies
+
+* Update dependency com.google.cloud:google-cloud-core to v2.22.0 ([#1687](https://github.com/googleapis/java-pubsub/issues/1687)) ([220f318](https://github.com/googleapis/java-pubsub/commit/220f3181562a848cd786cc0126e8e3ad382787c7))
+* Update dependency com.google.cloud:google-cloud-shared-dependencies to v3.14.0 ([#1688](https://github.com/googleapis/java-pubsub/issues/1688)) ([0ded9f1](https://github.com/googleapis/java-pubsub/commit/0ded9f172af637db5d4302b146a24ecdd5b1bde2))
+
 ## [1.124.0](https://github.com/googleapis/java-pubsub/compare/v1.123.20...v1.124.0) (2023-07-27)
 
 
