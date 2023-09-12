@@ -68,7 +68,8 @@ public class SubscribeAsyncUnlimitedConcurrencyExample {
     try {
       Thread.sleep(30000);
     } catch (Exception e) {
-
+      System.out.println("Could not sleep: " + e);
+      return;
     }
     printThreads();
     for (Subscriber subscriber : subscribers) {

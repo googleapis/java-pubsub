@@ -42,8 +42,8 @@ import java.util.concurrent.atomic.AtomicLong;
 public class SubscribeAsyncLimitedConcurrencyExample {
   public static void main(String... args) throws Exception {
     // TODO(developer): Replace these variables before running the sample.
-    String projectId = "my-project";
-    String subscriptionId = "my-subscription";
+    String projectId = "ordering-keys-testing";
+    String subscriptionId = "threads-test";
 
     subscribeAsyncLimitedConcurrencyExample(projectId, subscriptionId);
   }
@@ -145,7 +145,8 @@ public class SubscribeAsyncLimitedConcurrencyExample {
     try {
       Thread.sleep(30000);
     } catch (Exception e) {
-
+      System.out.println("Could not sleep: " + e);
+      return;
     }
     printThreads();
 
