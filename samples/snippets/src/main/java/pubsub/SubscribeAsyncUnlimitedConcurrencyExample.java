@@ -32,7 +32,7 @@ public class SubscribeAsyncUnlimitedConcurrencyExample {
   public static void main(String... args) throws Exception {
     // TODO(developer): Replace these variables before running the sample.
     String projectId = "my-topic";
-    String subscriptionId = "my-subscription"
+    String subscriptionId = "my-subscription";
 
     subscribeAsyncUnlimitedConcurrencyExample(projectId, subscriptionId);
   }
