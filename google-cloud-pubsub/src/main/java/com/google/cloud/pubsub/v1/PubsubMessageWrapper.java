@@ -19,6 +19,7 @@ package com.google.cloud.pubsub.v1;
 import com.google.common.base.Preconditions;
 import com.google.pubsub.v1.PubsubMessage;
 import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.StatusCode;
 import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.context.Context;
 import java.util.Optional;
@@ -26,12 +27,16 @@ import java.util.Optional;
 public class PubsubMessageWrapper {
   private final PubsubMessage pubsubMessage;
 
-  private static final String MESSAGE_ATTRIBUTE_PREFIX = "googclient_";
+  // Pubsub Message attribute
+  private static final String PUBSUB_MESSAGE_ATTRIBUTE_PREFIX = "googclient_";
+
+  private String topicName;
+  private String subscriptionName;
 
   /**
    * Publish Spans are hierarchical - they must be open and closed in the following order:
    *
-   * <p>Publish -> (optional) Flow Control -> (optional) Scheduler -> PublishRpc
+   * <p>Publish -> (optional) Flow Control / (optional) Scheduler / PublishRpc
    */
   private static final String SEND = "send";
 
@@ -39,6 +44,20 @@ public class PubsubMessageWrapper {
   private static final String PUBLISH_FLOW_CONTROL_SPAN_NAME = "publish flow control";
   private static final String PUBLISH_SCHEDULER_SPAN_NAME = "publish scheduler";
   private static final String PUBLISH_RPC_SPAN_NAME = "send Publish";
+
+  // Open Telemetry Span attributes
+  private static final String PUBLISH_SPAN_SYSTEM_ATTRIBUTE_KEY = "messaging.system";
+  private static final String PUBLISH_SPAN_SYSTEM_ATTRIBUTE_VALUE = "pubsub";
+  private static final String PUBLISH_SPAN_DESTINATION_ATTRIBUTE_KEY = "messaging.destination";
+  private static final String PUBLISH_SPAN_DESTINATION_KIND_ATTRIBUTE_KEY =
+      "messaging.destination_kind";
+  private static final String PUBLISH_SPAN_DESTINATION_KIND_ATTRIBUTE_VALUE = "topic";
+  private static final String PUBLISH_SPAN_MESSAGE_ID_ATTRIBUTE_KEY = "messaging.message_id";
+  private static final String PUBLISH_SPAN_MESSAGE_PAYLOAD_SIZE_BYTES_ATTRIBUTE_KEY =
+      "messaging.message_payload_size_bytes";
+  private static final String PUBLISH_SPAN_ORDERING_KEY_ATTRIBUTE_KEY = "messaging.ordering_key";
+  private static final String PUBLISH_RPC_SPAN_NUM_MESSAGES_IN_BATCH_ATTRIBUTE_KEY =
+      "messaging.pubsub.num_messages_in_batch";
 
   private Optional<Span> publishSpan = Optional.empty();
   private Optional<Span> publishFlowControlSpan = Optional.empty();
@@ -48,8 +67,8 @@ public class PubsubMessageWrapper {
   /**
    * Subscribe Spans are hierarchical - they must be open and closed in the following order:
    *
-   * <p>Receive -> (optional) Flow Control -> (optional) Scheduler -> Process -> ModifyAckDeadline
-   * -> Acknowledgement OR Negative Acknowledgement
+   * <p>Receive -> (optional) Flow Control / (optional) Scheduler -> Process -> ModifyAckDeadline ->
+   * Acknowledgement OR Negative Acknowledgement
    */
   private static final String RECEIVE = "receive";
 
@@ -74,24 +93,59 @@ public class PubsubMessageWrapper {
     this.pubsubMessage = builder.pubsubMessage;
 
     if (builder.topicName.isPresent()) {
+      this.topicName = builder.topicName.get();
       this.PUBLISH_SPAN_NAME = builder.topicName.get() + " " + this.SEND;
     }
 
     if (builder.subscriptionName.isPresent()) {
+      this.subscriptionName = builder.subscriptionName.get();
       this.RECEIVE_SPAN_NAME = builder.subscriptionName.get() + " " + this.RECEIVE;
       this.PROCESS_SPAN_NAME = builder.subscriptionName.get() + " " + this.PROCESS;
     }
   }
 
+  public PubsubMessage getPubsubMessage() {
+    return pubsubMessage;
+  }
+
   public void startPublishSpan(Optional<Tracer> tracer) {
     if (tracer.isPresent()) {
       this.publishSpan = Optional.of(createAndStartSpan(tracer.get(), PUBLISH_SPAN_NAME));
+      // Set required span attribute(s)
+      this.publishSpan
+          .get()
+          .setAttribute(PUBLISH_SPAN_SYSTEM_ATTRIBUTE_KEY, PUBLISH_SPAN_SYSTEM_ATTRIBUTE_VALUE);
+      this.publishSpan.get().setAttribute(PUBLISH_SPAN_DESTINATION_ATTRIBUTE_KEY, this.topicName);
+      this.publishSpan
+          .get()
+          .setAttribute(
+              PUBLISH_SPAN_DESTINATION_KIND_ATTRIBUTE_KEY,
+              PUBLISH_SPAN_DESTINATION_KIND_ATTRIBUTE_VALUE);
+      this.publishSpan
+          .get()
+          .setAttribute(
+              PUBLISH_SPAN_MESSAGE_PAYLOAD_SIZE_BYTES_ATTRIBUTE_KEY,
+              this.pubsubMessage.getSerializedSize());
+      this.publishSpan
+          .get()
+          .setAttribute(
+              PUBLISH_SPAN_ORDERING_KEY_ATTRIBUTE_KEY, this.pubsubMessage.getOrderingKey());
     }
   }
 
   public void endPublishSpan() {
     if (this.publishSpan.isPresent()) {
       this.publishSpan.get().end();
+    }
+  }
+
+  /**
+   * Set the MessageId attribute for the Publish Span. This must be set AFTER the publish is done as
+   * we receive a messageId from the server
+   */
+  public void setPublishSpanMessageIdAttribute(String messageId) {
+    if (this.publishSpan.isPresent()) {
+      this.publishSpan.get().setAttribute(PUBLISH_SPAN_MESSAGE_ID_ATTRIBUTE_KEY, messageId);
     }
   }
 
@@ -112,16 +166,23 @@ public class PubsubMessageWrapper {
     }
   }
 
+  public void setPublishFlowControlSpanException(Throwable throwable) {
+    if (this.publishFlowControlSpan.isPresent()) {
+      this.publishFlowControlSpan
+          .get()
+          .setStatus(StatusCode.ERROR, "Publish flow control exception caught.");
+      this.publishFlowControlSpan.get().recordException(throwable);
+      this.endAllPublishSpans();
+    }
+  }
+
   /** (Optional) Start Flow Control Span */
   public void startPublishSchedulerSpan(Optional<Tracer> tracer) {
     if (tracer.isPresent()) {
-      // Check for optional parent
-      Span parent =
-          this.publishFlowControlSpan.isPresent()
-              ? this.publishFlowControlSpan.get()
-              : this.publishSpan.get();
       this.publishSchedulerSpan =
-          Optional.of(this.createAndStartSpan(tracer.get(), PUBLISH_SCHEDULER_SPAN_NAME, parent));
+          Optional.of(
+              this.createAndStartSpan(
+                  tracer.get(), PUBLISH_SCHEDULER_SPAN_NAME, this.publishSpan.get()));
     }
   }
 
@@ -132,24 +193,41 @@ public class PubsubMessageWrapper {
     }
   }
 
-  public void startPublishRpcSpan(Optional<Tracer> tracer) {
+  public void setPublishSchedulerException(Throwable throwable) {
+    if (this.publishSchedulerSpan.isPresent()) {
+      this.publishSchedulerSpan
+          .get()
+          .setStatus(StatusCode.ERROR, "Publish scheduler exception caught.");
+      this.publishSchedulerSpan.get().recordException(throwable);
+      this.endAllPublishSpans();
+    }
+  }
+
+  public void startPublishRpcSpan(Optional<Tracer> tracer, int numMessagesInBatch) {
     if (tracer.isPresent()) {
-      Span parent;
-      if (this.publishSchedulerSpan.isPresent()) {
-        parent = this.publishSchedulerSpan.get();
-      } else if (this.publishFlowControlSpan.isPresent()) {
-        parent = this.publishFlowControlSpan.get();
-      } else {
-        parent = this.publishSpan.get();
-      }
       this.publishRpcSpan =
-          Optional.of(createAndStartSpan(tracer.get(), PUBLISH_RPC_SPAN_NAME, parent));
+          Optional.of(
+              createAndStartSpan(tracer.get(), PUBLISH_RPC_SPAN_NAME, this.publishSpan.get()));
+      // Set required span attribute(s)
+      this.publishRpcSpan
+          .get()
+          .setAttribute(PUBLISH_RPC_SPAN_NUM_MESSAGES_IN_BATCH_ATTRIBUTE_KEY, numMessagesInBatch);
     }
   }
 
   public void endPublishRpcSpan() {
     if (this.publishRpcSpan.isPresent()) {
       this.publishRpcSpan.get().end();
+    }
+  }
+
+  public void setPublishRpcSpanException(Throwable throwable) {
+    if (this.publishRpcSpan.isPresent()) {
+      this.publishRpcSpan
+          .get()
+          .setStatus(StatusCode.ERROR, "Publish flow control exception caught.");
+      this.publishRpcSpan.get().recordException(throwable);
+      this.endAllPublishSpans();
     }
   }
 
@@ -266,6 +344,14 @@ public class PubsubMessageWrapper {
 
   private Span createAndStartSpan(Tracer tracer, String spanName, Span parent) {
     return tracer.spanBuilder(spanName).setParent(Context.current().with(parent)).startSpan();
+  }
+
+  /** Helper function used after setting an exception to end all publish spans. */
+  private void endAllPublishSpans() {
+    this.endPublishRpcSpan();
+    this.endPublishSchedulerSpan();
+    this.endPublishFlowControlSpan();
+    this.endPublishSpan();
   }
 
   public static PubsubMessageWrapper.Builder newBuilder(PubsubMessage pubsubMessage) {
