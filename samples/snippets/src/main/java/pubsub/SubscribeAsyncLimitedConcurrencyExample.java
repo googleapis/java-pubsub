@@ -60,6 +60,7 @@ public class SubscribeAsyncLimitedConcurrencyExample {
         builder
             .executor(executor)
             .offloadExecutor(offloadExecutor)
+            .maxInboundMessageSize(MAX_INBOUND_MESSAGE_SIZE)
             .maxInboundMetadataSize(MAX_INBOUND_METADATA_SIZE)
             .keepAliveTime(30, TimeUnit.SECONDS);
 
@@ -69,8 +70,8 @@ public class SubscribeAsyncLimitedConcurrencyExample {
 
   public static void subscribeAsyncLimitedConcurrencyExample(
       String projectId, String subscriptionId) {
-    int subCount = 100;
-    int transportChannelCount = 20;
+    final int subCount = 100;
+    final int transportChannelCount = 20;
     final AtomicLong receivedCount = new AtomicLong();
 
     // Instantiate an asynchronous message receiver.

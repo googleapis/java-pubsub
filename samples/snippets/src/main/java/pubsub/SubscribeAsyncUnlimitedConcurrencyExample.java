@@ -39,7 +39,7 @@ public class SubscribeAsyncUnlimitedConcurrencyExample {
 
   public static void subscribeAsyncUnlimitedConcurrencyExample(
       String projectId, String subscriptionId) {
-    int subCount = 100;
+    final int subCount = 100;
     final AtomicLong receivedCount = new AtomicLong();
 
     // Instantiate an asynchronous message receiver.
