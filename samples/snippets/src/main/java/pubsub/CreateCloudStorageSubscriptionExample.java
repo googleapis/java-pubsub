@@ -22,7 +22,6 @@ import com.google.pubsub.v1.CloudStorageConfig;
 import com.google.pubsub.v1.ProjectSubscriptionName;
 import com.google.pubsub.v1.ProjectTopicName;
 import com.google.pubsub.v1.Subscription;
-import com.google.pubsub.v1.AvroConfig;
 import java.io.IOException;
 
 public class CreateCloudStorageSubscriptionExample {
