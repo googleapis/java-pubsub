@@ -36,8 +36,7 @@ public class CreateCloudStorageSubscriptionExample {
   }
 
   public static void createCloudStorageSubscription(
-      String projectId, String topicId, String subscriptionId, String bucket)
-      throws IOException {
+      String projectId, String topicId, String subscriptionId, String bucket) throws IOException {
     try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
 
       ProjectTopicName topicName = ProjectTopicName.of(projectId, topicId);
