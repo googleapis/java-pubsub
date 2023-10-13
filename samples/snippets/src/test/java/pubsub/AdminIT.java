@@ -33,6 +33,11 @@ import com.google.cloud.bigquery.TableId;
 import com.google.cloud.bigquery.TableInfo;
 import com.google.cloud.pubsub.v1.SubscriptionAdminClient;
 import com.google.cloud.pubsub.v1.TopicAdminClient;
+import com.google.cloud.storage.Bucket;
+import com.google.cloud.storage.BucketInfo;
+import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageClass;
+import com.google.cloud.storage.StorageOptions;
 import com.google.pubsub.v1.SubscriptionName;
 import com.google.pubsub.v1.TopicName;
 import java.io.ByteArrayOutputStream;
@@ -44,11 +49,6 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
-import com.google.cloud.storage.Bucket;
-import com.google.cloud.storage.BucketInfo;
-import com.google.cloud.storage.Storage;
-import com.google.cloud.storage.StorageClass;
-import com.google.cloud.storage.StorageOptions;
 
 public class AdminIT {
   private ByteArrayOutputStream bout;
@@ -69,7 +69,8 @@ public class AdminIT {
   private static final String bigquerySubscriptionId = "iam-bigquery-subscription-" + _suffix;
   private static final String bigqueryTableId = "java_samples_table_" + _suffix;
 
-  private static final String cloudStorageSubscriptionId = "iam-cloudstorage-subscription-" + _suffix;
+  private static final String cloudStorageSubscriptionId =
+      "iam-cloudstorage-subscription-" + _suffix;
   private static final String cloudStorageBucketName = "java_samples_gcs_bucket_" + _suffix;
   private static final String cloudStorageFilenamePrefix = "log_events_";
   private static final String cloudStorageFilenameSuffix = ".text";
