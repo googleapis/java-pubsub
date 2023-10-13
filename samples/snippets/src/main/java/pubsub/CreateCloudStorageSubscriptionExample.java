@@ -31,12 +31,16 @@ public class CreateCloudStorageSubscriptionExample {
     String topicId = "your-topic-id";
     String subscriptionId = "your-subscription-id";
     String bucket = "your-bucket";
+    String filenamePrefix = "log_events_";
+    String filenameSuffix = ".text";
 
-    createCloudStorageSubscription(projectId, topicId, subscriptionId, bucket);
+    createCloudStorageSubscription(projectId, topicId, subscriptionId, bucket, filenamePrefix,
+        filenameSuffix);
   }
 
   public static void createCloudStorageSubscription(
-      String projectId, String topicId, String subscriptionId, String bucket)
+      String projectId, String topicId, String subscriptionId, String bucket, String filenamePrefix,
+      String filenameSuffix)
       throws IOException {
     try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
 
@@ -45,7 +49,10 @@ public class CreateCloudStorageSubscriptionExample {
           ProjectSubscriptionName.of(projectId, subscriptionId);
 
       CloudStorageConfig cloudStorageConfig =
-          CloudStorageConfig.newBuilder().setBucket(bucket).build();
+          CloudStorageConfig.newBuilder().setBucket(bucket)
+              .setFilenamePrefix(filenamePrefix)
+              .setFilenameSuffix(filenameSuffix)
+              .build();
 
       Subscription subscription =
           subscriptionAdminClient.createSubscription(
