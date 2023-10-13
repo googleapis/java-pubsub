@@ -44,6 +44,11 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
+import com.google.cloud.storage.Bucket;
+import com.google.cloud.storage.BucketInfo;
+import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageClass;
+import com.google.cloud.storage.StorageOptions;
 
 public class AdminIT {
   private ByteArrayOutputStream bout;
@@ -63,6 +68,11 @@ public class AdminIT {
       "java_samples_data_set" + _suffix.replace("-", "_");
   private static final String bigquerySubscriptionId = "iam-bigquery-subscription-" + _suffix;
   private static final String bigqueryTableId = "java_samples_table_" + _suffix;
+
+  private static final String cloudStorageSubscriptionId = "iam-cloudstorage-subscription-" + _suffix;
+  private static final String cloudStorageBucketName = "java_samples_gcs_bucket_" + _suffix;
+  private static final String cloudStorageFilenamePrefix = "log_events_";
+  private static final String cloudStorageFilenameSuffix = ".text";
 
   private static final TopicName topicName = TopicName.of(projectId, topicId);
   private static final SubscriptionName pullSubscriptionName =
@@ -97,6 +107,9 @@ public class AdminIT {
 
     // Create table for BigQuery subscription.
     createBigQueryTable();
+
+    // Create bucket for CloudStorage subscription
+    createCloudStorageBucket();
   }
 
   @After
@@ -123,6 +136,9 @@ public class AdminIT {
 
     // Delete BigQuery table.
     deleteBigQueryTable();
+
+    //Delete GCS Bucket
+    deleteCloudStorageBucket();
 
     System.setOut(null);
   }
@@ -151,6 +167,22 @@ public class AdminIT {
     BigQuery bigquery = BigQueryOptions.getDefaultInstance().getService();
     DatasetId datasetId = DatasetId.of(projectId, bigqueryDatasetId);
     bigquery.delete(datasetId, BigQuery.DatasetDeleteOption.deleteContents());
+  }
+
+  private void createCloudStorageBucket() throws Exception {
+    Storage storage = StorageOptions.newBuilder().setProjectId(projectId).build().getService();
+    String location = "ASIA";
+    Bucket bucket =
+        storage.create(
+            BucketInfo.newBuilder(cloudStorageBucketName)
+                .setLocation(location)
+                .build());
+  }
+
+  private void deleteCloudStorageBucket() throws Exception {
+    Storage storage = StorageOptions.newBuilder().setProjectId(projectId).build().getService();
+    Bucket bucket = storage.get(cloudStorageBucketName);
+    bucket.delete();
   }
 
   @Test
@@ -265,12 +297,21 @@ public class AdminIT {
     assertThat(bout.toString()).contains(bigqueryTablePath);
 
     bout.reset();
+    // Test create a CloudStorage susbscription
+    CreateCloudStorageSubscriptionExample.createCloudStorageSubscription(
+        projectId, topicId, cloudStorageSubscriptionId, cloudStorageBucketName,
+        cloudStorageFilenamePrefix, cloudStorageFilenameSuffix);
+    assertThat(bout.toString()).contains("Created a CloudStorage subscription:");
+    assertThat(bout.toString()).contains(cloudStorageBucketName);
+
+    bout.reset();
     // Test delete subscription.
     DeleteSubscriptionExample.deleteSubscriptionExample(projectId, pullSubscriptionId);
     DeleteSubscriptionExample.deleteSubscriptionExample(projectId, pushSubscriptionId);
     DeleteSubscriptionExample.deleteSubscriptionExample(projectId, orderedSubscriptionId);
     DeleteSubscriptionExample.deleteSubscriptionExample(projectId, exactlyOnceSubscriptionId);
     DeleteSubscriptionExample.deleteSubscriptionExample(projectId, bigquerySubscriptionId);
+    DeleteSubscriptionExample.deleteSubscriptionExample(projectId, cloudStorageSubscriptionId);
     assertThat(bout.toString()).contains("Deleted subscription.");
 
     bout.reset();
