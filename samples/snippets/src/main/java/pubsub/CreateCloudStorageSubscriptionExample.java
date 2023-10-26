@@ -23,6 +23,7 @@ import com.google.pubsub.v1.ProjectSubscriptionName;
 import com.google.pubsub.v1.ProjectTopicName;
 import com.google.pubsub.v1.Subscription;
 import java.io.IOException;
+import com.google.protobuf.Duration;
 
 public class CreateCloudStorageSubscriptionExample {
   public static void main(String... args) throws Exception {
@@ -33,14 +34,15 @@ public class CreateCloudStorageSubscriptionExample {
     String bucket = "your-bucket";
     String filenamePrefix = "log_events_";
     String filenameSuffix = ".text";
+    Duration maxDuration = Duration.newBuilder().setSeconds(300).build();
 
     createCloudStorageSubscription(projectId, topicId, subscriptionId, bucket, filenamePrefix,
-        filenameSuffix);
+        filenameSuffix, maxDuration);
   }
 
   public static void createCloudStorageSubscription(
       String projectId, String topicId, String subscriptionId, String bucket, String filenamePrefix,
-      String filenameSuffix) throws IOException {
+      String filenameSuffix, Duration maxDuration) throws IOException {
     try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
 
       ProjectTopicName topicName = ProjectTopicName.of(projectId, topicId);
@@ -51,6 +53,7 @@ public class CreateCloudStorageSubscriptionExample {
           CloudStorageConfig.newBuilder().setBucket(bucket)
               .setFilenamePrefix(filenamePrefix)
               .setFilenameSuffix(filenameSuffix)
+              .setMaxDuration(maxDuration)
               .build();
 
       Subscription subscription =
