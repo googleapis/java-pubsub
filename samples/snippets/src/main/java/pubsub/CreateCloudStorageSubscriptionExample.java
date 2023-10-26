@@ -50,7 +50,8 @@ public class CreateCloudStorageSubscriptionExample {
           ProjectSubscriptionName.of(projectId, subscriptionId);
 
       CloudStorageConfig cloudStorageConfig =
-          CloudStorageConfig.newBuilder().setBucket(bucket)
+          CloudStorageConfig.newBuilder()
+              .setBucket(bucket)
               .setFilenamePrefix(filenamePrefix)
               .setFilenameSuffix(filenameSuffix)
               .setMaxDuration(maxDuration)
