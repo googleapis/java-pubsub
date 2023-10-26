@@ -18,12 +18,12 @@ package pubsub;
 
 // [START pubsub_create_cloud_storage_subscription]
 import com.google.cloud.pubsub.v1.SubscriptionAdminClient;
+import com.google.protobuf.Duration;
 import com.google.pubsub.v1.CloudStorageConfig;
 import com.google.pubsub.v1.ProjectSubscriptionName;
 import com.google.pubsub.v1.ProjectTopicName;
 import com.google.pubsub.v1.Subscription;
 import java.io.IOException;
-import com.google.protobuf.Duration;
 
 public class CreateCloudStorageSubscriptionExample {
   public static void main(String... args) throws Exception {
