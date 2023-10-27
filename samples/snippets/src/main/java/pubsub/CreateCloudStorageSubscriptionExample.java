@@ -36,13 +36,19 @@ public class CreateCloudStorageSubscriptionExample {
     String filenameSuffix = ".text";
     Duration maxDuration = Duration.newBuilder().setSeconds(300).build();
 
-    createCloudStorageSubscription(projectId, topicId, subscriptionId, bucket, filenamePrefix,
-        filenameSuffix, maxDuration);
+    createCloudStorageSubscription(
+        projectId, topicId, subscriptionId, bucket, filenamePrefix, filenameSuffix, maxDuration);
   }
 
   public static void createCloudStorageSubscription(
-      String projectId, String topicId, String subscriptionId, String bucket, String filenamePrefix,
-      String filenameSuffix, Duration maxDuration) throws IOException {
+      String projectId,
+      String topicId,
+      String subscriptionId,
+      String bucket,
+      String filenamePrefix,
+      String filenameSuffix,
+      Duration maxDuration)
+      throws IOException {
     try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
 
       ProjectTopicName topicName = ProjectTopicName.of(projectId, topicId);
