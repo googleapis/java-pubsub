@@ -411,7 +411,7 @@ class MessageDispatcher {
     processBatch(outstandingBatch);
   }
 
-  synchronized void notifyAckSuccess(AckRequestData ackRequestData) {
+  void notifyAckSuccess(AckRequestData ackRequestData) {
 
     if (outstandingReceipts.containsKey(ackRequestData.getAckId())) {
       outstandingReceipts.get(ackRequestData.getAckId()).notifyReceiptComplete();
@@ -437,7 +437,7 @@ class MessageDispatcher {
     }
   }
 
-  synchronized void notifyAckFailed(AckRequestData ackRequestData) {
+  void notifyAckFailed(AckRequestData ackRequestData) {
     outstandingReceipts.remove(ackRequestData.getAckId());
   }
 
