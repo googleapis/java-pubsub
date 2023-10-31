@@ -92,8 +92,8 @@ class MessageDispatcher {
   private final LinkedBlockingQueue<AckRequestData> pendingAcks = new LinkedBlockingQueue<>();
   private final LinkedBlockingQueue<AckRequestData> pendingNacks = new LinkedBlockingQueue<>();
   private final LinkedBlockingQueue<AckRequestData> pendingReceipts = new LinkedBlockingQueue<>();
-  private final LinkedHashMap<String, ReceiptCompleteData> outstandingReceipts =
-      new LinkedHashMap<String, ReceiptCompleteData>();
+  private final ConcurrentMap<String, ReceiptCompleteData> outstandingReceipts =
+      new ConcurrentHashMap<String, ReceiptCompleteData>();
   private final AtomicInteger messageDeadlineSeconds = new AtomicInteger();
   private final AtomicBoolean extendDeadline = new AtomicBoolean(true);
   private final Lock jobLock;
@@ -376,7 +376,7 @@ class MessageDispatcher {
     }
   }
 
-  synchronized void processReceivedMessages(List<ReceivedMessage> messages) {
+  void processReceivedMessages(List<ReceivedMessage> messages) {
     Instant totalExpiration = now().plus(maxAckExtensionPeriod);
     List<OutstandingMessage> outstandingBatch = new ArrayList<>(messages.size());
     for (ReceivedMessage message : messages) {
