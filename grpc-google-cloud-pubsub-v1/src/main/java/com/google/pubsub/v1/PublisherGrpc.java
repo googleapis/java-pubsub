@@ -33,7 +33,7 @@ public final class PublisherGrpc {
 
   private PublisherGrpc() {}
 
-  public static final String SERVICE_NAME = "google.pubsub.v1.Publisher";
+  public static final java.lang.String SERVICE_NAME = "google.pubsub.v1.Publisher";
 
   // Static method descriptors that strictly reflect the proto.
   private static volatile io.grpc.MethodDescriptor<
@@ -465,7 +465,7 @@ public final class PublisherGrpc {
      *
      * <pre>
      * Creates the given topic with the given name. See the [resource name rules]
-     * (https://cloud.google.com/pubsub/docs/admin#resource_names).
+     * (https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names).
      * </pre>
      */
     default void createTopic(
@@ -640,7 +640,7 @@ public final class PublisherGrpc {
      *
      * <pre>
      * Creates the given topic with the given name. See the [resource name rules]
-     * (https://cloud.google.com/pubsub/docs/admin#resource_names).
+     * (https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names).
      * </pre>
      */
     public void createTopic(
@@ -816,7 +816,7 @@ public final class PublisherGrpc {
      *
      * <pre>
      * Creates the given topic with the given name. See the [resource name rules]
-     * (https://cloud.google.com/pubsub/docs/admin#resource_names).
+     * (https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names).
      * </pre>
      */
     public com.google.pubsub.v1.Topic createTopic(com.google.pubsub.v1.Topic request) {
@@ -963,7 +963,7 @@ public final class PublisherGrpc {
      *
      * <pre>
      * Creates the given topic with the given name. See the [resource name rules]
-     * (https://cloud.google.com/pubsub/docs/admin#resource_names).
+     * (https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names).
      * </pre>
      */
     public com.google.common.util.concurrent.ListenableFuture<com.google.pubsub.v1.Topic>
@@ -1271,9 +1271,9 @@ public final class PublisherGrpc {
   private static final class PublisherMethodDescriptorSupplier
       extends PublisherBaseDescriptorSupplier
       implements io.grpc.protobuf.ProtoMethodDescriptorSupplier {
-    private final String methodName;
+    private final java.lang.String methodName;
 
-    PublisherMethodDescriptorSupplier(String methodName) {
+    PublisherMethodDescriptorSupplier(java.lang.String methodName) {
       this.methodName = methodName;
     }
 
