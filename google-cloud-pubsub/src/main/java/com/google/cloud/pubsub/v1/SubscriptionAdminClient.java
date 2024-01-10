@@ -100,10 +100,12 @@ import javax.annotation.Generated;
  * close().
  *
  * <table>
+ *   <caption>Methods</caption>
  *    <tr>
  *      <th>Method</th>
  *      <th>Description</th>
  *      <th>Method Variants</th>
+ *    </tr>
  *    <tr>
  *      <td>CreateSubscription</td>
  *      <td><p> Creates a subscription to a given topic. See the [resource name rules] (https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names). If the subscription already exists, returns `ALREADY_EXISTS`. If the corresponding topic doesn't exist, returns `NOT_FOUND`.
@@ -212,8 +214,8 @@ import javax.annotation.Generated;
  *      </ul>
  *      <p>"Flattened" method variants have converted the fields of the request object into function parameters to enable multiple ways to call the same method.</p>
  *      <ul>
- *           <li>modifyAckDeadline(SubscriptionName subscription, List<String> ackIds, int ackDeadlineSeconds)
- *           <li>modifyAckDeadline(String subscription, List<String> ackIds, int ackDeadlineSeconds)
+ *           <li>modifyAckDeadline(SubscriptionName subscription, List&lt;String&gt; ackIds, int ackDeadlineSeconds)
+ *           <li>modifyAckDeadline(String subscription, List&lt;String&gt; ackIds, int ackDeadlineSeconds)
  *      </ul>
  *      <p>Callable method variants take no parameters and return an immutable API callable object, which can be used to initiate calls to the service.</p>
  *      <ul>
@@ -232,8 +234,8 @@ import javax.annotation.Generated;
  *      </ul>
  *      <p>"Flattened" method variants have converted the fields of the request object into function parameters to enable multiple ways to call the same method.</p>
  *      <ul>
- *           <li>acknowledge(SubscriptionName subscription, List<String> ackIds)
- *           <li>acknowledge(String subscription, List<String> ackIds)
+ *           <li>acknowledge(SubscriptionName subscription, List&lt;String&gt; ackIds)
+ *           <li>acknowledge(String subscription, List&lt;String&gt; ackIds)
  *      </ul>
  *      <p>Callable method variants take no parameters and return an immutable API callable object, which can be used to initiate calls to the service.</p>
  *      <ul>
@@ -446,7 +448,6 @@ import javax.annotation.Generated;
  *           <li>testIamPermissionsCallable()
  *      </ul>
  *       </td>
- *    </tr>
  *    </tr>
  *  </table>
  *
