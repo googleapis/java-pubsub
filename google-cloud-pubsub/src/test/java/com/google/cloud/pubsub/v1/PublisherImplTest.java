@@ -66,6 +66,7 @@ import org.threeten.bp.Duration;
 @RunWith(JUnit4.class)
 public class PublisherImplTest {
 
+  // Testing
   private static final ProjectTopicName TEST_TOPIC =
       ProjectTopicName.of("test-project", "test-topic");
 
