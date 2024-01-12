@@ -134,8 +134,8 @@ import javax.annotation.Generated;
  *      </ul>
  *      <p>"Flattened" method variants have converted the fields of the request object into function parameters to enable multiple ways to call the same method.</p>
  *      <ul>
- *           <li>publish(TopicName topic, List<PubsubMessage> messages)
- *           <li>publish(String topic, List<PubsubMessage> messages)
+ *           <li>publish(TopicName topic, List&lt;PubsubMessage&gt; messages)
+ *           <li>publish(String topic, List&lt;PubsubMessage&gt; messages)
  *      </ul>
  *      <p>Callable method variants take no parameters and return an immutable API callable object, which can be used to initiate calls to the service.</p>
  *      <ul>
