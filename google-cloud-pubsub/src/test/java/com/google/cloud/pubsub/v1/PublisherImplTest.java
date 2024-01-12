@@ -524,10 +524,17 @@ public class PublisherImplTest {
             .setEnableMessageOrdering(true)
             .build();
 
-    // This exception should stop future publishing to the same key
-    testPublisherServiceImpl.addPublishError(new StatusException(Status.INVALID_ARGUMENT));
     ApiFuture<String> future1 = sendTestMessageWithOrderingKey(publisher, "m1", "orderA");
     ApiFuture<String> future2 = sendTestMessageWithOrderingKey(publisher, "m2", "orderA");
+
+    fakeExecutor.advanceTime(Duration.ZERO);
+    assertFalse(future1.isDone());
+    assertFalse(future2.isDone());
+
+    // This exception should stop future publishing to the same key
+    testPublisherServiceImpl.addPublishError(new StatusException(Status.INVALID_ARGUMENT));
+
+    fakeExecutor.advanceTime(Duration.ZERO);
 
     try {
       future1.get();
@@ -633,6 +640,8 @@ public class PublisherImplTest {
     } catch (ExecutionException e) {
       assertEquals(SequentialExecutorService.CallbackExecutor.CANCELLATION_EXCEPTION, e.getCause());
     }
+
+    shutdownTestPublisher(publisher);
   }
 
   private ApiFuture<String> sendTestMessageWithOrderingKey(
