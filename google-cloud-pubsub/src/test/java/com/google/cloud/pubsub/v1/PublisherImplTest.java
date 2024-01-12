@@ -99,7 +99,7 @@ public class PublisherImplTest {
 
   @After
   public void tearDown() throws Exception {
-    testServer.shutdownNow().awaitTermination();
+    testServer.shutdownNow().awaitTermination(10, TimeUnit.SECONDS);
     testChannel.shutdown();
   }
 
@@ -238,7 +238,7 @@ public class PublisherImplTest {
     assertEquals("2", publishFuture2.get());
 
     fakeExecutor.advanceTime(Duration.ofSeconds(100));
-    publisher.awaitTermination(1, TimeUnit.MINUTES);
+    publisher.awaitTermination(10, TimeUnit.SECONDS);
   }
 
   @Test
@@ -499,7 +499,7 @@ public class PublisherImplTest {
 
     assertEquals(4, testPublisherServiceImpl.getCapturedRequests().size());
     publisher.shutdown();
-    assertTrue(publisher.awaitTermination(1, TimeUnit.MINUTES));
+    assertTrue(publisher.awaitTermination(10, TimeUnit.SECONDS));
   }
 
   @Test
@@ -770,7 +770,7 @@ public class PublisherImplTest {
 
     assertEquals(3, testPublisherServiceImpl.getCapturedRequests().size());
     publisher.shutdown();
-    assertTrue(publisher.awaitTermination(1, TimeUnit.MINUTES));
+    assertTrue(publisher.awaitTermination(10, TimeUnit.SECONDS));
   }
 
   @Test(expected = ExecutionException.class)
@@ -799,7 +799,7 @@ public class PublisherImplTest {
     } finally {
       assertTrue(testPublisherServiceImpl.getCapturedRequests().size() >= 1);
       publisher.shutdown();
-      assertTrue(publisher.awaitTermination(1, TimeUnit.MINUTES));
+      assertTrue(publisher.awaitTermination(10, TimeUnit.SECONDS));
     }
   }
 
@@ -823,7 +823,7 @@ public class PublisherImplTest {
     assertEquals(Duration.ofMillis(11), publisher.getBatchingSettings().getDelayThreshold());
     assertEquals(12, (long) publisher.getBatchingSettings().getElementCountThreshold());
     publisher.shutdown();
-    assertTrue(publisher.awaitTermination(1, TimeUnit.MINUTES));
+    assertTrue(publisher.awaitTermination(10, TimeUnit.SECONDS));
   }
 
   @Test
@@ -1024,7 +1024,7 @@ public class PublisherImplTest {
             .build();
     ApiFuture<String> publishFuture1 = sendTestMessage(publisher, "A");
     publisher.shutdown();
-    assertTrue(publisher.awaitTermination(1, TimeUnit.MINUTES));
+    assertTrue(publisher.awaitTermination(10, TimeUnit.SECONDS));
   }
 
   @Test
@@ -1035,13 +1035,13 @@ public class PublisherImplTest {
             publisher.publish(
                 PubsubMessage.newBuilder().setData(ByteString.copyFromUtf8("A")).build()))
         .andReturn(apiFuture);
-    EasyMock.expect(publisher.awaitTermination(1, TimeUnit.MINUTES)).andReturn(true);
+    EasyMock.expect(publisher.awaitTermination(10, TimeUnit.SECONDS)).andReturn(true);
     publisher.shutdown();
     EasyMock.expectLastCall().once();
     EasyMock.replay(publisher);
     sendTestMessage(publisher, "A");
     publisher.shutdown();
-    assertTrue(publisher.awaitTermination(1, TimeUnit.MINUTES));
+    assertTrue(publisher.awaitTermination(10, TimeUnit.SECONDS));
   }
 
   @Test
@@ -1313,6 +1313,6 @@ public class PublisherImplTest {
   private void shutdownTestPublisher(Publisher publisher) throws InterruptedException {
     publisher.shutdown();
     fakeExecutor.advanceTime(Duration.ofSeconds(10));
-    assertTrue(publisher.awaitTermination(1, TimeUnit.MINUTES));
+    assertTrue(publisher.awaitTermination(10, TimeUnit.SECONDS));
   }
 }
