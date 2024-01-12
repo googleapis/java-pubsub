@@ -516,10 +516,12 @@ public class PublisherImplTest {
   public void testResumePublish() throws Exception {
     Publisher publisher =
         getTestPublisherBuilder()
+            .setExecutorProvider(SINGLE_THREAD_EXECUTOR)
             .setBatchingSettings(
                 Publisher.Builder.DEFAULT_BATCHING_SETTINGS
                     .toBuilder()
                     .setElementCountThreshold(2L)
+                    .setDelayThreshold(Duration.ofSeconds(100))
                     .build())
             .setEnableMessageOrdering(true)
             .build();
@@ -527,14 +529,11 @@ public class PublisherImplTest {
     ApiFuture<String> future1 = sendTestMessageWithOrderingKey(publisher, "m1", "orderA");
     ApiFuture<String> future2 = sendTestMessageWithOrderingKey(publisher, "m2", "orderA");
 
-    fakeExecutor.advanceTime(Duration.ZERO);
     assertFalse(future1.isDone());
     assertFalse(future2.isDone());
 
     // This exception should stop future publishing to the same key
     testPublisherServiceImpl.addPublishError(new StatusException(Status.INVALID_ARGUMENT));
-
-    fakeExecutor.advanceTime(Duration.ZERO);
 
     try {
       future1.get();
@@ -550,9 +549,17 @@ public class PublisherImplTest {
 
     // Submit new requests with orderA that should fail.
     ApiFuture<String> future3 = sendTestMessageWithOrderingKey(publisher, "m3", "orderA");
+    ApiFuture<String> future4 = sendTestMessageWithOrderingKey(publisher, "m4", "orderA");
 
     try {
       future3.get();
+      Assert.fail("This should fail.");
+    } catch (ExecutionException e) {
+      assertEquals(SequentialExecutorService.CallbackExecutor.CANCELLATION_EXCEPTION, e.getCause());
+    }
+
+    try {
+      future4.get();
       Assert.fail("This should fail.");
     } catch (ExecutionException e) {
       assertEquals(SequentialExecutorService.CallbackExecutor.CANCELLATION_EXCEPTION, e.getCause());
