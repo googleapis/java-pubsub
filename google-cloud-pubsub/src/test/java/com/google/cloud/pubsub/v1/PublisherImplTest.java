@@ -500,10 +500,6 @@ public class PublisherImplTest {
     assertTrue(publisher.awaitTermination(1, TimeUnit.MINUTES));
   }
 
-  /*
-  Temporarily disabled due to https://github.com/googleapis/java-pubsub/issues/1861.
-  TODO(maitrimangal): Enable once resolved.
-  @Test
   /**
    * Make sure that resume publishing works as expected:
    *
@@ -515,6 +511,10 @@ public class PublisherImplTest {
    *   <li>publish with key orderA, which should now succeed
    * </ol>
    */
+  /*
+  Temporarily disabled due to https://github.com/googleapis/java-pubsub/issues/1861.
+  TODO(maitrimangal): Enable once resolved.
+  @Test
   public void testResumePublish() throws Exception {
     Publisher publisher =
         getTestPublisherBuilder()
@@ -642,7 +642,8 @@ public class PublisherImplTest {
     } catch (ExecutionException e) {
       assertEquals(SequentialExecutorService.CallbackExecutor.CANCELLATION_EXCEPTION, e.getCause());
     }
-  }*/
+  }
+  */
 
   private ApiFuture<String> sendTestMessageWithOrderingKey(
       Publisher publisher, String data, String orderingKey) {
