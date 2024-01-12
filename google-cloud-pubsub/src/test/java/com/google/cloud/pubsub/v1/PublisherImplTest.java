@@ -638,8 +638,6 @@ public class PublisherImplTest {
     } catch (ExecutionException e) {
       assertEquals(SequentialExecutorService.CallbackExecutor.CANCELLATION_EXCEPTION, e.getCause());
     }
-
-    shutdownTestPublisher(publisher);
   }
 
   private ApiFuture<String> sendTestMessageWithOrderingKey(
