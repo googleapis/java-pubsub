@@ -65,7 +65,6 @@ import org.threeten.bp.Duration;
 @RunWith(JUnit4.class)
 public class PublisherImplTest {
 
-  // Testing
   private static final ProjectTopicName TEST_TOPIC =
       ProjectTopicName.of("test-project", "test-topic");
 
@@ -98,7 +97,7 @@ public class PublisherImplTest {
 
   @After
   public void tearDown() throws Exception {
-    testServer.shutdownNow().awaitTermination(1, TimeUnit.MINUTES);
+    testServer.shutdownNow().awaitTermination();
     testChannel.shutdown();
   }
 
@@ -527,14 +526,11 @@ public class PublisherImplTest {
     ApiFuture<String> future1 = sendTestMessageWithOrderingKey(publisher, "m1", "orderA");
     ApiFuture<String> future2 = sendTestMessageWithOrderingKey(publisher, "m2", "orderA");
 
-    fakeExecutor.advanceTime(Duration.ofSeconds(1));
     assertFalse(future1.isDone());
     assertFalse(future2.isDone());
 
     // This exception should stop future publishing to the same key
     testPublisherServiceImpl.addPublishError(new StatusException(Status.INVALID_ARGUMENT));
-
-    fakeExecutor.advanceTime(Duration.ofSeconds(1));
 
     try {
       future1.get();
