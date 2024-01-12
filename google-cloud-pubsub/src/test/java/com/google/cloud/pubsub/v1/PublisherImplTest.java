@@ -587,8 +587,6 @@ public class PublisherImplTest {
 
     Assert.assertEquals("7", future7.get());
     Assert.assertEquals("8", future8.get());
-
-    shutdownTestPublisher(publisher);
   }
 
   @Test
