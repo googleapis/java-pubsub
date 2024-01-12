@@ -366,6 +366,15 @@ public class PublisherImplTest {
     shutdownTestPublisher(publisher);
   }
 
+  private ApiFuture<String> sendTestMessageWithOrderingKey(
+      Publisher publisher, String data, String orderingKey) {
+    return publisher.publish(
+        PubsubMessage.newBuilder()
+            .setOrderingKey(orderingKey)
+            .setData(ByteString.copyFromUtf8(data))
+            .build());
+  }
+
   @Test
   public void testBatchedMessagesWithOrderingKeyByDuration() throws Exception {
     // Limit the batching timeout to 100 seconds.
