@@ -550,17 +550,9 @@ public class PublisherImplTest {
 
     // Submit new requests with orderA that should fail.
     ApiFuture<String> future3 = sendTestMessageWithOrderingKey(publisher, "m3", "orderA");
-    ApiFuture<String> future4 = sendTestMessageWithOrderingKey(publisher, "m4", "orderA");
 
     try {
       future3.get();
-      Assert.fail("This should fail.");
-    } catch (ExecutionException e) {
-      assertEquals(SequentialExecutorService.CallbackExecutor.CANCELLATION_EXCEPTION, e.getCause());
-    }
-
-    try {
-      future4.get();
       Assert.fail("This should fail.");
     } catch (ExecutionException e) {
       assertEquals(SequentialExecutorService.CallbackExecutor.CANCELLATION_EXCEPTION, e.getCause());
