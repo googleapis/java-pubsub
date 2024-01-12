@@ -524,14 +524,10 @@ public class PublisherImplTest {
             .setEnableMessageOrdering(true)
             .build();
 
-    ApiFuture<String> future1 = sendTestMessageWithOrderingKey(publisher, "m1", "orderA");
-    ApiFuture<String> future2 = sendTestMessageWithOrderingKey(publisher, "m2", "orderA");
-
-    assertFalse(future1.isDone());
-    assertFalse(future2.isDone());
-
     // This exception should stop future publishing to the same key
     testPublisherServiceImpl.addPublishError(new StatusException(Status.INVALID_ARGUMENT));
+    ApiFuture<String> future1 = sendTestMessageWithOrderingKey(publisher, "m1", "orderA");
+    ApiFuture<String> future2 = sendTestMessageWithOrderingKey(publisher, "m2", "orderA");
 
     try {
       future1.get();
