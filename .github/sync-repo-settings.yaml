@@ -14,11 +14,11 @@ branchProtectionRules:
       - units (8)
       - units (11)
       - 'Kokoro - Test: Integration'
-      - Kokoro - Against Pub/Sub Lite samples
       - cla/google
       - OwlBot Post Processor
       - 'Kokoro - Test: Java GraalVM Native Image'
       - 'Kokoro - Test: Java 17 GraalVM Native Image'
+      - javadoc
   - pattern: 1.111.0-sp
     isAdminEnforced: true
     requiredApprovingReviewCount: 1

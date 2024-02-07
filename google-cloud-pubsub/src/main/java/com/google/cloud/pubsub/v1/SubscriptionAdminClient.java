@@ -99,19 +99,357 @@ import javax.annotation.Generated;
  * such as threads. In the example above, try-with-resources is used, which automatically calls
  * close().
  *
- * <p>The surface of this class includes several types of Java methods for each of the API's
- * methods:
- *
- * <ol>
- *   <li>A "flattened" method. With this type of method, the fields of the request type have been
- *       converted into function parameters. It may be the case that not all fields are available as
- *       parameters, and not every API method will have a flattened method entry point.
- *   <li>A "request object" method. This type of method only takes one parameter, a request object,
- *       which must be constructed before the call. Not every API method will have a request object
- *       method.
- *   <li>A "callable" method. This type of method takes no parameters and returns an immutable API
- *       callable object, which can be used to initiate calls to the service.
- * </ol>
+ * <table>
+ *    <caption>Methods</caption>
+ *    <tr>
+ *      <th>Method</th>
+ *      <th>Description</th>
+ *      <th>Method Variants</th>
+ *    </tr>
+ *    <tr>
+ *      <td><p> CreateSubscription</td>
+ *      <td><p> Creates a subscription to a given topic. See the [resource name rules] (https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names). If the subscription already exists, returns `ALREADY_EXISTS`. If the corresponding topic doesn't exist, returns `NOT_FOUND`.
+ * <p>  If the name is not provided in the request, the server will assign a random name for this subscription on the same project as the topic, conforming to the [resource name format] (https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names). The generated name is populated in the returned Subscription object. Note that for REST API requests, you must specify a name in the request.</td>
+ *      <td>
+ *      <p>Request object method variants only take one parameter, a request object, which must be constructed before the call.</p>
+ *      <ul>
+ *           <li><p> createSubscription(Subscription request)
+ *      </ul>
+ *      <p>"Flattened" method variants have converted the fields of the request object into function parameters to enable multiple ways to call the same method.</p>
+ *      <ul>
+ *           <li><p> createSubscription(SubscriptionName name, TopicName topic, PushConfig pushConfig, int ackDeadlineSeconds)
+ *           <li><p> createSubscription(SubscriptionName name, String topic, PushConfig pushConfig, int ackDeadlineSeconds)
+ *           <li><p> createSubscription(String name, TopicName topic, PushConfig pushConfig, int ackDeadlineSeconds)
+ *           <li><p> createSubscription(String name, String topic, PushConfig pushConfig, int ackDeadlineSeconds)
+ *      </ul>
+ *      <p>Callable method variants take no parameters and return an immutable API callable object, which can be used to initiate calls to the service.</p>
+ *      <ul>
+ *           <li><p> createSubscriptionCallable()
+ *      </ul>
+ *       </td>
+ *    </tr>
+ *    <tr>
+ *      <td><p> GetSubscription</td>
+ *      <td><p> Gets the configuration details of a subscription.</td>
+ *      <td>
+ *      <p>Request object method variants only take one parameter, a request object, which must be constructed before the call.</p>
+ *      <ul>
+ *           <li><p> getSubscription(GetSubscriptionRequest request)
+ *      </ul>
+ *      <p>"Flattened" method variants have converted the fields of the request object into function parameters to enable multiple ways to call the same method.</p>
+ *      <ul>
+ *           <li><p> getSubscription(SubscriptionName subscription)
+ *           <li><p> getSubscription(String subscription)
+ *      </ul>
+ *      <p>Callable method variants take no parameters and return an immutable API callable object, which can be used to initiate calls to the service.</p>
+ *      <ul>
+ *           <li><p> getSubscriptionCallable()
+ *      </ul>
+ *       </td>
+ *    </tr>
+ *    <tr>
+ *      <td><p> UpdateSubscription</td>
+ *      <td><p> Updates an existing subscription by updating the fields specified in the update mask. Note that certain properties of a subscription, such as its topic, are not modifiable.</td>
+ *      <td>
+ *      <p>Request object method variants only take one parameter, a request object, which must be constructed before the call.</p>
+ *      <ul>
+ *           <li><p> updateSubscription(UpdateSubscriptionRequest request)
+ *      </ul>
+ *      <p>"Flattened" method variants have converted the fields of the request object into function parameters to enable multiple ways to call the same method.</p>
+ *      <ul>
+ *           <li><p> updateSubscription(Subscription subscription, FieldMask updateMask)
+ *      </ul>
+ *      <p>Callable method variants take no parameters and return an immutable API callable object, which can be used to initiate calls to the service.</p>
+ *      <ul>
+ *           <li><p> updateSubscriptionCallable()
+ *      </ul>
+ *       </td>
+ *    </tr>
+ *    <tr>
+ *      <td><p> ListSubscriptions</td>
+ *      <td><p> Lists matching subscriptions.</td>
+ *      <td>
+ *      <p>Request object method variants only take one parameter, a request object, which must be constructed before the call.</p>
+ *      <ul>
+ *           <li><p> listSubscriptions(ListSubscriptionsRequest request)
+ *      </ul>
+ *      <p>"Flattened" method variants have converted the fields of the request object into function parameters to enable multiple ways to call the same method.</p>
+ *      <ul>
+ *           <li><p> listSubscriptions(ProjectName project)
+ *           <li><p> listSubscriptions(String project)
+ *      </ul>
+ *      <p>Callable method variants take no parameters and return an immutable API callable object, which can be used to initiate calls to the service.</p>
+ *      <ul>
+ *           <li><p> listSubscriptionsPagedCallable()
+ *           <li><p> listSubscriptionsCallable()
+ *      </ul>
+ *       </td>
+ *    </tr>
+ *    <tr>
+ *      <td><p> DeleteSubscription</td>
+ *      <td><p> Deletes an existing subscription. All messages retained in the subscription are immediately dropped. Calls to `Pull` after deletion will return `NOT_FOUND`. After a subscription is deleted, a new one may be created with the same name, but the new one has no association with the old subscription or its topic unless the same topic is specified.</td>
+ *      <td>
+ *      <p>Request object method variants only take one parameter, a request object, which must be constructed before the call.</p>
+ *      <ul>
+ *           <li><p> deleteSubscription(DeleteSubscriptionRequest request)
+ *      </ul>
+ *      <p>"Flattened" method variants have converted the fields of the request object into function parameters to enable multiple ways to call the same method.</p>
+ *      <ul>
+ *           <li><p> deleteSubscription(SubscriptionName subscription)
+ *           <li><p> deleteSubscription(String subscription)
+ *      </ul>
+ *      <p>Callable method variants take no parameters and return an immutable API callable object, which can be used to initiate calls to the service.</p>
+ *      <ul>
+ *           <li><p> deleteSubscriptionCallable()
+ *      </ul>
+ *       </td>
+ *    </tr>
+ *    <tr>
+ *      <td><p> ModifyAckDeadline</td>
+ *      <td><p> Modifies the ack deadline for a specific message. This method is useful to indicate that more time is needed to process a message by the subscriber, or to make the message available for redelivery if the processing was interrupted. Note that this does not modify the subscription-level `ackDeadlineSeconds` used for subsequent messages.</td>
+ *      <td>
+ *      <p>Request object method variants only take one parameter, a request object, which must be constructed before the call.</p>
+ *      <ul>
+ *           <li><p> modifyAckDeadline(ModifyAckDeadlineRequest request)
+ *      </ul>
+ *      <p>"Flattened" method variants have converted the fields of the request object into function parameters to enable multiple ways to call the same method.</p>
+ *      <ul>
+ *           <li><p> modifyAckDeadline(SubscriptionName subscription, List&lt;String&gt; ackIds, int ackDeadlineSeconds)
+ *           <li><p> modifyAckDeadline(String subscription, List&lt;String&gt; ackIds, int ackDeadlineSeconds)
+ *      </ul>
+ *      <p>Callable method variants take no parameters and return an immutable API callable object, which can be used to initiate calls to the service.</p>
+ *      <ul>
+ *           <li><p> modifyAckDeadlineCallable()
+ *      </ul>
+ *       </td>
+ *    </tr>
+ *    <tr>
+ *      <td><p> Acknowledge</td>
+ *      <td><p> Acknowledges the messages associated with the `ack_ids` in the `AcknowledgeRequest`. The Pub/Sub system can remove the relevant messages from the subscription.
+ * <p>  Acknowledging a message whose ack deadline has expired may succeed, but such a message may be redelivered later. Acknowledging a message more than once will not result in an error.</td>
+ *      <td>
+ *      <p>Request object method variants only take one parameter, a request object, which must be constructed before the call.</p>
+ *      <ul>
+ *           <li><p> acknowledge(AcknowledgeRequest request)
+ *      </ul>
+ *      <p>"Flattened" method variants have converted the fields of the request object into function parameters to enable multiple ways to call the same method.</p>
+ *      <ul>
+ *           <li><p> acknowledge(SubscriptionName subscription, List&lt;String&gt; ackIds)
+ *           <li><p> acknowledge(String subscription, List&lt;String&gt; ackIds)
+ *      </ul>
+ *      <p>Callable method variants take no parameters and return an immutable API callable object, which can be used to initiate calls to the service.</p>
+ *      <ul>
+ *           <li><p> acknowledgeCallable()
+ *      </ul>
+ *       </td>
+ *    </tr>
+ *    <tr>
+ *      <td><p> Pull</td>
+ *      <td><p> Pulls messages from the server.</td>
+ *      <td>
+ *      <p>Request object method variants only take one parameter, a request object, which must be constructed before the call.</p>
+ *      <ul>
+ *           <li><p> pull(PullRequest request)
+ *      </ul>
+ *      <p>"Flattened" method variants have converted the fields of the request object into function parameters to enable multiple ways to call the same method.</p>
+ *      <ul>
+ *           <li><p> pull(SubscriptionName subscription, int maxMessages)
+ *           <li><p> pull(String subscription, int maxMessages)
+ *           <li><p> pull(SubscriptionName subscription, boolean returnImmediately, int maxMessages)
+ *           <li><p> pull(String subscription, boolean returnImmediately, int maxMessages)
+ *      </ul>
+ *      <p>Callable method variants take no parameters and return an immutable API callable object, which can be used to initiate calls to the service.</p>
+ *      <ul>
+ *           <li><p> pullCallable()
+ *      </ul>
+ *       </td>
+ *    </tr>
+ *    <tr>
+ *      <td><p> StreamingPull</td>
+ *      <td><p> Establishes a stream with the server, which sends messages down to the client. The client streams acknowledgements and ack deadline modifications back to the server. The server will close the stream and return the status on any error. The server may close the stream with status `UNAVAILABLE` to reassign server-side resources, in which case, the client should re-establish the stream. Flow control can be achieved by configuring the underlying RPC channel.</td>
+ *      <td>
+ *      <p>Callable method variants take no parameters and return an immutable API callable object, which can be used to initiate calls to the service.</p>
+ *      <ul>
+ *           <li><p> streamingPullCallable()
+ *      </ul>
+ *       </td>
+ *    </tr>
+ *    <tr>
+ *      <td><p> ModifyPushConfig</td>
+ *      <td><p> Modifies the `PushConfig` for a specified subscription.
+ * <p>  This may be used to change a push subscription to a pull one (signified by an empty `PushConfig`) or vice versa, or change the endpoint URL and other attributes of a push subscription. Messages will accumulate for delivery continuously through the call regardless of changes to the `PushConfig`.</td>
+ *      <td>
+ *      <p>Request object method variants only take one parameter, a request object, which must be constructed before the call.</p>
+ *      <ul>
+ *           <li><p> modifyPushConfig(ModifyPushConfigRequest request)
+ *      </ul>
+ *      <p>"Flattened" method variants have converted the fields of the request object into function parameters to enable multiple ways to call the same method.</p>
+ *      <ul>
+ *           <li><p> modifyPushConfig(SubscriptionName subscription, PushConfig pushConfig)
+ *           <li><p> modifyPushConfig(String subscription, PushConfig pushConfig)
+ *      </ul>
+ *      <p>Callable method variants take no parameters and return an immutable API callable object, which can be used to initiate calls to the service.</p>
+ *      <ul>
+ *           <li><p> modifyPushConfigCallable()
+ *      </ul>
+ *       </td>
+ *    </tr>
+ *    <tr>
+ *      <td><p> GetSnapshot</td>
+ *      <td><p> Gets the configuration details of a snapshot. Snapshots are used in [Seek](https://cloud.google.com/pubsub/docs/replay-overview) operations, which allow you to manage message acknowledgments in bulk. That is, you can set the acknowledgment state of messages in an existing subscription to the state captured by a snapshot.</td>
+ *      <td>
+ *      <p>Request object method variants only take one parameter, a request object, which must be constructed before the call.</p>
+ *      <ul>
+ *           <li><p> getSnapshot(GetSnapshotRequest request)
+ *      </ul>
+ *      <p>"Flattened" method variants have converted the fields of the request object into function parameters to enable multiple ways to call the same method.</p>
+ *      <ul>
+ *           <li><p> getSnapshot(SnapshotName snapshot)
+ *           <li><p> getSnapshot(String snapshot)
+ *      </ul>
+ *      <p>Callable method variants take no parameters and return an immutable API callable object, which can be used to initiate calls to the service.</p>
+ *      <ul>
+ *           <li><p> getSnapshotCallable()
+ *      </ul>
+ *       </td>
+ *    </tr>
+ *    <tr>
+ *      <td><p> ListSnapshots</td>
+ *      <td><p> Lists the existing snapshots. Snapshots are used in [Seek]( https://cloud.google.com/pubsub/docs/replay-overview) operations, which allow you to manage message acknowledgments in bulk. That is, you can set the acknowledgment state of messages in an existing subscription to the state captured by a snapshot.</td>
+ *      <td>
+ *      <p>Request object method variants only take one parameter, a request object, which must be constructed before the call.</p>
+ *      <ul>
+ *           <li><p> listSnapshots(ListSnapshotsRequest request)
+ *      </ul>
+ *      <p>"Flattened" method variants have converted the fields of the request object into function parameters to enable multiple ways to call the same method.</p>
+ *      <ul>
+ *           <li><p> listSnapshots(ProjectName project)
+ *           <li><p> listSnapshots(String project)
+ *      </ul>
+ *      <p>Callable method variants take no parameters and return an immutable API callable object, which can be used to initiate calls to the service.</p>
+ *      <ul>
+ *           <li><p> listSnapshotsPagedCallable()
+ *           <li><p> listSnapshotsCallable()
+ *      </ul>
+ *       </td>
+ *    </tr>
+ *    <tr>
+ *      <td><p> CreateSnapshot</td>
+ *      <td><p> Creates a snapshot from the requested subscription. Snapshots are used in [Seek](https://cloud.google.com/pubsub/docs/replay-overview) operations, which allow you to manage message acknowledgments in bulk. That is, you can set the acknowledgment state of messages in an existing subscription to the state captured by a snapshot. If the snapshot already exists, returns `ALREADY_EXISTS`. If the requested subscription doesn't exist, returns `NOT_FOUND`. If the backlog in the subscription is too old -- and the resulting snapshot would expire in less than 1 hour -- then `FAILED_PRECONDITION` is returned. See also the `Snapshot.expire_time` field. If the name is not provided in the request, the server will assign a random name for this snapshot on the same project as the subscription, conforming to the [resource name format] (https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names). The generated name is populated in the returned Snapshot object. Note that for REST API requests, you must specify a name in the request.</td>
+ *      <td>
+ *      <p>Request object method variants only take one parameter, a request object, which must be constructed before the call.</p>
+ *      <ul>
+ *           <li><p> createSnapshot(CreateSnapshotRequest request)
+ *      </ul>
+ *      <p>"Flattened" method variants have converted the fields of the request object into function parameters to enable multiple ways to call the same method.</p>
+ *      <ul>
+ *           <li><p> createSnapshot(SnapshotName name, SubscriptionName subscription)
+ *           <li><p> createSnapshot(SnapshotName name, String subscription)
+ *           <li><p> createSnapshot(String name, SubscriptionName subscription)
+ *           <li><p> createSnapshot(String name, String subscription)
+ *      </ul>
+ *      <p>Callable method variants take no parameters and return an immutable API callable object, which can be used to initiate calls to the service.</p>
+ *      <ul>
+ *           <li><p> createSnapshotCallable()
+ *      </ul>
+ *       </td>
+ *    </tr>
+ *    <tr>
+ *      <td><p> UpdateSnapshot</td>
+ *      <td><p> Updates an existing snapshot by updating the fields specified in the update mask. Snapshots are used in [Seek](https://cloud.google.com/pubsub/docs/replay-overview) operations, which allow you to manage message acknowledgments in bulk. That is, you can set the acknowledgment state of messages in an existing subscription to the state captured by a snapshot.</td>
+ *      <td>
+ *      <p>Request object method variants only take one parameter, a request object, which must be constructed before the call.</p>
+ *      <ul>
+ *           <li><p> updateSnapshot(UpdateSnapshotRequest request)
+ *      </ul>
+ *      <p>"Flattened" method variants have converted the fields of the request object into function parameters to enable multiple ways to call the same method.</p>
+ *      <ul>
+ *           <li><p> updateSnapshot(Snapshot snapshot, FieldMask updateMask)
+ *      </ul>
+ *      <p>Callable method variants take no parameters and return an immutable API callable object, which can be used to initiate calls to the service.</p>
+ *      <ul>
+ *           <li><p> updateSnapshotCallable()
+ *      </ul>
+ *       </td>
+ *    </tr>
+ *    <tr>
+ *      <td><p> DeleteSnapshot</td>
+ *      <td><p> Removes an existing snapshot. Snapshots are used in [Seek] (https://cloud.google.com/pubsub/docs/replay-overview) operations, which allow you to manage message acknowledgments in bulk. That is, you can set the acknowledgment state of messages in an existing subscription to the state captured by a snapshot. When the snapshot is deleted, all messages retained in the snapshot are immediately dropped. After a snapshot is deleted, a new one may be created with the same name, but the new one has no association with the old snapshot or its subscription, unless the same subscription is specified.</td>
+ *      <td>
+ *      <p>Request object method variants only take one parameter, a request object, which must be constructed before the call.</p>
+ *      <ul>
+ *           <li><p> deleteSnapshot(DeleteSnapshotRequest request)
+ *      </ul>
+ *      <p>"Flattened" method variants have converted the fields of the request object into function parameters to enable multiple ways to call the same method.</p>
+ *      <ul>
+ *           <li><p> deleteSnapshot(SnapshotName snapshot)
+ *           <li><p> deleteSnapshot(String snapshot)
+ *      </ul>
+ *      <p>Callable method variants take no parameters and return an immutable API callable object, which can be used to initiate calls to the service.</p>
+ *      <ul>
+ *           <li><p> deleteSnapshotCallable()
+ *      </ul>
+ *       </td>
+ *    </tr>
+ *    <tr>
+ *      <td><p> Seek</td>
+ *      <td><p> Seeks an existing subscription to a point in time or to a given snapshot, whichever is provided in the request. Snapshots are used in [Seek] (https://cloud.google.com/pubsub/docs/replay-overview) operations, which allow you to manage message acknowledgments in bulk. That is, you can set the acknowledgment state of messages in an existing subscription to the state captured by a snapshot. Note that both the subscription and the snapshot must be on the same topic.</td>
+ *      <td>
+ *      <p>Request object method variants only take one parameter, a request object, which must be constructed before the call.</p>
+ *      <ul>
+ *           <li><p> seek(SeekRequest request)
+ *      </ul>
+ *      <p>Callable method variants take no parameters and return an immutable API callable object, which can be used to initiate calls to the service.</p>
+ *      <ul>
+ *           <li><p> seekCallable()
+ *      </ul>
+ *       </td>
+ *    </tr>
+ *    <tr>
+ *      <td><p> SetIamPolicy</td>
+ *      <td><p> Sets the access control policy on the specified resource. Replacesany existing policy.
+ * <p> Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`errors.</td>
+ *      <td>
+ *      <p>Request object method variants only take one parameter, a request object, which must be constructed before the call.</p>
+ *      <ul>
+ *           <li><p> setIamPolicy(SetIamPolicyRequest request)
+ *      </ul>
+ *      <p>Callable method variants take no parameters and return an immutable API callable object, which can be used to initiate calls to the service.</p>
+ *      <ul>
+ *           <li><p> setIamPolicyCallable()
+ *      </ul>
+ *       </td>
+ *    </tr>
+ *    <tr>
+ *      <td><p> GetIamPolicy</td>
+ *      <td><p> Gets the access control policy for a resource. Returns an empty policyif the resource exists and does not have a policy set.</td>
+ *      <td>
+ *      <p>Request object method variants only take one parameter, a request object, which must be constructed before the call.</p>
+ *      <ul>
+ *           <li><p> getIamPolicy(GetIamPolicyRequest request)
+ *      </ul>
+ *      <p>Callable method variants take no parameters and return an immutable API callable object, which can be used to initiate calls to the service.</p>
+ *      <ul>
+ *           <li><p> getIamPolicyCallable()
+ *      </ul>
+ *       </td>
+ *    </tr>
+ *    <tr>
+ *      <td><p> TestIamPermissions</td>
+ *      <td><p> Returns permissions that a caller has on the specified resource. If theresource does not exist, this will return an empty set ofpermissions, not a `NOT_FOUND` error.
+ * <p> Note: This operation is designed to be used for buildingpermission-aware UIs and command-line tools, not for authorizationchecking. This operation may "fail open" without warning.</td>
+ *      <td>
+ *      <p>Request object method variants only take one parameter, a request object, which must be constructed before the call.</p>
+ *      <ul>
+ *           <li><p> testIamPermissions(TestIamPermissionsRequest request)
+ *      </ul>
+ *      <p>Callable method variants take no parameters and return an immutable API callable object, which can be used to initiate calls to the service.</p>
+ *      <ul>
+ *           <li><p> testIamPermissionsCallable()
+ *      </ul>
+ *       </td>
+ *    </tr>
+ *  </table>
  *
  * <p>See the individual methods for example code.
  *
@@ -222,15 +560,15 @@ public class SubscriptionAdminClient implements BackgroundResource {
   // AUTO-GENERATED DOCUMENTATION AND METHOD.
   /**
    * Creates a subscription to a given topic. See the [resource name rules]
-   * (https://cloud.google.com/pubsub/docs/admin#resource_names). If the subscription already
-   * exists, returns `ALREADY_EXISTS`. If the corresponding topic doesn't exist, returns
+   * (https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names). If the subscription
+   * already exists, returns `ALREADY_EXISTS`. If the corresponding topic doesn't exist, returns
    * `NOT_FOUND`.
    *
    * <p>If the name is not provided in the request, the server will assign a random name for this
    * subscription on the same project as the topic, conforming to the [resource name format]
-   * (https://cloud.google.com/pubsub/docs/admin#resource_names). The generated name is populated in
-   * the returned Subscription object. Note that for REST API requests, you must specify a name in
-   * the request.
+   * (https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names). The generated name is
+   * populated in the returned Subscription object. Note that for REST API requests, you must
+   * specify a name in the request.
    *
    * <p>Sample code:
    *
@@ -258,12 +596,12 @@ public class SubscriptionAdminClient implements BackgroundResource {
    * @param topic Required. The name of the topic from which this subscription is receiving
    *     messages. Format is `projects/{project}/topics/{topic}`. The value of this field will be
    *     `_deleted-topic_` if the topic has been deleted.
-   * @param pushConfig If push delivery is used with this subscription, this field is used to
-   *     configure it.
-   * @param ackDeadlineSeconds The approximate amount of time (on a best-effort basis) Pub/Sub waits
-   *     for the subscriber to acknowledge receipt before resending the message. In the interval
-   *     after the message is delivered and before it is acknowledged, it is considered to be
-   *     _outstanding_. During that time period, the message will not be redelivered (on a
+   * @param pushConfig Optional. If push delivery is used with this subscription, this field is used
+   *     to configure it.
+   * @param ackDeadlineSeconds Optional. The approximate amount of time (on a best-effort basis)
+   *     Pub/Sub waits for the subscriber to acknowledge receipt before resending the message. In
+   *     the interval after the message is delivered and before it is acknowledged, it is considered
+   *     to be _outstanding_. During that time period, the message will not be redelivered (on a
    *     best-effort basis).
    *     <p>For pull subscriptions, this value is used as the initial value for the ack deadline. To
    *     override this value for a given message, call `ModifyAckDeadline` with the corresponding
@@ -292,15 +630,15 @@ public class SubscriptionAdminClient implements BackgroundResource {
   // AUTO-GENERATED DOCUMENTATION AND METHOD.
   /**
    * Creates a subscription to a given topic. See the [resource name rules]
-   * (https://cloud.google.com/pubsub/docs/admin#resource_names). If the subscription already
-   * exists, returns `ALREADY_EXISTS`. If the corresponding topic doesn't exist, returns
+   * (https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names). If the subscription
+   * already exists, returns `ALREADY_EXISTS`. If the corresponding topic doesn't exist, returns
    * `NOT_FOUND`.
    *
    * <p>If the name is not provided in the request, the server will assign a random name for this
    * subscription on the same project as the topic, conforming to the [resource name format]
-   * (https://cloud.google.com/pubsub/docs/admin#resource_names). The generated name is populated in
-   * the returned Subscription object. Note that for REST API requests, you must specify a name in
-   * the request.
+   * (https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names). The generated name is
+   * populated in the returned Subscription object. Note that for REST API requests, you must
+   * specify a name in the request.
    *
    * <p>Sample code:
    *
@@ -328,12 +666,12 @@ public class SubscriptionAdminClient implements BackgroundResource {
    * @param topic Required. The name of the topic from which this subscription is receiving
    *     messages. Format is `projects/{project}/topics/{topic}`. The value of this field will be
    *     `_deleted-topic_` if the topic has been deleted.
-   * @param pushConfig If push delivery is used with this subscription, this field is used to
-   *     configure it.
-   * @param ackDeadlineSeconds The approximate amount of time (on a best-effort basis) Pub/Sub waits
-   *     for the subscriber to acknowledge receipt before resending the message. In the interval
-   *     after the message is delivered and before it is acknowledged, it is considered to be
-   *     _outstanding_. During that time period, the message will not be redelivered (on a
+   * @param pushConfig Optional. If push delivery is used with this subscription, this field is used
+   *     to configure it.
+   * @param ackDeadlineSeconds Optional. The approximate amount of time (on a best-effort basis)
+   *     Pub/Sub waits for the subscriber to acknowledge receipt before resending the message. In
+   *     the interval after the message is delivered and before it is acknowledged, it is considered
+   *     to be _outstanding_. During that time period, the message will not be redelivered (on a
    *     best-effort basis).
    *     <p>For pull subscriptions, this value is used as the initial value for the ack deadline. To
    *     override this value for a given message, call `ModifyAckDeadline` with the corresponding
@@ -362,15 +700,15 @@ public class SubscriptionAdminClient implements BackgroundResource {
   // AUTO-GENERATED DOCUMENTATION AND METHOD.
   /**
    * Creates a subscription to a given topic. See the [resource name rules]
-   * (https://cloud.google.com/pubsub/docs/admin#resource_names). If the subscription already
-   * exists, returns `ALREADY_EXISTS`. If the corresponding topic doesn't exist, returns
+   * (https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names). If the subscription
+   * already exists, returns `ALREADY_EXISTS`. If the corresponding topic doesn't exist, returns
    * `NOT_FOUND`.
    *
    * <p>If the name is not provided in the request, the server will assign a random name for this
    * subscription on the same project as the topic, conforming to the [resource name format]
-   * (https://cloud.google.com/pubsub/docs/admin#resource_names). The generated name is populated in
-   * the returned Subscription object. Note that for REST API requests, you must specify a name in
-   * the request.
+   * (https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names). The generated name is
+   * populated in the returned Subscription object. Note that for REST API requests, you must
+   * specify a name in the request.
    *
    * <p>Sample code:
    *
@@ -398,12 +736,12 @@ public class SubscriptionAdminClient implements BackgroundResource {
    * @param topic Required. The name of the topic from which this subscription is receiving
    *     messages. Format is `projects/{project}/topics/{topic}`. The value of this field will be
    *     `_deleted-topic_` if the topic has been deleted.
-   * @param pushConfig If push delivery is used with this subscription, this field is used to
-   *     configure it.
-   * @param ackDeadlineSeconds The approximate amount of time (on a best-effort basis) Pub/Sub waits
-   *     for the subscriber to acknowledge receipt before resending the message. In the interval
-   *     after the message is delivered and before it is acknowledged, it is considered to be
-   *     _outstanding_. During that time period, the message will not be redelivered (on a
+   * @param pushConfig Optional. If push delivery is used with this subscription, this field is used
+   *     to configure it.
+   * @param ackDeadlineSeconds Optional. The approximate amount of time (on a best-effort basis)
+   *     Pub/Sub waits for the subscriber to acknowledge receipt before resending the message. In
+   *     the interval after the message is delivered and before it is acknowledged, it is considered
+   *     to be _outstanding_. During that time period, the message will not be redelivered (on a
    *     best-effort basis).
    *     <p>For pull subscriptions, this value is used as the initial value for the ack deadline. To
    *     override this value for a given message, call `ModifyAckDeadline` with the corresponding
@@ -432,15 +770,15 @@ public class SubscriptionAdminClient implements BackgroundResource {
   // AUTO-GENERATED DOCUMENTATION AND METHOD.
   /**
    * Creates a subscription to a given topic. See the [resource name rules]
-   * (https://cloud.google.com/pubsub/docs/admin#resource_names). If the subscription already
-   * exists, returns `ALREADY_EXISTS`. If the corresponding topic doesn't exist, returns
+   * (https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names). If the subscription
+   * already exists, returns `ALREADY_EXISTS`. If the corresponding topic doesn't exist, returns
    * `NOT_FOUND`.
    *
    * <p>If the name is not provided in the request, the server will assign a random name for this
    * subscription on the same project as the topic, conforming to the [resource name format]
-   * (https://cloud.google.com/pubsub/docs/admin#resource_names). The generated name is populated in
-   * the returned Subscription object. Note that for REST API requests, you must specify a name in
-   * the request.
+   * (https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names). The generated name is
+   * populated in the returned Subscription object. Note that for REST API requests, you must
+   * specify a name in the request.
    *
    * <p>Sample code:
    *
@@ -468,12 +806,12 @@ public class SubscriptionAdminClient implements BackgroundResource {
    * @param topic Required. The name of the topic from which this subscription is receiving
    *     messages. Format is `projects/{project}/topics/{topic}`. The value of this field will be
    *     `_deleted-topic_` if the topic has been deleted.
-   * @param pushConfig If push delivery is used with this subscription, this field is used to
-   *     configure it.
-   * @param ackDeadlineSeconds The approximate amount of time (on a best-effort basis) Pub/Sub waits
-   *     for the subscriber to acknowledge receipt before resending the message. In the interval
-   *     after the message is delivered and before it is acknowledged, it is considered to be
-   *     _outstanding_. During that time period, the message will not be redelivered (on a
+   * @param pushConfig Optional. If push delivery is used with this subscription, this field is used
+   *     to configure it.
+   * @param ackDeadlineSeconds Optional. The approximate amount of time (on a best-effort basis)
+   *     Pub/Sub waits for the subscriber to acknowledge receipt before resending the message. In
+   *     the interval after the message is delivered and before it is acknowledged, it is considered
+   *     to be _outstanding_. During that time period, the message will not be redelivered (on a
    *     best-effort basis).
    *     <p>For pull subscriptions, this value is used as the initial value for the ack deadline. To
    *     override this value for a given message, call `ModifyAckDeadline` with the corresponding
@@ -502,15 +840,15 @@ public class SubscriptionAdminClient implements BackgroundResource {
   // AUTO-GENERATED DOCUMENTATION AND METHOD.
   /**
    * Creates a subscription to a given topic. See the [resource name rules]
-   * (https://cloud.google.com/pubsub/docs/admin#resource_names). If the subscription already
-   * exists, returns `ALREADY_EXISTS`. If the corresponding topic doesn't exist, returns
+   * (https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names). If the subscription
+   * already exists, returns `ALREADY_EXISTS`. If the corresponding topic doesn't exist, returns
    * `NOT_FOUND`.
    *
    * <p>If the name is not provided in the request, the server will assign a random name for this
    * subscription on the same project as the topic, conforming to the [resource name format]
-   * (https://cloud.google.com/pubsub/docs/admin#resource_names). The generated name is populated in
-   * the returned Subscription object. Note that for REST API requests, you must specify a name in
-   * the request.
+   * (https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names). The generated name is
+   * populated in the returned Subscription object. Note that for REST API requests, you must
+   * specify a name in the request.
    *
    * <p>Sample code:
    *
@@ -765,15 +1103,15 @@ public class SubscriptionAdminClient implements BackgroundResource {
   // AUTO-GENERATED DOCUMENTATION AND METHOD.
   /**
    * Creates a subscription to a given topic. See the [resource name rules]
-   * (https://cloud.google.com/pubsub/docs/admin#resource_names). If the subscription already
-   * exists, returns `ALREADY_EXISTS`. If the corresponding topic doesn't exist, returns
+   * (https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names). If the subscription
+   * already exists, returns `ALREADY_EXISTS`. If the corresponding topic doesn't exist, returns
    * `NOT_FOUND`.
    *
    * <p>If the name is not provided in the request, the server will assign a random name for this
    * subscription on the same project as the topic, conforming to the [resource name format]
-   * (https://cloud.google.com/pubsub/docs/admin#resource_names). The generated name is populated in
-   * the returned Subscription object. Note that for REST API requests, you must specify a name in
-   * the request.
+   * (https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names). The generated name is
+   * populated in the returned Subscription object. Note that for REST API requests, you must
+   * specify a name in the request.
    *
    * <p>Sample code:
    *
@@ -958,8 +1296,8 @@ public class SubscriptionAdminClient implements BackgroundResource {
 
   // AUTO-GENERATED DOCUMENTATION AND METHOD.
   /**
-   * Updates an existing subscription. Note that certain properties of a subscription, such as its
-   * topic, are not modifiable.
+   * Updates an existing subscription by updating the fields specified in the update mask. Note that
+   * certain properties of a subscription, such as its topic, are not modifiable.
    *
    * <p>Sample code:
    *
@@ -992,8 +1330,8 @@ public class SubscriptionAdminClient implements BackgroundResource {
 
   // AUTO-GENERATED DOCUMENTATION AND METHOD.
   /**
-   * Updates an existing subscription. Note that certain properties of a subscription, such as its
-   * topic, are not modifiable.
+   * Updates an existing subscription by updating the fields specified in the update mask. Note that
+   * certain properties of a subscription, such as its topic, are not modifiable.
    *
    * <p>Sample code:
    *
@@ -1022,8 +1360,8 @@ public class SubscriptionAdminClient implements BackgroundResource {
 
   // AUTO-GENERATED DOCUMENTATION AND METHOD.
   /**
-   * Updates an existing subscription. Note that certain properties of a subscription, such as its
-   * topic, are not modifiable.
+   * Updates an existing subscription by updating the fields specified in the update mask. Note that
+   * certain properties of a subscription, such as its topic, are not modifiable.
    *
    * <p>Sample code:
    *
@@ -1404,8 +1742,8 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *     expire 10 seconds after the `ModifyAckDeadline` call was made. Specifying zero might
    *     immediately make the message available for delivery to another subscriber client. This
    *     typically results in an increase in the rate of message redeliveries (that is, duplicates).
-   *     The minimum deadline you can specify is 0 seconds. The maximum deadline you can specify is
-   *     600 seconds (10 minutes).
+   *     The minimum deadline you can specify is 0 seconds. The maximum deadline you can specify in
+   *     a single request is 600 seconds (10 minutes).
    * @throws com.google.api.gax.rpc.ApiException if the remote call fails
    */
   public final void modifyAckDeadline(
@@ -1450,8 +1788,8 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *     expire 10 seconds after the `ModifyAckDeadline` call was made. Specifying zero might
    *     immediately make the message available for delivery to another subscriber client. This
    *     typically results in an increase in the rate of message redeliveries (that is, duplicates).
-   *     The minimum deadline you can specify is 0 seconds. The maximum deadline you can specify is
-   *     600 seconds (10 minutes).
+   *     The minimum deadline you can specify is 0 seconds. The maximum deadline you can specify in
+   *     a single request is 600 seconds (10 minutes).
    * @throws com.google.api.gax.rpc.ApiException if the remote call fails
    */
   public final void modifyAckDeadline(
@@ -2609,9 +2947,9 @@ public class SubscriptionAdminClient implements BackgroundResource {
    * expire in less than 1 hour -- then `FAILED_PRECONDITION` is returned. See also the
    * `Snapshot.expire_time` field. If the name is not provided in the request, the server will
    * assign a random name for this snapshot on the same project as the subscription, conforming to
-   * the [resource name format] (https://cloud.google.com/pubsub/docs/admin#resource_names). The
-   * generated name is populated in the returned Snapshot object. Note that for REST API requests,
-   * you must specify a name in the request.
+   * the [resource name format] (https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names).
+   * The generated name is populated in the returned Snapshot object. Note that for REST API
+   * requests, you must specify a name in the request.
    *
    * <p>Sample code:
    *
@@ -2631,7 +2969,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    * @param name Required. User-provided name for this snapshot. If the name is not provided in the
    *     request, the server will assign a random name for this snapshot on the same project as the
    *     subscription. Note that for REST API requests, you must specify a name. See the [resource
-   *     name rules](https://cloud.google.com/pubsub/docs/admin#resource_names). Format is
+   *     name rules](https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names). Format is
    *     `projects/{project}/snapshots/{snap}`.
    * @param subscription Required. The subscription whose backlog the snapshot retains.
    *     Specifically, the created snapshot is guaranteed to retain: (a) The existing backlog on the
@@ -2662,9 +3000,9 @@ public class SubscriptionAdminClient implements BackgroundResource {
    * expire in less than 1 hour -- then `FAILED_PRECONDITION` is returned. See also the
    * `Snapshot.expire_time` field. If the name is not provided in the request, the server will
    * assign a random name for this snapshot on the same project as the subscription, conforming to
-   * the [resource name format] (https://cloud.google.com/pubsub/docs/admin#resource_names). The
-   * generated name is populated in the returned Snapshot object. Note that for REST API requests,
-   * you must specify a name in the request.
+   * the [resource name format] (https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names).
+   * The generated name is populated in the returned Snapshot object. Note that for REST API
+   * requests, you must specify a name in the request.
    *
    * <p>Sample code:
    *
@@ -2684,7 +3022,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    * @param name Required. User-provided name for this snapshot. If the name is not provided in the
    *     request, the server will assign a random name for this snapshot on the same project as the
    *     subscription. Note that for REST API requests, you must specify a name. See the [resource
-   *     name rules](https://cloud.google.com/pubsub/docs/admin#resource_names). Format is
+   *     name rules](https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names). Format is
    *     `projects/{project}/snapshots/{snap}`.
    * @param subscription Required. The subscription whose backlog the snapshot retains.
    *     Specifically, the created snapshot is guaranteed to retain: (a) The existing backlog on the
@@ -2715,9 +3053,9 @@ public class SubscriptionAdminClient implements BackgroundResource {
    * expire in less than 1 hour -- then `FAILED_PRECONDITION` is returned. See also the
    * `Snapshot.expire_time` field. If the name is not provided in the request, the server will
    * assign a random name for this snapshot on the same project as the subscription, conforming to
-   * the [resource name format] (https://cloud.google.com/pubsub/docs/admin#resource_names). The
-   * generated name is populated in the returned Snapshot object. Note that for REST API requests,
-   * you must specify a name in the request.
+   * the [resource name format] (https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names).
+   * The generated name is populated in the returned Snapshot object. Note that for REST API
+   * requests, you must specify a name in the request.
    *
    * <p>Sample code:
    *
@@ -2737,7 +3075,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    * @param name Required. User-provided name for this snapshot. If the name is not provided in the
    *     request, the server will assign a random name for this snapshot on the same project as the
    *     subscription. Note that for REST API requests, you must specify a name. See the [resource
-   *     name rules](https://cloud.google.com/pubsub/docs/admin#resource_names). Format is
+   *     name rules](https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names). Format is
    *     `projects/{project}/snapshots/{snap}`.
    * @param subscription Required. The subscription whose backlog the snapshot retains.
    *     Specifically, the created snapshot is guaranteed to retain: (a) The existing backlog on the
@@ -2768,9 +3106,9 @@ public class SubscriptionAdminClient implements BackgroundResource {
    * expire in less than 1 hour -- then `FAILED_PRECONDITION` is returned. See also the
    * `Snapshot.expire_time` field. If the name is not provided in the request, the server will
    * assign a random name for this snapshot on the same project as the subscription, conforming to
-   * the [resource name format] (https://cloud.google.com/pubsub/docs/admin#resource_names). The
-   * generated name is populated in the returned Snapshot object. Note that for REST API requests,
-   * you must specify a name in the request.
+   * the [resource name format] (https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names).
+   * The generated name is populated in the returned Snapshot object. Note that for REST API
+   * requests, you must specify a name in the request.
    *
    * <p>Sample code:
    *
@@ -2790,7 +3128,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    * @param name Required. User-provided name for this snapshot. If the name is not provided in the
    *     request, the server will assign a random name for this snapshot on the same project as the
    *     subscription. Note that for REST API requests, you must specify a name. See the [resource
-   *     name rules](https://cloud.google.com/pubsub/docs/admin#resource_names). Format is
+   *     name rules](https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names). Format is
    *     `projects/{project}/snapshots/{snap}`.
    * @param subscription Required. The subscription whose backlog the snapshot retains.
    *     Specifically, the created snapshot is guaranteed to retain: (a) The existing backlog on the
@@ -2818,9 +3156,9 @@ public class SubscriptionAdminClient implements BackgroundResource {
    * expire in less than 1 hour -- then `FAILED_PRECONDITION` is returned. See also the
    * `Snapshot.expire_time` field. If the name is not provided in the request, the server will
    * assign a random name for this snapshot on the same project as the subscription, conforming to
-   * the [resource name format] (https://cloud.google.com/pubsub/docs/admin#resource_names). The
-   * generated name is populated in the returned Snapshot object. Note that for REST API requests,
-   * you must specify a name in the request.
+   * the [resource name format] (https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names).
+   * The generated name is populated in the returned Snapshot object. Note that for REST API
+   * requests, you must specify a name in the request.
    *
    * <p>Sample code:
    *
@@ -3010,9 +3348,9 @@ public class SubscriptionAdminClient implements BackgroundResource {
    * expire in less than 1 hour -- then `FAILED_PRECONDITION` is returned. See also the
    * `Snapshot.expire_time` field. If the name is not provided in the request, the server will
    * assign a random name for this snapshot on the same project as the subscription, conforming to
-   * the [resource name format] (https://cloud.google.com/pubsub/docs/admin#resource_names). The
-   * generated name is populated in the returned Snapshot object. Note that for REST API requests,
-   * you must specify a name in the request.
+   * the [resource name format] (https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names).
+   * The generated name is populated in the returned Snapshot object. Note that for REST API
+   * requests, you must specify a name in the request.
    *
    * <p>Sample code:
    *
@@ -3042,9 +3380,9 @@ public class SubscriptionAdminClient implements BackgroundResource {
 
   // AUTO-GENERATED DOCUMENTATION AND METHOD.
   /**
-   * Updates an existing snapshot. Snapshots are used in
-   * [Seek](https://cloud.google.com/pubsub/docs/replay-overview) operations, which allow you to
-   * manage message acknowledgments in bulk. That is, you can set the acknowledgment state of
+   * Updates an existing snapshot by updating the fields specified in the update mask. Snapshots are
+   * used in [Seek](https://cloud.google.com/pubsub/docs/replay-overview) operations, which allow
+   * you to manage message acknowledgments in bulk. That is, you can set the acknowledgment state of
    * messages in an existing subscription to the state captured by a snapshot.
    *
    * <p>Sample code:
@@ -3075,9 +3413,9 @@ public class SubscriptionAdminClient implements BackgroundResource {
 
   // AUTO-GENERATED DOCUMENTATION AND METHOD.
   /**
-   * Updates an existing snapshot. Snapshots are used in
-   * [Seek](https://cloud.google.com/pubsub/docs/replay-overview) operations, which allow you to
-   * manage message acknowledgments in bulk. That is, you can set the acknowledgment state of
+   * Updates an existing snapshot by updating the fields specified in the update mask. Snapshots are
+   * used in [Seek](https://cloud.google.com/pubsub/docs/replay-overview) operations, which allow
+   * you to manage message acknowledgments in bulk. That is, you can set the acknowledgment state of
    * messages in an existing subscription to the state captured by a snapshot.
    *
    * <p>Sample code:
@@ -3107,9 +3445,9 @@ public class SubscriptionAdminClient implements BackgroundResource {
 
   // AUTO-GENERATED DOCUMENTATION AND METHOD.
   /**
-   * Updates an existing snapshot. Snapshots are used in
-   * [Seek](https://cloud.google.com/pubsub/docs/replay-overview) operations, which allow you to
-   * manage message acknowledgments in bulk. That is, you can set the acknowledgment state of
+   * Updates an existing snapshot by updating the fields specified in the update mask. Snapshots are
+   * used in [Seek](https://cloud.google.com/pubsub/docs/replay-overview) operations, which allow
+   * you to manage message acknowledgments in bulk. That is, you can set the acknowledgment state of
    * messages in an existing subscription to the state captured by a snapshot.
    *
    * <p>Sample code:

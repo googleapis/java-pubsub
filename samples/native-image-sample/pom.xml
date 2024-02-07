@@ -30,7 +30,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
       <dependency>
         <groupId>com.google.cloud</groupId>
         <artifactId>libraries-bom</artifactId>
-        <version>26.23.0</version>
+        <version>26.30.0</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -56,7 +56,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <dependency>
       <groupId>com.google.truth</groupId>
       <artifactId>truth</artifactId>
-      <version>1.1.5</version>
+      <version>1.3.0</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -79,7 +79,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
-        <version>3.6.0</version>
+        <version>3.6.1</version>
         <executions>
           <execution>
             <id>copy-dependencies</id>
@@ -107,13 +107,13 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
         <dependency>
           <groupId>org.junit.vintage</groupId>
           <artifactId>junit-vintage-engine</artifactId>
-          <version>5.10.0</version>
+          <version>5.10.1</version>
           <scope>test</scope>
         </dependency>
         <dependency>
           <groupId>org.graalvm.buildtools</groupId>
           <artifactId>junit-platform-native</artifactId>
-          <version>0.9.27</version>
+          <version>0.9.28</version>
           <scope>test</scope>
         </dependency>
       </dependencies>
@@ -124,7 +124,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-surefire-plugin
             </artifactId> <!-- Must use older version of surefire plugin for native-image testing. -->
-            <version>3.1.2</version>
+            <version>3.2.5</version>
             <configuration>
               <includes>
                 <include>**/*IT</include>
@@ -134,7 +134,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
           <plugin>
             <groupId>org.graalvm.buildtools</groupId>
             <artifactId>native-maven-plugin</artifactId>
-            <version>0.9.27</version>
+            <version>0.9.28</version>
             <extensions>true</extensions>
             <configuration>
               <mainClass>pubsub.NativeImagePubSubSample

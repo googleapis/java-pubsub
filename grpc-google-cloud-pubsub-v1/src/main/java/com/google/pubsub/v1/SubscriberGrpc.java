@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -742,15 +742,15 @@ public final class SubscriberGrpc {
      *
      * <pre>
      * Creates a subscription to a given topic. See the [resource name rules]
-     * (https://cloud.google.com/pubsub/docs/admin#resource_names).
+     * (https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names).
      * If the subscription already exists, returns `ALREADY_EXISTS`.
      * If the corresponding topic doesn't exist, returns `NOT_FOUND`.
      * If the name is not provided in the request, the server will assign a random
      * name for this subscription on the same project as the topic, conforming
      * to the [resource name format]
-     * (https://cloud.google.com/pubsub/docs/admin#resource_names). The generated
-     * name is populated in the returned Subscription object. Note that for REST
-     * API requests, you must specify a name in the request.
+     * (https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names). The
+     * generated name is populated in the returned Subscription object. Note that
+     * for REST API requests, you must specify a name in the request.
      * </pre>
      */
     default void createSubscription(
@@ -778,8 +778,9 @@ public final class SubscriberGrpc {
      *
      *
      * <pre>
-     * Updates an existing subscription. Note that certain properties of a
-     * subscription, such as its topic, are not modifiable.
+     * Updates an existing subscription by updating the fields specified in the
+     * update mask. Note that certain properties of a subscription, such as its
+     * topic, are not modifiable.
      * </pre>
      */
     default void updateSubscription(
@@ -962,7 +963,7 @@ public final class SubscriberGrpc {
      * the request, the server will assign a random
      * name for this snapshot on the same project as the subscription, conforming
      * to the [resource name format]
-     * (https://cloud.google.com/pubsub/docs/admin#resource_names). The
+     * (https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names). The
      * generated name is populated in the returned Snapshot object. Note that for
      * REST API requests, you must specify a name in the request.
      * </pre>
@@ -978,7 +979,8 @@ public final class SubscriberGrpc {
      *
      *
      * <pre>
-     * Updates an existing snapshot. Snapshots are used in
+     * Updates an existing snapshot by updating the fields specified in the update
+     * mask. Snapshots are used in
      * [Seek](https://cloud.google.com/pubsub/docs/replay-overview) operations,
      * which allow you to manage message acknowledgments in bulk. That is, you can
      * set the acknowledgment state of messages in an existing subscription to the
@@ -1075,15 +1077,15 @@ public final class SubscriberGrpc {
      *
      * <pre>
      * Creates a subscription to a given topic. See the [resource name rules]
-     * (https://cloud.google.com/pubsub/docs/admin#resource_names).
+     * (https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names).
      * If the subscription already exists, returns `ALREADY_EXISTS`.
      * If the corresponding topic doesn't exist, returns `NOT_FOUND`.
      * If the name is not provided in the request, the server will assign a random
      * name for this subscription on the same project as the topic, conforming
      * to the [resource name format]
-     * (https://cloud.google.com/pubsub/docs/admin#resource_names). The generated
-     * name is populated in the returned Subscription object. Note that for REST
-     * API requests, you must specify a name in the request.
+     * (https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names). The
+     * generated name is populated in the returned Subscription object. Note that
+     * for REST API requests, you must specify a name in the request.
      * </pre>
      */
     public void createSubscription(
@@ -1115,8 +1117,9 @@ public final class SubscriberGrpc {
      *
      *
      * <pre>
-     * Updates an existing subscription. Note that certain properties of a
-     * subscription, such as its topic, are not modifiable.
+     * Updates an existing subscription by updating the fields specified in the
+     * update mask. Note that certain properties of a subscription, such as its
+     * topic, are not modifiable.
      * </pre>
      */
     public void updateSubscription(
@@ -1316,7 +1319,7 @@ public final class SubscriberGrpc {
      * the request, the server will assign a random
      * name for this snapshot on the same project as the subscription, conforming
      * to the [resource name format]
-     * (https://cloud.google.com/pubsub/docs/admin#resource_names). The
+     * (https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names). The
      * generated name is populated in the returned Snapshot object. Note that for
      * REST API requests, you must specify a name in the request.
      * </pre>
@@ -1334,7 +1337,8 @@ public final class SubscriberGrpc {
      *
      *
      * <pre>
-     * Updates an existing snapshot. Snapshots are used in
+     * Updates an existing snapshot by updating the fields specified in the update
+     * mask. Snapshots are used in
      * [Seek](https://cloud.google.com/pubsub/docs/replay-overview) operations,
      * which allow you to manage message acknowledgments in bulk. That is, you can
      * set the acknowledgment state of messages in an existing subscription to the
@@ -1421,15 +1425,15 @@ public final class SubscriberGrpc {
      *
      * <pre>
      * Creates a subscription to a given topic. See the [resource name rules]
-     * (https://cloud.google.com/pubsub/docs/admin#resource_names).
+     * (https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names).
      * If the subscription already exists, returns `ALREADY_EXISTS`.
      * If the corresponding topic doesn't exist, returns `NOT_FOUND`.
      * If the name is not provided in the request, the server will assign a random
      * name for this subscription on the same project as the topic, conforming
      * to the [resource name format]
-     * (https://cloud.google.com/pubsub/docs/admin#resource_names). The generated
-     * name is populated in the returned Subscription object. Note that for REST
-     * API requests, you must specify a name in the request.
+     * (https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names). The
+     * generated name is populated in the returned Subscription object. Note that
+     * for REST API requests, you must specify a name in the request.
      * </pre>
      */
     public com.google.pubsub.v1.Subscription createSubscription(
@@ -1455,8 +1459,9 @@ public final class SubscriberGrpc {
      *
      *
      * <pre>
-     * Updates an existing subscription. Note that certain properties of a
-     * subscription, such as its topic, are not modifiable.
+     * Updates an existing subscription by updating the fields specified in the
+     * update mask. Note that certain properties of a subscription, such as its
+     * topic, are not modifiable.
      * </pre>
      */
     public com.google.pubsub.v1.Subscription updateSubscription(
@@ -1609,7 +1614,7 @@ public final class SubscriberGrpc {
      * the request, the server will assign a random
      * name for this snapshot on the same project as the subscription, conforming
      * to the [resource name format]
-     * (https://cloud.google.com/pubsub/docs/admin#resource_names). The
+     * (https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names). The
      * generated name is populated in the returned Snapshot object. Note that for
      * REST API requests, you must specify a name in the request.
      * </pre>
@@ -1624,7 +1629,8 @@ public final class SubscriberGrpc {
      *
      *
      * <pre>
-     * Updates an existing snapshot. Snapshots are used in
+     * Updates an existing snapshot by updating the fields specified in the update
+     * mask. Snapshots are used in
      * [Seek](https://cloud.google.com/pubsub/docs/replay-overview) operations,
      * which allow you to manage message acknowledgments in bulk. That is, you can
      * set the acknowledgment state of messages in an existing subscription to the
@@ -1702,15 +1708,15 @@ public final class SubscriberGrpc {
      *
      * <pre>
      * Creates a subscription to a given topic. See the [resource name rules]
-     * (https://cloud.google.com/pubsub/docs/admin#resource_names).
+     * (https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names).
      * If the subscription already exists, returns `ALREADY_EXISTS`.
      * If the corresponding topic doesn't exist, returns `NOT_FOUND`.
      * If the name is not provided in the request, the server will assign a random
      * name for this subscription on the same project as the topic, conforming
      * to the [resource name format]
-     * (https://cloud.google.com/pubsub/docs/admin#resource_names). The generated
-     * name is populated in the returned Subscription object. Note that for REST
-     * API requests, you must specify a name in the request.
+     * (https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names). The
+     * generated name is populated in the returned Subscription object. Note that
+     * for REST API requests, you must specify a name in the request.
      * </pre>
      */
     public com.google.common.util.concurrent.ListenableFuture<com.google.pubsub.v1.Subscription>
@@ -1736,8 +1742,9 @@ public final class SubscriberGrpc {
      *
      *
      * <pre>
-     * Updates an existing subscription. Note that certain properties of a
-     * subscription, such as its topic, are not modifiable.
+     * Updates an existing subscription by updating the fields specified in the
+     * update mask. Note that certain properties of a subscription, such as its
+     * topic, are not modifiable.
      * </pre>
      */
     public com.google.common.util.concurrent.ListenableFuture<com.google.pubsub.v1.Subscription>
@@ -1894,7 +1901,7 @@ public final class SubscriberGrpc {
      * the request, the server will assign a random
      * name for this snapshot on the same project as the subscription, conforming
      * to the [resource name format]
-     * (https://cloud.google.com/pubsub/docs/admin#resource_names). The
+     * (https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names). The
      * generated name is populated in the returned Snapshot object. Note that for
      * REST API requests, you must specify a name in the request.
      * </pre>
@@ -1909,7 +1916,8 @@ public final class SubscriberGrpc {
      *
      *
      * <pre>
-     * Updates an existing snapshot. Snapshots are used in
+     * Updates an existing snapshot by updating the fields specified in the update
+     * mask. Snapshots are used in
      * [Seek](https://cloud.google.com/pubsub/docs/replay-overview) operations,
      * which allow you to manage message acknowledgments in bulk. That is, you can
      * set the acknowledgment state of messages in an existing subscription to the

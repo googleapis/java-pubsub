@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +31,8 @@ public interface CreateSnapshotRequestOrBuilder
    * in the request, the server will assign a random name for this snapshot on
    * the same project as the subscription. Note that for REST API requests, you
    * must specify a name.  See the [resource name
-   * rules](https://cloud.google.com/pubsub/docs/admin#resource_names). Format
-   * is `projects/{project}/snapshots/{snap}`.
+   * rules](https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names).
+   * Format is `projects/{project}/snapshots/{snap}`.
    * </pre>
    *
    * <code>
@@ -50,8 +50,8 @@ public interface CreateSnapshotRequestOrBuilder
    * in the request, the server will assign a random name for this snapshot on
    * the same project as the subscription. Note that for REST API requests, you
    * must specify a name.  See the [resource name
-   * rules](https://cloud.google.com/pubsub/docs/admin#resource_names). Format
-   * is `projects/{project}/snapshots/{snap}`.
+   * rules](https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names).
+   * Format is `projects/{project}/snapshots/{snap}`.
    * </pre>
    *
    * <code>
@@ -111,22 +111,22 @@ public interface CreateSnapshotRequestOrBuilder
    *
    *
    * <pre>
-   * See [Creating and managing
+   * Optional. See [Creating and managing
    * labels](https://cloud.google.com/pubsub/docs/labels).
    * </pre>
    *
-   * <code>map&lt;string, string&gt; labels = 3;</code>
+   * <code>map&lt;string, string&gt; labels = 3 [(.google.api.field_behavior) = OPTIONAL];</code>
    */
   int getLabelsCount();
   /**
    *
    *
    * <pre>
-   * See [Creating and managing
+   * Optional. See [Creating and managing
    * labels](https://cloud.google.com/pubsub/docs/labels).
    * </pre>
    *
-   * <code>map&lt;string, string&gt; labels = 3;</code>
+   * <code>map&lt;string, string&gt; labels = 3 [(.google.api.field_behavior) = OPTIONAL];</code>
    */
   boolean containsLabels(java.lang.String key);
   /** Use {@link #getLabelsMap()} instead. */
@@ -136,22 +136,22 @@ public interface CreateSnapshotRequestOrBuilder
    *
    *
    * <pre>
-   * See [Creating and managing
+   * Optional. See [Creating and managing
    * labels](https://cloud.google.com/pubsub/docs/labels).
    * </pre>
    *
-   * <code>map&lt;string, string&gt; labels = 3;</code>
+   * <code>map&lt;string, string&gt; labels = 3 [(.google.api.field_behavior) = OPTIONAL];</code>
    */
   java.util.Map<java.lang.String, java.lang.String> getLabelsMap();
   /**
    *
    *
    * <pre>
-   * See [Creating and managing
+   * Optional. See [Creating and managing
    * labels](https://cloud.google.com/pubsub/docs/labels).
    * </pre>
    *
-   * <code>map&lt;string, string&gt; labels = 3;</code>
+   * <code>map&lt;string, string&gt; labels = 3 [(.google.api.field_behavior) = OPTIONAL];</code>
    */
   /* nullable */
   java.lang.String getLabelsOrDefault(
@@ -162,11 +162,11 @@ public interface CreateSnapshotRequestOrBuilder
    *
    *
    * <pre>
-   * See [Creating and managing
+   * Optional. See [Creating and managing
    * labels](https://cloud.google.com/pubsub/docs/labels).
    * </pre>
    *
-   * <code>map&lt;string, string&gt; labels = 3;</code>
+   * <code>map&lt;string, string&gt; labels = 3 [(.google.api.field_behavior) = OPTIONAL];</code>
    */
   java.lang.String getLabelsOrThrow(java.lang.String key);
 }
