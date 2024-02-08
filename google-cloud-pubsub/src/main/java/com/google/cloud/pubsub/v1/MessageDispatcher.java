@@ -382,7 +382,7 @@ class MessageDispatcher {
     }
   }
 
-  void processReceivedMessages(List<ReceivedMessage> messages) {
+  synchronized void processReceivedMessages(List<ReceivedMessage> messages) {
     Instant totalExpiration = now().plus(maxAckExtensionPeriod);
     List<OutstandingMessage> outstandingBatch = new ArrayList<>(messages.size());
     for (ReceivedMessage message : messages) {
