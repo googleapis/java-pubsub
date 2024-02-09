@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.126.4](https://github.com/googleapis/java-pubsub/compare/v1.126.3...v1.126.4) (2024-02-09)
+
+
+### Bug Fixes
+
+* Message ordering fix for [#1889](https://github.com/googleapis/java-pubsub/issues/1889) ([#1903](https://github.com/googleapis/java-pubsub/issues/1903)) ([22a87c6](https://github.com/googleapis/java-pubsub/commit/22a87c67f07b55266e277f83f5ceb17d9f32f67e))
+
+## [1.126.3](https://github.com/googleapis/java-pubsub/compare/v1.126.2...v1.126.3) (2024-02-08)
+
+
+### Dependencies
+
+* Update dependency com.google.cloud:google-cloud-core to v2.32.0 ([#1885](https://github.com/googleapis/java-pubsub/issues/1885)) ([a2063cf](https://github.com/googleapis/java-pubsub/commit/a2063cf8f1f792f5ad1994bff00f367b399c0ff2))
+
 ## [1.126.2](https://github.com/googleapis/java-pubsub/compare/v1.126.1...v1.126.2) (2024-01-26)
 
 
