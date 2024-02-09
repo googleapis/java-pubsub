@@ -382,7 +382,7 @@ class MessageDispatcher {
     }
   }
 
-  synchronized void processReceivedMessages(List<ReceivedMessage> messages) {
+  void processReceivedMessages(List<ReceivedMessage> messages) {
     Instant totalExpiration = now().plus(maxAckExtensionPeriod);
     List<OutstandingMessage> outstandingBatch = new ArrayList<>(messages.size());
     for (ReceivedMessage message : messages) {
@@ -398,7 +398,9 @@ class MessageDispatcher {
       if (this.exactlyOnceDeliveryEnabled.get()) {
         // For exactly once deliveries we don't add to outstanding batch because we first
         // process the receipt modack. If that is successful then we process the message.
-        outstandingReceipts.put(message.getAckId(), new ReceiptCompleteData(outstandingMessage));
+        synchronized (outstandingReceipts) {
+          outstandingReceipts.put(message.getAckId(), new ReceiptCompleteData(outstandingMessage));
+        }
       } else if (pendingMessages.putIfAbsent(message.getAckId(), ackHandler) != null) {
         // putIfAbsent puts ackHandler if ackID isn't previously mapped, then return the
         // previously-mapped element.
@@ -417,34 +419,37 @@ class MessageDispatcher {
     processBatch(outstandingBatch);
   }
 
-  synchronized void notifyAckSuccess(AckRequestData ackRequestData) {
+  void notifyAckSuccess(AckRequestData ackRequestData) {
+    synchronized (outstandingReceipts) {
+      if (outstandingReceipts.containsKey(ackRequestData.getAckId())) {
+        outstandingReceipts.get(ackRequestData.getAckId()).notifyReceiptComplete();
+        List<OutstandingMessage> outstandingBatch = new ArrayList<>();
 
-    if (outstandingReceipts.containsKey(ackRequestData.getAckId())) {
-      outstandingReceipts.get(ackRequestData.getAckId()).notifyReceiptComplete();
-      List<OutstandingMessage> outstandingBatch = new ArrayList<>();
-
-      for (Iterator<Entry<String, ReceiptCompleteData>> it =
-              outstandingReceipts.entrySet().iterator();
-          it.hasNext(); ) {
-        Map.Entry<String, ReceiptCompleteData> receipt = it.next();
-        // If receipt is complete then add to outstandingBatch to process the batch
-        if (receipt.getValue().isReceiptComplete()) {
-          it.remove();
-          if (pendingMessages.putIfAbsent(
-                  receipt.getKey(), receipt.getValue().getOutstandingMessage().ackHandler)
-              == null) {
-            outstandingBatch.add(receipt.getValue().getOutstandingMessage());
+        for (Iterator<Entry<String, ReceiptCompleteData>> it =
+                outstandingReceipts.entrySet().iterator();
+            it.hasNext(); ) {
+          Map.Entry<String, ReceiptCompleteData> receipt = it.next();
+          // If receipt is complete then add to outstandingBatch to process the batch
+          if (receipt.getValue().isReceiptComplete()) {
+            it.remove();
+            if (pendingMessages.putIfAbsent(
+                    receipt.getKey(), receipt.getValue().getOutstandingMessage().ackHandler)
+                == null) {
+              outstandingBatch.add(receipt.getValue().getOutstandingMessage());
+            }
+          } else {
+            break;
           }
-        } else {
-          break;
         }
+        processBatch(outstandingBatch);
       }
-      processBatch(outstandingBatch);
     }
   }
 
-  synchronized void notifyAckFailed(AckRequestData ackRequestData) {
-    outstandingReceipts.remove(ackRequestData.getAckId());
+  void notifyAckFailed(AckRequestData ackRequestData) {
+    synchronized (outstandingReceipts) {
+      outstandingReceipts.remove(ackRequestData.getAckId());
+    }
   }
 
   private void processBatch(List<OutstandingMessage> batch) {
