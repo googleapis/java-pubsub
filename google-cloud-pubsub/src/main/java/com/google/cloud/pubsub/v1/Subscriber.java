@@ -492,7 +492,7 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
         SubscriptionAdminSettings.defaultCredentialsProviderBuilder().build();
     private Optional<ApiClock> clock = Optional.absent();
     private int parallelPullCount = 1;
-    private String endpoint = SubscriberStubSettings.getDefaultEndpoint();
+    private String endpoint = null;
     private String universeDomain = null;
 
     Builder(String subscription, MessageReceiver receiver) {

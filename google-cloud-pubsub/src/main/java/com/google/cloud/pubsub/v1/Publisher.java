@@ -718,7 +718,7 @@ public class Publisher implements PublisherInterface {
     static final long DEFAULT_COMPRESSION_BYTES_THRESHOLD = 240L;
 
     String topicName;
-    private String endpoint = PublisherStubSettings.getDefaultEndpoint();
+    private String endpoint = null;
     private String universeDomain = null;
 
     // Batching options
