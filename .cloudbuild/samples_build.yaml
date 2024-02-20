@@ -13,5 +13,10 @@ steps:
   ]
   env:
   - 'JOB_TYPE=samples'
+- name: gcr.io/cloud-devrel-kokoro-resources/java8
+  entrypoint: echo
+  args: [
+    'Samp[le job succeeded',
+  ]
 
 timeout: 300m
