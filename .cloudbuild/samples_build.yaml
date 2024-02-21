@@ -16,7 +16,7 @@ steps:
 - name: gcr.io/cloud-devrel-public-resources/java8
   entrypoint: bash
   args: [
-    './kokoro/build.sh'
+    '.kokoro/build.sh'
   ]
   env:
   - 'JOB_TYPE=samples'
