@@ -1,19 +1,26 @@
 steps:
-- name: gcr.io/cloud-devrel-kokoro-resources/java8
+- name: gcr.io/cloud-devrel-public-resources/java8
   entrypoint: ls
   args: [
     '-alt',
   ]
-- name: gcr.io/cloud-devrel-kokoro-resources/java8
+- name: gcr.io/cloud-devrel-public-resources/java8
+  entrypoint: curl
+  args: [
+    '--header',
+    'Metadata-Flavor: Google',
+    'http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/email'
+  ]
+- name: gcr.io/cloud-devrel-public-resources/java8
   entrypoint: pwd
-- name: gcr.io/cloud-devrel-kokoro-resources/java8
+- name: gcr.io/cloud-devrel-public-resources/java8
   entrypoint: bash
   args: [
     './kokoro/build.sh'
   ]
   env:
   - 'JOB_TYPE=samples'
-- name: gcr.io/cloud-devrel-kokoro-resources/java8
+- name: gcr.io/cloud-devrel-public-resources/java8
   entrypoint: echo
   args: [
     'Samp[le job succeeded',
