@@ -27,4 +27,4 @@ steps:
     'Samp[le job succeeded',
   ]
 
-timeout: 300m
+timeout: 3600s
