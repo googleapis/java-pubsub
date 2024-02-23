@@ -26,5 +26,6 @@ steps:
   args: [
     'Samp[le job succeeded',
   ]
-
 timeout: 3600s
+options:
+  defaultLogsBucketBehavior: REGIONAL_USER_OWNED_BUCKET
