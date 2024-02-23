@@ -24,7 +24,7 @@ steps:
 - name: gcr.io/cloud-devrel-public-resources/java8
   entrypoint: echo
   args: [
-    'Samp[le job succeeded',
+    'Sample job succeeded',
   ]
 timeout: 3600s
 options:
