@@ -78,7 +78,7 @@ public class UpdateTopicTypeExample {
 
       Topic response = topicAdminClient.updateTopic(request);
 
-      System.out.println("Updated topic with Kinesis ingestion settings: " + topic.getName());
+      System.out.println("Updated topic with Kinesis ingestion settings: " + topic.getAllFields());
     }
   }
 }

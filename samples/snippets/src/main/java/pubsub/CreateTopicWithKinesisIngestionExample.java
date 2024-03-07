@@ -67,7 +67,7 @@ public class CreateTopicWithKinesisIngestionExample {
                   .setIngestionDataSourceSettings(ingestionDataSourceSettings)
                   .build());
 
-      System.out.println("Created topic with Kinesis ingestion settings: " + topic.getName());
+      System.out.println("Created topic with Kinesis ingestion settings: " + topic.getAllFields());
     }
   }
 }

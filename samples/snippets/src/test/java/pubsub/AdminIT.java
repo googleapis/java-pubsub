@@ -69,6 +69,9 @@ public class AdminIT {
   private static final String consumerArn =
       "arn:aws:kinesis:us-west-2:111111111111:stream/fake-stream-name/"
           + "consumer/consumer-1:1111111111";
+  private static final String consumerArn2 =
+      "arn:aws:kinesis:us-west-2:111111111111:stream/fake-stream-name/"
+          + "consumer/consumer-2:2222222222";
   private static final String awsRoleArn = "arn:aws:iam::111111111111:role/fake-role-name";
   private static final String gcpServiceAccount =
       "fake-service-account@fake-gcp-project.iam.gserviceaccount.com";
@@ -287,8 +290,11 @@ public class AdminIT {
     // Update topic type to Kinesis ingestion.
     UpdateTopicTypeExample.updateTopicTypeExample(
         projectId, topicId, streamArn, consumerArn, awsRoleArn, gcpServiceAccount);
-    assertThat(bout.toString())
-        .contains("Updated topic with Kinesis ingestion settings: " + topicName.toString());
+    assertThat(bout.toString()).contains("google.pubsub.v1.Topic.name=" + ingestionTopicName.toString());
+    assertThat(bout.toString()).contains(streamArn);
+    assertThat(bout.toString()).contains(consumerArn);
+    assertThat(bout.toString()).contains(awsRoleArn);
+    assertThat(bout.toString()).contains(gcpServiceAccount);
 
     bout.reset();
     // Test delete topic.
@@ -299,12 +305,24 @@ public class AdminIT {
     // Test create topic with Kinesis ingestion settings.
     CreateTopicWithKinesisIngestionExample.createTopicWithKinesisIngestionExample(
         projectId, ingestionTopicId, streamArn, consumerArn, awsRoleArn, gcpServiceAccount);
-    assertThat(bout.toString())
-        .contains(
-            "Created topic with Kinesis ingestion settings: " + ingestionTopicName.toString());
+    assertThat(bout.toString()).contains("google.pubsub.v1.Topic.name=" + ingestionTopicName.toString());
+    assertThat(bout.toString()).contains(streamArn);
+    assertThat(bout.toString()).contains(consumerArn);
+    assertThat(bout.toString()).contains(awsRoleArn);
+    assertThat(bout.toString()).contains(gcpServiceAccount);
 
     bout.reset();
-    // Test delete ingestion topic.
+    // Test update existing Kinesis ingestion settings.
+    UpdateTopicTypeExample.updateTopicTypeExample(
+        projectId, ingestionTopicId, streamArn, consumerArn2, awsRoleArn, gcpServiceAccount);
+    assertThat(bout.toString()).contains("google.pubsub.v1.Topic.name=" + ingestionTopicName.toString());
+    assertThat(bout.toString()).contains(streamArn);
+    assertThat(bout.toString()).contains(consumerArn2);
+    assertThat(bout.toString()).contains(awsRoleArn);
+    assertThat(bout.toString()).contains(gcpServiceAccount);
+
+    bout.reset();
+    // Test delete Kinesis ingestion topic.
     DeleteTopicExample.deleteTopicExample(projectId, ingestionTopicId);
     assertThat(bout.toString()).contains("Deleted topic.");
   }
