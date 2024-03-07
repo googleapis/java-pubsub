@@ -67,7 +67,8 @@ public class AdminIT {
   private static final String streamArn =
       "arn:aws:kinesis:us-west-2:111111111111:stream/fake-stream-name";
   private static final String consumerArn =
-      "arn:aws:kinesis:us-west-2:111111111111:stream/fake-stream-name/consumer/consumer-1:1111111111";
+      "arn:aws:kinesis:us-west-2:111111111111:stream/fake-stream-name/"
+          + "consumer/consumer-1:1111111111";
   private static final String awsRoleArn = "arn:aws:iam::111111111111:role/fake-role-name";
   private static final String gcpServiceAccount =
       "fake-service-account@fake-gcp-project.iam.gserviceaccount.com";
