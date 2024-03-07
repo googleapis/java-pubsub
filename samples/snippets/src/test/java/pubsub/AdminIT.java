@@ -64,10 +64,13 @@ public class AdminIT {
       "java_samples_data_set" + _suffix.replace("-", "_");
   private static final String bigquerySubscriptionId = "iam-bigquery-subscription-" + _suffix;
   private static final String bigqueryTableId = "java_samples_table_" + _suffix;
-  private static final String streamArn = "arn:aws:kinesis:us-west-2:111111111111:stream/fake-stream-name";
-  private static final String consumerArn = "arn:aws:kinesis:us-west-2:111111111111:stream/fake-stream-name/consumer/consumer-1:1111111111";
+  private static final String streamArn =
+      "arn:aws:kinesis:us-west-2:111111111111:stream/fake-stream-name";
+  private static final String consumerArn =
+      "arn:aws:kinesis:us-west-2:111111111111:stream/fake-stream-name/consumer/consumer-1:1111111111";
   private static final String awsRoleArn = "arn:aws:iam::111111111111:role/fake-role-name";
-  private static final String gcpServiceAccount = "fake-service-account@fake-gcp-project.iam.gserviceaccount.com";
+  private static final String gcpServiceAccount =
+      "fake-service-account@fake-gcp-project.iam.gserviceaccount.com";
 
   private static final TopicName topicName = TopicName.of(projectId, topicId);
   private static final TopicName ingestionTopicName = TopicName.of(projectId, ingestionTopicId);
@@ -81,7 +84,6 @@ public class AdminIT {
       SubscriptionName.of(projectId, filteredSubscriptionId);
   private static final SubscriptionName exactlyOnceSubscriptionName =
       SubscriptionName.of(projectId, exactlyOnceSubscriptionId);
-
 
   private static void requireEnvVar(String varName) {
     assertNotNull(
@@ -282,8 +284,10 @@ public class AdminIT {
 
     bout.reset();
     // Update topic type to Kinesis ingestion.
-    UpdateTopicTypeExample.updateTopicTypeExample(projectId, topicId, streamArn, consumerArn, awsRoleArn, gcpServiceAccount);
-    assertThat(bout.toString()).contains("Updated topic with Kinesis ingestion settings: " + topicName.toString());
+    UpdateTopicTypeExample.updateTopicTypeExample(
+        projectId, topicId, streamArn, consumerArn, awsRoleArn, gcpServiceAccount);
+    assertThat(bout.toString())
+        .contains("Updated topic with Kinesis ingestion settings: " + topicName.toString());
 
     bout.reset();
     // Test delete topic.
