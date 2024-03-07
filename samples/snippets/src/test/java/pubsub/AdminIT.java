@@ -305,7 +305,7 @@ public class AdminIT {
 
     bout.reset();
     // Test delete ingestion topic.
-    DeleteTopicExample.deleteTopicExample(projectId, topicId);
+    DeleteTopicExample.deleteTopicExample(projectId, ingestionTopicId);
     assertThat(bout.toString()).contains("Deleted topic.");
   }
 }
