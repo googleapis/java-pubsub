@@ -290,7 +290,8 @@ public class AdminIT {
     // Update topic type to Kinesis ingestion.
     UpdateTopicTypeExample.updateTopicTypeExample(
         projectId, topicId, streamArn, consumerArn, awsRoleArn, gcpServiceAccount);
-    assertThat(bout.toString()).contains("google.pubsub.v1.Topic.name=" + ingestionTopicName.toString());
+    assertThat(bout.toString())
+        .contains("google.pubsub.v1.Topic.name=" + ingestionTopicName.toString());
     assertThat(bout.toString()).contains(streamArn);
     assertThat(bout.toString()).contains(consumerArn);
     assertThat(bout.toString()).contains(awsRoleArn);
@@ -305,7 +306,8 @@ public class AdminIT {
     // Test create topic with Kinesis ingestion settings.
     CreateTopicWithKinesisIngestionExample.createTopicWithKinesisIngestionExample(
         projectId, ingestionTopicId, streamArn, consumerArn, awsRoleArn, gcpServiceAccount);
-    assertThat(bout.toString()).contains("google.pubsub.v1.Topic.name=" + ingestionTopicName.toString());
+    assertThat(bout.toString())
+        .contains("google.pubsub.v1.Topic.name=" + ingestionTopicName.toString());
     assertThat(bout.toString()).contains(streamArn);
     assertThat(bout.toString()).contains(consumerArn);
     assertThat(bout.toString()).contains(awsRoleArn);
@@ -315,7 +317,8 @@ public class AdminIT {
     // Test update existing Kinesis ingestion settings.
     UpdateTopicTypeExample.updateTopicTypeExample(
         projectId, ingestionTopicId, streamArn, consumerArn2, awsRoleArn, gcpServiceAccount);
-    assertThat(bout.toString()).contains("google.pubsub.v1.Topic.name=" + ingestionTopicName.toString());
+    assertThat(bout.toString())
+        .contains("google.pubsub.v1.Topic.name=" + ingestionTopicName.toString());
     assertThat(bout.toString()).contains(streamArn);
     assertThat(bout.toString()).contains(consumerArn2);
     assertThat(bout.toString()).contains(awsRoleArn);
