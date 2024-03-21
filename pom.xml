@@ -4,7 +4,7 @@
   <groupId>com.google.cloud</groupId>
   <artifactId>google-cloud-pubsub-parent</artifactId>
   <packaging>pom</packaging>
-  <version>1.127.2-SNAPSHOT</version><!-- {x-version-update:google-cloud-pubsub:current} -->
+  <version>1.127.4-SNAPSHOT</version><!-- {x-version-update:google-cloud-pubsub:current} -->
   <name>Google Cloud Pub/Sub Parent</name>
   <url>https://github.com/googleapis/java-pubsub</url>
   <description>
@@ -14,7 +14,7 @@
   <parent>
     <groupId>com.google.cloud</groupId>
     <artifactId>sdk-platform-java-config</artifactId>
-    <version>3.27.0</version>
+    <version>3.28.1</version>
   </parent>
 
   <developers>
@@ -69,17 +69,17 @@
       <dependency>
         <groupId>com.google.api.grpc</groupId>
         <artifactId>proto-google-cloud-pubsub-v1</artifactId>
-        <version>1.109.2-SNAPSHOT</version><!-- {x-version-update:proto-google-cloud-pubsub-v1:current} -->
+        <version>1.109.4-SNAPSHOT</version><!-- {x-version-update:proto-google-cloud-pubsub-v1:current} -->
       </dependency>
       <dependency>
         <groupId>com.google.api.grpc</groupId>
         <artifactId>grpc-google-cloud-pubsub-v1</artifactId>
-        <version>1.109.2-SNAPSHOT</version><!-- {x-version-update:grpc-google-cloud-pubsub-v1:current} -->
+        <version>1.109.4-SNAPSHOT</version><!-- {x-version-update:grpc-google-cloud-pubsub-v1:current} -->
       </dependency>
       <dependency>
         <groupId>com.google.cloud</groupId>
         <artifactId>google-cloud-pubsub</artifactId>
-        <version>1.127.2-SNAPSHOT</version><!-- {x-version-update:google-cloud-pubsub:current} -->
+        <version>1.127.4-SNAPSHOT</version><!-- {x-version-update:google-cloud-pubsub:current} -->
       </dependency>
 
       <!-- Test dependencies -->
@@ -104,7 +104,7 @@
       <dependency>
         <groupId>com.google.truth</groupId>
         <artifactId>truth</artifactId>
-        <version>1.4.1</version>
+        <version>1.4.2</version>
         <scope>test</scope>
         <exclusions>
           <exclusion>

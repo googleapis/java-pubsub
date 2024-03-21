@@ -1,5 +1,31 @@
 # Changelog
 
+## [1.127.3](https://github.com/googleapis/java-pubsub/compare/v1.127.2...v1.127.3) (2024-03-20)
+
+
+### Dependencies
+
+* Update dependency com.google.cloud:google-cloud-core to v2.36.0 ([#1955](https://github.com/googleapis/java-pubsub/issues/1955)) ([d25d14a](https://github.com/googleapis/java-pubsub/commit/d25d14ad4694c5a914f9d07018cb0f6b9af4f9aa))
+* Update dependency com.google.cloud:google-cloud-core to v2.36.1 ([#1962](https://github.com/googleapis/java-pubsub/issues/1962)) ([96c1c97](https://github.com/googleapis/java-pubsub/commit/96c1c971fa4dced85cb2ed4e9db3e3fb47eb82c6))
+* Update dependency com.google.cloud:google-cloud-storage to v2.36.0 ([#1957](https://github.com/googleapis/java-pubsub/issues/1957)) ([0d8c182](https://github.com/googleapis/java-pubsub/commit/0d8c182653ea1ffd429465e91075760c1501eb34))
+* Update dependency com.google.cloud:sdk-platform-java-config to v3.28.0 ([#1956](https://github.com/googleapis/java-pubsub/issues/1956)) ([183df2c](https://github.com/googleapis/java-pubsub/commit/183df2caeed8e0df53ef9668232e4949ec4719a9))
+* Update dependency com.google.cloud:sdk-platform-java-config to v3.28.1 ([#1960](https://github.com/googleapis/java-pubsub/issues/1960)) ([faa45a4](https://github.com/googleapis/java-pubsub/commit/faa45a4efeaee5b45f9a4cc89dc2917f56a66797))
+* Update dependency com.google.protobuf:protobuf-java-util to v4 ([#1951](https://github.com/googleapis/java-pubsub/issues/1951)) ([243ec9a](https://github.com/googleapis/java-pubsub/commit/243ec9ab47212bbe701b16882c92a9b3d5d4aeaa))
+
+## [1.127.2](https://github.com/googleapis/java-pubsub/compare/v1.127.1...v1.127.2) (2024-03-10)
+
+
+### Bug Fixes
+
+* **deps:** Update the Java code generator (gapic-generator-java) to 2.37.0 ([#1938](https://github.com/googleapis/java-pubsub/issues/1938)) ([1435c4e](https://github.com/googleapis/java-pubsub/commit/1435c4e4d25d789fadbfc2c54c2f90b138693b40))
+
+
+### Dependencies
+
+* Update dependency com.google.cloud:google-cloud-bigquery to v2.38.1 ([#1944](https://github.com/googleapis/java-pubsub/issues/1944)) ([76317e1](https://github.com/googleapis/java-pubsub/commit/76317e1fe60467b4bbe9b4867d0a29e983ce687f))
+* Update dependency com.google.cloud:google-cloud-storage to v2.35.0 ([#1942](https://github.com/googleapis/java-pubsub/issues/1942)) ([989f7ba](https://github.com/googleapis/java-pubsub/commit/989f7bac5bada7ac5d6e68c742af0290cb757e4b))
+* Update dependency com.google.cloud:google-cloud-storage to v2.35.0 ([#1946](https://github.com/googleapis/java-pubsub/issues/1946)) ([b94989d](https://github.com/googleapis/java-pubsub/commit/b94989df6c5ae6f62e648016cef2e008a3b9ed05))
+
 ## [1.127.1](https://github.com/googleapis/java-pubsub/compare/v1.127.0...v1.127.1) (2024-03-04)
 
 
