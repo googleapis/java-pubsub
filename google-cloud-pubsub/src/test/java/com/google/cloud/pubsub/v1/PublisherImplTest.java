@@ -513,6 +513,7 @@ public class PublisherImplTest {
    */
   @Test
   public void testResumePublish() throws Exception {
+    System.out.println("Starting testResumePublish");
     Publisher publisher =
         getTestPublisherBuilder()
             .setBatchingSettings(
@@ -588,10 +589,12 @@ public class PublisherImplTest {
     assertEquals("8", future8.get());
 
     shutdownTestPublisher(publisher);
+    System.out.println("Ending testResumePublish");
   }
 
   @Test
   public void testPublishThrowExceptionForUnsubmittedOrderingKeyMessage() throws Exception {
+    System.out.println("Starting testPublishThrowExceptionForUnsubmittedOrderingKeyMessage");
     Publisher publisher =
         getTestPublisherBuilder()
             .setExecutorProvider(SINGLE_THREAD_EXECUTOR)
@@ -640,6 +643,7 @@ public class PublisherImplTest {
     } catch (ExecutionException e) {
       assertEquals(SequentialExecutorService.CallbackExecutor.CANCELLATION_EXCEPTION, e.getCause());
     }
+    System.out.println("Ending testPublishThrowExceptionForUnsubmittedOrderingKeyMessage");
   }
 
   private ApiFuture<String> sendTestMessageWithOrderingKey(
