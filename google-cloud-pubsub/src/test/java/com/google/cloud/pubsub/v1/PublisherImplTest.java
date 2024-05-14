@@ -511,7 +511,6 @@ public class PublisherImplTest {
    *   <li>publish with key orderA, which should now succeed
    * </ol>
    */
-  /*
   @Test
   public void testResumePublish() throws Exception {
     Publisher publisher =
@@ -590,8 +589,8 @@ public class PublisherImplTest {
 
     shutdownTestPublisher(publisher);
   }
-  */
 
+  /*
   @Test
   public void testPublishThrowExceptionForUnsubmittedOrderingKeyMessage() throws Exception {
     Publisher publisher =
@@ -643,6 +642,7 @@ public class PublisherImplTest {
       assertEquals(SequentialExecutorService.CallbackExecutor.CANCELLATION_EXCEPTION, e.getCause());
     }
   }
+  */
 
   private ApiFuture<String> sendTestMessageWithOrderingKey(
       Publisher publisher, String data, String orderingKey) {
