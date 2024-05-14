@@ -630,7 +630,7 @@ public class PublisherImplTest {
     } catch (ExecutionException e) {
       assertEquals(SequentialExecutorService.CallbackExecutor.CANCELLATION_EXCEPTION, e.getCause());
     }
-    fakeExecutor.advanceTime(Duration.ZERO);
+    fakeExecutor.advanceTime(Duration.ofSeconds(5));
 
     // A subsequent attempt fails immediately.
     ApiFuture<String> publishFuture4 = sendTestMessageWithOrderingKey(publisher, "D", "a");
