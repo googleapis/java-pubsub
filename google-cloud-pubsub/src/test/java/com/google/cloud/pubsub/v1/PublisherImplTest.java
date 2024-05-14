@@ -583,7 +583,7 @@ public class PublisherImplTest {
 
     testPublisherServiceImpl.addPublishResponse(
         PublishResponse.newBuilder().addMessageIds("7").addMessageIds("8"));
-    
+
     assertEquals("7", future7.get());
     assertEquals("8", future8.get());
 
