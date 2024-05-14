@@ -513,7 +513,7 @@ public class PublisherImplTest {
    */
   @Test
   public void testResumePublish() throws Exception {
-    System.out.println("Starting testResumePublish");
+    // System.out.println("Starting testResumePublish");
     Publisher publisher =
         getTestPublisherBuilder()
             .setBatchingSettings(
