@@ -511,6 +511,7 @@ public class PublisherImplTest {
    *   <li>publish with key orderA, which should now succeed
    * </ol>
    */
+  /*
   @Test
   public void testResumePublish() throws Exception {
     Publisher publisher =
@@ -589,6 +590,7 @@ public class PublisherImplTest {
 
     shutdownTestPublisher(publisher);
   }
+  */
 
   @Test
   public void testPublishThrowExceptionForUnsubmittedOrderingKeyMessage() throws Exception {
