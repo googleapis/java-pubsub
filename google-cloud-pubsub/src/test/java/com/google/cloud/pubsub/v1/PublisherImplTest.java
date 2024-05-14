@@ -587,7 +587,7 @@ public class PublisherImplTest {
     // Resume publishing of "orderA", which should now succeed
     publisher.resumePublish("orderA");
 
-    System.out.println("Resume publishing of orderA");
+    // System.out.println("Resume publishing of orderA");
 
     ApiFuture<String> future7 = sendTestMessageWithOrderingKey(publisher, "m7", "orderA");
     ApiFuture<String> future8 = sendTestMessageWithOrderingKey(publisher, "m8", "orderA");
@@ -595,7 +595,7 @@ public class PublisherImplTest {
     testPublisherServiceImpl.addPublishResponse(
         PublishResponse.newBuilder().addMessageIds("7").addMessageIds("8"));
     
-    System.out.println("Publish of 7 and 8");
+    // System.out.println("Publish of 7 and 8");
 
     assertEquals("7", future7.get());
     assertEquals("8", future8.get());
