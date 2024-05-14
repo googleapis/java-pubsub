@@ -582,7 +582,7 @@ public class PublisherImplTest {
     assertEquals("5", future5.get());
     assertEquals("6", future6.get());
 
-    System.out.println("Publish and receive 5 and 6");
+    // System.out.println("Publish and receive 5 and 6");
 
     // Resume publishing of "orderA", which should now succeed
     publisher.resumePublish("orderA");
@@ -600,7 +600,7 @@ public class PublisherImplTest {
     assertEquals("7", future7.get());
     assertEquals("8", future8.get());
 
-    System.out.println("Receive 7 and 8");
+    // System.out.println("Receive 7 and 8");
 
     shutdownTestPublisher(publisher);
     System.out.println("Ending testResumePublish");
