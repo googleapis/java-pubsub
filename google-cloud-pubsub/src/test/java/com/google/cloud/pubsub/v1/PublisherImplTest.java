@@ -531,7 +531,7 @@ public class PublisherImplTest {
     assertFalse(future1.isDone());
     assertFalse(future2.isDone());
 
-    System.out.println("Publish 1 and 2");
+    // System.out.println("Publish 1 and 2");
 
     // This exception should stop future publishing to the same key
     testPublisherServiceImpl.addPublishError(new StatusException(Status.INVALID_ARGUMENT));
@@ -542,14 +542,14 @@ public class PublisherImplTest {
       future1.get();
       fail("This should fail.");
     } catch (ExecutionException e) {
-      System.out.println("Message 1 failed");
+      // System.out.println("Message 1 failed");
     }
 
     try {
       future2.get();
       fail("This should fail.");
     } catch (ExecutionException e) {
-      System.out.println("Message 2 failed");
+      // System.out.println("Message 2 failed");
     }
 
     // Submit new requests with orderA that should fail.
@@ -561,7 +561,7 @@ public class PublisherImplTest {
       fail("This should fail.");
     } catch (ExecutionException e) {
       assertEquals(SequentialExecutorService.CallbackExecutor.CANCELLATION_EXCEPTION, e.getCause());
-      System.out.println("Message 3 failed");
+      // System.out.println("Message 3 failed");
     }
 
     try {
@@ -569,7 +569,7 @@ public class PublisherImplTest {
       fail("This should fail.");
     } catch (ExecutionException e) {
       assertEquals(SequentialExecutorService.CallbackExecutor.CANCELLATION_EXCEPTION, e.getCause());
-      System.out.println("Message 4 failed");
+      // System.out.println("Message 4 failed");
     }
 
     // Submit a new request with orderB, which should succeed
