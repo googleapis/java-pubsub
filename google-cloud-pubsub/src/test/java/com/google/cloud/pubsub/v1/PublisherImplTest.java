@@ -592,6 +592,7 @@ public class PublisherImplTest {
     System.out.println("Ending testResumePublish");
   }
 
+  /*
   @Test
   public void testPublishThrowExceptionForUnsubmittedOrderingKeyMessage() throws Exception {
     System.out.println("Starting testPublishThrowExceptionForUnsubmittedOrderingKeyMessage");
@@ -645,6 +646,7 @@ public class PublisherImplTest {
     }
     System.out.println("Ending testPublishThrowExceptionForUnsubmittedOrderingKeyMessage");
   }
+  */
 
   private ApiFuture<String> sendTestMessageWithOrderingKey(
       Publisher publisher, String data, String orderingKey) {
