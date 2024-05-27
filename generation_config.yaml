@@ -30,4 +30,4 @@ ibraries:
     requires_billing: true
     recommended_package: "com.google.cloud.pubsub.v1"
     GAPICs:
-    - proto_path: google/pubsub/v1
+      - proto_path: google/pubsub/v1
