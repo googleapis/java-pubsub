@@ -1,6 +1,6 @@
 gapic_generator_version: 2.40.1
 protoc_version: '25.2'
-googleapis_commitish: 6f289d775912966eb0cf04bda91e5e355c998d30
+googleapis_committish: 3597f7db2191c00b100400991ef96e52d62f5841
 libraries_bom_version: 26.38.0
 template_excludes:
   - ".github/workflows/samples.yaml"
