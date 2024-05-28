@@ -11,7 +11,7 @@ template_excludes:
   - '.kokoro/requirements.txt'
   - '.kokoro/presubmit/graalvm-native.cfg'
   - '.kokoro/presubmit/graalvm-native-17.cfg'
-ibraries:
+libraries:
   - api_shortname: "pubsub"
     name_pretty: "Cloud Pub/Sub"
     api_reference: "https://cloud.google.com/pubsub/"
