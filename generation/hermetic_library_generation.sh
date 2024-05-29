@@ -103,8 +103,8 @@ if [[ $(basename $(pwd)) == "google-cloud-java" ]]; then
   git add java-* pom.xml gapic-libraries-bom/pom.xml versions.txt
 else
   # The image leaves intermediate folders and files it works with. Here we remove them
-  rm -rdf output googleapis baseline_generation_config.yaml pr_description.txt
-  git add .
+  rm -rdf output googleapis "${baseline_generation_config}"
+  git add --all -- ':!pr_description.txt'
 fi
 changed_files=$(git diff --cached --name-only)
 if [[ "${changed_files}" == "" ]]; then
