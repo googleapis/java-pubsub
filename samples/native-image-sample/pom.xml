@@ -30,7 +30,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
       <dependency>
         <groupId>com.google.cloud</groupId>
         <artifactId>libraries-bom</artifactId>
-        <version>26.39.0</version>
+        <version>26.40.0</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -113,7 +113,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
         <dependency>
           <groupId>org.graalvm.buildtools</groupId>
           <artifactId>junit-platform-native</artifactId>
-          <version>0.10.1</version>
+          <version>0.10.2</version>
           <scope>test</scope>
         </dependency>
       </dependencies>
@@ -134,7 +134,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
           <plugin>
             <groupId>org.graalvm.buildtools</groupId>
             <artifactId>native-maven-plugin</artifactId>
-            <version>0.10.1</version>
+            <version>0.10.2</version>
             <extensions>true</extensions>
             <configuration>
               <mainClass>pubsub.NativeImagePubSubSample
