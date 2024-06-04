@@ -42,7 +42,6 @@ public final class CloudStorageConfig extends com.google.protobuf.GeneratedMessa
     bucket_ = "";
     filenamePrefix_ = "";
     filenameSuffix_ = "";
-    filenameDatetimeFormat_ = "";
     state_ = 0;
     serviceAccountEmail_ = "";
   }
@@ -1615,61 +1614,6 @@ public final class CloudStorageConfig extends com.google.protobuf.GeneratedMessa
     }
   }
 
-  public static final int FILENAME_DATETIME_FORMAT_FIELD_NUMBER = 10;
-
-  @SuppressWarnings("serial")
-  private volatile java.lang.Object filenameDatetimeFormat_ = "";
-  /**
-   *
-   *
-   * <pre>
-   * Optional. User-provided format string specifying how to represent datetimes
-   * in Cloud Storage filenames. See the [datetime format
-   * guidance](https://cloud.google.com/pubsub/docs/create-cloudstorage-subscription#file_names).
-   * </pre>
-   *
-   * <code>string filename_datetime_format = 10 [(.google.api.field_behavior) = OPTIONAL];</code>
-   *
-   * @return The filenameDatetimeFormat.
-   */
-  @java.lang.Override
-  public java.lang.String getFilenameDatetimeFormat() {
-    java.lang.Object ref = filenameDatetimeFormat_;
-    if (ref instanceof java.lang.String) {
-      return (java.lang.String) ref;
-    } else {
-      com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
-      java.lang.String s = bs.toStringUtf8();
-      filenameDatetimeFormat_ = s;
-      return s;
-    }
-  }
-  /**
-   *
-   *
-   * <pre>
-   * Optional. User-provided format string specifying how to represent datetimes
-   * in Cloud Storage filenames. See the [datetime format
-   * guidance](https://cloud.google.com/pubsub/docs/create-cloudstorage-subscription#file_names).
-   * </pre>
-   *
-   * <code>string filename_datetime_format = 10 [(.google.api.field_behavior) = OPTIONAL];</code>
-   *
-   * @return The bytes for filenameDatetimeFormat.
-   */
-  @java.lang.Override
-  public com.google.protobuf.ByteString getFilenameDatetimeFormatBytes() {
-    java.lang.Object ref = filenameDatetimeFormat_;
-    if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b =
-          com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
-      filenameDatetimeFormat_ = b;
-      return b;
-    } else {
-      return (com.google.protobuf.ByteString) ref;
-    }
-  }
-
   public static final int TEXT_CONFIG_FIELD_NUMBER = 4;
   /**
    *
@@ -2005,12 +1949,6 @@ public final class CloudStorageConfig extends com.google.protobuf.GeneratedMessa
     if (state_ != com.google.pubsub.v1.CloudStorageConfig.State.STATE_UNSPECIFIED.getNumber()) {
       output.writeEnum(9, state_);
     }
-    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(filenameDatetimeFormat_)) {
-      com.google.protobuf.GeneratedMessageV3.writeString(output, 10, filenameDatetimeFormat_);
-    }
-    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(serviceAccountEmail_)) {
-      com.google.protobuf.GeneratedMessageV3.writeString(output, 11, serviceAccountEmail_);
-    }
     getUnknownFields().writeTo(output);
   }
 
@@ -2048,12 +1986,6 @@ public final class CloudStorageConfig extends com.google.protobuf.GeneratedMessa
     if (state_ != com.google.pubsub.v1.CloudStorageConfig.State.STATE_UNSPECIFIED.getNumber()) {
       size += com.google.protobuf.CodedOutputStream.computeEnumSize(9, state_);
     }
-    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(filenameDatetimeFormat_)) {
-      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(10, filenameDatetimeFormat_);
-    }
-    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(serviceAccountEmail_)) {
-      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(11, serviceAccountEmail_);
-    }
     size += getUnknownFields().getSerializedSize();
     memoizedSize = size;
     return size;
@@ -2072,7 +2004,6 @@ public final class CloudStorageConfig extends com.google.protobuf.GeneratedMessa
     if (!getBucket().equals(other.getBucket())) return false;
     if (!getFilenamePrefix().equals(other.getFilenamePrefix())) return false;
     if (!getFilenameSuffix().equals(other.getFilenameSuffix())) return false;
-    if (!getFilenameDatetimeFormat().equals(other.getFilenameDatetimeFormat())) return false;
     if (hasMaxDuration() != other.hasMaxDuration()) return false;
     if (hasMaxDuration()) {
       if (!getMaxDuration().equals(other.getMaxDuration())) return false;
@@ -2108,8 +2039,6 @@ public final class CloudStorageConfig extends com.google.protobuf.GeneratedMessa
     hash = (53 * hash) + getFilenamePrefix().hashCode();
     hash = (37 * hash) + FILENAME_SUFFIX_FIELD_NUMBER;
     hash = (53 * hash) + getFilenameSuffix().hashCode();
-    hash = (37 * hash) + FILENAME_DATETIME_FORMAT_FIELD_NUMBER;
-    hash = (53 * hash) + getFilenameDatetimeFormat().hashCode();
     if (hasMaxDuration()) {
       hash = (37 * hash) + MAX_DURATION_FIELD_NUMBER;
       hash = (53 * hash) + getMaxDuration().hashCode();
@@ -2283,7 +2212,6 @@ public final class CloudStorageConfig extends com.google.protobuf.GeneratedMessa
       bucket_ = "";
       filenamePrefix_ = "";
       filenameSuffix_ = "";
-      filenameDatetimeFormat_ = "";
       if (textConfigBuilder_ != null) {
         textConfigBuilder_.clear();
       }
@@ -2346,19 +2274,16 @@ public final class CloudStorageConfig extends com.google.protobuf.GeneratedMessa
       if (((from_bitField0_ & 0x00000004) != 0)) {
         result.filenameSuffix_ = filenameSuffix_;
       }
-      if (((from_bitField0_ & 0x00000008) != 0)) {
-        result.filenameDatetimeFormat_ = filenameDatetimeFormat_;
-      }
       int to_bitField0_ = 0;
-      if (((from_bitField0_ & 0x00000040) != 0)) {
+      if (((from_bitField0_ & 0x00000020) != 0)) {
         result.maxDuration_ =
             maxDurationBuilder_ == null ? maxDuration_ : maxDurationBuilder_.build();
         to_bitField0_ |= 0x00000001;
       }
-      if (((from_bitField0_ & 0x00000080) != 0)) {
+      if (((from_bitField0_ & 0x00000040) != 0)) {
         result.maxBytes_ = maxBytes_;
       }
-      if (((from_bitField0_ & 0x00000100) != 0)) {
+      if (((from_bitField0_ & 0x00000080) != 0)) {
         result.state_ = state_;
       }
       if (((from_bitField0_ & 0x00000200) != 0)) {
@@ -2436,11 +2361,6 @@ public final class CloudStorageConfig extends com.google.protobuf.GeneratedMessa
       if (!other.getFilenameSuffix().isEmpty()) {
         filenameSuffix_ = other.filenameSuffix_;
         bitField0_ |= 0x00000004;
-        onChanged();
-      }
-      if (!other.getFilenameDatetimeFormat().isEmpty()) {
-        filenameDatetimeFormat_ = other.filenameDatetimeFormat_;
-        bitField0_ |= 0x00000008;
         onChanged();
       }
       if (other.hasMaxDuration()) {
@@ -2532,33 +2452,21 @@ public final class CloudStorageConfig extends com.google.protobuf.GeneratedMessa
             case 50:
               {
                 input.readMessage(getMaxDurationFieldBuilder().getBuilder(), extensionRegistry);
-                bitField0_ |= 0x00000040;
+                bitField0_ |= 0x00000020;
                 break;
               } // case 50
             case 56:
               {
                 maxBytes_ = input.readInt64();
-                bitField0_ |= 0x00000080;
+                bitField0_ |= 0x00000040;
                 break;
               } // case 56
             case 72:
               {
                 state_ = input.readEnum();
-                bitField0_ |= 0x00000100;
+                bitField0_ |= 0x00000080;
                 break;
               } // case 72
-            case 82:
-              {
-                filenameDatetimeFormat_ = input.readStringRequireUtf8();
-                bitField0_ |= 0x00000008;
-                break;
-              } // case 82
-            case 90:
-              {
-                serviceAccountEmail_ = input.readStringRequireUtf8();
-                bitField0_ |= 0x00000200;
-                break;
-              } // case 90
             default:
               {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
@@ -2936,122 +2844,6 @@ public final class CloudStorageConfig extends com.google.protobuf.GeneratedMessa
       checkByteStringIsUtf8(value);
       filenameSuffix_ = value;
       bitField0_ |= 0x00000004;
-      onChanged();
-      return this;
-    }
-
-    private java.lang.Object filenameDatetimeFormat_ = "";
-    /**
-     *
-     *
-     * <pre>
-     * Optional. User-provided format string specifying how to represent datetimes
-     * in Cloud Storage filenames. See the [datetime format
-     * guidance](https://cloud.google.com/pubsub/docs/create-cloudstorage-subscription#file_names).
-     * </pre>
-     *
-     * <code>string filename_datetime_format = 10 [(.google.api.field_behavior) = OPTIONAL];</code>
-     *
-     * @return The filenameDatetimeFormat.
-     */
-    public java.lang.String getFilenameDatetimeFormat() {
-      java.lang.Object ref = filenameDatetimeFormat_;
-      if (!(ref instanceof java.lang.String)) {
-        com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        filenameDatetimeFormat_ = s;
-        return s;
-      } else {
-        return (java.lang.String) ref;
-      }
-    }
-    /**
-     *
-     *
-     * <pre>
-     * Optional. User-provided format string specifying how to represent datetimes
-     * in Cloud Storage filenames. See the [datetime format
-     * guidance](https://cloud.google.com/pubsub/docs/create-cloudstorage-subscription#file_names).
-     * </pre>
-     *
-     * <code>string filename_datetime_format = 10 [(.google.api.field_behavior) = OPTIONAL];</code>
-     *
-     * @return The bytes for filenameDatetimeFormat.
-     */
-    public com.google.protobuf.ByteString getFilenameDatetimeFormatBytes() {
-      java.lang.Object ref = filenameDatetimeFormat_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b =
-            com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
-        filenameDatetimeFormat_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-    /**
-     *
-     *
-     * <pre>
-     * Optional. User-provided format string specifying how to represent datetimes
-     * in Cloud Storage filenames. See the [datetime format
-     * guidance](https://cloud.google.com/pubsub/docs/create-cloudstorage-subscription#file_names).
-     * </pre>
-     *
-     * <code>string filename_datetime_format = 10 [(.google.api.field_behavior) = OPTIONAL];</code>
-     *
-     * @param value The filenameDatetimeFormat to set.
-     * @return This builder for chaining.
-     */
-    public Builder setFilenameDatetimeFormat(java.lang.String value) {
-      if (value == null) {
-        throw new NullPointerException();
-      }
-      filenameDatetimeFormat_ = value;
-      bitField0_ |= 0x00000008;
-      onChanged();
-      return this;
-    }
-    /**
-     *
-     *
-     * <pre>
-     * Optional. User-provided format string specifying how to represent datetimes
-     * in Cloud Storage filenames. See the [datetime format
-     * guidance](https://cloud.google.com/pubsub/docs/create-cloudstorage-subscription#file_names).
-     * </pre>
-     *
-     * <code>string filename_datetime_format = 10 [(.google.api.field_behavior) = OPTIONAL];</code>
-     *
-     * @return This builder for chaining.
-     */
-    public Builder clearFilenameDatetimeFormat() {
-      filenameDatetimeFormat_ = getDefaultInstance().getFilenameDatetimeFormat();
-      bitField0_ = (bitField0_ & ~0x00000008);
-      onChanged();
-      return this;
-    }
-    /**
-     *
-     *
-     * <pre>
-     * Optional. User-provided format string specifying how to represent datetimes
-     * in Cloud Storage filenames. See the [datetime format
-     * guidance](https://cloud.google.com/pubsub/docs/create-cloudstorage-subscription#file_names).
-     * </pre>
-     *
-     * <code>string filename_datetime_format = 10 [(.google.api.field_behavior) = OPTIONAL];</code>
-     *
-     * @param value The bytes for filenameDatetimeFormat to set.
-     * @return This builder for chaining.
-     */
-    public Builder setFilenameDatetimeFormatBytes(com.google.protobuf.ByteString value) {
-      if (value == null) {
-        throw new NullPointerException();
-      }
-      checkByteStringIsUtf8(value);
-      filenameDatetimeFormat_ = value;
-      bitField0_ |= 0x00000008;
       onChanged();
       return this;
     }
@@ -3551,7 +3343,7 @@ public final class CloudStorageConfig extends com.google.protobuf.GeneratedMessa
      * @return Whether the maxDuration field is set.
      */
     public boolean hasMaxDuration() {
-      return ((bitField0_ & 0x00000040) != 0);
+      return ((bitField0_ & 0x00000020) != 0);
     }
     /**
      *
@@ -3597,7 +3389,7 @@ public final class CloudStorageConfig extends com.google.protobuf.GeneratedMessa
       } else {
         maxDurationBuilder_.setMessage(value);
       }
-      bitField0_ |= 0x00000040;
+      bitField0_ |= 0x00000020;
       onChanged();
       return this;
     }
@@ -3619,7 +3411,7 @@ public final class CloudStorageConfig extends com.google.protobuf.GeneratedMessa
       } else {
         maxDurationBuilder_.setMessage(builderForValue.build());
       }
-      bitField0_ |= 0x00000040;
+      bitField0_ |= 0x00000020;
       onChanged();
       return this;
     }
@@ -3637,7 +3429,7 @@ public final class CloudStorageConfig extends com.google.protobuf.GeneratedMessa
      */
     public Builder mergeMaxDuration(com.google.protobuf.Duration value) {
       if (maxDurationBuilder_ == null) {
-        if (((bitField0_ & 0x00000040) != 0)
+        if (((bitField0_ & 0x00000020) != 0)
             && maxDuration_ != null
             && maxDuration_ != com.google.protobuf.Duration.getDefaultInstance()) {
           getMaxDurationBuilder().mergeFrom(value);
@@ -3648,7 +3440,7 @@ public final class CloudStorageConfig extends com.google.protobuf.GeneratedMessa
         maxDurationBuilder_.mergeFrom(value);
       }
       if (maxDuration_ != null) {
-        bitField0_ |= 0x00000040;
+        bitField0_ |= 0x00000020;
         onChanged();
       }
       return this;
@@ -3666,7 +3458,7 @@ public final class CloudStorageConfig extends com.google.protobuf.GeneratedMessa
      * </code>
      */
     public Builder clearMaxDuration() {
-      bitField0_ = (bitField0_ & ~0x00000040);
+      bitField0_ = (bitField0_ & ~0x00000020);
       maxDuration_ = null;
       if (maxDurationBuilder_ != null) {
         maxDurationBuilder_.dispose();
@@ -3688,7 +3480,7 @@ public final class CloudStorageConfig extends com.google.protobuf.GeneratedMessa
      * </code>
      */
     public com.google.protobuf.Duration.Builder getMaxDurationBuilder() {
-      bitField0_ |= 0x00000040;
+      bitField0_ |= 0x00000020;
       onChanged();
       return getMaxDurationFieldBuilder().getBuilder();
     }
@@ -3777,7 +3569,7 @@ public final class CloudStorageConfig extends com.google.protobuf.GeneratedMessa
     public Builder setMaxBytes(long value) {
 
       maxBytes_ = value;
-      bitField0_ |= 0x00000080;
+      bitField0_ |= 0x00000040;
       onChanged();
       return this;
     }
@@ -3795,7 +3587,7 @@ public final class CloudStorageConfig extends com.google.protobuf.GeneratedMessa
      * @return This builder for chaining.
      */
     public Builder clearMaxBytes() {
-      bitField0_ = (bitField0_ & ~0x00000080);
+      bitField0_ = (bitField0_ & ~0x00000040);
       maxBytes_ = 0L;
       onChanged();
       return this;
@@ -3837,7 +3629,7 @@ public final class CloudStorageConfig extends com.google.protobuf.GeneratedMessa
      */
     public Builder setStateValue(int value) {
       state_ = value;
-      bitField0_ |= 0x00000100;
+      bitField0_ |= 0x00000080;
       onChanged();
       return this;
     }
@@ -3880,7 +3672,7 @@ public final class CloudStorageConfig extends com.google.protobuf.GeneratedMessa
       if (value == null) {
         throw new NullPointerException();
       }
-      bitField0_ |= 0x00000100;
+      bitField0_ |= 0x00000080;
       state_ = value.getNumber();
       onChanged();
       return this;
@@ -3900,7 +3692,7 @@ public final class CloudStorageConfig extends com.google.protobuf.GeneratedMessa
      * @return This builder for chaining.
      */
     public Builder clearState() {
-      bitField0_ = (bitField0_ & ~0x00000100);
+      bitField0_ = (bitField0_ & ~0x00000080);
       state_ = 0;
       onChanged();
       return this;
