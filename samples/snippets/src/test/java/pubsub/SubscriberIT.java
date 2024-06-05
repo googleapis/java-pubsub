@@ -253,7 +253,10 @@ public class SubscriberIT {
   @Test
   public void testOptimisticSubscriber() throws Exception {
     bout.reset();
-    OptimisticSubscribeExample.optimisticSubscribeExample(projectId, subscriptionOptimisticId, topicId);
-    assertThat(bout.toString().contains("Created pull subscription: " + subscriptionOptimisticName.toString()));
+    OptimisticSubscribeExample.optimisticSubscribeExample(
+        projectId, subscriptionOptimisticId, topicId);
+    assertThat(
+        bout.toString()
+            .contains("Created pull subscription: " + subscriptionOptimisticName.toString()));
   }
 }
