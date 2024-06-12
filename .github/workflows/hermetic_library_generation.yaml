@@ -33,7 +33,6 @@ jobs:
         [ -z "$(git config user.name)" ] && git config --global user.name "cloud-java-bot"
         bash generation/hermetic_library_generation.sh \
           --target_branch ${{ github.base_ref }} \
-          --current_branch ${{ github.head_ref }} \
-          --image_tag $(cat generation_config.yaml | yq .gapic_generator_version)
+          --current_branch ${{ github.head_ref }}
       env:
         GH_TOKEN: ${{ secrets.CLOUD_JAVA_BOT_TOKEN }}
