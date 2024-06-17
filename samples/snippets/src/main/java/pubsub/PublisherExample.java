@@ -28,23 +28,43 @@ import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
+import io.opentelemetry.exporter.logging.LoggingSpanExporter;
+import io.opentelemetry.api.OpenTelemetry;
+import io.opentelemetry.sdk.OpenTelemetrySdk;
+import io.opentelemetry.sdk.resources.Resource;
+import io.opentelemetry.sdk.trace.SdkTracerProvider;
+import io.opentelemetry.sdk.trace.export.SimpleSpanProcessor;
+import io.opentelemetry.sdk.logs.SdkLoggerProvider;
+import io.opentelemetry.semconv.ResourceAttributes;
+
 public class PublisherExample {
   public static void main(String... args) throws Exception {
     // TODO(developer): Replace these variables before running the sample.
-    String projectId = "your-project-id";
-    String topicId = "your-topic-id";
+    String projectId = "cloud-pubsub-experiments";
+    String topicId = "mike-topic-test";
 
     publisherExample(projectId, topicId);
   }
 
   public static void publisherExample(String projectId, String topicId)
       throws IOException, ExecutionException, InterruptedException {
+    Resource resource = Resource.getDefault().toBuilder()
+      .put(ResourceAttributes.SERVICE_NAME, "publisher-example").build();
+    SdkTracerProvider sdkTracerProvider = SdkTracerProvider.builder()
+      .setResource(resource)
+      .addSpanProcessor(SimpleSpanProcessor.create(LoggingSpanExporter.create()))
+      .build();
+
+    OpenTelemetry openTelemetry = OpenTelemetrySdk.builder()
+      .setTracerProvider(sdkTracerProvider)
+      .buildAndRegisterGlobal();
+
     TopicName topicName = TopicName.of(projectId, topicId);
 
     Publisher publisher = null;
     try {
       // Create a publisher instance with default settings bound to the topic
-      publisher = Publisher.newBuilder(topicName).build();
+      publisher = Publisher.newBuilder(topicName).setOpenTelemetry(openTelemetry).build();
 
       String message = "Hello World!";
       ByteString data = ByteString.copyFromUtf8(message);
