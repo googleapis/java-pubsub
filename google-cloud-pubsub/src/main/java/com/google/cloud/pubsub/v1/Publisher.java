@@ -55,6 +55,10 @@ import io.grpc.CallOptions;
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.Tracer;
+import io.opentelemetry.api.trace.propagation.W3CTraceContextPropagator;
+import io.opentelemetry.context.propagation.ContextPropagators;
+import io.opentelemetry.context.propagation.TextMapPropagator;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -129,6 +133,9 @@ public class Publisher implements PublisherInterface {
   private final GrpcCallContext publishContext;
   private final GrpcCallContext publishContextWithCompression;
 
+  private final boolean enableOpenTelemetryTracing;
+  private final OpenTelemetry openTelemetry;
+  private TextMapPropagator propagator;
   private Tracer tracer = null;
 
   /** The maximum number of messages in one request. Defined by the API. */
@@ -159,7 +166,10 @@ public class Publisher implements PublisherInterface {
     this.messageTransform = builder.messageTransform;
     this.enableCompression = builder.enableCompression;
     this.compressionBytesThreshold = builder.compressionBytesThreshold;
-    if (builder.openTelemetry != null) {
+    this.enableOpenTelemetryTracing = builder.enableOpenTelemetryTracing;
+    this.openTelemetry = builder.openTelemetry;
+    if (this.openTelemetry != null) {
+      this.propagator = W3CTraceContextPropagator.getInstance();
       this.tracer = builder.openTelemetry.getTracer(OPEN_TELEMETRY_TRACER_NAME);
     }
 
@@ -269,9 +279,10 @@ public class Publisher implements PublisherInterface {
             + "Publisher client. Please create a Publisher client with "
             + "setEnableMessageOrdering(true) in the builder.");
 
-    PubsubMessageWrapper messageWrapper = PubsubMessageWrapper.newBuilder(messageTransform.apply(message), topicName)
+    PubsubMessageWrapper messageWrapper = PubsubMessageWrapper
+        .newBuilder(messageTransform.apply(message), topicName, enableOpenTelemetryTracing)
         .build();
-    messageWrapper.startPublisherSpan(tracer);
+    messageWrapper.startPublisherSpan(tracer, propagator);
 
     final OutstandingPublish outstandingPublish = new OutstandingPublish(messageWrapper);
 
@@ -475,10 +486,11 @@ public class Publisher implements PublisherInterface {
     List<PubsubMessageWrapper> messageWrappers = outstandingBatch.getMessageWrappers();
     for (PubsubMessageWrapper messageWrapper : messageWrappers) {
       messageWrapper.endPublishBatchingSpan();
+      messageWrapper.addPublishStartEvent();
       pubsubMessagesList.add(messageWrapper.getPubsubMessage());
     }
 
-    outstandingBatch.publishRpcSpan = OpenTelemetryUtil.startPublishRpcSpan(tracer, TopicName.parse(topicName), messageWrappers);
+    outstandingBatch.publishRpcSpan = OpenTelemetryUtil.startPublishRpcSpan(tracer, TopicName.parse(topicName), messageWrappers, enableOpenTelemetryTracing);
 
     return publisherStub
         .publishCallable()
@@ -598,11 +610,14 @@ public class Publisher implements PublisherInterface {
           flowController.release(outstandingPublish.messageSize);
         }
         outstandingPublish.publishResult.setException(t);
+        outstandingPublish.messageWrapper.endPublisherSpan();
       }
-      OpenTelemetryUtil.setPublishRpcSpanException(publishRpcSpan, t);
+      OpenTelemetryUtil.setPublishRpcSpanException(publishRpcSpan, t, enableOpenTelemetryTracing);
     }
 
     private void onSuccess(Iterable<String> results) {
+      OpenTelemetryUtil.endPublishRpcSpan(publishRpcSpan, enableOpenTelemetryTracing);
+
       Iterator<OutstandingPublish> messagesResultsIt = outstandingPublishes.iterator();
       for (String messageId : results) {
         OutstandingPublish nextPublish = messagesResultsIt.next();
@@ -610,9 +625,9 @@ public class Publisher implements PublisherInterface {
           flowController.release(nextPublish.messageSize);
         }
         nextPublish.publishResult.set(messageId);
+        nextPublish.messageWrapper.setMessageIdSpanAttribute(messageId);
         nextPublish.messageWrapper.endPublisherSpan();
       }
-      OpenTelemetryUtil.endPublishRpcSpan(publishRpcSpan);
     }
   }
 
@@ -781,6 +796,7 @@ public class Publisher implements PublisherInterface {
     private boolean enableCompression = DEFAULT_ENABLE_COMPRESSION;
     private long compressionBytesThreshold = DEFAULT_COMPRESSION_BYTES_THRESHOLD;
 
+    private boolean enableOpenTelemetryTracing = false;
     private OpenTelemetry openTelemetry = null;
 
     private Builder(String topic) {
@@ -911,6 +927,11 @@ public class Publisher implements PublisherInterface {
      */
     public Builder setCompressionBytesThreshold(long compressionBytesThreshold) {
       this.compressionBytesThreshold = compressionBytesThreshold;
+      return this;
+    }
+
+    public Builder setEnableOpenTelemetryTracing(boolean enableOpenTelemetryTracing) {
+      this.enableOpenTelemetryTracing = enableOpenTelemetryTracing;
       return this;
     }
 

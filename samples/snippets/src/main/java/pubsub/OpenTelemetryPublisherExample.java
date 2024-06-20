@@ -1,0 +1,99 @@
+/*
+ * Copyright 2016 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package pubsub;
+
+import com.google.api.core.ApiFuture;
+import com.google.cloud.pubsub.v1.Publisher;
+import com.google.protobuf.ByteString;
+import com.google.pubsub.v1.PubsubMessage;
+import com.google.pubsub.v1.TopicName;
+import java.io.IOException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+
+import com.google.cloud.opentelemetry.trace.TraceConfiguration;
+import com.google.cloud.opentelemetry.trace.TraceExporter;
+import io.opentelemetry.exporter.logging.LoggingSpanExporter;
+import io.opentelemetry.api.OpenTelemetry;
+import io.opentelemetry.sdk.OpenTelemetrySdk;
+import io.opentelemetry.sdk.resources.Resource;
+import io.opentelemetry.sdk.trace.SdkTracerProvider;
+import io.opentelemetry.sdk.trace.samplers.Sampler;
+import io.opentelemetry.sdk.trace.export.SimpleSpanProcessor;
+import io.opentelemetry.sdk.trace.export.BatchSpanProcessor;
+import io.opentelemetry.sdk.logs.SdkLoggerProvider;
+import io.opentelemetry.semconv.ResourceAttributes;
+import io.opentelemetry.context.propagation.TextMapPropagator;
+import io.opentelemetry.api.trace.propagation.W3CTraceContextPropagator;
+import io.opentelemetry.context.propagation.ContextPropagators;
+
+public class OpenTelemetryPublisherExample {
+  public static void main(String... args) throws Exception {
+    // TODO(developer): Replace these variables before running the sample.
+    String projectId = "cloud-pubsub-experiments";
+    String topicId = "mike-topic-test";
+
+    openTelemetryPublisherExample(projectId, topicId);
+  }
+
+  public static void openTelemetryPublisherExample(String projectId, String topicId)
+      throws IOException, ExecutionException, InterruptedException {
+    Resource resource = Resource.getDefault().toBuilder()
+      .put(ResourceAttributes.SERVICE_NAME, "publisher-example").build();
+    
+    TraceExporter traceExporter = TraceExporter.createWithConfiguration(TraceConfiguration.builder().setProjectId(projectId).build());
+
+    SdkTracerProvider sdkTracerProvider = SdkTracerProvider.builder()
+      .setResource(resource)
+      // .addSpanProcessor(BatchSpanProcessor.builder(traceExporter).build())
+      .addSpanProcessor(SimpleSpanProcessor.create(traceExporter))
+      // .addSpanProcessor(SimpleSpanProcessor.create(LoggingSpanExporter.create()))
+      .setSampler(Sampler.alwaysOn())
+      .build();
+
+    OpenTelemetry openTelemetry = OpenTelemetrySdk.builder()
+      .setTracerProvider(sdkTracerProvider)
+      .setPropagators(ContextPropagators.create(TextMapPropagator.composite(W3CTraceContextPropagator.getInstance())))
+      .buildAndRegisterGlobal();
+
+    TopicName topicName = TopicName.of(projectId, topicId);
+
+    Publisher publisher = null;
+    try {
+      // Create a publisher instance with default settings bound to the topic
+      publisher = Publisher.newBuilder(topicName).setOpenTelemetry(openTelemetry).setEnableOpenTelemetryTracing(true).build();
+
+      for (int i = 0; i < 1; i++) {
+        String message = "Hello World!";
+        ByteString data = ByteString.copyFromUtf8(message);
+        PubsubMessage pubsubMessage = PubsubMessage.newBuilder().setData(data).build();
+
+        // Once published, returns a server-assigned message id (unique within the topic)
+        ApiFuture<String> messageIdFuture = publisher.publish(pubsubMessage);
+        System.out.println("Published message ID: " + messageIdFuture.get());
+      }
+    } finally {
+      if (publisher != null) {
+        // When finished with the publisher, shutdown to free up resources.
+        publisher.shutdown();
+        publisher.awaitTermination(1, TimeUnit.MINUTES);
+      }
+    }
+  }
+}
+// [END pubsub_quickstart_publisher]
+// [END pubsub_publish]
