@@ -127,7 +127,7 @@ public class OpenTelemetryTest {
         .containsEntry(SemanticAttributes.MESSAGING_DESTINATION_NAME, FULL_TOPIC_NAME.getTopic())
         .containsEntry(PROJECT_ATTR_KEY, FULL_TOPIC_NAME.getProject())
         .containsEntry(SemanticAttributes.CODE_FUNCTION, "Publisher.publishCall")
-        .containsEntry(SemanticAttributes.MESSAGING_OPERATION, "create")
+        .containsEntry(SemanticAttributes.MESSAGING_OPERATION, "publish")
         .containsEntry(SemanticAttributes.MESSAGING_BATCH_MESSAGE_COUNT, messageWrappers.size());
 
     // Check span data, events, links, and attributes for the publisher create span
