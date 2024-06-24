@@ -110,6 +110,11 @@
       <artifactId>opentelemetry-context</artifactId>
       <version>1.38.0</version>
     </dependency>
+    <dependency>
+      <groupId>io.opentelemetry</groupId>
+      <artifactId>opentelemetry-semconv</artifactId>
+      <version>1.25.0-alpha</version>
+    </dependency>
 
     <!-- Test dependencies -->
     <dependency>

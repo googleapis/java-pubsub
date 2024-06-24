@@ -34,6 +34,7 @@ import io.opentelemetry.sdk.testing.junit4.OpenTelemetryRule;
 import io.opentelemetry.sdk.trace.data.LinkData;
 import io.opentelemetry.sdk.trace.data.SpanData;
 import io.opentelemetry.sdk.trace.data.StatusData;
+import io.opentelemetry.semconv.trace.attributes.SemanticAttributes;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.Test;
@@ -52,14 +53,8 @@ public class OpenTelemetryTest {
   private static final String PUBLISH_START_EVENT = "publish start";
   private static final String PUBLISH_END_EVENT = "publish end";
 
-  private static final String SYSTEM_ATTR_KEY = "messaging.system";
-  private static final String SYSTEM_ATTR_VALUE = "gcp_pubsub";
-  private static final String DESTINATION_ATTR_KEY = "messaging.destination.name";
-  private static final String CODE_FUNCTION_ATTR_KEY = "code.function";
-  private static final String MESSAGE_BATCH_SIZE_ATTR_KEY = "messaging.batch.message_count";
-  private static final String OPERATION_ATTR_KEY = "messaging.operation";
+  private static final String MESSAGING_SYSTEM_VALUE = "gcp_pubsub";
   private static final String PROJECT_ATTR_KEY = "gcp_pubsub.project_id";
-  private static final String MESSAGE_ID_ATTR_KEY = "messaging.message.id";
   private static final String MESSAGE_SIZE_ATTR_KEY = "messaging.message.envelope.size";
   private static final String ORDERING_KEY_ATTR_KEY = "messaging.gcp_pubsub.message.ordering_key";
 
@@ -128,12 +123,12 @@ public class OpenTelemetryTest {
     AttributesAssert publishRpcSpanAttributesAssert =
         OpenTelemetryAssertions.assertThat(publishRpcSpanData.getAttributes());
     publishRpcSpanAttributesAssert
-        .containsEntry(SYSTEM_ATTR_KEY, SYSTEM_ATTR_VALUE)
-        .containsEntry(DESTINATION_ATTR_KEY, FULL_TOPIC_NAME.getTopic())
+        .containsEntry(SemanticAttributes.MESSAGING_SYSTEM, MESSAGING_SYSTEM_VALUE)
+        .containsEntry(SemanticAttributes.MESSAGING_DESTINATION_NAME, FULL_TOPIC_NAME.getTopic())
         .containsEntry(PROJECT_ATTR_KEY, FULL_TOPIC_NAME.getProject())
-        .containsEntry(CODE_FUNCTION_ATTR_KEY, "Publisher.publishCall")
-        .containsEntry(OPERATION_ATTR_KEY, "publish")
-        .containsEntry(MESSAGE_BATCH_SIZE_ATTR_KEY, messageWrappers.size());
+        .containsEntry(SemanticAttributes.CODE_FUNCTION, "Publisher.publishCall")
+        .containsEntry(SemanticAttributes.MESSAGING_OPERATION, "create")
+        .containsEntry(SemanticAttributes.MESSAGING_BATCH_MESSAGE_COUNT, messageWrappers.size());
 
     // Check span data, events, links, and attributes for the publisher create span
     SpanDataAssert publishSpanDataAssert = OpenTelemetryAssertions.assertThat(publisherSpanData);
@@ -159,14 +154,14 @@ public class OpenTelemetryTest {
     AttributesAssert publisherSpanAttributesAssert =
         OpenTelemetryAssertions.assertThat(publisherSpanData.getAttributes());
     publisherSpanAttributesAssert
-        .containsEntry(SYSTEM_ATTR_KEY, SYSTEM_ATTR_VALUE)
-        .containsEntry(DESTINATION_ATTR_KEY, FULL_TOPIC_NAME.getTopic())
+        .containsEntry(SemanticAttributes.MESSAGING_SYSTEM, MESSAGING_SYSTEM_VALUE)
+        .containsEntry(SemanticAttributes.MESSAGING_DESTINATION_NAME, FULL_TOPIC_NAME.getTopic())
         .containsEntry(PROJECT_ATTR_KEY, PROJECT_NAME)
-        .containsEntry(CODE_FUNCTION_ATTR_KEY, "Publisher.publish")
-        .containsEntry(OPERATION_ATTR_KEY, "create")
+        .containsEntry(SemanticAttributes.CODE_FUNCTION, "Publisher.publish")
+        .containsEntry(SemanticAttributes.MESSAGING_OPERATION, "create")
         .containsEntry(ORDERING_KEY_ATTR_KEY, ORDERING_KEY)
         .containsEntry(MESSAGE_SIZE_ATTR_KEY, messageSize)
-        .containsEntry(MESSAGE_ID_ATTR_KEY, MESSAGE_ID);
+        .containsEntry(SemanticAttributes.MESSAGING_MESSAGE_ID, MESSAGE_ID);
 
     // Check that the message has the attribute containing the trace context.
     PubsubMessage message = messageWrapper.getPubsubMessage();

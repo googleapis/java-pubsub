@@ -101,27 +101,6 @@
       <version>2.39.0</version>
       <classifier>tests</classifier>
     </dependency>
-    <dependency>
-      <groupId>io.opentelemetry</groupId>
-      <artifactId>opentelemetry-sdk</artifactId>
-      <version>1.39.0</version>
-    </dependency>
-    <dependency>
-      <groupId>io.opentelemetry</groupId>
-      <artifactId>opentelemetry-exporter-logging</artifactId>
-      <version>1.39.0</version>
-    </dependency>
-    <dependency>
-      <!-- Not managed by opentelemetry-bom -->
-      <groupId>io.opentelemetry.semconv</groupId>
-      <artifactId>opentelemetry-semconv</artifactId>
-      <version>1.25.0-alpha</version>
-    </dependency>
-    <dependency>
-      <groupId>com.google.cloud.opentelemetry</groupId>
-      <artifactId>exporter-trace</artifactId>
-      <version>0.15.0</version>
-    </dependency>
     <!-- [END_EXCLUDE] -->
   </dependencies>
   <!-- [END pubsub_install_with_bom] -->

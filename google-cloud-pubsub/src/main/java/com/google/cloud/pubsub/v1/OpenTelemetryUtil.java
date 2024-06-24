@@ -23,15 +23,11 @@ import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.SpanKind;
 import io.opentelemetry.api.trace.StatusCode;
 import io.opentelemetry.api.trace.Tracer;
+import io.opentelemetry.semconv.trace.attributes.SemanticAttributes;
 import java.util.List;
 
 public class OpenTelemetryUtil {
-  private static final String SYSTEM_ATTR_KEY = "messaging.system";
-  private static final String SYSTEM_ATTR_VALUE = "gcp_pubsub";
-  private static final String DESTINATION_ATTR_KEY = "messaging.destination.name";
-  private static final String CODE_FUNCTION_ATTR_KEY = "code.function";
-  private static final String MESSAGE_BATCH_SIZE_ATTR_KEY = "messaging.batch.message_count";
-  private static final String OPERATION_ATTR_KEY = "messaging.operation";
+  private static final String MESSAGING_SYSTEM_VALUE = "gcp_pubsub";
   private static final String PROJECT_ATTR_KEY = "gcp_pubsub.project_id";
 
   private static final String PUBLISH_RPC_SPAN_SUFFIX = " publish";
@@ -41,11 +37,11 @@ public class OpenTelemetryUtil {
       TopicName topicName, String codeFunction, String operation) {
     AttributesBuilder attributesBuilder =
         Attributes.builder()
-            .put(SYSTEM_ATTR_KEY, SYSTEM_ATTR_VALUE)
-            .put(DESTINATION_ATTR_KEY, topicName.getTopic())
+            .put(SemanticAttributes.MESSAGING_SYSTEM, MESSAGING_SYSTEM_VALUE)
+            .put(SemanticAttributes.MESSAGING_DESTINATION_NAME, topicName.getTopic())
             .put(PROJECT_ATTR_KEY, topicName.getProject())
-            .put(CODE_FUNCTION_ATTR_KEY, codeFunction)
-            .put(OPERATION_ATTR_KEY, operation);
+            .put(SemanticAttributes.CODE_FUNCTION, codeFunction)
+            .put(SemanticAttributes.MESSAGING_OPERATION, operation);
 
     return attributesBuilder;
   }
@@ -62,7 +58,7 @@ public class OpenTelemetryUtil {
     if (enableOpenTelemetryTracing && tracer != null) {
       Attributes attributes =
           createPublishSpanAttributesBuilder(topicName, "Publisher.publishCall", "publish")
-              .put(MESSAGE_BATCH_SIZE_ATTR_KEY, messages.size())
+              .put(SemanticAttributes.MESSAGING_BATCH_MESSAGE_COUNT, messages.size())
               .build();
       Span publishRpcSpan =
           tracer
@@ -72,7 +68,8 @@ public class OpenTelemetryUtil {
               .startSpan();
 
       for (PubsubMessageWrapper message : messages) {
-        Attributes linkAttributes = Attributes.builder().put(OPERATION_ATTR_KEY, "publish").build();
+        Attributes linkAttributes =
+            Attributes.builder().put(SemanticAttributes.MESSAGING_OPERATION, "publish").build();
         publishRpcSpan.addLink(message.getPublisherSpan().getSpanContext(), linkAttributes);
         message.getPublisherSpan().addLink(publishRpcSpan.getSpanContext(), linkAttributes);
         message.addPublishStartEvent();
