@@ -44,8 +44,8 @@ import io.opentelemetry.context.propagation.ContextPropagators;
 public class OpenTelemetryPublisherExample {
   public static void main(String... args) throws Exception {
     // TODO(developer): Replace these variables before running the sample.
-    String projectId = "cloud-pubsub-experiments";
-    String topicId = "mike-topic-test";
+    String projectId = "your-project-id";
+    String topicId = "your-topic-id";
 
     openTelemetryPublisherExample(projectId, topicId);
   }
@@ -67,7 +67,6 @@ public class OpenTelemetryPublisherExample {
 
     OpenTelemetry openTelemetry = OpenTelemetrySdk.builder()
       .setTracerProvider(sdkTracerProvider)
-      .setPropagators(ContextPropagators.create(TextMapPropagator.composite(W3CTraceContextPropagator.getInstance())))
       .buildAndRegisterGlobal();
 
     TopicName topicName = TopicName.of(projectId, topicId);
