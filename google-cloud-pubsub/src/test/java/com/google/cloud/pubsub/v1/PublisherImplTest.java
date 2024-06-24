@@ -1339,6 +1339,7 @@ public class PublisherImplTest {
 
     testPublisherServiceImpl.addPublishResponse(PublishResponse.newBuilder().addMessageIds("1"));
     ApiFuture<String> publishFuture = sendTestMessage(publisher, "A");
+    fakeExecutor.advanceTime(Duration.ofSeconds(5));
     assertEquals("1", publishFuture.get());
     fakeExecutor.advanceTime(Duration.ofSeconds(5));
 
