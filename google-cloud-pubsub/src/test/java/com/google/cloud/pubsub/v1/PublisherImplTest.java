@@ -54,7 +54,6 @@ import io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions;
 import io.opentelemetry.sdk.testing.assertj.SpanDataAssert;
 import io.opentelemetry.sdk.testing.junit4.OpenTelemetryRule;
 import io.opentelemetry.sdk.trace.data.SpanData;
-
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
@@ -1338,8 +1337,7 @@ public class PublisherImplTest {
             .setEnableOpenTelemetryTracing(true)
             .build();
 
-    testPublisherServiceImpl.addPublishResponse(
-        PublishResponse.newBuilder().addMessageIds("1"));
+    testPublisherServiceImpl.addPublishResponse(PublishResponse.newBuilder().addMessageIds("1"));
     ApiFuture<String> publishFuture = sendTestMessage(publisher, "A");
     assertEquals("1", publishFuture.get());
 

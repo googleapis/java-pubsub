@@ -172,8 +172,14 @@ public class OpenTelemetryTest {
     PubsubMessage message = messageWrapper.getPubsubMessage();
     assertEquals(1, message.getAttributesMap().size());
     assertTrue(message.containsAttributes(TRACEPARENT_ATTRIBUTE));
-    assertTrue(message.getAttributesOrDefault(TRACEPARENT_ATTRIBUTE, "").contains(publisherSpanData.getTraceId()));
-    assertTrue(message.getAttributesOrDefault(TRACEPARENT_ATTRIBUTE, "").contains(publisherSpanData.getSpanId()));
+    assertTrue(
+        message
+            .getAttributesOrDefault(TRACEPARENT_ATTRIBUTE, "")
+            .contains(publisherSpanData.getTraceId()));
+    assertTrue(
+        message
+            .getAttributesOrDefault(TRACEPARENT_ATTRIBUTE, "")
+            .contains(publisherSpanData.getSpanId()));
   }
 
   @Test
