@@ -63,5 +63,5 @@ public class PublisherExample {
     }
   }
 }
- // [END pubsub_quickstart_publisher]
- // [END pubsub_publish]
+// [END pubsub_quickstart_publisher]
+// [END pubsub_publish]
