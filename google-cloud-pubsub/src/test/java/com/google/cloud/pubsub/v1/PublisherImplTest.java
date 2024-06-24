@@ -1343,7 +1343,7 @@ public class PublisherImplTest {
     fakeExecutor.advanceTime(Duration.ofSeconds(5));
 
     List<SpanData> allSpans = openTelemetryTesting.getSpans();
-    // assertEquals(4, allSpans.size());
+    assertEquals(4, allSpans.size());
     SpanData flowControlSpanData = allSpans.get(0);
     SpanData batchingSpanData = allSpans.get(1);
     SpanData publishRpcSpanData = allSpans.get(2);
