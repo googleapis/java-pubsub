@@ -17,6 +17,7 @@
 package com.google.cloud.pubsub.v1;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import com.google.protobuf.ByteString;
 import com.google.pubsub.v1.PubsubMessage;
@@ -62,11 +63,13 @@ public class OpenTelemetryTest {
   private static final String MESSAGE_SIZE_ATTR_KEY = "messaging.message.envelope.size";
   private static final String ORDERING_KEY_ATTR_KEY = "messaging.gcp_pubsub.message.ordering_key";
 
-  private static final OpenTelemetryRule openTelemetryRule = OpenTelemetryRule.create();
+  private static final String TRACEPARENT_ATTRIBUTE = "googclient_traceparent";
+
+  private static final OpenTelemetryRule openTelemetryTesting = OpenTelemetryRule.create();
 
   @Test
   public void testPublishSpansSuccess() {
-    openTelemetryRule.clearSpans();
+    openTelemetryTesting.clearSpans();
 
     PubsubMessageWrapper messageWrapper =
         PubsubMessageWrapper.newBuilder(getPubsubMessage(), FULL_TOPIC_NAME.toString(), true)
@@ -74,7 +77,7 @@ public class OpenTelemetryTest {
     List<PubsubMessageWrapper> messageWrappers = Arrays.asList(messageWrapper);
 
     long messageSize = messageWrapper.getPubsubMessage().getSerializedSize();
-    Tracer tracer = openTelemetryRule.getOpenTelemetry().getTracer("test");
+    Tracer tracer = openTelemetryTesting.getOpenTelemetry().getTracer("test");
 
     // Call all span start/end methods in the expected order
     messageWrapper.startPublisherSpan(tracer);
@@ -88,8 +91,8 @@ public class OpenTelemetryTest {
     messageWrapper.setMessageIdSpanAttribute(MESSAGE_ID);
     messageWrapper.endPublisherSpan();
 
-    List<SpanData> allSpans = openTelemetryRule.getSpans();
-    assertEquals(allSpans.size(), 4);
+    List<SpanData> allSpans = openTelemetryTesting.getSpans();
+    assertEquals(4, allSpans.size());
     SpanData flowControlSpanData = allSpans.get(0);
     SpanData batchingSpanData = allSpans.get(1);
     SpanData publishRpcSpanData = allSpans.get(2);
@@ -118,10 +121,10 @@ public class OpenTelemetryTest {
         .hasEnded();
 
     List<LinkData> publishRpcLinks = publishRpcSpanData.getLinks();
-    assertEquals(publishRpcLinks.size(), messageWrappers.size());
-    assertEquals(publishRpcLinks.get(0).getSpanContext(), publisherSpanData.getSpanContext());
+    assertEquals(messageWrappers.size(), publishRpcLinks.size());
+    assertEquals(publisherSpanData.getSpanContext(), publishRpcLinks.get(0).getSpanContext());
 
-    assertEquals(publishRpcSpanData.getAttributes().size(), 6);
+    assertEquals(6, publishRpcSpanData.getAttributes().size());
     AttributesAssert publishRpcSpanAttributesAssert =
         OpenTelemetryAssertions.assertThat(publishRpcSpanData.getAttributes());
     publishRpcSpanAttributesAssert
@@ -140,7 +143,7 @@ public class OpenTelemetryTest {
         .hasNoParent()
         .hasEnded();
 
-    assertEquals(publisherSpanData.getEvents().size(), 2);
+    assertEquals(2, publisherSpanData.getEvents().size());
     EventDataAssert startEventAssert =
         OpenTelemetryAssertions.assertThat(publisherSpanData.getEvents().get(0));
     startEventAssert.hasName(PUBLISH_START_EVENT);
@@ -149,10 +152,10 @@ public class OpenTelemetryTest {
     endEventAssert.hasName(PUBLISH_END_EVENT);
 
     List<LinkData> publisherLinks = publisherSpanData.getLinks();
-    assertEquals(publisherLinks.size(), 1);
-    assertEquals(publisherLinks.get(0).getSpanContext(), publishRpcSpanData.getSpanContext());
+    assertEquals(1, publisherLinks.size());
+    assertEquals(publishRpcSpanData.getSpanContext(), publisherLinks.get(0).getSpanContext());
 
-    assertEquals(publisherSpanData.getAttributes().size(), 8);
+    assertEquals(8, publisherSpanData.getAttributes().size());
     AttributesAssert publisherSpanAttributesAssert =
         OpenTelemetryAssertions.assertThat(publisherSpanData.getAttributes());
     publisherSpanAttributesAssert
@@ -164,17 +167,24 @@ public class OpenTelemetryTest {
         .containsEntry(ORDERING_KEY_ATTR_KEY, ORDERING_KEY)
         .containsEntry(MESSAGE_SIZE_ATTR_KEY, messageSize)
         .containsEntry(MESSAGE_ID_ATTR_KEY, MESSAGE_ID);
+
+    // Check that the message has the attribute containing the trace context.
+    PubsubMessage message = messageWrapper.getPubsubMessage();
+    assertEquals(1, message.getAttributesMap().size());
+    assertTrue(message.containsAttributes(TRACEPARENT_ATTRIBUTE));
+    assertTrue(message.getAttributesOrDefault(TRACEPARENT_ATTRIBUTE, "").contains(publisherSpanData.getTraceId()));
+    assertTrue(message.getAttributesOrDefault(TRACEPARENT_ATTRIBUTE, "").contains(publisherSpanData.getSpanId()));
   }
 
   @Test
   public void testPublishFlowControlSpanFailure() {
-    openTelemetryRule.clearSpans();
+    openTelemetryTesting.clearSpans();
 
     PubsubMessageWrapper messageWrapper =
         PubsubMessageWrapper.newBuilder(getPubsubMessage(), FULL_TOPIC_NAME.toString(), true)
             .build();
 
-    Tracer tracer = openTelemetryRule.getOpenTelemetry().getTracer("test");
+    Tracer tracer = openTelemetryTesting.getOpenTelemetry().getTracer("test");
 
     messageWrapper.startPublisherSpan(tracer);
     messageWrapper.startPublishFlowControlSpan(tracer);
@@ -182,8 +192,8 @@ public class OpenTelemetryTest {
     Exception e = new Exception("test-exception");
     messageWrapper.setPublishFlowControlSpanException(e);
 
-    List<SpanData> allSpans = openTelemetryRule.getSpans();
-    assertEquals(allSpans.size(), 2);
+    List<SpanData> allSpans = openTelemetryTesting.getSpans();
+    assertEquals(2, allSpans.size());
     SpanData flowControlSpanData = allSpans.get(0);
     SpanData publisherSpanData = allSpans.get(1);
 
@@ -208,13 +218,13 @@ public class OpenTelemetryTest {
 
   @Test
   public void testPublishBatchingSpanFailure() {
-    openTelemetryRule.clearSpans();
+    openTelemetryTesting.clearSpans();
 
     PubsubMessageWrapper messageWrapper =
         PubsubMessageWrapper.newBuilder(getPubsubMessage(), FULL_TOPIC_NAME.toString(), true)
             .build();
 
-    Tracer tracer = openTelemetryRule.getOpenTelemetry().getTracer("test");
+    Tracer tracer = openTelemetryTesting.getOpenTelemetry().getTracer("test");
 
     messageWrapper.startPublisherSpan(tracer);
     messageWrapper.startPublishBatchingSpan(tracer);
@@ -222,8 +232,8 @@ public class OpenTelemetryTest {
     Exception e = new Exception("test-exception");
     messageWrapper.setPublishBatchingSpanException(e);
 
-    List<SpanData> allSpans = openTelemetryRule.getSpans();
-    assertEquals(allSpans.size(), 2);
+    List<SpanData> allSpans = openTelemetryTesting.getSpans();
+    assertEquals(2, allSpans.size());
     SpanData batchingSpanData = allSpans.get(0);
     SpanData publisherSpanData = allSpans.get(1);
 
@@ -247,14 +257,14 @@ public class OpenTelemetryTest {
 
   @Test
   public void testPublishRpcSpanFailure() {
-    openTelemetryRule.clearSpans();
+    openTelemetryTesting.clearSpans();
 
     PubsubMessageWrapper messageWrapper =
         PubsubMessageWrapper.newBuilder(getPubsubMessage(), FULL_TOPIC_NAME.toString(), true)
             .build();
 
     List<PubsubMessageWrapper> messageWrappers = Arrays.asList(messageWrapper);
-    Tracer tracer = openTelemetryRule.getOpenTelemetry().getTracer("test");
+    Tracer tracer = openTelemetryTesting.getOpenTelemetry().getTracer("test");
 
     messageWrapper.startPublisherSpan(tracer);
     Span publishRpcSpan =
@@ -264,8 +274,8 @@ public class OpenTelemetryTest {
     OpenTelemetryUtil.setPublishRpcSpanException(publishRpcSpan, e, true);
     messageWrapper.endPublisherSpan();
 
-    List<SpanData> allSpans = openTelemetryRule.getSpans();
-    assertEquals(allSpans.size(), 2);
+    List<SpanData> allSpans = openTelemetryTesting.getSpans();
+    assertEquals(2, allSpans.size());
     SpanData rpcSpanData = allSpans.get(0);
     SpanData publisherSpanData = allSpans.get(1);
 

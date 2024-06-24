@@ -83,7 +83,6 @@ public class PubsubMessageWrapper {
    */
   public void startPublisherSpan(Tracer tracer) {
     if (enableOpenTelemetryTracing && tracer != null) {
-
       AttributesBuilder attributesBuilder =
           OpenTelemetryUtil.createPublishSpanAttributesBuilder(
               topicName, "Publisher.publish", "create");
