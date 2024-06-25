@@ -927,6 +927,7 @@ public class Publisher implements PublisherInterface {
       return this;
     }
 
+    /** Gives the ability to enable Open Telemetry Tracing */
     public Builder setEnableOpenTelemetryTracing(boolean enableOpenTelemetryTracing) {
       this.enableOpenTelemetryTracing = enableOpenTelemetryTracing;
       return this;
