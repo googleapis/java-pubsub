@@ -28,6 +28,8 @@ import com.google.common.primitives.Ints;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.pubsub.v1.PubsubMessage;
 import com.google.pubsub.v1.ReceivedMessage;
+import com.google.pubsub.v1.SubscriptionName;
+import io.opentelemetry.api.trace.Tracer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -104,6 +106,10 @@ class MessageDispatcher {
   // To keep track of number of seconds the receiver takes to process messages.
   private final Distribution ackLatencyDistribution;
 
+  private final String subscriptionName;
+  private final boolean enableOpenTelemetryTracing;
+  private final Tracer tracer;
+
   /** Internal representation of a reply to a Pubsub message, to be sent back to the service. */
   public enum AckReply {
     ACK,
@@ -157,6 +163,7 @@ class MessageDispatcher {
           t);
       this.ackRequestData.setResponse(AckResponse.OTHER, false);
       pendingNacks.add(this.ackRequestData);
+      this.ackRequestData.getMessageWrapper().endSubscribeProcessSpan("nack");
       forget();
     }
 
@@ -169,9 +176,11 @@ class MessageDispatcher {
           ackLatencyDistribution.record(
               Ints.saturatedCast(
                   (long) Math.ceil((clock.millisTime() - receivedTimeMillis) / 1000D)));
+          this.ackRequestData.getMessageWrapper().endSubscribeProcessSpan("ack");
           break;
         case NACK:
           pendingNacks.add(this.ackRequestData);
+          this.ackRequestData.getMessageWrapper().endSubscribeProcessSpan("nack");
           break;
         default:
           throw new IllegalArgumentException(String.format("AckReply: %s not supported", reply));
@@ -217,6 +226,10 @@ class MessageDispatcher {
     jobLock = new ReentrantLock();
     messagesWaiter = new Waiter();
     sequentialExecutor = new SequentialExecutorService.AutoExecutor(builder.executor);
+
+    subscriptionName = builder.subscriptionName;
+    enableOpenTelemetryTracing = builder.enableOpenTelemetryTracing;
+    tracer = builder.tracer;
   }
 
   private boolean shouldSetMessageFuture() {
@@ -351,12 +364,14 @@ class MessageDispatcher {
   }
 
   private static class OutstandingMessage {
-    private final ReceivedMessage receivedMessage;
     private final AckHandler ackHandler;
 
-    private OutstandingMessage(ReceivedMessage receivedMessage, AckHandler ackHandler) {
-      this.receivedMessage = receivedMessage;
+    private OutstandingMessage(AckHandler ackHandler) {
       this.ackHandler = ackHandler;
+    }
+
+    public PubsubMessageWrapper messageWrapper() {
+      return this.ackHandler.ackRequestData.getMessageWrapper();
     }
   }
 
@@ -390,10 +405,21 @@ class MessageDispatcher {
       if (shouldSetMessageFuture()) {
         builder.setMessageFuture(SettableApiFuture.create());
       }
+      PubsubMessageWrapper messageWrapper =
+          PubsubMessageWrapper.newBuilder(
+                  message.getMessage(),
+                  SubscriptionName.parse(subscriptionName),
+                  message.getAckId(),
+                  message.getDeliveryAttempt(),
+                  enableOpenTelemetryTracing)
+              .build();
+      builder.setMessageWrapper(messageWrapper);
+      messageWrapper.startSubscriberSpan(tracer, this.exactlyOnceDeliveryEnabled.get());
+
       AckRequestData ackRequestData = builder.build();
       AckHandler ackHandler =
           new AckHandler(ackRequestData, message.getMessage().getSerializedSize(), totalExpiration);
-      OutstandingMessage outstandingMessage = new OutstandingMessage(message, ackHandler);
+      OutstandingMessage outstandingMessage = new OutstandingMessage(ackHandler);
 
       if (this.exactlyOnceDeliveryEnabled.get()) {
         // For exactly once deliveries we don't add to outstanding batch because we first
@@ -457,30 +483,39 @@ class MessageDispatcher {
     for (OutstandingMessage message : batch) {
       // This is a blocking flow controller.  We have already incremented messagesWaiter, so
       // shutdown will block on processing of all these messages anyway.
+      message.messageWrapper().startSubscribeConcurrencyControlSpan(tracer);
       try {
-        flowController.reserve(1, message.receivedMessage.getMessage().getSerializedSize());
+        flowController.reserve(1, message.messageWrapper().getPubsubMessage().getSerializedSize());
+        message.messageWrapper().endSubscribeConcurrencyControlSpan();
       } catch (FlowControlException unexpectedException) {
         // This should be a blocking flow controller and never throw an exception.
+        message.messageWrapper().setSubscribeConcurrencyControlSpanException(unexpectedException);
         throw new IllegalStateException("Flow control unexpected exception", unexpectedException);
       }
-      processOutstandingMessage(addDeliveryInfoCount(message.receivedMessage), message.ackHandler);
+      addDeliveryInfoCount(message.messageWrapper());
+      processOutstandingMessage(message.ackHandler);
     }
   }
 
-  private PubsubMessage addDeliveryInfoCount(ReceivedMessage receivedMessage) {
-    PubsubMessage originalMessage = receivedMessage.getMessage();
-    int deliveryAttempt = receivedMessage.getDeliveryAttempt();
+  private void addDeliveryInfoCount(PubsubMessageWrapper messageWrapper) {
+    PubsubMessage originalMessage = messageWrapper.getPubsubMessage();
+    int deliveryAttempt = messageWrapper.getDeliveryAttempt();
     // Delivery Attempt will be set to 0 if DeadLetterPolicy is not set on the subscription. In
     // this case, do not populate the PubsubMessage with the delivery attempt attribute.
     if (deliveryAttempt > 0) {
-      return PubsubMessage.newBuilder(originalMessage)
-          .putAttributes("googclient_deliveryattempt", Integer.toString(deliveryAttempt))
-          .build();
+      messageWrapper.setPubsubMessage(
+          PubsubMessage.newBuilder(originalMessage)
+              .putAttributes("googclient_deliveryattempt", Integer.toString(deliveryAttempt))
+              .build());
     }
-    return originalMessage;
   }
 
-  private void processOutstandingMessage(final PubsubMessage message, final AckHandler ackHandler) {
+  private void processOutstandingMessage(final AckHandler ackHandler) {
+    // Get the PubsubMessageWrapper and the PubsubMessage it wraps that are stored withing the
+    // AckHandler object.
+    PubsubMessageWrapper messageWrapper = ackHandler.ackRequestData.getMessageWrapper();
+    PubsubMessage message = messageWrapper.getPubsubMessage();
+
     // This future is for internal bookkeeping to be sent to the StreamingSubscriberConnection
     // use below in the consumers
     SettableApiFuture<AckReply> ackReplySettableApiFuture = SettableApiFuture.create();
@@ -499,8 +534,10 @@ class MessageDispatcher {
                 // so it was probably sent to someone else. Don't work on it.
                 // Don't nack it either, because we'd be nacking someone else's message.
                 ackHandler.forget();
+                messageWrapper.setSubscriberSpanExpirationResult();
                 return;
               }
+              messageWrapper.startSubscribeProcessSpan(tracer);
               if (shouldSetMessageFuture()) {
                 // This is the message future that is propagated to the user
                 SettableApiFuture<AckResponse> messageFuture =
@@ -521,7 +558,9 @@ class MessageDispatcher {
     if (!messageOrderingEnabled.get() || message.getOrderingKey().isEmpty()) {
       executor.execute(deliverMessageTask);
     } else {
+      messageWrapper.startSubscribeSchedulerSpan(tracer);
       sequentialExecutor.submit(message.getOrderingKey(), deliverMessageTask);
+      messageWrapper.endSubscribeSchedulerSpan();
     }
   }
 
@@ -645,6 +684,10 @@ class MessageDispatcher {
     private ScheduledExecutorService systemExecutor;
     private ApiClock clock;
 
+    private String subscriptionName;
+    private boolean enableOpenTelemetryTracing;
+    private Tracer tracer;
+
     protected Builder(MessageReceiver receiver) {
       this.receiver = receiver;
     }
@@ -712,6 +755,21 @@ class MessageDispatcher {
 
     public Builder setApiClock(ApiClock clock) {
       this.clock = clock;
+      return this;
+    }
+
+    public Builder setSubscriptionName(String subscriptionName) {
+      this.subscriptionName = subscriptionName;
+      return this;
+    }
+
+    public Builder setEnableOpenTelemetryTracing(boolean enableOpenTelemetryTracing) {
+      this.enableOpenTelemetryTracing = enableOpenTelemetryTracing;
+      return this;
+    }
+
+    public Builder setTracer(Tracer tracer) {
+      this.tracer = tracer;
       return this;
     }
 

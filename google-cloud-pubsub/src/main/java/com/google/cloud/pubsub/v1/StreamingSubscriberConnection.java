@@ -50,6 +50,7 @@ import com.google.pubsub.v1.StreamingPullResponse;
 import com.google.rpc.ErrorInfo;
 import io.grpc.Status;
 import io.grpc.protobuf.StatusProto;
+import io.opentelemetry.api.trace.Tracer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -118,6 +119,10 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
    */
   private final String clientId = UUID.randomUUID().toString();
 
+  private final String subscriptionName;
+  private final boolean enableOpenTelemetryTracing;
+  private final Tracer tracer;
+
   private StreamingSubscriberConnection(Builder builder) {
     subscription = builder.subscription;
     systemExecutor = builder.systemExecutor;
@@ -151,6 +156,10 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
       messageDispatcherBuilder = MessageDispatcher.newBuilder(builder.receiverWithAckResponse);
     }
 
+    subscriptionName = builder.subscriptionName;
+    enableOpenTelemetryTracing = builder.enableOpenTelemetryTracing;
+    tracer = builder.tracer;
+
     messageDispatcher =
         messageDispatcherBuilder
             .setAckProcessor(this)
@@ -165,6 +174,9 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
             .setExecutor(builder.executor)
             .setSystemExecutor(builder.systemExecutor)
             .setApiClock(builder.clock)
+            .setSubscriptionName(subscriptionName)
+            .setEnableOpenTelemetryTracing(enableOpenTelemetryTracing)
+            .setTracer(tracer)
             .build();
 
     flowControlSettings = builder.flowControlSettings;
@@ -533,6 +545,9 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
           messageDispatcher.notifyAckSuccess(ackRequestData);
           // Remove from our pending operations
           pendingRequests.remove(ackRequestData);
+          if (!isModack) {
+            ackRequestData.getMessageWrapper().endSubscriberSpan();
+          }
         }
       }
 
@@ -580,6 +595,9 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
                 }
                 // Remove from our pending
                 pendingRequests.remove(ackRequestData);
+                if (!isModack) {
+                  ackRequestData.getMessageWrapper().endSubscriberSpan();
+                }
               });
         } catch (InvalidProtocolBufferException e) {
           // If we fail to parse out the errorInfo, we should retry all
@@ -636,6 +654,10 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     private ScheduledExecutorService executor;
     private ScheduledExecutorService systemExecutor;
     private ApiClock clock;
+
+    private String subscriptionName;
+    private boolean enableOpenTelemetryTracing;
+    private Tracer tracer;
 
     protected Builder(MessageReceiver receiver) {
       this.receiver = receiver;
@@ -724,6 +746,21 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
 
     public Builder setClock(ApiClock clock) {
       this.clock = clock;
+      return this;
+    }
+
+    public Builder setSubscriptionName(String subscriptionName) {
+      this.subscriptionName = subscriptionName;
+      return this;
+    }
+
+    public Builder setEnableOpenTelemetryTracing(boolean enableOpenTelemetryTracing) {
+      this.enableOpenTelemetryTracing = enableOpenTelemetryTracing;
+      return this;
+    }
+
+    public Builder setTracer(Tracer tracer) {
+      this.tracer = tracer;
       return this;
     }
 

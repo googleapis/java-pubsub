@@ -33,15 +33,17 @@ public class OpenTelemetryUtil {
   private static final String PUBLISH_RPC_SPAN_SUFFIX = " publish";
 
   /** Populates attributes that are common the publisher parent span and publish RPC span. */
-  public static final AttributesBuilder createPublishSpanAttributesBuilder(
-      TopicName topicName, String codeFunction, String operation) {
+  public static final AttributesBuilder createCommonSpanAttributesBuilder(
+      String destinationName, String projectName, String codeFunction, String operation) {
     AttributesBuilder attributesBuilder =
         Attributes.builder()
             .put(SemanticAttributes.MESSAGING_SYSTEM, MESSAGING_SYSTEM_VALUE)
-            .put(SemanticAttributes.MESSAGING_DESTINATION_NAME, topicName.getTopic())
-            .put(PROJECT_ATTR_KEY, topicName.getProject())
-            .put(SemanticAttributes.CODE_FUNCTION, codeFunction)
-            .put(SemanticAttributes.MESSAGING_OPERATION, operation);
+            .put(SemanticAttributes.MESSAGING_DESTINATION_NAME, destinationName)
+            .put(PROJECT_ATTR_KEY, projectName)
+            .put(SemanticAttributes.CODE_FUNCTION, codeFunction);
+    if (operation != null) {
+      attributesBuilder.put(SemanticAttributes.MESSAGING_OPERATION, operation);
+    }
 
     return attributesBuilder;
   }
@@ -57,7 +59,8 @@ public class OpenTelemetryUtil {
       boolean enableOpenTelemetryTracing) {
     if (enableOpenTelemetryTracing && tracer != null) {
       Attributes attributes =
-          createPublishSpanAttributesBuilder(topicName, "Publisher.publishCall", "publish")
+          createCommonSpanAttributesBuilder(
+                  topicName.getTopic(), topicName.getProject(), "Publisher.publishCall", "publish")
               .put(SemanticAttributes.MESSAGING_BATCH_MESSAGE_COUNT, messages.size())
               .build();
       Span publishRpcSpan =

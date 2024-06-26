@@ -275,7 +275,9 @@ public class Publisher implements PublisherInterface {
 
     PubsubMessageWrapper messageWrapper =
         PubsubMessageWrapper.newBuilder(
-                messageTransform.apply(message), topicName, enableOpenTelemetryTracing)
+                messageTransform.apply(message),
+                TopicName.parse(topicName),
+                enableOpenTelemetryTracing)
             .build();
     messageWrapper.startPublisherSpan(tracer);
 
@@ -622,7 +624,7 @@ public class Publisher implements PublisherInterface {
           flowController.release(nextPublish.messageSize);
         }
         nextPublish.publishResult.set(messageId);
-        nextPublish.messageWrapper.setMessageIdSpanAttribute(messageId);
+        nextPublish.messageWrapper.setPublisherMessageIdSpanAttribute(messageId);
         nextPublish.messageWrapper.endPublisherSpan();
       }
     }
