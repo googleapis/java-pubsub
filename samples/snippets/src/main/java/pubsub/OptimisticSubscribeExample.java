@@ -89,6 +89,11 @@ public class OptimisticSubscribeExample {
       subscriber.startAsync().awaitRunning();
       System.out.printf("Listening for messages on %s:\n", subscriptionName.toString());
       subscriber.awaitTerminated(30, TimeUnit.SECONDS);
+    } catch (IllegalStateException e) {
+      // Prevent an exception from being thrown if it is the expected NotFoundException
+      if (!(subscriber.failureCause() instanceof NotFoundException)) {
+        throw e;
+      }
     } catch (TimeoutException e) {
       subscriber.stopAsync();
     }
