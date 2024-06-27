@@ -296,6 +296,9 @@ public class PubsubMessageWrapper {
       subscribeProcessSpan = startChildSpan(tracer, SUBSCRIBE_PROCESS_SPAN_NAME, subscriberSpan);
       subscribeProcessSpan.setAttribute(
           SemanticAttributes.MESSAGING_SYSTEM, MESSAGING_SYSTEM_VALUE);
+      if (publisherSpan != null) {
+        subscribeProcessSpan.addLink(publisherSpan.getSpanContext());
+      }
     }
   }
 
@@ -411,6 +414,7 @@ public class PubsubMessageWrapper {
     Context context =
         W3CTraceContextPropagator.getInstance()
             .extract(Context.current(), this, extractMessageAttributes);
+    publisherSpan = Span.fromContextOrNull(context);
     return tracer
         .spanBuilder(SUBSCRIBER_SPAN_NAME)
         .setSpanKind(SpanKind.CONSUMER)
