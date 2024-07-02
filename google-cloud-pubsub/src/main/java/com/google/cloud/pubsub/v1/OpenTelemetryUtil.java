@@ -16,6 +16,7 @@
 
 package com.google.cloud.pubsub.v1;
 
+import com.google.pubsub.v1.SubscriptionName;
 import com.google.pubsub.v1.TopicName;
 import io.opentelemetry.api.common.Attributes;
 import io.opentelemetry.api.common.AttributesBuilder;
@@ -28,7 +29,9 @@ import java.util.List;
 
 public class OpenTelemetryUtil {
   private static final String MESSAGING_SYSTEM_VALUE = "gcp_pubsub";
-  private static final String PROJECT_ATTR_KEY = "gcp_pubsub.project_id";
+  private static final String PROJECT_ATTR_KEY = "gcp.project_id";
+  private static final String ACK_DEADLINE_ATTR_KEY = "messaging.gcp_pubsub.message.ack_deadline";
+  private static final String RECEIPT_MODACK_ATTR_KEY = "messaging.gcp_pubsub.is_receipt_modack";
 
   private static final String PUBLISH_RPC_SPAN_SUFFIX = " publish";
 
@@ -50,7 +53,7 @@ public class OpenTelemetryUtil {
 
   /**
    * Creates, starts, and returns a publish RPC span for the given message batch. Bi-directional
-   * links with the publisher parent span are created for each message in the batch.
+   * links with the publisher parent span are created for sampled messages in the batch.
    */
   public static final Span startPublishRpcSpan(
       Tracer tracer,
@@ -71,11 +74,13 @@ public class OpenTelemetryUtil {
               .startSpan();
 
       for (PubsubMessageWrapper message : messages) {
-        Attributes linkAttributes =
-            Attributes.builder().put(SemanticAttributes.MESSAGING_OPERATION, "publish").build();
-        publishRpcSpan.addLink(message.getPublisherSpan().getSpanContext(), linkAttributes);
-        message.getPublisherSpan().addLink(publishRpcSpan.getSpanContext(), linkAttributes);
-        message.addPublishStartEvent();
+        if (message.getPublisherSpan().getSpanContext().isSampled()) {
+          Attributes linkAttributes =
+              Attributes.builder().put(SemanticAttributes.MESSAGING_OPERATION, "publish").build();
+          publishRpcSpan.addLink(message.getPublisherSpan().getSpanContext(), linkAttributes);
+          message.getPublisherSpan().addLink(publishRpcSpan.getSpanContext(), linkAttributes);
+          message.addPublishStartEvent();
+        }
       }
       return publishRpcSpan;
     }
@@ -100,6 +105,78 @@ public class OpenTelemetryUtil {
       publishRpcSpan.setStatus(StatusCode.ERROR, "Exception thrown on publish RPC.");
       publishRpcSpan.recordException(t);
       endPublishRpcSpan(publishRpcSpan, enableOpenTelemetryTracing);
+    }
+  }
+
+  /**
+   * Creates, starts, and returns spans for ModAck, Nack, and Ack RPC requests. Bi-directional links
+   * to parent subscribe span for sampled messages are added.
+   */
+  public static final Span startSubscribeRpcSpan(
+      Tracer tracer,
+      SubscriptionName subscriptionName,
+      String rpcOperation,
+      List<PubsubMessageWrapper> messages,
+      int ackDeadline,
+      boolean isReceiptModack,
+      boolean enableOpenTelemetryTracing) {
+    if (enableOpenTelemetryTracing && tracer != null) {
+      String codeFunction =
+          rpcOperation == "ack"
+              ? "StreamingSubscriberConnection.sendAckOperations"
+              : "StreamingSubscriberConnection.sendModAckOperations";
+      AttributesBuilder attributesBuilder =
+          createCommonSpanAttributesBuilder(
+                  subscriptionName.getSubscription(),
+                  subscriptionName.getProject(),
+                  codeFunction,
+                  rpcOperation)
+              .put(SemanticAttributes.MESSAGING_BATCH_MESSAGE_COUNT, messages.size());
+
+      // Ack deadline and receipt modack are specific to the modack operation
+      if (rpcOperation == "modack") {
+        attributesBuilder
+            .put(ACK_DEADLINE_ATTR_KEY, ackDeadline)
+            .put(RECEIPT_MODACK_ATTR_KEY, isReceiptModack);
+      }
+
+      Span rpcSpan =
+          tracer
+              .spanBuilder(subscriptionName.getSubscription() + " " + rpcOperation)
+              .setSpanKind(SpanKind.CLIENT)
+              .setAllAttributes(attributesBuilder.build())
+              .startSpan();
+
+      for (PubsubMessageWrapper message : messages) {
+        if (message.getSubscriberSpan().getSpanContext().isSampled()) {
+          Attributes linkAttributes =
+              Attributes.builder()
+                  .put(SemanticAttributes.MESSAGING_OPERATION, rpcOperation)
+                  .build();
+          rpcSpan.addLink(message.getSubscriberSpan().getSpanContext(), linkAttributes);
+          message.getSubscriberSpan().addLink(rpcSpan.getSpanContext(), linkAttributes);
+          switch (rpcOperation) {
+            case "ack":
+              message.addAckStartEvent();
+              break;
+            case "modack":
+              message.addModAckStartEvent();
+              break;
+            case "nack":
+              message.addNackStartEvent();
+              break;
+          }
+        }
+      }
+      return rpcSpan;
+    }
+    return null;
+  }
+
+  /** Ends the given subscribe RPC span if it exists. */
+  public static final void endSubscribeRpcSpan(Span rpcSpan, boolean enableOpenTelemetryTracing) {
+    if (enableOpenTelemetryTracing && rpcSpan != null) {
+      rpcSpan.end();
     }
   }
 }

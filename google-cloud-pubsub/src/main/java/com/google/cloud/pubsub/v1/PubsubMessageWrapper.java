@@ -58,6 +58,12 @@ public class PubsubMessageWrapper {
       "subscriber concurrency control";
   private static final String SUBSCRIBE_SCHEDULER_SPAN_NAME = "subscriber scheduler";
   private String SUBSCRIBE_PROCESS_SPAN_NAME;
+  private static final String MODACK_START_EVENT = "modack start";
+  private static final String MODACK_END_EVENT = "modack end";
+  private static final String NACK_START_EVENT = "nack start";
+  private static final String NACK_END_EVENT = "nack end";
+  private static final String ACK_START_EVENT = "ack start";
+  private static final String ACK_END_EVENT = "ack start";
 
   private static final String GOOGCLIENT_PREFIX = "googclient_";
 
@@ -116,9 +122,14 @@ public class PubsubMessageWrapper {
     return message;
   }
 
-  /** Returns the parent span for this message wrapper. */
+  /** Returns the parent publisher span for this message wrapper. */
   public Span getPublisherSpan() {
     return publisherSpan;
+  }
+
+  /** Returns the parent subscriber span for this message wrapper. */
+  public Span getSubscriberSpan() {
+    return subscriberSpan;
   }
 
   /** Returns the delivery attempt for the received PubsubMessage. */
@@ -302,6 +313,56 @@ public class PubsubMessageWrapper {
     }
   }
 
+  /**
+   * Creates start and end events for ModAcks, Nacks, and Acks that are tied to the corresponding
+   * RPC span start and end times.
+   */
+  public void addModAckStartEvent() {
+    if (enableOpenTelemetryTracing && subscriberSpan != null) {
+      subscriberSpan.addEvent(MODACK_START_EVENT);
+    }
+  }
+
+  public void addModAckEndEvent() {
+    if (enableOpenTelemetryTracing && subscriberSpan != null) {
+      subscriberSpan.addEvent(MODACK_END_EVENT);
+    }
+  }
+
+  public void addNackStartEvent() {
+    if (enableOpenTelemetryTracing && subscriberSpan != null) {
+      subscriberSpan.addEvent(NACK_START_EVENT);
+    }
+  }
+
+  public void addNackEndEvent() {
+    if (enableOpenTelemetryTracing && subscriberSpan != null) {
+      subscriberSpan.addEvent(NACK_END_EVENT);
+    }
+  }
+
+  public void addAckStartEvent() {
+    if (enableOpenTelemetryTracing && subscriberSpan != null) {
+      subscriberSpan.addEvent(ACK_START_EVENT);
+    }
+  }
+
+  public void addAckEndEvent() {
+    if (enableOpenTelemetryTracing && subscriberSpan != null) {
+      subscriberSpan.addEvent(ACK_END_EVENT);
+    }
+  }
+
+  public void addEndRpcEvent(boolean isModack, int ackDeadline) {
+    if (!isModack) {
+      addAckEndEvent();
+    } else if (ackDeadline == 0) {
+      addNackEndEvent();
+    } else {
+      addModAckEndEvent();
+    }
+  }
+
   /** Ends the subscriber parent span if exists. */
   public void endSubscriberSpan() {
     if (enableOpenTelemetryTracing && subscriberSpan != null) {
@@ -332,6 +393,15 @@ public class PubsubMessageWrapper {
       subscribeProcessSpan.addEvent(action + " called");
       subscribeProcessSpan.end();
       subscriberSpan.setAttribute(MESSAGE_RESULT_ATTR_KEY, action);
+    }
+  }
+
+  /** Sets an exception on the subscriber span during Ack/ModAck/Nack failures */
+  public void setSubscriberSpanException(Throwable t, String exception) {
+    if (enableOpenTelemetryTracing && subscriberSpan != null) {
+      subscriberSpan.setStatus(StatusCode.ERROR, exception);
+      subscriberSpan.recordException(t);
+      endAllSubscribeSpans();
     }
   }
 

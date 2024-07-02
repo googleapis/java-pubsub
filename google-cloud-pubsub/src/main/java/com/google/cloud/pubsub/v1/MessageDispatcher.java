@@ -646,8 +646,10 @@ class MessageDispatcher {
     List<AckRequestData> ackRequestDataReceipts = new ArrayList<AckRequestData>();
     pendingReceipts.drainTo(ackRequestDataReceipts);
     if (!ackRequestDataReceipts.isEmpty()) {
-      modackRequestData.add(
-          new ModackRequestData(this.getMessageDeadlineSeconds(), ackRequestDataReceipts));
+      ModackRequestData receiptModack =
+          new ModackRequestData(this.getMessageDeadlineSeconds(), ackRequestDataReceipts);
+      receiptModack.setIsReceiptModack(true);
+      modackRequestData.add(receiptModack);
     }
     logger.log(Level.FINER, "Sending {0} receipts", ackRequestDataReceipts.size());
 
