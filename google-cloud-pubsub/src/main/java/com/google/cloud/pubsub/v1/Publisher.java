@@ -275,7 +275,9 @@ public class Publisher implements PublisherInterface {
 
     PubsubMessageWrapper messageWrapper =
         PubsubMessageWrapper.newBuilder(
-                messageTransform.apply(message), topicName, enableOpenTelemetryTracing)
+                messageTransform.apply(message),
+                TopicName.parse(topicName),
+                enableOpenTelemetryTracing)
             .build();
     messageWrapper.startPublisherSpan(tracer);
 

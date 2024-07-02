@@ -525,6 +525,19 @@ public class PubsubMessageWrapper {
       this.enableOpenTelemetryTracing = enableOpenTelemetryTracing;
     }
 
+    public Builder(
+        PubsubMessage message,
+        SubscriptionName subscriptionName,
+        String ackId,
+        int deliveryAttempt,
+        boolean enableOpenTelemetryTracing) {
+      this.message = message;
+      this.subscriptionName = subscriptionName;
+      this.ackId = ackId;
+      this.deliveryAttempt = deliveryAttempt;
+      this.enableOpenTelemetryTracing = enableOpenTelemetryTracing;
+    }
+
     public PubsubMessageWrapper build() {
       Preconditions.checkArgument(
           this.enableOpenTelemetryTracing == false

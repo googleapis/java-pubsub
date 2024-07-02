@@ -47,6 +47,7 @@ import com.google.pubsub.v1.AcknowledgeRequest;
 import com.google.pubsub.v1.ModifyAckDeadlineRequest;
 import com.google.pubsub.v1.StreamingPullRequest;
 import com.google.pubsub.v1.StreamingPullResponse;
+import com.google.pubsub.v1.SubscriptionName;
 import com.google.rpc.ErrorInfo;
 import io.grpc.Status;
 import io.grpc.protobuf.StatusProto;
