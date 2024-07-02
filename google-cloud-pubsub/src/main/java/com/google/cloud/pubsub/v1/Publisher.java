@@ -488,7 +488,7 @@ public class Publisher implements PublisherInterface {
 
     outstandingBatch.publishRpcSpan =
         OpenTelemetryUtil.startPublishRpcSpan(
-            tracer, TopicName.parse(topicName), messageWrappers, enableOpenTelemetryTracing);
+            tracer, topicName, messageWrappers, enableOpenTelemetryTracing);
 
     return publisherStub
         .publishCallable()

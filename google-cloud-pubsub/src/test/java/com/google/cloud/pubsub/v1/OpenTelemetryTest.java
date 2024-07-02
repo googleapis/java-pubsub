@@ -54,8 +54,8 @@ public class OpenTelemetryTest {
   private static final String PUBLISH_END_EVENT = "publish end";
 
   private static final String MESSAGING_SYSTEM_VALUE = "gcp_pubsub";
-  private static final String PROJECT_ATTR_KEY = "gcp_pubsub.project_id";
-  private static final String MESSAGE_SIZE_ATTR_KEY = "messaging.message.envelope.size";
+  private static final String PROJECT_ATTR_KEY = "gcp.project_id";
+  private static final String MESSAGE_SIZE_ATTR_KEY = "messaging.message.body.size";
   private static final String ORDERING_KEY_ATTR_KEY = "messaging.gcp_pubsub.message.ordering_key";
 
   private static final String TRACEPARENT_ATTRIBUTE = "googclient_traceparent";
@@ -70,7 +70,7 @@ public class OpenTelemetryTest {
         PubsubMessageWrapper.newBuilder(getPubsubMessage(), FULL_TOPIC_NAME, true).build();
     List<PubsubMessageWrapper> messageWrappers = Arrays.asList(messageWrapper);
 
-    long messageSize = messageWrapper.getPubsubMessage().getSerializedSize();
+    long messageSize = messageWrapper.getPubsubMessage().getData().size();
     Tracer tracer = openTelemetryTesting.getOpenTelemetry().getTracer("test");
 
     // Call all span start/end methods in the expected order
@@ -80,7 +80,8 @@ public class OpenTelemetryTest {
     messageWrapper.startPublishBatchingSpan(tracer);
     messageWrapper.endPublishBatchingSpan();
     Span publishRpcSpan =
-        OpenTelemetryUtil.startPublishRpcSpan(tracer, FULL_TOPIC_NAME, messageWrappers, true);
+        OpenTelemetryUtil.startPublishRpcSpan(
+            tracer, FULL_TOPIC_NAME.toString(), messageWrappers, true);
     OpenTelemetryUtil.endPublishRpcSpan(publishRpcSpan, true);
     messageWrapper.setPublisherMessageIdSpanAttribute(MESSAGE_ID);
     messageWrapper.endPublisherSpan();
@@ -265,7 +266,8 @@ public class OpenTelemetryTest {
 
     messageWrapper.startPublisherSpan(tracer);
     Span publishRpcSpan =
-        OpenTelemetryUtil.startPublishRpcSpan(tracer, FULL_TOPIC_NAME, messageWrappers, true);
+        OpenTelemetryUtil.startPublishRpcSpan(
+            tracer, FULL_TOPIC_NAME.toString(), messageWrappers, true);
 
     Exception e = new Exception("test-exception");
     OpenTelemetryUtil.setPublishRpcSpanException(publishRpcSpan, e, true);

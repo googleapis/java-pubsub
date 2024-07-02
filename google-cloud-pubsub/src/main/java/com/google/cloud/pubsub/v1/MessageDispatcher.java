@@ -28,7 +28,6 @@ import com.google.common.primitives.Ints;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.pubsub.v1.PubsubMessage;
 import com.google.pubsub.v1.ReceivedMessage;
-import com.google.pubsub.v1.SubscriptionName;
 import io.opentelemetry.api.trace.Tracer;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -408,7 +407,7 @@ class MessageDispatcher {
       PubsubMessageWrapper messageWrapper =
           PubsubMessageWrapper.newBuilder(
                   message.getMessage(),
-                  SubscriptionName.parse(subscriptionName),
+                  subscriptionName,
                   message.getAckId(),
                   message.getDeliveryAttempt(),
                   enableOpenTelemetryTracing)
