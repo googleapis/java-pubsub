@@ -57,10 +57,11 @@ public class OpenTelemetryUtil {
    */
   public static final Span startPublishRpcSpan(
       Tracer tracer,
-      TopicName topicName,
+      String topic,
       List<PubsubMessageWrapper> messages,
       boolean enableOpenTelemetryTracing) {
     if (enableOpenTelemetryTracing && tracer != null) {
+      TopicName topicName = TopicName.parse(topic);
       Attributes attributes =
           createCommonSpanAttributesBuilder(
                   topicName.getTopic(), topicName.getProject(), "Publisher.publishCall", "publish")
@@ -114,7 +115,7 @@ public class OpenTelemetryUtil {
    */
   public static final Span startSubscribeRpcSpan(
       Tracer tracer,
-      SubscriptionName subscriptionName,
+      String subscription,
       String rpcOperation,
       List<PubsubMessageWrapper> messages,
       int ackDeadline,
@@ -125,6 +126,7 @@ public class OpenTelemetryUtil {
           rpcOperation == "ack"
               ? "StreamingSubscriberConnection.sendAckOperations"
               : "StreamingSubscriberConnection.sendModAckOperations";
+      SubscriptionName subscriptionName = SubscriptionName.parse(subscription);
       AttributesBuilder attributesBuilder =
           createCommonSpanAttributesBuilder(
                   subscriptionName.getSubscription(),

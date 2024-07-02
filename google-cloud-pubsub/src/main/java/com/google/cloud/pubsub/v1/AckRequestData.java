@@ -38,7 +38,14 @@ public class AckRequestData {
     return this.messageFuture.orElse(null);
   }
 
+  /**
+   * Returns an empty PubsubMessageWrapper with OpenTelemetry tracing disabled. This allows methods
+   * that use this method to be unit tested.
+   */
   public PubsubMessageWrapper getMessageWrapper() {
+    if (this.messageWrapper == null) {
+      return PubsubMessageWrapper.newBuilder(null, null, false).build();
+    }
     return messageWrapper;
   }
 

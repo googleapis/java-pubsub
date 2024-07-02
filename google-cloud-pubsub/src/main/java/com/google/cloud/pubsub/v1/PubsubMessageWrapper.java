@@ -103,13 +103,13 @@ public class PubsubMessageWrapper {
   }
 
   public static Builder newBuilder(
-      PubsubMessage message, TopicName topicName, boolean enableOpenTelemetryTracing) {
+      PubsubMessage message, String topicName, boolean enableOpenTelemetryTracing) {
     return new Builder(message, topicName, enableOpenTelemetryTracing);
   }
 
   public static Builder newBuilder(
       PubsubMessage message,
-      SubscriptionName subscriptionName,
+      String subscriptionName,
       String ackId,
       int deliveryAttempt,
       boolean enableOpenTelemetryTracing) {
@@ -502,27 +502,34 @@ public class PubsubMessageWrapper {
     private int deliveryAttempt = 0;
     private boolean enableOpenTelemetryTracing = false;
 
-    public Builder(PubsubMessage message, TopicName topicName, boolean enableOpenTelemetryTracing) {
+    public Builder(PubsubMessage message, String topicName, boolean enableOpenTelemetryTracing) {
       this.message = message;
-      this.topicName = topicName;
+      if (topicName != null) {
+        this.topicName = TopicName.parse(topicName);
+      }
       this.enableOpenTelemetryTracing = enableOpenTelemetryTracing;
     }
 
     public Builder(
         PubsubMessage message,
-        SubscriptionName subscriptionName,
+        String subscriptionName,
         String ackId,
         int deliveryAttempt,
         boolean enableOpenTelemetryTracing) {
       this.message = message;
-      this.subscriptionName = subscriptionName;
+      if (subscriptionName != null) {
+        this.subscriptionName = SubscriptionName.parse(subscriptionName);
+      }
       this.ackId = ackId;
       this.deliveryAttempt = deliveryAttempt;
       this.enableOpenTelemetryTracing = enableOpenTelemetryTracing;
     }
 
     public PubsubMessageWrapper build() {
-      Preconditions.checkArgument(this.topicName != null || this.subscriptionName != null);
+      Preconditions.checkArgument(
+          this.enableOpenTelemetryTracing == false
+              || this.topicName != null
+              || this.subscriptionName != null);
       return new PubsubMessageWrapper(this);
     }
   }

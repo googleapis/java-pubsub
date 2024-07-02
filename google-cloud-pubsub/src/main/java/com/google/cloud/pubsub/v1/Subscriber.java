@@ -400,7 +400,6 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
                 .setExecutor(executor)
                 .setSystemExecutor(alarmsExecutor)
                 .setClock(clock)
-                .setSubscriptionName(subscriptionName)
                 .setEnableOpenTelemetryTracing(enableOpenTelemetryTracing)
                 .setTracer(tracer)
                 .build();

@@ -47,7 +47,6 @@ import com.google.pubsub.v1.AcknowledgeRequest;
 import com.google.pubsub.v1.ModifyAckDeadlineRequest;
 import com.google.pubsub.v1.StreamingPullRequest;
 import com.google.pubsub.v1.StreamingPullResponse;
-import com.google.pubsub.v1.SubscriptionName;
 import com.google.rpc.ErrorInfo;
 import io.grpc.Status;
 import io.grpc.protobuf.StatusProto;
@@ -121,7 +120,6 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
    */
   private final String clientId = UUID.randomUUID().toString();
 
-  private final String subscriptionName;
   private final boolean enableOpenTelemetryTracing;
   private final Tracer tracer;
 
@@ -158,7 +156,6 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
       messageDispatcherBuilder = MessageDispatcher.newBuilder(builder.receiverWithAckResponse);
     }
 
-    subscriptionName = builder.subscriptionName;
     enableOpenTelemetryTracing = builder.enableOpenTelemetryTracing;
     tracer = builder.tracer;
 
@@ -176,7 +173,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
             .setExecutor(builder.executor)
             .setSystemExecutor(builder.systemExecutor)
             .setApiClock(builder.clock)
-            .setSubscriptionName(subscriptionName)
+            .setSubscriptionName(subscription)
             .setEnableOpenTelemetryTracing(enableOpenTelemetryTracing)
             .setTracer(tracer)
             .build();
@@ -458,13 +455,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
       // Creates an Ack span to be passed to the callback
       Span rpcSpan =
           OpenTelemetryUtil.startSubscribeRpcSpan(
-              tracer,
-              SubscriptionName.parse(subscriptionName),
-              "ack",
-              messagesInRequest,
-              0,
-              false,
-              enableOpenTelemetryTracing);
+              tracer, subscription, "ack", messagesInRequest, 0, false, enableOpenTelemetryTracing);
       ApiFutureCallback<Empty> callback =
           getCallback(ackRequestDataInRequestList, 0, false, currentBackoffMillis, rpcSpan);
       ApiFuture<Empty> ackFuture =
@@ -504,7 +495,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
         Span rpcSpan =
             OpenTelemetryUtil.startSubscribeRpcSpan(
                 tracer,
-                SubscriptionName.parse(subscriptionName),
+                subscription,
                 rpcOperation,
                 messagesInRequest,
                 deadlineExtensionSeconds,
@@ -711,7 +702,6 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     private ScheduledExecutorService systemExecutor;
     private ApiClock clock;
 
-    private String subscriptionName;
     private boolean enableOpenTelemetryTracing;
     private Tracer tracer;
 
@@ -802,11 +792,6 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
 
     public Builder setClock(ApiClock clock) {
       this.clock = clock;
-      return this;
-    }
-
-    public Builder setSubscriptionName(String subscriptionName) {
-      this.subscriptionName = subscriptionName;
       return this;
     }
 

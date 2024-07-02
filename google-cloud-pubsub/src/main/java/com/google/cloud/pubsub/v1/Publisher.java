@@ -275,9 +275,7 @@ public class Publisher implements PublisherInterface {
 
     PubsubMessageWrapper messageWrapper =
         PubsubMessageWrapper.newBuilder(
-                messageTransform.apply(message),
-                TopicName.parse(topicName),
-                enableOpenTelemetryTracing)
+                messageTransform.apply(message), topicName, enableOpenTelemetryTracing)
             .build();
     messageWrapper.startPublisherSpan(tracer);
 
@@ -488,7 +486,7 @@ public class Publisher implements PublisherInterface {
 
     outstandingBatch.publishRpcSpan =
         OpenTelemetryUtil.startPublishRpcSpan(
-            tracer, TopicName.parse(topicName), messageWrappers, enableOpenTelemetryTracing);
+            tracer, topicName, messageWrappers, enableOpenTelemetryTracing);
 
     return publisherStub
         .publishCallable()
