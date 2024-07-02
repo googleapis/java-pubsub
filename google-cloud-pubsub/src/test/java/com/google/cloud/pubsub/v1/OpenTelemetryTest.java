@@ -67,7 +67,8 @@ public class OpenTelemetryTest {
     openTelemetryTesting.clearSpans();
 
     PubsubMessageWrapper messageWrapper =
-        PubsubMessageWrapper.newBuilder(getPubsubMessage(), FULL_TOPIC_NAME, true).build();
+        PubsubMessageWrapper.newBuilder(getPubsubMessage(), FULL_TOPIC_NAME.toString(), true)
+            .build();
     List<PubsubMessageWrapper> messageWrappers = Arrays.asList(messageWrapper);
 
     long messageSize = messageWrapper.getPubsubMessage().getData().size();
@@ -182,7 +183,8 @@ public class OpenTelemetryTest {
     openTelemetryTesting.clearSpans();
 
     PubsubMessageWrapper messageWrapper =
-        PubsubMessageWrapper.newBuilder(getPubsubMessage(), FULL_TOPIC_NAME, true).build();
+        PubsubMessageWrapper.newBuilder(getPubsubMessage(), FULL_TOPIC_NAME.toString(), true)
+            .build();
 
     Tracer tracer = openTelemetryTesting.getOpenTelemetry().getTracer("test");
 
@@ -221,7 +223,8 @@ public class OpenTelemetryTest {
     openTelemetryTesting.clearSpans();
 
     PubsubMessageWrapper messageWrapper =
-        PubsubMessageWrapper.newBuilder(getPubsubMessage(), FULL_TOPIC_NAME, true).build();
+        PubsubMessageWrapper.newBuilder(getPubsubMessage(), FULL_TOPIC_NAME.toString(), true)
+            .build();
 
     Tracer tracer = openTelemetryTesting.getOpenTelemetry().getTracer("test");
 
@@ -259,7 +262,8 @@ public class OpenTelemetryTest {
     openTelemetryTesting.clearSpans();
 
     PubsubMessageWrapper messageWrapper =
-        PubsubMessageWrapper.newBuilder(getPubsubMessage(), FULL_TOPIC_NAME, true).build();
+        PubsubMessageWrapper.newBuilder(getPubsubMessage(), FULL_TOPIC_NAME.toString(), true)
+            .build();
 
     List<PubsubMessageWrapper> messageWrappers = Arrays.asList(messageWrapper);
     Tracer tracer = openTelemetryTesting.getOpenTelemetry().getTracer("test");
