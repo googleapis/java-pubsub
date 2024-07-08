@@ -204,6 +204,7 @@
               <ignoredUnusedDeclaredDependency>com.google.auth:google-auth-library-oauth2-http:jar</ignoredUnusedDeclaredDependency>
               <ignoredUnusedDeclaredDependency>io.opencensus:opencensus-impl</ignoredUnusedDeclaredDependency>
               <ignoredUnusedDeclaredDependency>javax.annotation:javax.annotation-api</ignoredUnusedDeclaredDependency>
+              <ignoredUnusedDeclaredDependency>org.assertj:assertj-core</ignoredUnusedDeclaredDependency>
             </ignoredUnusedDeclaredDependencies>
           </configuration>
         </plugin>
