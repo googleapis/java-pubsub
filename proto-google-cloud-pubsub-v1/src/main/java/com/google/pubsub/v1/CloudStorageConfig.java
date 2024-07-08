@@ -44,6 +44,7 @@ public final class CloudStorageConfig extends com.google.protobuf.GeneratedMessa
     filenameSuffix_ = "";
     filenameDatetimeFormat_ = "";
     state_ = 0;
+    serviceAccountEmail_ = "";
   }
 
   @java.lang.Override
@@ -129,6 +130,17 @@ public final class CloudStorageConfig extends com.google.protobuf.GeneratedMessa
      * <code>IN_TRANSIT_LOCATION_RESTRICTION = 4;</code>
      */
     IN_TRANSIT_LOCATION_RESTRICTION(4),
+    /**
+     *
+     *
+     * <pre>
+     * Cannot write to the Cloud Storage bucket due to an incompatibility
+     * between the topic schema and subscription settings.
+     * </pre>
+     *
+     * <code>SCHEMA_MISMATCH = 5;</code>
+     */
+    SCHEMA_MISMATCH(5),
     UNRECOGNIZED(-1),
     ;
 
@@ -184,6 +196,17 @@ public final class CloudStorageConfig extends com.google.protobuf.GeneratedMessa
      * <code>IN_TRANSIT_LOCATION_RESTRICTION = 4;</code>
      */
     public static final int IN_TRANSIT_LOCATION_RESTRICTION_VALUE = 4;
+    /**
+     *
+     *
+     * <pre>
+     * Cannot write to the Cloud Storage bucket due to an incompatibility
+     * between the topic schema and subscription settings.
+     * </pre>
+     *
+     * <code>SCHEMA_MISMATCH = 5;</code>
+     */
+    public static final int SCHEMA_MISMATCH_VALUE = 5;
 
     public final int getNumber() {
       if (this == UNRECOGNIZED) {
@@ -219,6 +242,8 @@ public final class CloudStorageConfig extends com.google.protobuf.GeneratedMessa
           return NOT_FOUND;
         case 4:
           return IN_TRANSIT_LOCATION_RESTRICTION;
+        case 5:
+          return SCHEMA_MISMATCH;
         default:
           return null;
       }
@@ -720,6 +745,20 @@ public final class CloudStorageConfig extends com.google.protobuf.GeneratedMessa
      * @return The writeMetadata.
      */
     boolean getWriteMetadata();
+
+    /**
+     *
+     *
+     * <pre>
+     * Optional. When true, the output Cloud Storage file will be serialized
+     * using the topic schema, if it exists.
+     * </pre>
+     *
+     * <code>bool use_topic_schema = 2 [(.google.api.field_behavior) = OPTIONAL];</code>
+     *
+     * @return The useTopicSchema.
+     */
+    boolean getUseTopicSchema();
   }
   /**
    *
@@ -787,6 +826,25 @@ public final class CloudStorageConfig extends com.google.protobuf.GeneratedMessa
       return writeMetadata_;
     }
 
+    public static final int USE_TOPIC_SCHEMA_FIELD_NUMBER = 2;
+    private boolean useTopicSchema_ = false;
+    /**
+     *
+     *
+     * <pre>
+     * Optional. When true, the output Cloud Storage file will be serialized
+     * using the topic schema, if it exists.
+     * </pre>
+     *
+     * <code>bool use_topic_schema = 2 [(.google.api.field_behavior) = OPTIONAL];</code>
+     *
+     * @return The useTopicSchema.
+     */
+    @java.lang.Override
+    public boolean getUseTopicSchema() {
+      return useTopicSchema_;
+    }
+
     private byte memoizedIsInitialized = -1;
 
     @java.lang.Override
@@ -804,6 +862,9 @@ public final class CloudStorageConfig extends com.google.protobuf.GeneratedMessa
       if (writeMetadata_ != false) {
         output.writeBool(1, writeMetadata_);
       }
+      if (useTopicSchema_ != false) {
+        output.writeBool(2, useTopicSchema_);
+      }
       getUnknownFields().writeTo(output);
     }
 
@@ -815,6 +876,9 @@ public final class CloudStorageConfig extends com.google.protobuf.GeneratedMessa
       size = 0;
       if (writeMetadata_ != false) {
         size += com.google.protobuf.CodedOutputStream.computeBoolSize(1, writeMetadata_);
+      }
+      if (useTopicSchema_ != false) {
+        size += com.google.protobuf.CodedOutputStream.computeBoolSize(2, useTopicSchema_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
@@ -833,6 +897,7 @@ public final class CloudStorageConfig extends com.google.protobuf.GeneratedMessa
           (com.google.pubsub.v1.CloudStorageConfig.AvroConfig) obj;
 
       if (getWriteMetadata() != other.getWriteMetadata()) return false;
+      if (getUseTopicSchema() != other.getUseTopicSchema()) return false;
       if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
@@ -846,6 +911,8 @@ public final class CloudStorageConfig extends com.google.protobuf.GeneratedMessa
       hash = (19 * hash) + getDescriptor().hashCode();
       hash = (37 * hash) + WRITE_METADATA_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(getWriteMetadata());
+      hash = (37 * hash) + USE_TOPIC_SCHEMA_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(getUseTopicSchema());
       hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -989,6 +1056,7 @@ public final class CloudStorageConfig extends com.google.protobuf.GeneratedMessa
         super.clear();
         bitField0_ = 0;
         writeMetadata_ = false;
+        useTopicSchema_ = false;
         return this;
       }
 
@@ -1027,6 +1095,9 @@ public final class CloudStorageConfig extends com.google.protobuf.GeneratedMessa
         int from_bitField0_ = bitField0_;
         if (((from_bitField0_ & 0x00000001) != 0)) {
           result.writeMetadata_ = writeMetadata_;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.useTopicSchema_ = useTopicSchema_;
         }
       }
 
@@ -1081,6 +1152,9 @@ public final class CloudStorageConfig extends com.google.protobuf.GeneratedMessa
         if (other.getWriteMetadata() != false) {
           setWriteMetadata(other.getWriteMetadata());
         }
+        if (other.getUseTopicSchema() != false) {
+          setUseTopicSchema(other.getUseTopicSchema());
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
@@ -1113,6 +1187,12 @@ public final class CloudStorageConfig extends com.google.protobuf.GeneratedMessa
                   bitField0_ |= 0x00000001;
                   break;
                 } // case 8
+              case 16:
+                {
+                  useTopicSchema_ = input.readBool();
+                  bitField0_ |= 0x00000002;
+                  break;
+                } // case 16
               default:
                 {
                   if (!super.parseUnknownField(input, extensionRegistry, tag)) {
@@ -1196,6 +1276,62 @@ public final class CloudStorageConfig extends com.google.protobuf.GeneratedMessa
       public Builder clearWriteMetadata() {
         bitField0_ = (bitField0_ & ~0x00000001);
         writeMetadata_ = false;
+        onChanged();
+        return this;
+      }
+
+      private boolean useTopicSchema_;
+      /**
+       *
+       *
+       * <pre>
+       * Optional. When true, the output Cloud Storage file will be serialized
+       * using the topic schema, if it exists.
+       * </pre>
+       *
+       * <code>bool use_topic_schema = 2 [(.google.api.field_behavior) = OPTIONAL];</code>
+       *
+       * @return The useTopicSchema.
+       */
+      @java.lang.Override
+      public boolean getUseTopicSchema() {
+        return useTopicSchema_;
+      }
+      /**
+       *
+       *
+       * <pre>
+       * Optional. When true, the output Cloud Storage file will be serialized
+       * using the topic schema, if it exists.
+       * </pre>
+       *
+       * <code>bool use_topic_schema = 2 [(.google.api.field_behavior) = OPTIONAL];</code>
+       *
+       * @param value The useTopicSchema to set.
+       * @return This builder for chaining.
+       */
+      public Builder setUseTopicSchema(boolean value) {
+
+        useTopicSchema_ = value;
+        bitField0_ |= 0x00000002;
+        onChanged();
+        return this;
+      }
+      /**
+       *
+       *
+       * <pre>
+       * Optional. When true, the output Cloud Storage file will be serialized
+       * using the topic schema, if it exists.
+       * </pre>
+       *
+       * <code>bool use_topic_schema = 2 [(.google.api.field_behavior) = OPTIONAL];</code>
+       *
+       * @return This builder for chaining.
+       */
+      public Builder clearUseTopicSchema() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        useTopicSchema_ = false;
         onChanged();
         return this;
       }
@@ -1770,6 +1906,67 @@ public final class CloudStorageConfig extends com.google.protobuf.GeneratedMessa
     return result == null ? com.google.pubsub.v1.CloudStorageConfig.State.UNRECOGNIZED : result;
   }
 
+  public static final int SERVICE_ACCOUNT_EMAIL_FIELD_NUMBER = 11;
+
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object serviceAccountEmail_ = "";
+  /**
+   *
+   *
+   * <pre>
+   * Optional. The service account to use to write to Cloud Storage. The
+   * subscription creator or updater that specifies this field must have
+   * `iam.serviceAccounts.actAs` permission on the service account. If not
+   * specified, the Pub/Sub
+   * [service agent](https://cloud.google.com/iam/docs/service-agents),
+   * service-{project_number}&#64;gcp-sa-pubsub.iam.gserviceaccount.com, is used.
+   * </pre>
+   *
+   * <code>string service_account_email = 11 [(.google.api.field_behavior) = OPTIONAL];</code>
+   *
+   * @return The serviceAccountEmail.
+   */
+  @java.lang.Override
+  public java.lang.String getServiceAccountEmail() {
+    java.lang.Object ref = serviceAccountEmail_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      serviceAccountEmail_ = s;
+      return s;
+    }
+  }
+  /**
+   *
+   *
+   * <pre>
+   * Optional. The service account to use to write to Cloud Storage. The
+   * subscription creator or updater that specifies this field must have
+   * `iam.serviceAccounts.actAs` permission on the service account. If not
+   * specified, the Pub/Sub
+   * [service agent](https://cloud.google.com/iam/docs/service-agents),
+   * service-{project_number}&#64;gcp-sa-pubsub.iam.gserviceaccount.com, is used.
+   * </pre>
+   *
+   * <code>string service_account_email = 11 [(.google.api.field_behavior) = OPTIONAL];</code>
+   *
+   * @return The bytes for serviceAccountEmail.
+   */
+  @java.lang.Override
+  public com.google.protobuf.ByteString getServiceAccountEmailBytes() {
+    java.lang.Object ref = serviceAccountEmail_;
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b =
+          com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
+      serviceAccountEmail_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
+  }
+
   private byte memoizedIsInitialized = -1;
 
   @java.lang.Override
@@ -1811,6 +2008,9 @@ public final class CloudStorageConfig extends com.google.protobuf.GeneratedMessa
     if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(filenameDatetimeFormat_)) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 10, filenameDatetimeFormat_);
     }
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(serviceAccountEmail_)) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 11, serviceAccountEmail_);
+    }
     getUnknownFields().writeTo(output);
   }
 
@@ -1851,6 +2051,9 @@ public final class CloudStorageConfig extends com.google.protobuf.GeneratedMessa
     if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(filenameDatetimeFormat_)) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(10, filenameDatetimeFormat_);
     }
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(serviceAccountEmail_)) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(11, serviceAccountEmail_);
+    }
     size += getUnknownFields().getSerializedSize();
     memoizedSize = size;
     return size;
@@ -1876,6 +2079,7 @@ public final class CloudStorageConfig extends com.google.protobuf.GeneratedMessa
     }
     if (getMaxBytes() != other.getMaxBytes()) return false;
     if (state_ != other.state_) return false;
+    if (!getServiceAccountEmail().equals(other.getServiceAccountEmail())) return false;
     if (!getOutputFormatCase().equals(other.getOutputFormatCase())) return false;
     switch (outputFormatCase_) {
       case 4:
@@ -1914,6 +2118,8 @@ public final class CloudStorageConfig extends com.google.protobuf.GeneratedMessa
     hash = (53 * hash) + com.google.protobuf.Internal.hashLong(getMaxBytes());
     hash = (37 * hash) + STATE_FIELD_NUMBER;
     hash = (53 * hash) + state_;
+    hash = (37 * hash) + SERVICE_ACCOUNT_EMAIL_FIELD_NUMBER;
+    hash = (53 * hash) + getServiceAccountEmail().hashCode();
     switch (outputFormatCase_) {
       case 4:
         hash = (37 * hash) + TEXT_CONFIG_FIELD_NUMBER;
@@ -2091,6 +2297,7 @@ public final class CloudStorageConfig extends com.google.protobuf.GeneratedMessa
       }
       maxBytes_ = 0L;
       state_ = 0;
+      serviceAccountEmail_ = "";
       outputFormatCase_ = 0;
       outputFormat_ = null;
       return this;
@@ -2153,6 +2360,9 @@ public final class CloudStorageConfig extends com.google.protobuf.GeneratedMessa
       }
       if (((from_bitField0_ & 0x00000100) != 0)) {
         result.state_ = state_;
+      }
+      if (((from_bitField0_ & 0x00000200) != 0)) {
+        result.serviceAccountEmail_ = serviceAccountEmail_;
       }
       result.bitField0_ |= to_bitField0_;
     }
@@ -2241,6 +2451,11 @@ public final class CloudStorageConfig extends com.google.protobuf.GeneratedMessa
       }
       if (other.state_ != 0) {
         setStateValue(other.getStateValue());
+      }
+      if (!other.getServiceAccountEmail().isEmpty()) {
+        serviceAccountEmail_ = other.serviceAccountEmail_;
+        bitField0_ |= 0x00000200;
+        onChanged();
       }
       switch (other.getOutputFormatCase()) {
         case TEXT_CONFIG:
@@ -2338,6 +2553,12 @@ public final class CloudStorageConfig extends com.google.protobuf.GeneratedMessa
                 bitField0_ |= 0x00000008;
                 break;
               } // case 82
+            case 90:
+              {
+                serviceAccountEmail_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000200;
+                break;
+              } // case 90
             default:
               {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
@@ -3681,6 +3902,137 @@ public final class CloudStorageConfig extends com.google.protobuf.GeneratedMessa
     public Builder clearState() {
       bitField0_ = (bitField0_ & ~0x00000100);
       state_ = 0;
+      onChanged();
+      return this;
+    }
+
+    private java.lang.Object serviceAccountEmail_ = "";
+    /**
+     *
+     *
+     * <pre>
+     * Optional. The service account to use to write to Cloud Storage. The
+     * subscription creator or updater that specifies this field must have
+     * `iam.serviceAccounts.actAs` permission on the service account. If not
+     * specified, the Pub/Sub
+     * [service agent](https://cloud.google.com/iam/docs/service-agents),
+     * service-{project_number}&#64;gcp-sa-pubsub.iam.gserviceaccount.com, is used.
+     * </pre>
+     *
+     * <code>string service_account_email = 11 [(.google.api.field_behavior) = OPTIONAL];</code>
+     *
+     * @return The serviceAccountEmail.
+     */
+    public java.lang.String getServiceAccountEmail() {
+      java.lang.Object ref = serviceAccountEmail_;
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        serviceAccountEmail_ = s;
+        return s;
+      } else {
+        return (java.lang.String) ref;
+      }
+    }
+    /**
+     *
+     *
+     * <pre>
+     * Optional. The service account to use to write to Cloud Storage. The
+     * subscription creator or updater that specifies this field must have
+     * `iam.serviceAccounts.actAs` permission on the service account. If not
+     * specified, the Pub/Sub
+     * [service agent](https://cloud.google.com/iam/docs/service-agents),
+     * service-{project_number}&#64;gcp-sa-pubsub.iam.gserviceaccount.com, is used.
+     * </pre>
+     *
+     * <code>string service_account_email = 11 [(.google.api.field_behavior) = OPTIONAL];</code>
+     *
+     * @return The bytes for serviceAccountEmail.
+     */
+    public com.google.protobuf.ByteString getServiceAccountEmailBytes() {
+      java.lang.Object ref = serviceAccountEmail_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b =
+            com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
+        serviceAccountEmail_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    /**
+     *
+     *
+     * <pre>
+     * Optional. The service account to use to write to Cloud Storage. The
+     * subscription creator or updater that specifies this field must have
+     * `iam.serviceAccounts.actAs` permission on the service account. If not
+     * specified, the Pub/Sub
+     * [service agent](https://cloud.google.com/iam/docs/service-agents),
+     * service-{project_number}&#64;gcp-sa-pubsub.iam.gserviceaccount.com, is used.
+     * </pre>
+     *
+     * <code>string service_account_email = 11 [(.google.api.field_behavior) = OPTIONAL];</code>
+     *
+     * @param value The serviceAccountEmail to set.
+     * @return This builder for chaining.
+     */
+    public Builder setServiceAccountEmail(java.lang.String value) {
+      if (value == null) {
+        throw new NullPointerException();
+      }
+      serviceAccountEmail_ = value;
+      bitField0_ |= 0x00000200;
+      onChanged();
+      return this;
+    }
+    /**
+     *
+     *
+     * <pre>
+     * Optional. The service account to use to write to Cloud Storage. The
+     * subscription creator or updater that specifies this field must have
+     * `iam.serviceAccounts.actAs` permission on the service account. If not
+     * specified, the Pub/Sub
+     * [service agent](https://cloud.google.com/iam/docs/service-agents),
+     * service-{project_number}&#64;gcp-sa-pubsub.iam.gserviceaccount.com, is used.
+     * </pre>
+     *
+     * <code>string service_account_email = 11 [(.google.api.field_behavior) = OPTIONAL];</code>
+     *
+     * @return This builder for chaining.
+     */
+    public Builder clearServiceAccountEmail() {
+      serviceAccountEmail_ = getDefaultInstance().getServiceAccountEmail();
+      bitField0_ = (bitField0_ & ~0x00000200);
+      onChanged();
+      return this;
+    }
+    /**
+     *
+     *
+     * <pre>
+     * Optional. The service account to use to write to Cloud Storage. The
+     * subscription creator or updater that specifies this field must have
+     * `iam.serviceAccounts.actAs` permission on the service account. If not
+     * specified, the Pub/Sub
+     * [service agent](https://cloud.google.com/iam/docs/service-agents),
+     * service-{project_number}&#64;gcp-sa-pubsub.iam.gserviceaccount.com, is used.
+     * </pre>
+     *
+     * <code>string service_account_email = 11 [(.google.api.field_behavior) = OPTIONAL];</code>
+     *
+     * @param value The bytes for serviceAccountEmail to set.
+     * @return This builder for chaining.
+     */
+    public Builder setServiceAccountEmailBytes(com.google.protobuf.ByteString value) {
+      if (value == null) {
+        throw new NullPointerException();
+      }
+      checkByteStringIsUtf8(value);
+      serviceAccountEmail_ = value;
+      bitField0_ |= 0x00000200;
       onChanged();
       return this;
     }

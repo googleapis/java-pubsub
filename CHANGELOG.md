@@ -1,5 +1,58 @@
 # Changelog
 
+## [1.131.0](https://github.com/googleapis/java-pubsub/compare/v1.130.1...v1.131.0) (2024-06-25)
+
+
+### Features
+
+* Add use_topic_schema for Cloud Storage Subscriptions ([#2082](https://github.com/googleapis/java-pubsub/issues/2082)) ([11d67d4](https://github.com/googleapis/java-pubsub/commit/11d67d44152ccca008dda071683d9932c59af41d))
+
+
+### Dependencies
+
+* Update dependency com.google.cloud:google-cloud-core to v2.40.0 ([#2087](https://github.com/googleapis/java-pubsub/issues/2087)) ([26b01c9](https://github.com/googleapis/java-pubsub/commit/26b01c921f2700947a1653702be0234cf84cccef))
+* Update dependency com.google.cloud:sdk-platform-java-config to v3.32.0 ([#2088](https://github.com/googleapis/java-pubsub/issues/2088)) ([aebc3ed](https://github.com/googleapis/java-pubsub/commit/aebc3ed779e0847077742dedc7c2c0a9d8a1ab10))
+
+## [1.130.1](https://github.com/googleapis/java-pubsub/compare/v1.130.0...v1.130.1) (2024-06-13)
+
+
+### Dependencies
+
+* Update dependency com.google.cloud:google-cloud-bigquery to v2.40.3 ([#2071](https://github.com/googleapis/java-pubsub/issues/2071)) ([0844bfb](https://github.com/googleapis/java-pubsub/commit/0844bfb0a500ae0b4a0f63fcb45ffffeaf609e3d))
+* Update dependency com.google.cloud:google-cloud-storage to v2.40.0 ([#2066](https://github.com/googleapis/java-pubsub/issues/2066)) ([dfcaeb5](https://github.com/googleapis/java-pubsub/commit/dfcaeb5b59466d86ac5b5bf74655ce359e7d5713))
+* Update dependency com.google.protobuf:protobuf-java-util to v4.27.1 ([#2065](https://github.com/googleapis/java-pubsub/issues/2065)) ([6baf69a](https://github.com/googleapis/java-pubsub/commit/6baf69a99adb75fba49c2289bca3ffd08720f8f4))
+
+## [1.130.0](https://github.com/googleapis/java-pubsub/compare/v1.129.7...v1.130.0) (2024-06-03)
+
+
+### Features
+
+* [java] allow passing libraries_bom_version from env ([#1967](https://github.com/googleapis/java-pubsub/issues/1967)) ([#2033](https://github.com/googleapis/java-pubsub/issues/2033)) ([825c5f8](https://github.com/googleapis/java-pubsub/commit/825c5f83e0fd2fd6b1f4856b9c555d71110a03e1))
+* Add service_account_email for export subscriptions ([#2054](https://github.com/googleapis/java-pubsub/issues/2054)) ([670db3e](https://github.com/googleapis/java-pubsub/commit/670db3e1b665e6f5aec3cd7bf3639e9242f20151))
+
+
+### Dependencies
+
+* Update dependency com.google.cloud:google-cloud-core to v2.39.0 ([#2057](https://github.com/googleapis/java-pubsub/issues/2057)) ([43446d2](https://github.com/googleapis/java-pubsub/commit/43446d22ad2140f1b18fd1dde5dab03a901580bc))
+* Update dependency com.google.cloud:sdk-platform-java-config to v3.31.0 ([#2058](https://github.com/googleapis/java-pubsub/issues/2058)) ([a998ef5](https://github.com/googleapis/java-pubsub/commit/a998ef5359942486ea47bfd50f154314ae37be33))
+
+## [1.129.7](https://github.com/googleapis/java-pubsub/compare/v1.129.6...v1.129.7) (2024-05-29)
+
+
+### Dependencies
+
+* Change scope of grpc-inprocess dependency from runtime to test ([#2038](https://github.com/googleapis/java-pubsub/issues/2038)) ([1ab45c9](https://github.com/googleapis/java-pubsub/commit/1ab45c9eaee35d4bfeb332244c74f1253b77c166))
+* Update dependency com.google.cloud:google-cloud-bigquery to v2.40.2 ([#2046](https://github.com/googleapis/java-pubsub/issues/2046)) ([f81c5e1](https://github.com/googleapis/java-pubsub/commit/f81c5e1b977e6da19aac6a40c1389ddcc4643e3c))
+* Update dependency com.google.protobuf:protobuf-java-util to v4.27.0 ([#2044](https://github.com/googleapis/java-pubsub/issues/2044)) ([37e94ce](https://github.com/googleapis/java-pubsub/commit/37e94ce13a2998b5e3f69e9ad3d4ab68af108d64))
+
+## [1.129.6](https://github.com/googleapis/java-pubsub/compare/v1.129.5...v1.129.6) (2024-05-23)
+
+
+### Dependencies
+
+* Update dependency com.google.cloud:google-cloud-storage to v2.39.0 ([#2040](https://github.com/googleapis/java-pubsub/issues/2040)) ([eb6bd9c](https://github.com/googleapis/java-pubsub/commit/eb6bd9c559073429d8338b9d8fa83e0e3f61b8e9))
+* Update dependency org.graalvm.buildtools:native-maven-plugin to v0.10.2 ([#2035](https://github.com/googleapis/java-pubsub/issues/2035)) ([40fdd7a](https://github.com/googleapis/java-pubsub/commit/40fdd7a71aa07d6c64ac6f96d7c6642af3563280))
+
 ## [1.129.5](https://github.com/googleapis/java-pubsub/compare/v1.129.4...v1.129.5) (2024-05-16)
 
 
