@@ -63,7 +63,7 @@ public class PubsubMessageWrapper {
   private static final String NACK_START_EVENT = "nack start";
   private static final String NACK_END_EVENT = "nack end";
   private static final String ACK_START_EVENT = "ack start";
-  private static final String ACK_END_EVENT = "ack start";
+  private static final String ACK_END_EVENT = "ack end";
 
   private static final String GOOGCLIENT_PREFIX = "googclient_";
 
@@ -270,6 +270,7 @@ public class PubsubMessageWrapper {
               null);
 
       attributesBuilder
+          .put(SemanticAttributes.MESSAGING_MESSAGE_ID, message.getMessageId())
           .put(MESSAGE_SIZE_ATTR_KEY, message.getData().size())
           .put(MESSAGE_ACK_ID_ATTR_KEY, ackId)
           .put(MESSAGE_EXACTLY_ONCE_ATTR_KEY, exactlyOnceDeliveryEnabled);

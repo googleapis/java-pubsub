@@ -105,7 +105,7 @@ public class OpenTelemetryUtil {
     if (enableOpenTelemetryTracing && publishRpcSpan != null) {
       publishRpcSpan.setStatus(StatusCode.ERROR, "Exception thrown on publish RPC.");
       publishRpcSpan.recordException(t);
-      endPublishRpcSpan(publishRpcSpan, enableOpenTelemetryTracing);
+      publishRpcSpan.end();
     }
   }
 
@@ -178,6 +178,20 @@ public class OpenTelemetryUtil {
   /** Ends the given subscribe RPC span if it exists. */
   public static final void endSubscribeRpcSpan(Span rpcSpan, boolean enableOpenTelemetryTracing) {
     if (enableOpenTelemetryTracing && rpcSpan != null) {
+      rpcSpan.end();
+    }
+  }
+
+  public static final void setSubscribeRpcSpanException(
+      Span rpcSpan,
+      boolean isModack,
+      int ackDeadline,
+      Throwable t,
+      boolean enableOpenTelemetryTracing) {
+    if (enableOpenTelemetryTracing && rpcSpan != null) {
+      String operation = !isModack ? "ack" : (ackDeadline == 0 ? "nack" : "modack");
+      rpcSpan.setStatus(StatusCode.ERROR, "Exception thrown on " + operation + " RPC.");
+      rpcSpan.recordException(t);
       rpcSpan.end();
     }
   }
