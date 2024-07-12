@@ -46,6 +46,7 @@ import com.google.cloud.pubsub.v1.stub.GrpcPublisherStub;
 import com.google.cloud.pubsub.v1.stub.PublisherStub;
 import com.google.cloud.pubsub.v1.stub.PublisherStubSettings;
 import com.google.common.base.Preconditions;
+import com.google.protobuf.CodedOutputStream;
 import com.google.pubsub.v1.PublishRequest;
 import com.google.pubsub.v1.PublishResponse;
 import com.google.pubsub.v1.PubsubMessage;
@@ -94,6 +95,7 @@ public class Publisher implements PublisherInterface {
   private static final String GZIP_COMPRESSION = "gzip";
 
   private final String topicName;
+  private final int topicNameSize;
 
   private final BatchingSettings batchingSettings;
   private final boolean enableMessageOrdering;
@@ -136,6 +138,8 @@ public class Publisher implements PublisherInterface {
 
   private Publisher(Builder builder) throws IOException {
     topicName = builder.topicName;
+    topicNameSize =
+        CodedOutputStream.computeStringSize(PublishRequest.TOPIC_FIELD_NUMBER, this.topicName);
 
     this.batchingSettings = builder.batchingSettings;
     FlowControlSettings flowControl = this.batchingSettings.getFlowControlSettings();
@@ -592,7 +596,8 @@ public class Publisher implements PublisherInterface {
     OutstandingPublish(PubsubMessage message) {
       this.publishResult = SettableApiFuture.create();
       this.message = message;
-      this.messageSize = message.getSerializedSize();
+      this.messageSize =
+          CodedOutputStream.computeMessageSize(PublishRequest.MESSAGES_FIELD_NUMBER, message);
     }
   }
 
@@ -1044,7 +1049,7 @@ public class Publisher implements PublisherInterface {
 
     private void reset() {
       messages = new LinkedList<>();
-      batchedBytes = 0;
+      batchedBytes = topicNameSize;
     }
 
     private boolean isEmpty() {
@@ -1083,6 +1088,8 @@ public class Publisher implements PublisherInterface {
       // immediately.
       // Alternatively if after adding the message we have reached the batch max messages then we
       // have a batch to send.
+      // Note that exceeding {@link Publisher#getApiMaxRequestBytes()} will result in failed
+      // publishes without compression and may yet fail if a request is not sufficiently compressed.
       if ((hasBatchingBytes() && outstandingPublish.messageSize >= getMaxBatchBytes())
           || getMessagesCount() == batchingSettings.getElementCountThreshold()) {
         batchesToSend.add(popOutstandingBatch());
