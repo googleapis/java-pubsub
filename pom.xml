@@ -104,7 +104,7 @@
       <dependency>
         <groupId>com.google.truth</groupId>
         <artifactId>truth</artifactId>
-        <version>1.4.2</version>
+        <version>1.4.4</version>
         <scope>test</scope>
         <exclusions>
           <exclusion>
@@ -145,7 +145,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-project-info-reports-plugin</artifactId>
-        <version>3.6.0</version>
+        <version>3.6.2</version>
         <reportSets>
           <reportSet>
             <reports>
