@@ -1,17 +1,13 @@
 #!/bin/bash
 set -e
 # This script should be run at the root of the repository.
-# This script is used to, when a pull request changes the generation
-# configuration (generation_config.yaml by default):
-# 1. Find whether the last commit in this pull request contains changes to
-# the generation configuration and exit early if it doesn't have such a change
-# since the generation result would be the same.
-# 2. Compare generation configurations in the current branch (with which the
+# This script is used to, when a pull request changes any file in the repo:
+# 1. Compare generation configurations in the current branch (with which the
 # pull request associated) and target branch (into which the pull request is
 # merged);
-# 3. Generate changed libraries using library_generation image;
-# 4. Commit the changes to the pull request, if any.
-# 5. Edit the PR body with generated pull request description, if applicable.
+# 2. Generate changed libraries using library_generation image;
+# 3. Commit the changes to the pull request, if any.
+# 4. Edit the PR body with generated pull request description, if applicable.
 
 # The following commands need to be installed before running the script:
 # 1. git
@@ -67,13 +63,6 @@ message="chore: generate libraries at $(date)"
 
 git checkout "${target_branch}"
 git checkout "${current_branch}"
-# if the last commit doesn't contain changes to generation configuration,
-# do not generate again as the result will be the same.
-change_of_last_commit="$(git diff-tree --no-commit-id --name-only HEAD~1..HEAD -r)"
-if [[ ! ("${change_of_last_commit}" == *"${generation_config}"*) ]]; then
-    echo "The last commit doesn't contain any changes to the generation_config.yaml, skipping the whole generation process." || true
-    exit 0
-fi
 # copy generation configuration from target branch to current branch.
 git show "${target_branch}":"${generation_config}" > "${baseline_generation_config}"
 config_diff=$(diff "${generation_config}" "${baseline_generation_config}" || true)
@@ -87,7 +76,6 @@ docker run \
   -u "$(id -u):$(id -g)" \
   -v "$(pwd):${workspace_name}" \
   gcr.io/cloud-devrel-public-resources/java-library-generation:"${image_tag}" \
-  --baseline-generation-config-path="${workspace_name}/${baseline_generation_config}" \
   --current-generation-config-path="${workspace_name}/${generation_config}"
 
 
