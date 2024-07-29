@@ -1090,7 +1090,7 @@ public class Publisher implements PublisherInterface {
       // have a batch to send.
       // Note that exceeding {@link Publisher#getApiMaxRequestBytes()} will result in failed
       // publishes without compression and may yet fail if a request is not sufficiently compressed.
-      if ((hasBatchingBytes() && outstandingPublish.messageSize >= getMaxBatchBytes())
+      if ((hasBatchingBytes() && getBatchedBytes() >= getMaxBatchBytes())
           || getMessagesCount() == batchingSettings.getElementCountThreshold()) {
         batchesToSend.add(popOutstandingBatch());
       }
