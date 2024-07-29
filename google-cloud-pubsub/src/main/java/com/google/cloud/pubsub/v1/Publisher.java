@@ -895,7 +895,7 @@ public class Publisher implements PublisherInterface {
     }
   }
 
-  private static class MessageFlowController {
+  private class MessageFlowController {
     private final Lock lock;
     private final Long messageLimit;
     private final Long byteLimit;
@@ -914,7 +914,7 @@ public class Publisher implements PublisherInterface {
       this.lock = new ReentrantLock();
 
       this.outstandingMessages = 0L;
-      this.outstandingBytes = 0L;
+      this.outstandingBytes = (long) topicNameSize;
 
       this.awaitingMessageAcquires = new LinkedList<CountDownLatch>();
       this.awaitingBytesAcquires = new LinkedList<CountDownLatch>();
