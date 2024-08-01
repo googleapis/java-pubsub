@@ -52,6 +52,9 @@ import com.google.pubsub.v1.PubsubMessage;
 import com.google.pubsub.v1.TopicName;
 import com.google.pubsub.v1.TopicNames;
 import io.grpc.CallOptions;
+import io.opentelemetry.api.OpenTelemetry;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.Tracer;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -93,6 +96,8 @@ public class Publisher implements PublisherInterface {
 
   private static final String GZIP_COMPRESSION = "gzip";
 
+  private static final String OPEN_TELEMETRY_TRACER_NAME = "com.google.cloud.pubsub.v1";
+
   private final String topicName;
 
   private final BatchingSettings batchingSettings;
@@ -124,6 +129,10 @@ public class Publisher implements PublisherInterface {
   private final GrpcCallContext publishContext;
   private final GrpcCallContext publishContextWithCompression;
 
+  private final boolean enableOpenTelemetryTracing;
+  private final OpenTelemetry openTelemetry;
+  private Tracer tracer = null;
+
   /** The maximum number of messages in one request. Defined by the API. */
   public static long getApiMaxRequestElementCount() {
     return 1000L;
@@ -152,6 +161,11 @@ public class Publisher implements PublisherInterface {
     this.messageTransform = builder.messageTransform;
     this.enableCompression = builder.enableCompression;
     this.compressionBytesThreshold = builder.compressionBytesThreshold;
+    this.enableOpenTelemetryTracing = builder.enableOpenTelemetryTracing;
+    this.openTelemetry = builder.openTelemetry;
+    if (this.openTelemetry != null) {
+      this.tracer = builder.openTelemetry.getTracer(OPEN_TELEMETRY_TRACER_NAME);
+    }
 
     messagesBatches = new HashMap<>();
     messagesBatchLock = new ReentrantLock();
@@ -259,17 +273,25 @@ public class Publisher implements PublisherInterface {
             + "Publisher client. Please create a Publisher client with "
             + "setEnableMessageOrdering(true) in the builder.");
 
-    final OutstandingPublish outstandingPublish =
-        new OutstandingPublish(messageTransform.apply(message));
+    PubsubMessageWrapper messageWrapper =
+        PubsubMessageWrapper.newBuilder(
+                messageTransform.apply(message), topicName, enableOpenTelemetryTracing)
+            .build();
+    messageWrapper.startPublisherSpan(tracer);
+
+    final OutstandingPublish outstandingPublish = new OutstandingPublish(messageWrapper);
 
     if (flowController != null) {
+      outstandingPublish.messageWrapper.startPublishFlowControlSpan(tracer);
       try {
         flowController.acquire(outstandingPublish.messageSize);
+        outstandingPublish.messageWrapper.endPublishFlowControlSpan();
       } catch (FlowController.FlowControlException e) {
         if (!orderingKey.isEmpty()) {
           sequentialExecutor.stopPublish(orderingKey);
         }
         outstandingPublish.publishResult.setException(e);
+        outstandingPublish.messageWrapper.setPublishFlowControlSpanException(e);
         return outstandingPublish.publishResult;
       }
     }
@@ -277,6 +299,7 @@ public class Publisher implements PublisherInterface {
     List<OutstandingBatch> batchesToSend;
     messagesBatchLock.lock();
     try {
+      outstandingPublish.messageWrapper.startPublishBatchingSpan(tracer);
       if (!orderingKey.isEmpty() && sequentialExecutor.keyHasError(orderingKey)) {
         outstandingPublish.publishResult.setException(
             SequentialExecutorService.CallbackExecutor.CANCELLATION_EXCEPTION);
@@ -452,12 +475,25 @@ public class Publisher implements PublisherInterface {
     if (enableCompression && outstandingBatch.batchSizeBytes >= compressionBytesThreshold) {
       context = publishContextWithCompression;
     }
+
+    int numMessagesInBatch = outstandingBatch.size();
+    List<PubsubMessage> pubsubMessagesList = new ArrayList<PubsubMessage>(numMessagesInBatch);
+    List<PubsubMessageWrapper> messageWrappers = outstandingBatch.getMessageWrappers();
+    for (PubsubMessageWrapper messageWrapper : messageWrappers) {
+      messageWrapper.endPublishBatchingSpan();
+      pubsubMessagesList.add(messageWrapper.getPubsubMessage());
+    }
+
+    outstandingBatch.publishRpcSpan =
+        OpenTelemetryUtil.startPublishRpcSpan(
+            tracer, topicName, messageWrappers, enableOpenTelemetryTracing);
+
     return publisherStub
         .publishCallable()
         .futureCall(
             PublishRequest.newBuilder()
                 .setTopic(topicName)
-                .addAllMessages(outstandingBatch.getMessages())
+                .addAllMessages(pubsubMessagesList)
                 .build(),
             context);
   }
@@ -541,6 +577,7 @@ public class Publisher implements PublisherInterface {
     int attempt;
     int batchSizeBytes;
     final String orderingKey;
+    Span publishRpcSpan;
 
     OutstandingBatch(
         List<OutstandingPublish> outstandingPublishes, int batchSizeBytes, String orderingKey) {
@@ -555,24 +592,29 @@ public class Publisher implements PublisherInterface {
       return outstandingPublishes.size();
     }
 
-    private List<PubsubMessage> getMessages() {
-      List<PubsubMessage> results = new ArrayList<>(outstandingPublishes.size());
+    private List<PubsubMessageWrapper> getMessageWrappers() {
+      List<PubsubMessageWrapper> results = new ArrayList<>(outstandingPublishes.size());
       for (OutstandingPublish outstandingPublish : outstandingPublishes) {
-        results.add(outstandingPublish.message);
+        results.add(outstandingPublish.messageWrapper);
       }
       return results;
     }
 
     private void onFailure(Throwable t) {
+      OpenTelemetryUtil.setPublishRpcSpanException(publishRpcSpan, t, enableOpenTelemetryTracing);
+
       for (OutstandingPublish outstandingPublish : outstandingPublishes) {
         if (flowController != null) {
           flowController.release(outstandingPublish.messageSize);
         }
         outstandingPublish.publishResult.setException(t);
+        outstandingPublish.messageWrapper.endPublisherSpan();
       }
     }
 
     private void onSuccess(Iterable<String> results) {
+      OpenTelemetryUtil.endPublishRpcSpan(publishRpcSpan, enableOpenTelemetryTracing);
+
       Iterator<OutstandingPublish> messagesResultsIt = outstandingPublishes.iterator();
       for (String messageId : results) {
         OutstandingPublish nextPublish = messagesResultsIt.next();
@@ -580,19 +622,21 @@ public class Publisher implements PublisherInterface {
           flowController.release(nextPublish.messageSize);
         }
         nextPublish.publishResult.set(messageId);
+        nextPublish.messageWrapper.setPublisherMessageIdSpanAttribute(messageId);
+        nextPublish.messageWrapper.endPublisherSpan();
       }
     }
   }
 
   private static final class OutstandingPublish {
     final SettableApiFuture<String> publishResult;
-    final PubsubMessage message;
+    final PubsubMessageWrapper messageWrapper;
     final int messageSize;
 
-    OutstandingPublish(PubsubMessage message) {
+    OutstandingPublish(PubsubMessageWrapper messageWrapper) {
       this.publishResult = SettableApiFuture.create();
-      this.message = message;
-      this.messageSize = message.getSerializedSize();
+      this.messageWrapper = messageWrapper;
+      this.messageSize = messageWrapper.getPubsubMessage().getSerializedSize();
     }
   }
 
@@ -749,6 +793,9 @@ public class Publisher implements PublisherInterface {
     private boolean enableCompression = DEFAULT_ENABLE_COMPRESSION;
     private long compressionBytesThreshold = DEFAULT_COMPRESSION_BYTES_THRESHOLD;
 
+    private boolean enableOpenTelemetryTracing = false;
+    private OpenTelemetry openTelemetry = null;
+
     private Builder(String topic) {
       this.topicName = Preconditions.checkNotNull(topic);
     }
@@ -877,6 +924,18 @@ public class Publisher implements PublisherInterface {
      */
     public Builder setCompressionBytesThreshold(long compressionBytesThreshold) {
       this.compressionBytesThreshold = compressionBytesThreshold;
+      return this;
+    }
+
+    /** Gives the ability to enable Open Telemetry Tracing */
+    public Builder setEnableOpenTelemetryTracing(boolean enableOpenTelemetryTracing) {
+      this.enableOpenTelemetryTracing = enableOpenTelemetryTracing;
+      return this;
+    }
+
+    /** Sets the instance of OpenTelemetry for the Publisher class. */
+    public Builder setOpenTelemetry(OpenTelemetry openTelemetry) {
+      this.openTelemetry = openTelemetry;
       return this;
     }
 
