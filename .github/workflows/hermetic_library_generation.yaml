@@ -23,7 +23,7 @@ env:
 
 jobs:
   library_generation:
-    # skip pull requests come from a forked repository
+    # skip pull requests coming from a forked repository
     if: github.env.REPO_FULL_NAME == github.repository
     runs-on: ubuntu-latest
     steps:
