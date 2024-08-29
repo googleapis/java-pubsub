@@ -1,5 +1,75 @@
 # Changelog
 
+## [1.132.1](https://github.com/googleapis/java-pubsub/compare/v1.132.0...v1.132.1) (2024-08-20)
+
+
+### Dependencies
+
+* Update dependency com.google.cloud:google-cloud-core to v2.42.0 ([#2140](https://github.com/googleapis/java-pubsub/issues/2140)) ([80dca35](https://github.com/googleapis/java-pubsub/commit/80dca35cebb1061f3d2a852ff9929519e69283cc))
+* Update dependency com.google.cloud:sdk-platform-java-config to v3.34.0 ([#2141](https://github.com/googleapis/java-pubsub/issues/2141)) ([273fbf3](https://github.com/googleapis/java-pubsub/commit/273fbf3f752444a397b0e743c5c6de1a539291ea))
+* Update dependency com.google.protobuf:protobuf-java-util to v4.27.3 ([#2127](https://github.com/googleapis/java-pubsub/issues/2127)) ([8523b4f](https://github.com/googleapis/java-pubsub/commit/8523b4f67f45ac219671c0d588bac7e9dc450dcb))
+* Update dependency org.xerial.snappy:snappy-java to v1.1.10.6 ([#2135](https://github.com/googleapis/java-pubsub/issues/2135)) ([102ff84](https://github.com/googleapis/java-pubsub/commit/102ff844594687b3bbaca1ff92e650fe9e8d3f1e))
+
+## [1.132.0](https://github.com/googleapis/java-pubsub/compare/v1.131.0...v1.132.0) (2024-08-01)
+
+
+### Features
+
+* Enable hermetic library generation ([#2048](https://github.com/googleapis/java-pubsub/issues/2048)) ([283a5e8](https://github.com/googleapis/java-pubsub/commit/283a5e89837071678f8dd94b8b8adfad91a6766c))
+
+
+### Dependencies
+
+* Update dependency com.google.cloud:google-cloud-bigquery to v2.41.0 ([#2093](https://github.com/googleapis/java-pubsub/issues/2093)) ([217b8a3](https://github.com/googleapis/java-pubsub/commit/217b8a3f5419f80402d349b8873d7302eeb35e3f))
+* Update dependency com.google.cloud:google-cloud-bigquery to v2.42.0 ([#2124](https://github.com/googleapis/java-pubsub/issues/2124)) ([24ebe24](https://github.com/googleapis/java-pubsub/commit/24ebe2402fe6278348d87b5a4259c365a819877f))
+* Update dependency com.google.cloud:google-cloud-core to v2.41.0 ([#2120](https://github.com/googleapis/java-pubsub/issues/2120)) ([1f6428a](https://github.com/googleapis/java-pubsub/commit/1f6428a8b79369a239664b9ea7cd38e024db9724))
+* Update dependency com.google.cloud:google-cloud-storage to v2.40.1 ([#2095](https://github.com/googleapis/java-pubsub/issues/2095)) ([0d64d6c](https://github.com/googleapis/java-pubsub/commit/0d64d6cf7799a176297ceaa1475b7cb29a64bebc))
+* Update dependency com.google.cloud:google-cloud-storage to v2.41.0 ([#2129](https://github.com/googleapis/java-pubsub/issues/2129)) ([2348d20](https://github.com/googleapis/java-pubsub/commit/2348d2022bc400b7f187d3db7f43aff94d8884a8))
+* Update dependency com.google.cloud:sdk-platform-java-config to v3.33.0 ([#2121](https://github.com/googleapis/java-pubsub/issues/2121)) ([7fbea6d](https://github.com/googleapis/java-pubsub/commit/7fbea6d0c922dd3485f19eafccc42869efd0e5ed))
+* Update dependency com.google.protobuf:protobuf-java-util to v4.27.2 ([#2091](https://github.com/googleapis/java-pubsub/issues/2091)) ([9859f11](https://github.com/googleapis/java-pubsub/commit/9859f1181a12bc683eaf4a6345bf2528a5463c59))
+* Update dependency org.junit.vintage:junit-vintage-engine to v5.10.3 ([#2096](https://github.com/googleapis/java-pubsub/issues/2096)) ([42f12ed](https://github.com/googleapis/java-pubsub/commit/42f12ed3270e66beae316deb729b445c94dcb1a8))
+
+
+### Documentation
+
+* **samples:** Optimistic subscribe sample ([#2063](https://github.com/googleapis/java-pubsub/issues/2063)) ([53a4844](https://github.com/googleapis/java-pubsub/commit/53a4844f09eace777142b8cdcd06bc07cef0b432))
+
+## [1.131.0](https://github.com/googleapis/java-pubsub/compare/v1.130.1...v1.131.0) (2024-06-25)
+
+
+### Features
+
+* Add use_topic_schema for Cloud Storage Subscriptions ([#2082](https://github.com/googleapis/java-pubsub/issues/2082)) ([11d67d4](https://github.com/googleapis/java-pubsub/commit/11d67d44152ccca008dda071683d9932c59af41d))
+
+
+### Dependencies
+
+* Update dependency com.google.cloud:google-cloud-core to v2.40.0 ([#2087](https://github.com/googleapis/java-pubsub/issues/2087)) ([26b01c9](https://github.com/googleapis/java-pubsub/commit/26b01c921f2700947a1653702be0234cf84cccef))
+* Update dependency com.google.cloud:sdk-platform-java-config to v3.32.0 ([#2088](https://github.com/googleapis/java-pubsub/issues/2088)) ([aebc3ed](https://github.com/googleapis/java-pubsub/commit/aebc3ed779e0847077742dedc7c2c0a9d8a1ab10))
+
+## [1.130.1](https://github.com/googleapis/java-pubsub/compare/v1.130.0...v1.130.1) (2024-06-13)
+
+
+### Dependencies
+
+* Update dependency com.google.cloud:google-cloud-bigquery to v2.40.3 ([#2071](https://github.com/googleapis/java-pubsub/issues/2071)) ([0844bfb](https://github.com/googleapis/java-pubsub/commit/0844bfb0a500ae0b4a0f63fcb45ffffeaf609e3d))
+* Update dependency com.google.cloud:google-cloud-storage to v2.40.0 ([#2066](https://github.com/googleapis/java-pubsub/issues/2066)) ([dfcaeb5](https://github.com/googleapis/java-pubsub/commit/dfcaeb5b59466d86ac5b5bf74655ce359e7d5713))
+* Update dependency com.google.protobuf:protobuf-java-util to v4.27.1 ([#2065](https://github.com/googleapis/java-pubsub/issues/2065)) ([6baf69a](https://github.com/googleapis/java-pubsub/commit/6baf69a99adb75fba49c2289bca3ffd08720f8f4))
+
+## [1.130.0](https://github.com/googleapis/java-pubsub/compare/v1.129.7...v1.130.0) (2024-06-03)
+
+
+### Features
+
+* [java] allow passing libraries_bom_version from env ([#1967](https://github.com/googleapis/java-pubsub/issues/1967)) ([#2033](https://github.com/googleapis/java-pubsub/issues/2033)) ([825c5f8](https://github.com/googleapis/java-pubsub/commit/825c5f83e0fd2fd6b1f4856b9c555d71110a03e1))
+* Add service_account_email for export subscriptions ([#2054](https://github.com/googleapis/java-pubsub/issues/2054)) ([670db3e](https://github.com/googleapis/java-pubsub/commit/670db3e1b665e6f5aec3cd7bf3639e9242f20151))
+
+
+### Dependencies
+
+* Update dependency com.google.cloud:google-cloud-core to v2.39.0 ([#2057](https://github.com/googleapis/java-pubsub/issues/2057)) ([43446d2](https://github.com/googleapis/java-pubsub/commit/43446d22ad2140f1b18fd1dde5dab03a901580bc))
+* Update dependency com.google.cloud:sdk-platform-java-config to v3.31.0 ([#2058](https://github.com/googleapis/java-pubsub/issues/2058)) ([a998ef5](https://github.com/googleapis/java-pubsub/commit/a998ef5359942486ea47bfd50f154314ae37be33))
+
 ## [1.129.7](https://github.com/googleapis/java-pubsub/compare/v1.129.6...v1.129.7) (2024-05-29)
 
 

@@ -1168,6 +1168,10 @@ message CloudStorageConfig {
     // data (for example, an ordering_key, if present) are added as entries in
     // the attributes map.
     bool write_metadata = 1 [(google.api.field_behavior) = OPTIONAL];
+
+    // Optional. When true, the output Cloud Storage file will be serialized
+    // using the topic schema, if it exists.
+    bool use_topic_schema = 2 [(google.api.field_behavior) = OPTIONAL];
   }
 
   // Possible states for a Cloud Storage subscription.
@@ -1188,6 +1192,10 @@ message CloudStorageConfig {
     // Cannot write to the destination because enforce_in_transit is set to true
     // and the destination locations are not in the allowed regions.
     IN_TRANSIT_LOCATION_RESTRICTION = 4;
+
+    // Cannot write to the Cloud Storage bucket due to an incompatibility
+    // between the topic schema and subscription settings.
+    SCHEMA_MISMATCH = 5;
   }
 
   // Required. User-provided name for the Cloud Storage bucket.
@@ -1231,6 +1239,10 @@ message CloudStorageConfig {
   // before a new file is created. Min 1 KB, max 10 GiB. The max_bytes limit may
   // be exceeded in cases where messages are larger than the limit.
   int64 max_bytes = 7 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. The maximum number of messages that can be written to a Cloud
+  // Storage file before a new file is created. Min 1000 messages.
+  int64 max_messages = 8 [(google.api.field_behavior) = OPTIONAL];
 
   // Output only. An output-only field that indicates whether or not the
   // subscription can receive messages.
