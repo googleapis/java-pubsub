@@ -21,6 +21,7 @@ import com.google.pubsub.v1.TopicName;
 import io.opentelemetry.api.common.Attributes;
 import io.opentelemetry.api.common.AttributesBuilder;
 import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.SpanBuilder;
 import io.opentelemetry.api.trace.SpanKind;
 import io.opentelemetry.api.trace.StatusCode;
 import io.opentelemetry.api.trace.Tracer;
@@ -36,7 +37,7 @@ public class OpenTelemetryUtil {
   private static final String PUBLISH_RPC_SPAN_SUFFIX = " publish";
 
   /** Populates attributes that are common the publisher parent span and publish RPC span. */
-  public static final AttributesBuilder createCommonSpanAttributesBuilder(
+  protected static final AttributesBuilder createCommonSpanAttributesBuilder(
       String destinationName, String projectName, String codeFunction, String operation) {
     AttributesBuilder attributesBuilder =
         Attributes.builder()
@@ -55,7 +56,7 @@ public class OpenTelemetryUtil {
    * Creates, starts, and returns a publish RPC span for the given message batch. Bi-directional
    * links with the publisher parent span are created for sampled messages in the batch.
    */
-  public static final Span startPublishRpcSpan(
+  protected static final Span startPublishRpcSpan(
       Tracer tracer,
       String topic,
       List<PubsubMessageWrapper> messages,
@@ -64,21 +65,24 @@ public class OpenTelemetryUtil {
       TopicName topicName = TopicName.parse(topic);
       Attributes attributes =
           createCommonSpanAttributesBuilder(
-                  topicName.getTopic(), topicName.getProject(), "Publisher.publishCall", "publish")
+                  topicName.getTopic(), topicName.getProject(), "publishCall", "publish")
               .put(SemanticAttributes.MESSAGING_BATCH_MESSAGE_COUNT, messages.size())
               .build();
-      Span publishRpcSpan =
+      SpanBuilder publishRpcSpanBuilder =
           tracer
               .spanBuilder(topicName.getTopic() + PUBLISH_RPC_SPAN_SUFFIX)
               .setSpanKind(SpanKind.CLIENT)
-              .setAllAttributes(attributes)
-              .startSpan();
+              .setAllAttributes(attributes);
+      Attributes linkAttributes =
+          Attributes.builder().put(SemanticAttributes.MESSAGING_OPERATION, "publish").build();
+      for (PubsubMessageWrapper message : messages) {
+          if (message.getPublisherSpan().getSpanContext().isSampled())
+          publishRpcSpanBuilder.addLink(message.getPublisherSpan().getSpanContext(), linkAttributes);
+      }
+      Span publishRpcSpan = publishRpcSpanBuilder.startSpan();
 
       for (PubsubMessageWrapper message : messages) {
         if (message.getPublisherSpan().getSpanContext().isSampled()) {
-          Attributes linkAttributes =
-              Attributes.builder().put(SemanticAttributes.MESSAGING_OPERATION, "publish").build();
-          publishRpcSpan.addLink(message.getPublisherSpan().getSpanContext(), linkAttributes);
           message.getPublisherSpan().addLink(publishRpcSpan.getSpanContext(), linkAttributes);
           message.addPublishStartEvent();
         }
@@ -89,7 +93,7 @@ public class OpenTelemetryUtil {
   }
 
   /** Ends the given publish RPC span if it exists. */
-  public static final void endPublishRpcSpan(
+  protected static final void endPublishRpcSpan(
       Span publishRpcSpan, boolean enableOpenTelemetryTracing) {
     if (enableOpenTelemetryTracing && publishRpcSpan != null) {
       publishRpcSpan.end();
@@ -100,7 +104,7 @@ public class OpenTelemetryUtil {
    * Sets an error status and records an exception when an exception is thrown when publishing the
    * message batch.
    */
-  public static final void setPublishRpcSpanException(
+  protected static final void setPublishRpcSpanException(
       Span publishRpcSpan, Throwable t, boolean enableOpenTelemetryTracing) {
     if (enableOpenTelemetryTracing && publishRpcSpan != null) {
       publishRpcSpan.setStatus(StatusCode.ERROR, "Exception thrown on publish RPC.");
@@ -113,7 +117,7 @@ public class OpenTelemetryUtil {
    * Creates, starts, and returns spans for ModAck, Nack, and Ack RPC requests. Bi-directional links
    * to parent subscribe span for sampled messages are added.
    */
-  public static final Span startSubscribeRpcSpan(
+  protected static final Span startSubscribeRpcSpan(
       Tracer tracer,
       String subscription,
       String rpcOperation,
@@ -124,8 +128,8 @@ public class OpenTelemetryUtil {
     if (enableOpenTelemetryTracing && tracer != null) {
       String codeFunction =
           rpcOperation == "ack"
-              ? "StreamingSubscriberConnection.sendAckOperations"
-              : "StreamingSubscriberConnection.sendModAckOperations";
+              ? "sendAckOperations"
+              : "sendModAckOperations";
       SubscriptionName subscriptionName = SubscriptionName.parse(subscription);
       AttributesBuilder attributesBuilder =
           createCommonSpanAttributesBuilder(
@@ -142,20 +146,24 @@ public class OpenTelemetryUtil {
             .put(RECEIPT_MODACK_ATTR_KEY, isReceiptModack);
       }
 
-      Span rpcSpan =
+      SpanBuilder rpcSpanBuilder =
           tracer
               .spanBuilder(subscriptionName.getSubscription() + " " + rpcOperation)
               .setSpanKind(SpanKind.CLIENT)
-              .setAllAttributes(attributesBuilder.build())
-              .startSpan();
+              .setAllAttributes(attributesBuilder.build());
+      Attributes linkAttributes =
+          Attributes.builder()
+              .put(SemanticAttributes.MESSAGING_OPERATION, rpcOperation)
+              .build();
+      for (PubsubMessageWrapper message : messages) {
+        if (message.getSubscriberSpan().getSpanContext().isSampled()) {
+          rpcSpanBuilder.addLink(message.getSubscriberSpan().getSpanContext(), linkAttributes);
+        }
+      }
+      Span rpcSpan = rpcSpanBuilder.startSpan();
 
       for (PubsubMessageWrapper message : messages) {
         if (message.getSubscriberSpan().getSpanContext().isSampled()) {
-          Attributes linkAttributes =
-              Attributes.builder()
-                  .put(SemanticAttributes.MESSAGING_OPERATION, rpcOperation)
-                  .build();
-          rpcSpan.addLink(message.getSubscriberSpan().getSpanContext(), linkAttributes);
           message.getSubscriberSpan().addLink(rpcSpan.getSpanContext(), linkAttributes);
           switch (rpcOperation) {
             case "ack":
@@ -176,13 +184,13 @@ public class OpenTelemetryUtil {
   }
 
   /** Ends the given subscribe RPC span if it exists. */
-  public static final void endSubscribeRpcSpan(Span rpcSpan, boolean enableOpenTelemetryTracing) {
+  protected static final void endSubscribeRpcSpan(Span rpcSpan, boolean enableOpenTelemetryTracing) {
     if (enableOpenTelemetryTracing && rpcSpan != null) {
       rpcSpan.end();
     }
   }
 
-  public static final void setSubscribeRpcSpanException(
+  protected static final void setSubscribeRpcSpanException(
       Span rpcSpan,
       boolean isModack,
       int ackDeadline,

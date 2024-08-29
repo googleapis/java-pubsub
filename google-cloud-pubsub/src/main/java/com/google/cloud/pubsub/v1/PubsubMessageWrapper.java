@@ -150,7 +150,7 @@ public class PubsubMessageWrapper {
     if (enableOpenTelemetryTracing && tracer != null) {
       AttributesBuilder attributesBuilder =
           OpenTelemetryUtil.createCommonSpanAttributesBuilder(
-              topicName.getTopic(), topicName.getProject(), "Publisher.publish", "create");
+              topicName.getTopic(), topicName.getProject(), "publish", "create");
 
       attributesBuilder.put(MESSAGE_SIZE_ATTR_KEY, message.getData().size());
       if (!message.getOrderingKey().isEmpty()) {
@@ -266,7 +266,7 @@ public class PubsubMessageWrapper {
           OpenTelemetryUtil.createCommonSpanAttributesBuilder(
               subscriptionName.getSubscription(),
               subscriptionName.getProject(),
-              "StreamingSubscriberConnection.onResponse",
+              "onResponse",
               null);
 
       attributesBuilder

@@ -164,7 +164,7 @@ public class OpenTelemetryTest {
         .containsEntry(SemanticAttributes.MESSAGING_SYSTEM, MESSAGING_SYSTEM_VALUE)
         .containsEntry(SemanticAttributes.MESSAGING_DESTINATION_NAME, FULL_TOPIC_NAME.getTopic())
         .containsEntry(PROJECT_ATTR_KEY, FULL_TOPIC_NAME.getProject())
-        .containsEntry(SemanticAttributes.CODE_FUNCTION, "Publisher.publishCall")
+        .containsEntry(SemanticAttributes.CODE_FUNCTION, "publishCall")
         .containsEntry(SemanticAttributes.MESSAGING_OPERATION, "publish")
         .containsEntry(SemanticAttributes.MESSAGING_BATCH_MESSAGE_COUNT, messageWrappers.size());
 
@@ -195,7 +195,7 @@ public class OpenTelemetryTest {
         .containsEntry(SemanticAttributes.MESSAGING_SYSTEM, MESSAGING_SYSTEM_VALUE)
         .containsEntry(SemanticAttributes.MESSAGING_DESTINATION_NAME, FULL_TOPIC_NAME.getTopic())
         .containsEntry(PROJECT_ATTR_KEY, PROJECT_NAME)
-        .containsEntry(SemanticAttributes.CODE_FUNCTION, "Publisher.publish")
+        .containsEntry(SemanticAttributes.CODE_FUNCTION, "publish")
         .containsEntry(SemanticAttributes.MESSAGING_OPERATION, "create")
         .containsEntry(ORDERING_KEY_ATTR_KEY, ORDERING_KEY)
         .containsEntry(MESSAGE_SIZE_ATTR_KEY, messageSize)
@@ -460,7 +460,7 @@ public class OpenTelemetryTest {
             SemanticAttributes.MESSAGING_DESTINATION_NAME, FULL_SUBSCRIPTION_NAME.getSubscription())
         .containsEntry(PROJECT_ATTR_KEY, FULL_TOPIC_NAME.getProject())
         .containsEntry(
-            SemanticAttributes.CODE_FUNCTION, "StreamingSubscriberConnection.sendModAckOperations")
+            SemanticAttributes.CODE_FUNCTION, "sendModAckOperations")
         .containsEntry(SemanticAttributes.MESSAGING_OPERATION, "modack")
         .containsEntry(
             SemanticAttributes.MESSAGING_BATCH_MESSAGE_COUNT, subscribeMessageWrappers.size())
@@ -488,7 +488,7 @@ public class OpenTelemetryTest {
             SemanticAttributes.MESSAGING_DESTINATION_NAME, FULL_SUBSCRIPTION_NAME.getSubscription())
         .containsEntry(PROJECT_ATTR_KEY, FULL_TOPIC_NAME.getProject())
         .containsEntry(
-            SemanticAttributes.CODE_FUNCTION, "StreamingSubscriberConnection.sendAckOperations")
+            SemanticAttributes.CODE_FUNCTION, "sendAckOperations")
         .containsEntry(SemanticAttributes.MESSAGING_OPERATION, "ack")
         .containsEntry(
             SemanticAttributes.MESSAGING_BATCH_MESSAGE_COUNT, subscribeMessageWrappers.size());
@@ -514,7 +514,7 @@ public class OpenTelemetryTest {
             SemanticAttributes.MESSAGING_DESTINATION_NAME, FULL_SUBSCRIPTION_NAME.getSubscription())
         .containsEntry(PROJECT_ATTR_KEY, FULL_TOPIC_NAME.getProject())
         .containsEntry(
-            SemanticAttributes.CODE_FUNCTION, "StreamingSubscriberConnection.sendModAckOperations")
+            SemanticAttributes.CODE_FUNCTION, "sendModAckOperations")
         .containsEntry(SemanticAttributes.MESSAGING_OPERATION, "nack")
         .containsEntry(
             SemanticAttributes.MESSAGING_BATCH_MESSAGE_COUNT, subscribeMessageWrappers.size());
@@ -562,7 +562,7 @@ public class OpenTelemetryTest {
         .containsEntry(
             SemanticAttributes.MESSAGING_DESTINATION_NAME, FULL_SUBSCRIPTION_NAME.getSubscription())
         .containsEntry(PROJECT_ATTR_KEY, PROJECT_NAME)
-        .containsEntry(SemanticAttributes.CODE_FUNCTION, "StreamingSubscriberConnection.onResponse")
+        .containsEntry(SemanticAttributes.CODE_FUNCTION, "onResponse")
         .containsEntry(MESSAGE_SIZE_ATTR_KEY, messageSize)
         .containsEntry(ORDERING_KEY_ATTR_KEY, ORDERING_KEY)
         .containsEntry(MESSAGE_ACK_ID_ATTR_KEY, ACK_ID)
