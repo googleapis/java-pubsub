@@ -48,10 +48,10 @@ echo "The latest proto version is: ${LATEST_PROTO_VERSION}"
 if [[ "${CURRENT_PROTO_VERSION}" != "${LATEST_PROTO_VERSION}" ]]; then
   # testing-infra-docker has Java 11 installed in java8 docker container. Use this as sdk-platform-java
   # needs Java 11+ to run with GraalVM. For GH actions, JAVA11_HOME does not exist and would skip this.
-  if [ ! -z "${JAVA11_HOME}" ]; then
-    export JAVA_HOME="${JAVA11_HOME}"
-    export PATH=${JAVA_HOME}/bin:$PATH
-  fi
+#  if [ ! -z "${JAVA11_HOME}" ]; then
+#    export JAVA_HOME="${JAVA11_HOME}"
+#    export PATH=${JAVA_HOME}/bin:$PATH
+#  fi
 
   pushd /tmp
   git clone https://github.com/googleapis/sdk-platform-java.git
@@ -97,9 +97,9 @@ if [[ "${CURRENT_PROTO_VERSION}" != "${LATEST_PROTO_VERSION}" ]]; then
     fi
   done
 
-  # Reset back to the original Java version if changed
-  export JAVA_HOME="${current_java_home}"
-  export PATH=${JAVA_HOME}/bin:$PATH
+#  # Reset back to the original Java version if changed
+#  export JAVA_HOME="${current_java_home}"
+#  export PATH=${JAVA_HOME}/bin:$PATH
 fi
 
 # attempt to install 3 times with exponential backoff (starting with 10 seconds)
