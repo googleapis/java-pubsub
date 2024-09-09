@@ -142,12 +142,12 @@ test)
     RETURN_CODE=$?
     ;;
 lint)
-    install_shared_deps
+    install_new_shared_deps
     mvn com.coveo:fmt-maven-plugin:check
     RETURN_CODE=$?
     ;;
 javadoc)
-    install_shared_deps
+    install_new_shared_deps
     mvn javadoc:javadoc javadoc:test-javadoc
     RETURN_CODE=$?
     ;;
@@ -243,7 +243,7 @@ presubmit-against-pubsublite-samples)
     fi
     ;;
 clirr)
-    install_shared_deps
+    install_new_shared_deps
     mvn -B -Denforcer.skip=true clirr:check
     RETURN_CODE=$?
     ;;
