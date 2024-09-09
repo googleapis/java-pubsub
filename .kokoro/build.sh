@@ -30,6 +30,8 @@ echo ${JOB_TYPE}
 # Store the current Java version since the version may change when installing sdk-platform-java
 current_java_home=$JAVA_HOME
 
+java -version
+
 # Get the current proto runtime version used in this repo
 CURRENT_PROTO_VERSION=$(mvn -ntp help:effective-pom |
 sed -n "/<artifactId>protobuf-java<\/artifactId>/,/<\/dependency>/ {
