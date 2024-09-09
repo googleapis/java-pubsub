@@ -15,6 +15,105 @@
 
 set -eo pipefail
 
+function install_new_shared_deps() {
+  # Store the current Java version since the version may change when installing sdk-platform-java
+  current_java_home=$JAVA_HOME
+
+  # Get the current proto runtime version used in this repo
+  CURRENT_PROTO_VERSION=$(mvn -ntp help:effective-pom |
+  sed -n "/<artifactId>protobuf-java<\/artifactId>/,/<\/dependency>/ {
+    /<version>/{
+        s/<version>\(.*\)<\/version>/\1/p
+        q
+    }
+  }" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+  echo "The current proto version is: ${CURRENT_PROTO_VERSION}"
+
+  # Find the latest proto runtime version available
+  LATEST_PROTO_VERSION="4.27.4"
+  echo "The latest proto version is: ${LATEST_PROTO_VERSION}"
+
+  # Only reinstall shared-deps again to test for a newer proto version
+  if [[ "${CURRENT_PROTO_VERSION}" != "${LATEST_PROTO_VERSION}" ]]; then
+    # testing-infra-docker has Java 11 installed in java8 docker container. Use this as sdk-platform-java
+    # needs Java 11+ to run with GraalVM. For GH actions, JAVA11_HOME does not exist and would skip this.
+    if [ ! -z "${JAVA11_HOME}" ]; then
+      export JAVA_HOME="${JAVA11_HOME}"
+      export PATH=${JAVA_HOME}/bin:$PATH
+    fi
+
+    pushd /tmp
+    git clone https://github.com/googleapis/sdk-platform-java.git
+    pushd sdk-platform-java
+    pushd gapic-generator-java-pom-parent
+    sed -i "/<protobuf.version>.*<\/protobuf.version>/s/\(.*<protobuf.version>\).*\(<\/protobuf.version>\)/\1${LATEST_PROTO_VERSION}\2/" pom.xml
+    # sdk-platform-java
+    popd
+
+    pushd sdk-platform-java-config
+    # Get current Shared-Deps version in sdk-platform-java
+    SHARED_DEPS_VERSION=$(mvn -ntp help:effective-pom |
+    sed -n "/<artifactId>sdk-platform-java-config<\/artifactId>/,/<\/dependency>/ {
+      /<version>/{
+          s/<version>\(.*\)<\/version>/\1/p
+          q
+      }
+    }" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+    echo "Shared-Deps Version: ${SHARED_DEPS_VERSION}"
+    # sdk-platform-java
+    popd
+
+    mvn clean install -q -ntp \
+        -DskipTests=true \
+        -Dclirr.skip=true \
+        -Denforcer.skip=true \
+        -T 1C
+    # /tmp
+    popd
+
+    # Back to the original directory of the repo
+    popd
+    # Find all the poms with a reference to shared-deps and update to the new local version
+    poms=($(find . -name pom.xml))
+    for pom in "${poms[@]}"; do
+      if grep -q "sdk-platform-java-config" "${pom}"; then
+        echo "Updating the pom: ${pom} to use shared-deps version: ${SHARED_DEPS_VERSION}"
+        sed -i "/<artifactId>sdk-platform-java-config<\/artifactId>/,/<\/parent>/ s/<version>.*<\/version>/<version>$SHARED_DEPS_VERSION<\/version>/" "${pom}"
+  #      xmlstarlet ed --inplace -N x="http://maven.apache.org/POM/4.0.0" \
+  #        -u "//x:project/x:parent[x:artifactId='sdk-platform-java-config']/x:version" \
+  #        -v "${SHARED_DEPS_VERSION}" \
+  #        "${pom}"
+      fi
+    done
+
+    # Reset back to the original Java version if changed
+    export JAVA_HOME="${current_java_home}"
+    export PATH=${JAVA_HOME}/bin:$PATH
+  fi
+
+  # attempt to install 3 times with exponential backoff (starting with 10 seconds)
+  retry_with_backoff 3 10 \
+    mvn install -B -V -ntp \
+      -DskipTests=true \
+      -Dclirr.skip=true \
+      -Denforcer.skip=true \
+      -Dmaven.javadoc.skip=true \
+      -Dgcloud.download.skip=true \
+      -T 1C
+}
+
+function install_shared_deps() {
+  # attempt to install 3 times with exponential backoff (starting with 10 seconds)
+  retry_with_backoff 3 10 \
+    mvn install -B -V -ntp \
+      -DskipTests=true \
+      -Dclirr.skip=true \
+      -Denforcer.skip=true \
+      -Dmaven.javadoc.skip=true \
+      -Dgcloud.download.skip=true \
+      -T 1C
+}
+
 ## Get the directory of the build script
 scriptDir=$(realpath $(dirname "${BASH_SOURCE[0]}"))
 ## cd to the parent directory, i.e. the root of the git repo
@@ -27,93 +126,6 @@ source ${scriptDir}/common.sh
 mvn -version
 echo ${JOB_TYPE}
 
-# Store the current Java version since the version may change when installing sdk-platform-java
-current_java_home=$JAVA_HOME
-
-java -version
-
-# Get the current proto runtime version used in this repo
-CURRENT_PROTO_VERSION=$(mvn -ntp help:effective-pom |
-sed -n "/<artifactId>protobuf-java<\/artifactId>/,/<\/dependency>/ {
-  /<version>/{
-      s/<version>\(.*\)<\/version>/\1/p
-      q
-  }
-}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
-echo "The current proto version is: ${CURRENT_PROTO_VERSION}"
-
-# Find the latest proto runtime version available
-LATEST_PROTO_VERSION="4.27.4"
-echo "The latest proto version is: ${LATEST_PROTO_VERSION}"
-
-# Only reinstall shared-deps again to test for a newer proto version
-if [[ "${CURRENT_PROTO_VERSION}" != "${LATEST_PROTO_VERSION}" ]]; then
-  # testing-infra-docker has Java 11 installed in java8 docker container. Use this as sdk-platform-java
-  # needs Java 11+ to run with GraalVM. For GH actions, JAVA11_HOME does not exist and would skip this.
-#  if [ ! -z "${JAVA11_HOME}" ]; then
-#    export JAVA_HOME="${JAVA11_HOME}"
-#    export PATH=${JAVA_HOME}/bin:$PATH
-#  fi
-
-  pushd /tmp
-  git clone https://github.com/googleapis/sdk-platform-java.git
-  pushd sdk-platform-java
-  pushd gapic-generator-java-pom-parent
-  sed -i "/<protobuf.version>.*<\/protobuf.version>/s/\(.*<protobuf.version>\).*\(<\/protobuf.version>\)/\1${LATEST_PROTO_VERSION}\2/" pom.xml
-  # sdk-platform-java
-  popd
-
-  pushd sdk-platform-java-config
-  # Get current Shared-Deps version in sdk-platform-java
-  SHARED_DEPS_VERSION=$(mvn -ntp help:effective-pom |
-  sed -n "/<artifactId>sdk-platform-java-config<\/artifactId>/,/<\/dependency>/ {
-    /<version>/{
-        s/<version>\(.*\)<\/version>/\1/p
-        q
-    }
-  }" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
-  echo "Shared-Deps Version: ${SHARED_DEPS_VERSION}"
-  # sdk-platform-java
-  popd
-
-  mvn clean install -q -ntp \
-      -DskipTests=true \
-      -Dclirr.skip=true \
-      -Denforcer.skip=true \
-      -T 1C
-  # /tmp
-  popd
-
-  # Back to the original directory of the repo
-  popd
-  # Find all the poms with a reference to shared-deps and update to the new local version
-  poms=($(find . -name pom.xml))
-  for pom in "${poms[@]}"; do
-    if grep -q "sdk-platform-java-config" "${pom}"; then
-      echo "Updating the pom: ${pom} to use shared-deps version: ${SHARED_DEPS_VERSION}"
-      sed -i "/<artifactId>sdk-platform-java-config<\/artifactId>/,/<\/parent>/ s/<version>.*<\/version>/<version>$SHARED_DEPS_VERSION<\/version>/" "${pom}"
-#      xmlstarlet ed --inplace -N x="http://maven.apache.org/POM/4.0.0" \
-#        -u "//x:project/x:parent[x:artifactId='sdk-platform-java-config']/x:version" \
-#        -v "${SHARED_DEPS_VERSION}" \
-#        "${pom}"
-    fi
-  done
-
-#  # Reset back to the original Java version if changed
-#  export JAVA_HOME="${current_java_home}"
-#  export PATH=${JAVA_HOME}/bin:$PATH
-fi
-
-# attempt to install 3 times with exponential backoff (starting with 10 seconds)
-retry_with_backoff 3 10 \
-  mvn install -B -V -ntp \
-    -DskipTests=true \
-    -Dclirr.skip=true \
-    -Denforcer.skip=true \
-    -Dmaven.javadoc.skip=true \
-    -Dgcloud.download.skip=true \
-    -T 1C
-
 # if GOOGLE_APPLICATION_CREDENTIALS is specified as a relative path, prepend Kokoro root directory onto it
 if [[ ! -z "${GOOGLE_APPLICATION_CREDENTIALS}" && "${GOOGLE_APPLICATION_CREDENTIALS}" != /* ]]; then
     export GOOGLE_APPLICATION_CREDENTIALS=$(realpath ${KOKORO_GFILE_DIR}/${GOOGLE_APPLICATION_CREDENTIALS})
@@ -124,19 +136,23 @@ set +e
 
 case ${JOB_TYPE} in
 test)
+    install_new_shared_deps
     echo "SUREFIRE_JVM_OPT: ${SUREFIRE_JVM_OPT}"
     mvn test -B -ntp -Dclirr.skip=true -Denforcer.skip=true ${SUREFIRE_JVM_OPT}
     RETURN_CODE=$?
     ;;
 lint)
+    install_shared_deps
     mvn com.coveo:fmt-maven-plugin:check
     RETURN_CODE=$?
     ;;
 javadoc)
+    install_shared_deps
     mvn javadoc:javadoc javadoc:test-javadoc
     RETURN_CODE=$?
     ;;
 integration)
+    install_new_shared_deps
     mvn -B ${INTEGRATION_TEST_ARGS} \
       -ntp \
       -Penable-integration-tests \
@@ -148,16 +164,19 @@ integration)
     RETURN_CODE=$?
     ;;
 graalvm)
+    install_new_shared_deps
     # Run Unit and Integration Tests with Native Image
     mvn -B ${INTEGRATION_TEST_ARGS} -ntp -Pnative -Penable-integration-tests test
     RETURN_CODE=$?
     ;;
 graalvm17)
+    install_new_shared_deps
     # Run Unit and Integration Tests with Native Image
     mvn -B ${INTEGRATION_TEST_ARGS} -ntp -Pnative -Penable-integration-tests test
     RETURN_CODE=$?
     ;;
 samples)
+    install_new_shared_deps
     SAMPLES_DIR=samples
     # only run ITs in snapshot/ on presubmit PRs. run ITs in all 3 samples/ subdirectories otherwise.
     if [[ ! -z ${KOKORO_GITHUB_PULL_REQUEST_NUMBER} ]]
@@ -188,6 +207,7 @@ samples)
     fi
     ;;
 presubmit-against-pubsublite-samples)
+    install_new_shared_deps
     ## cd to the directory one level above the root of the repo
     cd ${scriptDir}/../..
     git clone https://github.com/googleapis/java-pubsublite.git
@@ -223,6 +243,7 @@ presubmit-against-pubsublite-samples)
     fi
     ;;
 clirr)
+    install_shared_deps
     mvn -B -Denforcer.skip=true clirr:check
     RETURN_CODE=$?
     ;;
