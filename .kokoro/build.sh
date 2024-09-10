@@ -15,6 +15,18 @@
 
 set -eo pipefail
 
+## Get the directory of the build script
+scriptDir=$(realpath $(dirname "${BASH_SOURCE[0]}"))
+## cd to the parent directory, i.e. the root of the git repo
+cd ${scriptDir}/..
+
+# include common functions
+source ${scriptDir}/common.sh
+
+# Print out Maven & Java version
+mvn -version
+echo ${JOB_TYPE}
+
 # Store the current Java version since the version may change when installing sdk-platform-java
 current_java_home=$JAVA_HOME
 
@@ -99,18 +111,6 @@ retry_with_backoff 3 10 \
     -Dmaven.javadoc.skip=true \
     -Dgcloud.download.skip=true \
     -T 1C
-
-## Get the directory of the build script
-scriptDir=$(realpath $(dirname "${BASH_SOURCE[0]}"))
-## cd to the parent directory, i.e. the root of the git repo
-cd ${scriptDir}/..
-
-# include common functions
-source ${scriptDir}/common.sh
-
-# Print out Maven & Java version
-mvn -version
-echo ${JOB_TYPE}
 
 # if GOOGLE_APPLICATION_CREDENTIALS is specified as a relative path, prepend Kokoro root directory onto it
 if [[ ! -z "${GOOGLE_APPLICATION_CREDENTIALS}" && "${GOOGLE_APPLICATION_CREDENTIALS}" != /* ]]; then
