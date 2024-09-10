@@ -35,12 +35,12 @@ function install_new_shared_deps() {
 
   # Only reinstall shared-deps again to test for a newer proto version
   if [[ "${CURRENT_PROTO_VERSION}" != "${LATEST_PROTO_VERSION}" ]]; then
-    # testing-infra-docker has Java 11 installed in java8 docker container. Use this as sdk-platform-java
-    # needs Java 11+ to run with GraalVM. For GH actions, JAVA11_HOME does not exist and would skip this.
-    if [ ! -z "${JAVA11_HOME}" ]; then
-      export JAVA_HOME="${JAVA11_HOME}"
-      export PATH=${JAVA_HOME}/bin:$PATH
-    fi
+#    # testing-infra-docker has Java 11 installed in java8 docker container. Use this as sdk-platform-java
+#    # needs Java 11+ to run with GraalVM. For GH actions, JAVA11_HOME does not exist and would skip this.
+#    if [ ! -z "${JAVA11_HOME}" ]; then
+#      export JAVA_HOME="${JAVA11_HOME}"
+#      export PATH=${JAVA_HOME}/bin:$PATH
+#    fi
 
     pushd /tmp
     git clone https://github.com/googleapis/sdk-platform-java.git
@@ -86,20 +86,20 @@ function install_new_shared_deps() {
       fi
     done
 
-    # Reset back to the original Java version if changed
-    export JAVA_HOME="${current_java_home}"
-    export PATH=${JAVA_HOME}/bin:$PATH
-  fi
+#    # Reset back to the original Java version if changed
+#    export JAVA_HOME="${current_java_home}"
+#    export PATH=${JAVA_HOME}/bin:$PATH
 
-  # attempt to install 3 times with exponential backoff (starting with 10 seconds)
-  retry_with_backoff 3 10 \
-    mvn install -B -V -ntp \
-      -DskipTests=true \
-      -Dclirr.skip=true \
-      -Denforcer.skip=true \
-      -Dmaven.javadoc.skip=true \
-      -Dgcloud.download.skip=true \
-      -T 1C
+    # attempt to install 3 times with exponential backoff (starting with 10 seconds)
+    retry_with_backoff 3 10 \
+      mvn install -B -V -ntp \
+        -DskipTests=true \
+        -Dclirr.skip=true \
+        -Denforcer.skip=true \
+        -Dmaven.javadoc.skip=true \
+        -Dgcloud.download.skip=true \
+        -T 1C
+  fi
 }
 
 function install_shared_deps() {
