@@ -79,7 +79,7 @@
   <difference>
     <differenceType>7006</differenceType>
     <className>com/google/pubsub/v1/**</className>
-    <method>* setUnknownField(*)</method>
+    <method>* setUnknownFields(*)</method>
     <to>**</to>
   </difference>
 </differences>
