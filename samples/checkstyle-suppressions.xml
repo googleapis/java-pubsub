@@ -31,4 +31,9 @@
   <suppress checks="IllegalTokenTextCheck" files="StateProto.java"/>
   <suppress checks="ParameterNameCheck" files="State.java"/>
   <suppress checks="LineLengthCheck" files="State.java|StateProto.java"/>
+  <suppress checks="RequireEmptyLineBeforeBlockTagGroup" files="StateProto.java"/>
+  <suppress checks="RightCurlyAlone" files="StateProto.java"/>
+  <suppress checks="WhitespaceAfter" files="StateProto.java"/>
+  <suppress checks="OperatorWrap" files="StateProto.java"/>
+  <suppress checks="LocalVariableName" files="StateProto.java"/>
 </suppressions>
