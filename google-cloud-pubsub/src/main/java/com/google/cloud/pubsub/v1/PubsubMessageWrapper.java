@@ -17,7 +17,6 @@
 package com.google.cloud.pubsub.v1;
 
 import com.google.api.core.InternalApi;
-import com.google.common.base.Preconditions;
 import com.google.pubsub.v1.PubsubMessage;
 import com.google.pubsub.v1.SubscriptionName;
 import com.google.pubsub.v1.TopicName;
@@ -427,7 +426,6 @@ public class PubsubMessageWrapper {
     }
 
     public PubsubMessageWrapper build() {
-      Preconditions.checkArgument(this.topicName != null || this.subscriptionName != null);
       return new PubsubMessageWrapper(this);
     }
   }

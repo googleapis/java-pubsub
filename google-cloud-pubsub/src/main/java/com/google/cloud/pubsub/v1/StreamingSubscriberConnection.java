@@ -120,7 +120,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
   private final String clientId = UUID.randomUUID().toString();
 
   private final boolean enableOpenTelemetryTracing;
-  private final PubsubTracer tracer;
+  private PubsubTracer tracer = new BasePubsubTracer();
 
   private StreamingSubscriberConnection(Builder builder) {
     subscription = builder.subscription;
@@ -156,7 +156,9 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     }
 
     enableOpenTelemetryTracing = builder.enableOpenTelemetryTracing;
-    tracer = builder.tracer;
+    if (builder.tracer != null) {
+      tracer = builder.tracer;
+    }
 
     messageDispatcher =
         messageDispatcherBuilder
