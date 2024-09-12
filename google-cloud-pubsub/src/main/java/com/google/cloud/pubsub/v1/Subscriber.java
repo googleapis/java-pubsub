@@ -151,7 +151,7 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
 
   private final boolean enableOpenTelemetryTracing;
   private final OpenTelemetry openTelemetry;
-  private PubsubTracer tracer = null;
+  private PubsubTracer tracer = new BasePubsubTracer();
 
   private Subscriber(Builder builder) {
     receiver = builder.receiver;

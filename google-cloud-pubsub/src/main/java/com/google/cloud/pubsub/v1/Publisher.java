@@ -131,7 +131,7 @@ public class Publisher implements PublisherInterface {
 
   private final boolean enableOpenTelemetryTracing;
   private final OpenTelemetry openTelemetry;
-  private PubsubTracer tracer = null;
+  private PubsubTracer tracer = new BasePubsubTracer();
 
   /** The maximum number of messages in one request. Defined by the API. */
   public static long getApiMaxRequestElementCount() {
