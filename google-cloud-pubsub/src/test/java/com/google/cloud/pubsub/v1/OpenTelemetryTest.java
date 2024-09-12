@@ -104,25 +104,23 @@ public class OpenTelemetryTest {
     openTelemetryTesting.clearSpans();
 
     PubsubMessageWrapper messageWrapper =
-        PubsubMessageWrapper.newBuilder(getPubsubMessage(), FULL_TOPIC_NAME.toString(), true)
-            .build();
+        PubsubMessageWrapper.newBuilder(getPubsubMessage(), FULL_TOPIC_NAME.toString()).build();
     List<PubsubMessageWrapper> messageWrappers = Arrays.asList(messageWrapper);
 
     long messageSize = messageWrapper.getPubsubMessage().getData().size();
-    Tracer tracer = openTelemetryTesting.getOpenTelemetry().getTracer("test");
+    Tracer openTelemetryTracer = openTelemetryTesting.getOpenTelemetry().getTracer("test");
+    PubsubTracer tracer = new OpenTelemetryPubsubTracer(openTelemetryTracer);
 
     // Call all span start/end methods in the expected order
-    messageWrapper.startPublisherSpan(tracer);
-    messageWrapper.startPublishFlowControlSpan(tracer);
-    messageWrapper.endPublishFlowControlSpan();
-    messageWrapper.startPublishBatchingSpan(tracer);
-    messageWrapper.endPublishBatchingSpan();
-    Span publishRpcSpan =
-        OpenTelemetryUtil.startPublishRpcSpan(
-            tracer, FULL_TOPIC_NAME.toString(), messageWrappers, true);
-    OpenTelemetryUtil.endPublishRpcSpan(publishRpcSpan, true);
-    messageWrapper.setPublisherMessageIdSpanAttribute(MESSAGE_ID);
-    messageWrapper.endPublisherSpan();
+    tracer.startPublisherSpan(messageWrapper);
+    tracer.startPublishFlowControlSpan(messageWrapper);
+    tracer.endPublishFlowControlSpan(messageWrapper);
+    tracer.startPublishBatchingSpan(messageWrapper);
+    tracer.endPublishBatchingSpan(messageWrapper);
+    Span publishRpcSpan = tracer.startPublishRpcSpan(FULL_TOPIC_NAME.toString(), messageWrappers);
+    tracer.endPublishRpcSpan(publishRpcSpan);
+    tracer.setPublisherMessageIdSpanAttribute(messageWrapper, MESSAGE_ID);
+    tracer.endPublisherSpan(messageWrapper);
 
     List<SpanData> allSpans = openTelemetryTesting.getSpans();
     assertEquals(4, allSpans.size());
@@ -220,16 +218,16 @@ public class OpenTelemetryTest {
     openTelemetryTesting.clearSpans();
 
     PubsubMessageWrapper messageWrapper =
-        PubsubMessageWrapper.newBuilder(getPubsubMessage(), FULL_TOPIC_NAME.toString(), true)
-            .build();
+        PubsubMessageWrapper.newBuilder(getPubsubMessage(), FULL_TOPIC_NAME.toString()).build();
 
-    Tracer tracer = openTelemetryTesting.getOpenTelemetry().getTracer("test");
+    Tracer openTelemetryTracer = openTelemetryTesting.getOpenTelemetry().getTracer("test");
+    PubsubTracer tracer = new OpenTelemetryPubsubTracer(openTelemetryTracer);
 
-    messageWrapper.startPublisherSpan(tracer);
-    messageWrapper.startPublishFlowControlSpan(tracer);
+    tracer.startPublisherSpan(messageWrapper);
+    tracer.startPublishFlowControlSpan(messageWrapper);
 
     Exception e = new Exception("test-exception");
-    messageWrapper.setPublishFlowControlSpanException(e);
+    tracer.setPublishFlowControlSpanException(messageWrapper, e);
 
     List<SpanData> allSpans = openTelemetryTesting.getSpans();
     assertEquals(2, allSpans.size());
@@ -256,63 +254,22 @@ public class OpenTelemetryTest {
   }
 
   @Test
-  public void testPublishBatchingSpanFailure() {
-    openTelemetryTesting.clearSpans();
-
-    PubsubMessageWrapper messageWrapper =
-        PubsubMessageWrapper.newBuilder(getPubsubMessage(), FULL_TOPIC_NAME.toString(), true)
-            .build();
-
-    Tracer tracer = openTelemetryTesting.getOpenTelemetry().getTracer("test");
-
-    messageWrapper.startPublisherSpan(tracer);
-    messageWrapper.startPublishBatchingSpan(tracer);
-
-    Exception e = new Exception("test-exception");
-    messageWrapper.setPublishBatchingSpanException(e);
-
-    List<SpanData> allSpans = openTelemetryTesting.getSpans();
-    assertEquals(2, allSpans.size());
-    SpanData batchingSpanData = allSpans.get(0);
-    SpanData publisherSpanData = allSpans.get(1);
-
-    SpanDataAssert batchingSpanDataAssert = OpenTelemetryAssertions.assertThat(batchingSpanData);
-    StatusData expectedStatus =
-        StatusData.create(StatusCode.ERROR, "Exception thrown during publish batching.");
-    batchingSpanDataAssert
-        .hasName(PUBLISH_BATCHING_SPAN_NAME)
-        .hasParent(publisherSpanData)
-        .hasStatus(expectedStatus)
-        .hasException(e)
-        .hasEnded();
-
-    SpanDataAssert publisherSpanDataAssert = OpenTelemetryAssertions.assertThat(publisherSpanData);
-    publisherSpanDataAssert
-        .hasName(PUBLISHER_SPAN_NAME)
-        .hasKind(SpanKind.PRODUCER)
-        .hasNoParent()
-        .hasEnded();
-  }
-
-  @Test
   public void testPublishRpcSpanFailure() {
     openTelemetryTesting.clearSpans();
 
     PubsubMessageWrapper messageWrapper =
-        PubsubMessageWrapper.newBuilder(getPubsubMessage(), FULL_TOPIC_NAME.toString(), true)
-            .build();
+        PubsubMessageWrapper.newBuilder(getPubsubMessage(), FULL_TOPIC_NAME.toString()).build();
 
     List<PubsubMessageWrapper> messageWrappers = Arrays.asList(messageWrapper);
-    Tracer tracer = openTelemetryTesting.getOpenTelemetry().getTracer("test");
+    Tracer openTelemetryTracer = openTelemetryTesting.getOpenTelemetry().getTracer("test");
+    PubsubTracer tracer = new OpenTelemetryPubsubTracer(openTelemetryTracer);
 
-    messageWrapper.startPublisherSpan(tracer);
-    Span publishRpcSpan =
-        OpenTelemetryUtil.startPublishRpcSpan(
-            tracer, FULL_TOPIC_NAME.toString(), messageWrappers, true);
+    tracer.startPublisherSpan(messageWrapper);
+    Span publishRpcSpan = tracer.startPublishRpcSpan(FULL_TOPIC_NAME.toString(), messageWrappers);
 
     Exception e = new Exception("test-exception");
-    OpenTelemetryUtil.setPublishRpcSpanException(publishRpcSpan, e, true);
-    messageWrapper.endPublisherSpan();
+    tracer.setPublishRpcSpanException(publishRpcSpan, e);
+    tracer.endPublisherSpan(messageWrapper);
 
     List<SpanData> allSpans = openTelemetryTesting.getSpans();
     assertEquals(2, allSpans.size());
@@ -341,67 +298,53 @@ public class OpenTelemetryTest {
   public void testSubscribeSpansSuccess() {
     openTelemetryTesting.clearSpans();
 
-    Tracer tracer = openTelemetryTesting.getOpenTelemetry().getTracer("test");
+    Tracer openTelemetryTracer = openTelemetryTesting.getOpenTelemetry().getTracer("test");
+    PubsubTracer tracer = new OpenTelemetryPubsubTracer(openTelemetryTracer);
 
     PubsubMessageWrapper publishMessageWrapper =
-        PubsubMessageWrapper.newBuilder(getPubsubMessage(), FULL_TOPIC_NAME.toString(), true)
-            .build();
+        PubsubMessageWrapper.newBuilder(getPubsubMessage(), FULL_TOPIC_NAME.toString()).build();
     // Initialize the Publisher span to inject the context in the message
-    publishMessageWrapper.startPublisherSpan(tracer);
-    publishMessageWrapper.endPublisherSpan();
+    tracer.startPublisherSpan(publishMessageWrapper);
+    tracer.endPublisherSpan(publishMessageWrapper);
 
     PubsubMessage publishedMessage =
         publishMessageWrapper.getPubsubMessage().toBuilder().setMessageId(MESSAGE_ID).build();
     PubsubMessageWrapper subscribeMessageWrapper =
         PubsubMessageWrapper.newBuilder(
-                publishedMessage, FULL_SUBSCRIPTION_NAME.toString(), ACK_ID, 1, true)
+                publishedMessage, FULL_SUBSCRIPTION_NAME.toString(), ACK_ID, 1)
             .build();
     List<PubsubMessageWrapper> subscribeMessageWrappers = Arrays.asList(subscribeMessageWrapper);
 
     long messageSize = subscribeMessageWrapper.getPubsubMessage().getData().size();
 
     // Call all span start/end methods in the expected order
-    subscribeMessageWrapper.startSubscriberSpan(tracer, EXACTLY_ONCE_ENABLED);
-    subscribeMessageWrapper.startSubscribeConcurrencyControlSpan(tracer);
-    subscribeMessageWrapper.endSubscribeConcurrencyControlSpan();
-    subscribeMessageWrapper.startSubscribeSchedulerSpan(tracer);
-    subscribeMessageWrapper.endSubscribeSchedulerSpan();
-    subscribeMessageWrapper.startSubscribeProcessSpan(tracer);
-    subscribeMessageWrapper.endSubscribeProcessSpan(PROCESS_ACTION);
+    tracer.startSubscriberSpan(subscribeMessageWrapper, EXACTLY_ONCE_ENABLED);
+    tracer.startSubscribeConcurrencyControlSpan(subscribeMessageWrapper);
+    tracer.endSubscribeConcurrencyControlSpan(subscribeMessageWrapper);
+    tracer.startSubscribeSchedulerSpan(subscribeMessageWrapper);
+    tracer.endSubscribeSchedulerSpan(subscribeMessageWrapper);
+    tracer.startSubscribeProcessSpan(subscribeMessageWrapper);
+    tracer.endSubscribeProcessSpan(subscribeMessageWrapper, PROCESS_ACTION);
     Span subscribeModackRpcSpan =
-        OpenTelemetryUtil.startSubscribeRpcSpan(
-            tracer,
+        tracer.startSubscribeRpcSpan(
             FULL_SUBSCRIPTION_NAME.toString(),
             "modack",
             subscribeMessageWrappers,
             ACK_DEADLINE,
-            true,
             true);
-    OpenTelemetryUtil.endSubscribeRpcSpan(subscribeModackRpcSpan, true);
-    subscribeMessageWrapper.addEndRpcEvent(true, ACK_DEADLINE);
+    tracer.endSubscribeRpcSpan(subscribeModackRpcSpan);
+    tracer.addEndRpcEvent(subscribeMessageWrapper, true, ACK_DEADLINE);
     Span subscribeAckRpcSpan =
-        OpenTelemetryUtil.startSubscribeRpcSpan(
-            tracer,
-            FULL_SUBSCRIPTION_NAME.toString(),
-            "ack",
-            subscribeMessageWrappers,
-            0,
-            false,
-            true);
-    OpenTelemetryUtil.endSubscribeRpcSpan(subscribeAckRpcSpan, true);
-    subscribeMessageWrapper.addEndRpcEvent(false, 0);
+        tracer.startSubscribeRpcSpan(
+            FULL_SUBSCRIPTION_NAME.toString(), "ack", subscribeMessageWrappers, 0, false);
+    tracer.endSubscribeRpcSpan(subscribeAckRpcSpan);
+    tracer.addEndRpcEvent(subscribeMessageWrapper, false, 0);
     Span subscribeNackRpcSpan =
-        OpenTelemetryUtil.startSubscribeRpcSpan(
-            tracer,
-            FULL_SUBSCRIPTION_NAME.toString(),
-            "nack",
-            subscribeMessageWrappers,
-            0,
-            false,
-            true);
-    OpenTelemetryUtil.endSubscribeRpcSpan(subscribeNackRpcSpan, true);
-    subscribeMessageWrapper.addEndRpcEvent(true, 0);
-    subscribeMessageWrapper.endSubscriberSpan();
+        tracer.startSubscribeRpcSpan(
+            FULL_SUBSCRIPTION_NAME.toString(), "nack", subscribeMessageWrappers, 0, false);
+    tracer.endSubscribeRpcSpan(subscribeNackRpcSpan);
+    tracer.addEndRpcEvent(subscribeMessageWrapper, true, 0);
+    tracer.endSubscriberSpan(subscribeMessageWrapper);
 
     List<SpanData> allSpans = openTelemetryTesting.getSpans();
     assertEquals(8, allSpans.size());
@@ -459,8 +402,7 @@ public class OpenTelemetryTest {
         .containsEntry(
             SemanticAttributes.MESSAGING_DESTINATION_NAME, FULL_SUBSCRIPTION_NAME.getSubscription())
         .containsEntry(PROJECT_ATTR_KEY, FULL_TOPIC_NAME.getProject())
-        .containsEntry(
-            SemanticAttributes.CODE_FUNCTION, "sendModAckOperations")
+        .containsEntry(SemanticAttributes.CODE_FUNCTION, "sendModAckOperations")
         .containsEntry(SemanticAttributes.MESSAGING_OPERATION, "modack")
         .containsEntry(
             SemanticAttributes.MESSAGING_BATCH_MESSAGE_COUNT, subscribeMessageWrappers.size())
@@ -487,8 +429,7 @@ public class OpenTelemetryTest {
         .containsEntry(
             SemanticAttributes.MESSAGING_DESTINATION_NAME, FULL_SUBSCRIPTION_NAME.getSubscription())
         .containsEntry(PROJECT_ATTR_KEY, FULL_TOPIC_NAME.getProject())
-        .containsEntry(
-            SemanticAttributes.CODE_FUNCTION, "sendAckOperations")
+        .containsEntry(SemanticAttributes.CODE_FUNCTION, "sendAckOperations")
         .containsEntry(SemanticAttributes.MESSAGING_OPERATION, "ack")
         .containsEntry(
             SemanticAttributes.MESSAGING_BATCH_MESSAGE_COUNT, subscribeMessageWrappers.size());
@@ -513,8 +454,7 @@ public class OpenTelemetryTest {
         .containsEntry(
             SemanticAttributes.MESSAGING_DESTINATION_NAME, FULL_SUBSCRIPTION_NAME.getSubscription())
         .containsEntry(PROJECT_ATTR_KEY, FULL_TOPIC_NAME.getProject())
-        .containsEntry(
-            SemanticAttributes.CODE_FUNCTION, "sendModAckOperations")
+        .containsEntry(SemanticAttributes.CODE_FUNCTION, "sendModAckOperations")
         .containsEntry(SemanticAttributes.MESSAGING_OPERATION, "nack")
         .containsEntry(
             SemanticAttributes.MESSAGING_BATCH_MESSAGE_COUNT, subscribeMessageWrappers.size());
@@ -578,20 +518,17 @@ public class OpenTelemetryTest {
 
     PubsubMessageWrapper messageWrapper =
         PubsubMessageWrapper.newBuilder(
-                getPubsubMessage(),
-                FULL_SUBSCRIPTION_NAME.toString(),
-                ACK_ID,
-                DELIVERY_ATTEMPT,
-                true)
+                getPubsubMessage(), FULL_SUBSCRIPTION_NAME.toString(), ACK_ID, DELIVERY_ATTEMPT)
             .build();
 
-    Tracer tracer = openTelemetryTesting.getOpenTelemetry().getTracer("test");
+    Tracer openTelemetryTracer = openTelemetryTesting.getOpenTelemetry().getTracer("test");
+    PubsubTracer tracer = new OpenTelemetryPubsubTracer(openTelemetryTracer);
 
-    messageWrapper.startSubscriberSpan(tracer, EXACTLY_ONCE_ENABLED);
-    messageWrapper.startSubscribeConcurrencyControlSpan(tracer);
+    tracer.startSubscriberSpan(messageWrapper, EXACTLY_ONCE_ENABLED);
+    tracer.startSubscribeConcurrencyControlSpan(messageWrapper);
 
     Exception e = new Exception("test-exception");
-    messageWrapper.setSubscribeConcurrencyControlSpanException(e);
+    tracer.setSubscribeConcurrencyControlSpanException(messageWrapper, e);
 
     List<SpanData> allSpans = openTelemetryTesting.getSpans();
     assertEquals(2, allSpans.size());
@@ -625,19 +562,16 @@ public class OpenTelemetryTest {
 
     PubsubMessageWrapper messageWrapper =
         PubsubMessageWrapper.newBuilder(
-                getPubsubMessage(),
-                FULL_SUBSCRIPTION_NAME.toString(),
-                ACK_ID,
-                DELIVERY_ATTEMPT,
-                true)
+                getPubsubMessage(), FULL_SUBSCRIPTION_NAME.toString(), ACK_ID, DELIVERY_ATTEMPT)
             .build();
 
-    Tracer tracer = openTelemetryTesting.getOpenTelemetry().getTracer("test");
+    Tracer openTelemetryTracer = openTelemetryTesting.getOpenTelemetry().getTracer("test");
+    PubsubTracer tracer = new OpenTelemetryPubsubTracer(openTelemetryTracer);
 
-    messageWrapper.startSubscriberSpan(tracer, EXACTLY_ONCE_ENABLED);
+    tracer.startSubscriberSpan(messageWrapper, EXACTLY_ONCE_ENABLED);
 
     Exception e = new Exception("test-exception");
-    messageWrapper.setSubscriberSpanException(e, "Test exception");
+    tracer.setSubscriberSpanException(messageWrapper, e, "Test exception");
 
     List<SpanData> allSpans = openTelemetryTesting.getSpans();
     assertEquals(1, allSpans.size());
@@ -661,39 +595,29 @@ public class OpenTelemetryTest {
 
     PubsubMessageWrapper messageWrapper =
         PubsubMessageWrapper.newBuilder(
-                getPubsubMessage(),
-                FULL_SUBSCRIPTION_NAME.toString(),
-                ACK_ID,
-                DELIVERY_ATTEMPT,
-                true)
+                getPubsubMessage(), FULL_SUBSCRIPTION_NAME.toString(), ACK_ID, DELIVERY_ATTEMPT)
             .build();
     List<PubsubMessageWrapper> messageWrappers = Arrays.asList(messageWrapper);
 
-    Tracer tracer = openTelemetryTesting.getOpenTelemetry().getTracer("test");
+    Tracer openTelemetryTracer = openTelemetryTesting.getOpenTelemetry().getTracer("test");
+    PubsubTracer tracer = new OpenTelemetryPubsubTracer(openTelemetryTracer);
 
-    messageWrapper.startSubscriberSpan(tracer, EXACTLY_ONCE_ENABLED);
+    tracer.startSubscriberSpan(messageWrapper, EXACTLY_ONCE_ENABLED);
     Span subscribeModackRpcSpan =
-        OpenTelemetryUtil.startSubscribeRpcSpan(
-            tracer,
-            FULL_SUBSCRIPTION_NAME.toString(),
-            "modack",
-            messageWrappers,
-            ACK_DEADLINE,
-            true,
-            true);
+        tracer.startSubscribeRpcSpan(
+            FULL_SUBSCRIPTION_NAME.toString(), "modack", messageWrappers, ACK_DEADLINE, true);
     Span subscribeAckRpcSpan =
-        OpenTelemetryUtil.startSubscribeRpcSpan(
-            tracer, FULL_SUBSCRIPTION_NAME.toString(), "ack", messageWrappers, 0, false, true);
+        tracer.startSubscribeRpcSpan(
+            FULL_SUBSCRIPTION_NAME.toString(), "ack", messageWrappers, 0, false);
     Span subscribeNackRpcSpan =
-        OpenTelemetryUtil.startSubscribeRpcSpan(
-            tracer, FULL_SUBSCRIPTION_NAME.toString(), "nack", messageWrappers, 0, false, true);
+        tracer.startSubscribeRpcSpan(
+            FULL_SUBSCRIPTION_NAME.toString(), "nack", messageWrappers, 0, false);
 
     Exception e = new Exception("test-exception");
-    OpenTelemetryUtil.setSubscribeRpcSpanException(
-        subscribeModackRpcSpan, true, ACK_DEADLINE, e, true);
-    OpenTelemetryUtil.setSubscribeRpcSpanException(subscribeAckRpcSpan, false, 0, e, true);
-    OpenTelemetryUtil.setSubscribeRpcSpanException(subscribeNackRpcSpan, true, 0, e, true);
-    messageWrapper.endSubscriberSpan();
+    tracer.setSubscribeRpcSpanException(subscribeModackRpcSpan, true, ACK_DEADLINE, e);
+    tracer.setSubscribeRpcSpanException(subscribeAckRpcSpan, false, 0, e);
+    tracer.setSubscribeRpcSpanException(subscribeNackRpcSpan, true, 0, e);
+    tracer.endSubscriberSpan(messageWrapper);
 
     List<SpanData> allSpans = openTelemetryTesting.getSpans();
     assertEquals(4, allSpans.size());

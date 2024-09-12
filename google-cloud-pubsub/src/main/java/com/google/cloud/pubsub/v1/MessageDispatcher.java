@@ -28,7 +28,6 @@ import com.google.common.primitives.Ints;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.pubsub.v1.PubsubMessage;
 import com.google.pubsub.v1.ReceivedMessage;
-import io.opentelemetry.api.trace.Tracer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -107,7 +106,7 @@ class MessageDispatcher {
 
   private final String subscriptionName;
   private final boolean enableOpenTelemetryTracing;
-  private final Tracer tracer;
+  private final PubsubTracer tracer;
 
   /** Internal representation of a reply to a Pubsub message, to be sent back to the service. */
   public enum AckReply {
@@ -162,7 +161,7 @@ class MessageDispatcher {
           t);
       this.ackRequestData.setResponse(AckResponse.OTHER, false);
       pendingNacks.add(this.ackRequestData);
-      this.ackRequestData.getMessageWrapper().endSubscribeProcessSpan("nack");
+      tracer.endSubscribeProcessSpan(this.ackRequestData.getMessageWrapper(), "nack");
       forget();
     }
 
@@ -175,11 +174,11 @@ class MessageDispatcher {
           ackLatencyDistribution.record(
               Ints.saturatedCast(
                   (long) Math.ceil((clock.millisTime() - receivedTimeMillis) / 1000D)));
-          this.ackRequestData.getMessageWrapper().endSubscribeProcessSpan("ack");
+          tracer.endSubscribeProcessSpan(this.ackRequestData.getMessageWrapper(), "ack");
           break;
         case NACK:
           pendingNacks.add(this.ackRequestData);
-          this.ackRequestData.getMessageWrapper().endSubscribeProcessSpan("nack");
+          tracer.endSubscribeProcessSpan(this.ackRequestData.getMessageWrapper(), "nack");
           break;
         default:
           throw new IllegalArgumentException(String.format("AckReply: %s not supported", reply));
@@ -409,11 +408,10 @@ class MessageDispatcher {
                   message.getMessage(),
                   subscriptionName,
                   message.getAckId(),
-                  message.getDeliveryAttempt(),
-                  enableOpenTelemetryTracing)
+                  message.getDeliveryAttempt())
               .build();
       builder.setMessageWrapper(messageWrapper);
-      messageWrapper.startSubscriberSpan(tracer, this.exactlyOnceDeliveryEnabled.get());
+      tracer.startSubscriberSpan(messageWrapper, this.exactlyOnceDeliveryEnabled.get());
 
       AckRequestData ackRequestData = builder.build();
       AckHandler ackHandler =
@@ -482,13 +480,14 @@ class MessageDispatcher {
     for (OutstandingMessage message : batch) {
       // This is a blocking flow controller.  We have already incremented messagesWaiter, so
       // shutdown will block on processing of all these messages anyway.
-      message.messageWrapper().startSubscribeConcurrencyControlSpan(tracer);
+      tracer.startSubscribeConcurrencyControlSpan(message.messageWrapper());
       try {
         flowController.reserve(1, message.messageWrapper().getPubsubMessage().getSerializedSize());
-        message.messageWrapper().endSubscribeConcurrencyControlSpan();
+        tracer.endSubscribeConcurrencyControlSpan(message.messageWrapper());
       } catch (FlowControlException unexpectedException) {
         // This should be a blocking flow controller and never throw an exception.
-        message.messageWrapper().setSubscribeConcurrencyControlSpanException(unexpectedException);
+        tracer.setSubscribeConcurrencyControlSpanException(
+            message.messageWrapper(), unexpectedException);
         throw new IllegalStateException("Flow control unexpected exception", unexpectedException);
       }
       addDeliveryInfoCount(message.messageWrapper());
@@ -533,10 +532,10 @@ class MessageDispatcher {
                 // so it was probably sent to someone else. Don't work on it.
                 // Don't nack it either, because we'd be nacking someone else's message.
                 ackHandler.forget();
-                messageWrapper.setSubscriberSpanExpirationResult();
+                tracer.setSubscriberSpanExpirationResult(messageWrapper);
                 return;
               }
-              messageWrapper.startSubscribeProcessSpan(tracer);
+              tracer.startSubscribeProcessSpan(messageWrapper);
               if (shouldSetMessageFuture()) {
                 // This is the message future that is propagated to the user
                 SettableApiFuture<AckResponse> messageFuture =
@@ -557,9 +556,9 @@ class MessageDispatcher {
     if (!messageOrderingEnabled.get() || message.getOrderingKey().isEmpty()) {
       executor.execute(deliverMessageTask);
     } else {
-      messageWrapper.startSubscribeSchedulerSpan(tracer);
+      tracer.startSubscribeSchedulerSpan(messageWrapper);
       sequentialExecutor.submit(message.getOrderingKey(), deliverMessageTask);
-      messageWrapper.endSubscribeSchedulerSpan();
+      tracer.endSubscribeSchedulerSpan(messageWrapper);
     }
   }
 
@@ -687,7 +686,7 @@ class MessageDispatcher {
 
     private String subscriptionName;
     private boolean enableOpenTelemetryTracing;
-    private Tracer tracer;
+    private PubsubTracer tracer;
 
     protected Builder(MessageReceiver receiver) {
       this.receiver = receiver;
@@ -769,7 +768,7 @@ class MessageDispatcher {
       return this;
     }
 
-    public Builder setTracer(Tracer tracer) {
+    public Builder setTracer(PubsubTracer tracer) {
       this.tracer = tracer;
       return this;
     }

@@ -151,7 +151,7 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
 
   private final boolean enableOpenTelemetryTracing;
   private final OpenTelemetry openTelemetry;
-  private Tracer tracer = null;
+  private PubsubTracer tracer = null;
 
   private Subscriber(Builder builder) {
     receiver = builder.receiver;
@@ -209,8 +209,11 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
 
     this.enableOpenTelemetryTracing = builder.enableOpenTelemetryTracing;
     this.openTelemetry = builder.openTelemetry;
-    if (this.openTelemetry != null) {
-      this.tracer = builder.openTelemetry.getTracer(OPEN_TELEMETRY_TRACER_NAME);
+    if (this.openTelemetry != null && this.enableOpenTelemetryTracing) {
+      Tracer openTelemetryTracer = builder.openTelemetry.getTracer(OPEN_TELEMETRY_TRACER_NAME);
+      if (openTelemetryTracer != null) {
+        this.tracer = new OpenTelemetryPubsubTracer(openTelemetryTracer);
+      }
     }
 
     streamingSubscriberConnections = new ArrayList<StreamingSubscriberConnection>(numPullers);

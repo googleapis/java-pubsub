@@ -131,7 +131,7 @@ public class Publisher implements PublisherInterface {
 
   private final boolean enableOpenTelemetryTracing;
   private final OpenTelemetry openTelemetry;
-  private Tracer tracer = null;
+  private PubsubTracer tracer = null;
 
   /** The maximum number of messages in one request. Defined by the API. */
   public static long getApiMaxRequestElementCount() {
@@ -163,8 +163,11 @@ public class Publisher implements PublisherInterface {
     this.compressionBytesThreshold = builder.compressionBytesThreshold;
     this.enableOpenTelemetryTracing = builder.enableOpenTelemetryTracing;
     this.openTelemetry = builder.openTelemetry;
-    if (this.openTelemetry != null) {
-      this.tracer = builder.openTelemetry.getTracer(OPEN_TELEMETRY_TRACER_NAME);
+    if (this.openTelemetry != null && this.enableOpenTelemetryTracing) {
+      Tracer openTelemetryTracer = builder.openTelemetry.getTracer(OPEN_TELEMETRY_TRACER_NAME);
+      if (openTelemetryTracer != null) {
+        this.tracer = new OpenTelemetryPubsubTracer(openTelemetryTracer);
+      }
     }
 
     messagesBatches = new HashMap<>();
@@ -274,24 +277,22 @@ public class Publisher implements PublisherInterface {
             + "setEnableMessageOrdering(true) in the builder.");
 
     PubsubMessageWrapper messageWrapper =
-        PubsubMessageWrapper.newBuilder(
-                messageTransform.apply(message), topicName, enableOpenTelemetryTracing)
-            .build();
-    messageWrapper.startPublisherSpan(tracer);
+        PubsubMessageWrapper.newBuilder(messageTransform.apply(message), topicName).build();
+    tracer.startPublisherSpan(messageWrapper);
 
     final OutstandingPublish outstandingPublish = new OutstandingPublish(messageWrapper);
 
     if (flowController != null) {
-      outstandingPublish.messageWrapper.startPublishFlowControlSpan(tracer);
+      tracer.startPublishFlowControlSpan(messageWrapper);
       try {
         flowController.acquire(outstandingPublish.messageSize);
-        outstandingPublish.messageWrapper.endPublishFlowControlSpan();
+        tracer.endPublishFlowControlSpan(messageWrapper);
       } catch (FlowController.FlowControlException e) {
         if (!orderingKey.isEmpty()) {
           sequentialExecutor.stopPublish(orderingKey);
         }
         outstandingPublish.publishResult.setException(e);
-        outstandingPublish.messageWrapper.setPublishFlowControlSpanException(e);
+        tracer.setPublishFlowControlSpanException(messageWrapper, e);
         return outstandingPublish.publishResult;
       }
     }
@@ -299,7 +300,7 @@ public class Publisher implements PublisherInterface {
     List<OutstandingBatch> batchesToSend;
     messagesBatchLock.lock();
     try {
-      outstandingPublish.messageWrapper.startPublishBatchingSpan(tracer);
+      tracer.startPublishBatchingSpan(messageWrapper);
       if (!orderingKey.isEmpty() && sequentialExecutor.keyHasError(orderingKey)) {
         outstandingPublish.publishResult.setException(
             SequentialExecutorService.CallbackExecutor.CANCELLATION_EXCEPTION);
@@ -480,13 +481,11 @@ public class Publisher implements PublisherInterface {
     List<PubsubMessage> pubsubMessagesList = new ArrayList<PubsubMessage>(numMessagesInBatch);
     List<PubsubMessageWrapper> messageWrappers = outstandingBatch.getMessageWrappers();
     for (PubsubMessageWrapper messageWrapper : messageWrappers) {
-      messageWrapper.endPublishBatchingSpan();
+      tracer.endPublishBatchingSpan(messageWrapper);
       pubsubMessagesList.add(messageWrapper.getPubsubMessage());
     }
 
-    outstandingBatch.publishRpcSpan =
-        OpenTelemetryUtil.startPublishRpcSpan(
-            tracer, topicName, messageWrappers, enableOpenTelemetryTracing);
+    outstandingBatch.publishRpcSpan = tracer.startPublishRpcSpan(topicName, messageWrappers);
 
     return publisherStub
         .publishCallable()
@@ -601,19 +600,19 @@ public class Publisher implements PublisherInterface {
     }
 
     private void onFailure(Throwable t) {
-      OpenTelemetryUtil.setPublishRpcSpanException(publishRpcSpan, t, enableOpenTelemetryTracing);
+      tracer.setPublishRpcSpanException(publishRpcSpan, t);
 
       for (OutstandingPublish outstandingPublish : outstandingPublishes) {
         if (flowController != null) {
           flowController.release(outstandingPublish.messageSize);
         }
         outstandingPublish.publishResult.setException(t);
-        outstandingPublish.messageWrapper.endPublisherSpan();
+        tracer.endPublisherSpan(outstandingPublish.messageWrapper);
       }
     }
 
     private void onSuccess(Iterable<String> results) {
-      OpenTelemetryUtil.endPublishRpcSpan(publishRpcSpan, enableOpenTelemetryTracing);
+      tracer.endPublishRpcSpan(publishRpcSpan);
 
       Iterator<OutstandingPublish> messagesResultsIt = outstandingPublishes.iterator();
       for (String messageId : results) {
@@ -622,8 +621,8 @@ public class Publisher implements PublisherInterface {
           flowController.release(nextPublish.messageSize);
         }
         nextPublish.publishResult.set(messageId);
-        nextPublish.messageWrapper.setPublisherMessageIdSpanAttribute(messageId);
-        nextPublish.messageWrapper.endPublisherSpan();
+        tracer.setPublisherMessageIdSpanAttribute(nextPublish.messageWrapper, messageId);
+        tracer.endPublisherSpan(nextPublish.messageWrapper);
       }
     }
   }
