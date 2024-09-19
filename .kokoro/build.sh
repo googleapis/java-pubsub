@@ -41,7 +41,7 @@ sed -n "/<artifactId>protobuf-java<\/artifactId>/,/<\/dependency>/ {
 echo "The current proto version is: ${CURRENT_PROTO_VERSION}"
 
 # Find the latest proto runtime version available
-LATEST_PROTO_VERSION="4.27.4"
+LATEST_PROTO_VERSION="4.28.2"
 echo "The latest proto version is: ${LATEST_PROTO_VERSION}"
 
 # Only reinstall shared-deps again to test for a newer proto version
