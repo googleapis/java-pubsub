@@ -46,7 +46,6 @@
     <module>install-without-bom</module>
     <module>snapshot</module>
     <module>snippets</module>
-    <module>native-image-sample</module>
   </modules>
 
   <build>
@@ -54,7 +53,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-deploy-plugin</artifactId>
-        <version>3.1.2</version>
+        <version>3.1.3</version>
         <configuration>
           <skip>true</skip>
         </configuration>
@@ -75,7 +74,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
-        <version>3.4.0</version>
+        <version>3.5.0</version>
         <configuration>
           <suppressionsLocation>checkstyle-suppressions.xml</suppressionsLocation>
         </configuration>
