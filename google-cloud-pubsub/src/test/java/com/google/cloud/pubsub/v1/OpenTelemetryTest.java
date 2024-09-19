@@ -333,17 +333,17 @@ public class OpenTelemetryTest {
             ACK_DEADLINE,
             true);
     tracer.endSubscribeRpcSpan(subscribeModackRpcSpan);
-    tracer.addEndRpcEvent(subscribeMessageWrapper, true, ACK_DEADLINE);
+    tracer.addEndRpcEvent(subscribeMessageWrapper, true, true, ACK_DEADLINE);
     Span subscribeAckRpcSpan =
         tracer.startSubscribeRpcSpan(
             FULL_SUBSCRIPTION_NAME.toString(), "ack", subscribeMessageWrappers, 0, false);
     tracer.endSubscribeRpcSpan(subscribeAckRpcSpan);
-    tracer.addEndRpcEvent(subscribeMessageWrapper, false, 0);
+    tracer.addEndRpcEvent(subscribeMessageWrapper, true, false, 0);
     Span subscribeNackRpcSpan =
         tracer.startSubscribeRpcSpan(
             FULL_SUBSCRIPTION_NAME.toString(), "nack", subscribeMessageWrappers, 0, false);
     tracer.endSubscribeRpcSpan(subscribeNackRpcSpan);
-    tracer.addEndRpcEvent(subscribeMessageWrapper, true, 0);
+    tracer.addEndRpcEvent(subscribeMessageWrapper, true, true, 0);
     tracer.endSubscriberSpan(subscribeMessageWrapper);
 
     List<SpanData> allSpans = openTelemetryTesting.getSpans();

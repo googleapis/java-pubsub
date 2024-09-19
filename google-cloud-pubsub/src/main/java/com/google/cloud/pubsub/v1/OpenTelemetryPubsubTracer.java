@@ -158,7 +158,7 @@ public class OpenTelemetryPubsubTracer implements PubsubTracer {
     Span publishRpcSpan = publishRpcSpanBuilder.startSpan();
 
     for (PubsubMessageWrapper message : messages) {
-      if (message.getPublisherSpan().getSpanContext().isSampled()) {
+      if (publishRpcSpan.getSpanContext().isSampled()) {
         message.getPublisherSpan().addLink(publishRpcSpan.getSpanContext(), linkAttributes);
         message.addPublishStartEvent();
       }
@@ -336,7 +336,7 @@ public class OpenTelemetryPubsubTracer implements PubsubTracer {
     Span rpcSpan = rpcSpanBuilder.startSpan();
 
     for (PubsubMessageWrapper message : messages) {
-      if (message.getSubscriberSpan().getSpanContext().isSampled()) {
+      if (rpcSpan.getSpanContext().isSampled()) {
         message.getSubscriberSpan().addLink(rpcSpan.getSpanContext(), linkAttributes);
         switch (rpcOperation) {
           case "ack":
@@ -379,7 +379,11 @@ public class OpenTelemetryPubsubTracer implements PubsubTracer {
 
   /** Adds the appropriate subscribe-side RPC end event. */
   @Override
-  public void addEndRpcEvent(PubsubMessageWrapper message, boolean isModack, int ackDeadline) {
+  public void addEndRpcEvent(
+      PubsubMessageWrapper message, boolean rpcSampled, boolean isModack, int ackDeadline) {
+    if (!rpcSampled) {
+      return;
+    }
     if (!isModack) {
       message.addAckEndEvent();
     } else if (ackDeadline == 0) {

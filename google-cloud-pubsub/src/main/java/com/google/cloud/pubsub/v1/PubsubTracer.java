@@ -131,7 +131,8 @@ public interface PubsubTracer {
     // noop
   }
 
-  default void addEndRpcEvent(PubsubMessageWrapper message, boolean isModack, int ackDeadline) {
+  default void addEndRpcEvent(
+      PubsubMessageWrapper message, boolean rpcSampled, boolean isModack, int ackDeadline) {
     // noop
   }
 }

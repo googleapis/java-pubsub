@@ -553,6 +553,8 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     // Check if ack or nack
     boolean setResponseOnSuccess = (!isModack || (deadlineExtensionSeconds == 0)) ? true : false;
 
+    boolean rpcSpanSampled = rpcSpan == null ? false : rpcSpan.getSpanContext().isSampled();
+
     return new ApiFutureCallback<Empty>() {
       @Override
       public void onSuccess(Empty empty) {
@@ -567,7 +569,10 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
           // Remove from our pending operations
           pendingRequests.remove(ackRequestData);
           tracer.addEndRpcEvent(
-              ackRequestData.getMessageWrapper(), isModack, deadlineExtensionSeconds);
+              ackRequestData.getMessageWrapper(),
+              rpcSpanSampled,
+              isModack,
+              deadlineExtensionSeconds);
           if (!isModack || deadlineExtensionSeconds == 0) {
             tracer.endSubscriberSpan(ackRequestData.getMessageWrapper());
           }
@@ -588,7 +593,10 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
           if (enableOpenTelemetryTracing) {
             for (AckRequestData ackRequestData : ackRequestDataList) {
               tracer.addEndRpcEvent(
-                  ackRequestData.getMessageWrapper(), isModack, deadlineExtensionSeconds);
+                  ackRequestData.getMessageWrapper(),
+                  rpcSpanSampled,
+                  isModack,
+                  deadlineExtensionSeconds);
               if (!isModack || deadlineExtensionSeconds == 0) {
                 tracer.endSubscriberSpan(ackRequestData.getMessageWrapper());
               }
@@ -618,7 +626,10 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
                     ackRequestData.setResponse(AckResponse.INVALID, setResponseOnSuccess);
                     messageDispatcher.notifyAckFailed(ackRequestData);
                     tracer.addEndRpcEvent(
-                        ackRequestData.getMessageWrapper(), isModack, deadlineExtensionSeconds);
+                        ackRequestData.getMessageWrapper(),
+                        rpcSpanSampled,
+                        isModack,
+                        deadlineExtensionSeconds);
                     tracer.setSubscriberSpanException(
                         ackRequestData.getMessageWrapper(), t, "Invalid ack ID");
                   } else {
@@ -626,7 +637,10 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
                     ackRequestData.setResponse(AckResponse.OTHER, setResponseOnSuccess);
                     messageDispatcher.notifyAckFailed(ackRequestData);
                     tracer.addEndRpcEvent(
-                        ackRequestData.getMessageWrapper(), isModack, deadlineExtensionSeconds);
+                        ackRequestData.getMessageWrapper(),
+                        rpcSpanSampled,
+                        isModack,
+                        deadlineExtensionSeconds);
                     tracer.setSubscriberSpanException(
                         ackRequestData.getMessageWrapper(), t, "Unknown error message");
                     ackRequestData
@@ -638,7 +652,10 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
                   messageDispatcher.notifyAckSuccess(ackRequestData);
                   tracer.endSubscriberSpan(ackRequestData.getMessageWrapper());
                   tracer.addEndRpcEvent(
-                      ackRequestData.getMessageWrapper(), isModack, deadlineExtensionSeconds);
+                      ackRequestData.getMessageWrapper(),
+                      rpcSpanSampled,
+                      isModack,
+                      deadlineExtensionSeconds);
                 }
                 // Remove from our pending
                 pendingRequests.remove(ackRequestData);
