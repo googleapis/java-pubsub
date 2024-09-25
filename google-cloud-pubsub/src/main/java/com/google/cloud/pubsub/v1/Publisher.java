@@ -131,7 +131,7 @@ public class Publisher implements PublisherInterface {
 
   private final boolean enableOpenTelemetryTracing;
   private final OpenTelemetry openTelemetry;
-  private PubsubTracer tracer = new BasePubsubTracer();
+  private OpenTelemetryPubsubTracer tracer = new OpenTelemetryPubsubTracer(null, false);
 
   /** The maximum number of messages in one request. Defined by the API. */
   public static long getApiMaxRequestElementCount() {
@@ -166,7 +166,7 @@ public class Publisher implements PublisherInterface {
     if (this.openTelemetry != null && this.enableOpenTelemetryTracing) {
       Tracer openTelemetryTracer = builder.openTelemetry.getTracer(OPEN_TELEMETRY_TRACER_NAME);
       if (openTelemetryTracer != null) {
-        this.tracer = new OpenTelemetryPubsubTracer(openTelemetryTracer);
+        this.tracer = new OpenTelemetryPubsubTracer(openTelemetryTracer, this.enableOpenTelemetryTracing);
       }
     }
 

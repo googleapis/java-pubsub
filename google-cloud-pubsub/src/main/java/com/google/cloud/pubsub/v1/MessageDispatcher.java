@@ -106,7 +106,7 @@ class MessageDispatcher {
 
   private final String subscriptionName;
   private final boolean enableOpenTelemetryTracing;
-  private PubsubTracer tracer = new BasePubsubTracer();
+  private OpenTelemetryPubsubTracer tracer = new OpenTelemetryPubsubTracer(null, false);
 
   /** Internal representation of a reply to a Pubsub message, to be sent back to the service. */
   public enum AckReply {
@@ -688,7 +688,7 @@ class MessageDispatcher {
 
     private String subscriptionName;
     private boolean enableOpenTelemetryTracing;
-    private PubsubTracer tracer;
+    private OpenTelemetryPubsubTracer tracer;
 
     protected Builder(MessageReceiver receiver) {
       this.receiver = receiver;
@@ -770,7 +770,7 @@ class MessageDispatcher {
       return this;
     }
 
-    public Builder setTracer(PubsubTracer tracer) {
+    public Builder setTracer(OpenTelemetryPubsubTracer tracer) {
       this.tracer = tracer;
       return this;
     }

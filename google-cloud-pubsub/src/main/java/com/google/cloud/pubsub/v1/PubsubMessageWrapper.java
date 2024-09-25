@@ -16,7 +16,6 @@
 
 package com.google.cloud.pubsub.v1;
 
-import com.google.api.core.InternalApi;
 import com.google.pubsub.v1.PubsubMessage;
 import com.google.pubsub.v1.SubscriptionName;
 import com.google.pubsub.v1.TopicName;
@@ -66,8 +65,7 @@ public class PubsubMessageWrapper {
   private Span subscribeSchedulerSpan;
   private Span subscribeProcessSpan;
 
-  @InternalApi("For use by the google-cloud-pubsub library only")
-  public PubsubMessageWrapper(Builder builder) {
+  private PubsubMessageWrapper(Builder builder) {
     this.message = builder.message;
     this.topicName = builder.topicName;
     this.subscriptionName = builder.subscriptionName;
@@ -75,33 +73,33 @@ public class PubsubMessageWrapper {
     this.deliveryAttempt = builder.deliveryAttempt;
   }
 
-  public static Builder newBuilder(PubsubMessage message, String topicName) {
+  static Builder newBuilder(PubsubMessage message, String topicName) {
     return new Builder(message, topicName);
   }
 
-  public static Builder newBuilder(
+  static Builder newBuilder(
       PubsubMessage message, String subscriptionName, String ackId, int deliveryAttempt) {
     return new Builder(message, subscriptionName, ackId, deliveryAttempt);
   }
 
   /** Returns the PubsubMessage associated with this wrapper. */
-  protected PubsubMessage getPubsubMessage() {
+  PubsubMessage getPubsubMessage() {
     return message;
   }
 
-  protected void setPubsubMessage(PubsubMessage message) {
+  void setPubsubMessage(PubsubMessage message) {
     this.message = message;
   }
 
   /** Returns the TopicName for this wrapper as a string. */
-  protected String getTopicName() {
+  String getTopicName() {
     if (topicName != null) {
       return topicName.getTopic();
     }
     return "";
   }
 
-  protected String getTopicProject() {
+  String getTopicProject() {
     if (topicName != null) {
       return topicName.getProject();
     }
@@ -109,78 +107,78 @@ public class PubsubMessageWrapper {
   }
 
   /** Returns the SubscriptionName for this wrapper as a string. */
-  protected String getSubscriptionName() {
+  String getSubscriptionName() {
     if (subscriptionName != null) {
       return subscriptionName.getSubscription();
     }
     return "";
   }
 
-  protected String getSubscriptionProject() {
+  String getSubscriptionProject() {
     if (subscriptionName != null) {
       return subscriptionName.getProject();
     }
     return "";
   }
 
-  protected String getMessageId() {
+  String getMessageId() {
     return message.getMessageId();
   }
 
-  protected String getAckId() {
+  String getAckId() {
     return ackId;
   }
 
-  protected int getDataSize() {
+  int getDataSize() {
     return message.getData().size();
   }
 
-  protected String getOrderingKey() {
+  String getOrderingKey() {
     return message.getOrderingKey();
   }
 
-  protected int getDeliveryAttempt() {
+  int getDeliveryAttempt() {
     return deliveryAttempt;
   }
 
-  protected Span getPublisherSpan() {
+  Span getPublisherSpan() {
     return publisherSpan;
   }
 
-  protected void setPublisherSpan(Span span) {
+  void setPublisherSpan(Span span) {
     this.publisherSpan = span;
   }
 
-  protected void setPublishFlowControlSpan(Span span) {
+  void setPublishFlowControlSpan(Span span) {
     this.publishFlowControlSpan = span;
   }
 
-  protected void setPublishBatchingSpan(Span span) {
+  void setPublishBatchingSpan(Span span) {
     this.publishBatchingSpan = span;
   }
 
-  protected Span getSubscriberSpan() {
+  Span getSubscriberSpan() {
     return subscriberSpan;
   }
 
-  protected void setSubscriberSpan(Span span) {
+  void setSubscriberSpan(Span span) {
     this.subscriberSpan = span;
   }
 
-  protected void setSubscribeConcurrencyControlSpan(Span span) {
+  void setSubscribeConcurrencyControlSpan(Span span) {
     this.subscribeConcurrencyControlSpan = span;
   }
 
-  protected void setSubscribeSchedulerSpan(Span span) {
+  void setSubscribeSchedulerSpan(Span span) {
     this.subscribeSchedulerSpan = span;
   }
 
-  protected void setSubscribeProcessSpan(Span span) {
+  void setSubscribeProcessSpan(Span span) {
     this.subscribeProcessSpan = span;
   }
 
   /** Creates a publish start event that is tied to the publish RPC span time. */
-  protected void addPublishStartEvent() {
+  void addPublishStartEvent() {
     if (publisherSpan != null) {
       publisherSpan.addEvent(PUBLISH_START_EVENT);
     }
@@ -190,14 +188,14 @@ public class PubsubMessageWrapper {
    * Sets the message ID attribute in the publisher parent span. This is called after the publish
    * RPC returns with a message ID.
    */
-  protected void setPublisherMessageIdSpanAttribute(String messageId) {
+  void setPublisherMessageIdSpanAttribute(String messageId) {
     if (publisherSpan != null) {
       publisherSpan.setAttribute(SemanticAttributes.MESSAGING_MESSAGE_ID, messageId);
     }
   }
 
   /** Ends the publisher parent span if it exists. */
-  protected void endPublisherSpan() {
+  void endPublisherSpan() {
     if (publisherSpan != null) {
       publisherSpan.addEvent(PUBLISH_END_EVENT);
       publisherSpan.end();
@@ -205,14 +203,14 @@ public class PubsubMessageWrapper {
   }
 
   /** Ends the publish flow control span if it exists. */
-  protected void endPublishFlowControlSpan() {
+  void endPublishFlowControlSpan() {
     if (publishFlowControlSpan != null) {
       publishFlowControlSpan.end();
     }
   }
 
   /** Ends the publish batching span if it exists. */
-  protected void endPublishBatchingSpan() {
+  void endPublishBatchingSpan() {
     if (publishBatchingSpan != null) {
       publishBatchingSpan.end();
     }
@@ -221,7 +219,7 @@ public class PubsubMessageWrapper {
   /**
    * Sets an error status and records an exception when an exception is thrown during flow control.
    */
-  protected void setPublishFlowControlSpanException(Throwable t) {
+  void setPublishFlowControlSpanException(Throwable t) {
     if (publishFlowControlSpan != null) {
       publishFlowControlSpan.setStatus(
           StatusCode.ERROR, "Exception thrown during publish flow control.");
@@ -234,58 +232,58 @@ public class PubsubMessageWrapper {
    * Creates start and end events for ModAcks, Nacks, and Acks that are tied to the corresponding
    * RPC span start and end times.
    */
-  protected void addModAckStartEvent() {
+  void addModAckStartEvent() {
     if (subscriberSpan != null) {
       subscriberSpan.addEvent(MODACK_START_EVENT);
     }
   }
 
-  protected void addModAckEndEvent() {
+  void addModAckEndEvent() {
     if (subscriberSpan != null) {
       subscriberSpan.addEvent(MODACK_END_EVENT);
     }
   }
 
-  protected void addNackStartEvent() {
+  void addNackStartEvent() {
     if (subscriberSpan != null) {
       subscriberSpan.addEvent(NACK_START_EVENT);
     }
   }
 
-  protected void addNackEndEvent() {
+  void addNackEndEvent() {
     if (subscriberSpan != null) {
       subscriberSpan.addEvent(NACK_END_EVENT);
     }
   }
 
-  protected void addAckStartEvent() {
+  void addAckStartEvent() {
     if (subscriberSpan != null) {
       subscriberSpan.addEvent(ACK_START_EVENT);
     }
   }
 
-  protected void addAckEndEvent() {
+  void addAckEndEvent() {
     if (subscriberSpan != null) {
       subscriberSpan.addEvent(ACK_END_EVENT);
     }
   }
 
   /** Ends the subscriber parent span if exists. */
-  protected void endSubscriberSpan() {
+  void endSubscriberSpan() {
     if (subscriberSpan != null) {
       subscriberSpan.end();
     }
   }
 
   /** Ends the subscribe concurreny control span if exists. */
-  protected void endSubscribeConcurrencyControlSpan() {
+  void endSubscribeConcurrencyControlSpan() {
     if (subscribeConcurrencyControlSpan != null) {
       subscribeConcurrencyControlSpan.end();
     }
   }
 
   /** Ends the subscribe scheduler span if exists. */
-  protected void endSubscribeSchedulerSpan() {
+  void endSubscribeSchedulerSpan() {
     if (subscribeSchedulerSpan != null) {
       subscribeSchedulerSpan.end();
     }
@@ -295,7 +293,7 @@ public class PubsubMessageWrapper {
    * Ends the subscribe process span if it exists, creates an event with the appropriate result, and
    * sets the result on the parent subscriber span.
    */
-  protected void endSubscribeProcessSpan(String action) {
+  void endSubscribeProcessSpan(String action) {
     if (subscribeProcessSpan != null) {
       subscribeProcessSpan.addEvent(action + " called");
       subscribeProcessSpan.end();
@@ -304,7 +302,7 @@ public class PubsubMessageWrapper {
   }
 
   /** Sets an exception on the subscriber span during Ack/ModAck/Nack failures */
-  protected void setSubscriberSpanException(Throwable t, String exception) {
+  void setSubscriberSpanException(Throwable t, String exception) {
     if (subscriberSpan != null) {
       subscriberSpan.setStatus(StatusCode.ERROR, exception);
       subscriberSpan.recordException(t);
@@ -313,7 +311,7 @@ public class PubsubMessageWrapper {
   }
 
   /** Sets result of the parent subscriber span to expired and ends its. */
-  protected void setSubscriberSpanExpirationResult() {
+  void setSubscriberSpanExpirationResult() {
     if (subscriberSpan != null) {
       subscriberSpan.setAttribute(MESSAGE_RESULT_ATTR_KEY, "expired");
       endSubscriberSpan();
@@ -324,7 +322,7 @@ public class PubsubMessageWrapper {
    * Sets an error status and records an exception when an exception is thrown subscriber
    * concurrency control.
    */
-  protected void setSubscribeConcurrencyControlSpanException(Throwable t) {
+  void setSubscribeConcurrencyControlSpanException(Throwable t) {
     if (subscribeConcurrencyControlSpan != null) {
       subscribeConcurrencyControlSpan.setStatus(
           StatusCode.ERROR, "Exception thrown during subscribe concurrency control.");
@@ -351,7 +349,7 @@ public class PubsubMessageWrapper {
    * Injects the span context into the attributes of a Pub/Sub message for propagation to the
    * subscriber client.
    */
-  protected void injectSpanContext() {
+  void injectSpanContext() {
     TextMapSetter<PubsubMessageWrapper> injectMessageAttributes =
         new TextMapSetter<PubsubMessageWrapper>() {
           @Override
@@ -371,7 +369,7 @@ public class PubsubMessageWrapper {
    * Extracts the span context from the attributes of a Pub/Sub message and creates the parent
    * subscriber span using that context.
    */
-  protected Context extractSpanContext(Attributes attributes) {
+  Context extractSpanContext(Attributes attributes) {
     TextMapGetter<PubsubMessageWrapper> extractMessageAttributes =
         new TextMapGetter<PubsubMessageWrapper>() {
           @Override
@@ -390,7 +388,7 @@ public class PubsubMessageWrapper {
   }
 
   /** Builder of {@link PubsubMessageWrapper PubsubMessageWrapper}. */
-  protected static final class Builder {
+  static final class Builder {
     private PubsubMessage message = null;
     private TopicName topicName = null;
     private SubscriptionName subscriptionName = null;

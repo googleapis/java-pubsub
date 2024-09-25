@@ -109,7 +109,7 @@ public class OpenTelemetryTest {
 
     long messageSize = messageWrapper.getPubsubMessage().getData().size();
     Tracer openTelemetryTracer = openTelemetryTesting.getOpenTelemetry().getTracer("test");
-    PubsubTracer tracer = new OpenTelemetryPubsubTracer(openTelemetryTracer);
+    OpenTelemetryPubsubTracer tracer = new OpenTelemetryPubsubTracer(openTelemetryTracer, true);
 
     // Call all span start/end methods in the expected order
     tracer.startPublisherSpan(messageWrapper);
@@ -221,7 +221,7 @@ public class OpenTelemetryTest {
         PubsubMessageWrapper.newBuilder(getPubsubMessage(), FULL_TOPIC_NAME.toString()).build();
 
     Tracer openTelemetryTracer = openTelemetryTesting.getOpenTelemetry().getTracer("test");
-    PubsubTracer tracer = new OpenTelemetryPubsubTracer(openTelemetryTracer);
+    OpenTelemetryPubsubTracer tracer = new OpenTelemetryPubsubTracer(openTelemetryTracer, true);
 
     tracer.startPublisherSpan(messageWrapper);
     tracer.startPublishFlowControlSpan(messageWrapper);
@@ -262,7 +262,7 @@ public class OpenTelemetryTest {
 
     List<PubsubMessageWrapper> messageWrappers = Arrays.asList(messageWrapper);
     Tracer openTelemetryTracer = openTelemetryTesting.getOpenTelemetry().getTracer("test");
-    PubsubTracer tracer = new OpenTelemetryPubsubTracer(openTelemetryTracer);
+    OpenTelemetryPubsubTracer tracer = new OpenTelemetryPubsubTracer(openTelemetryTracer, true);
 
     tracer.startPublisherSpan(messageWrapper);
     Span publishRpcSpan = tracer.startPublishRpcSpan(FULL_TOPIC_NAME.toString(), messageWrappers);
@@ -299,7 +299,7 @@ public class OpenTelemetryTest {
     openTelemetryTesting.clearSpans();
 
     Tracer openTelemetryTracer = openTelemetryTesting.getOpenTelemetry().getTracer("test");
-    PubsubTracer tracer = new OpenTelemetryPubsubTracer(openTelemetryTracer);
+    OpenTelemetryPubsubTracer tracer = new OpenTelemetryPubsubTracer(openTelemetryTracer, true);
 
     PubsubMessageWrapper publishMessageWrapper =
         PubsubMessageWrapper.newBuilder(getPubsubMessage(), FULL_TOPIC_NAME.toString()).build();
@@ -522,7 +522,7 @@ public class OpenTelemetryTest {
             .build();
 
     Tracer openTelemetryTracer = openTelemetryTesting.getOpenTelemetry().getTracer("test");
-    PubsubTracer tracer = new OpenTelemetryPubsubTracer(openTelemetryTracer);
+    OpenTelemetryPubsubTracer tracer = new OpenTelemetryPubsubTracer(openTelemetryTracer, true);
 
     tracer.startSubscriberSpan(messageWrapper, EXACTLY_ONCE_ENABLED);
     tracer.startSubscribeConcurrencyControlSpan(messageWrapper);
@@ -566,7 +566,7 @@ public class OpenTelemetryTest {
             .build();
 
     Tracer openTelemetryTracer = openTelemetryTesting.getOpenTelemetry().getTracer("test");
-    PubsubTracer tracer = new OpenTelemetryPubsubTracer(openTelemetryTracer);
+    OpenTelemetryPubsubTracer tracer = new OpenTelemetryPubsubTracer(openTelemetryTracer, true);
 
     tracer.startSubscriberSpan(messageWrapper, EXACTLY_ONCE_ENABLED);
 
@@ -600,7 +600,7 @@ public class OpenTelemetryTest {
     List<PubsubMessageWrapper> messageWrappers = Arrays.asList(messageWrapper);
 
     Tracer openTelemetryTracer = openTelemetryTesting.getOpenTelemetry().getTracer("test");
-    PubsubTracer tracer = new OpenTelemetryPubsubTracer(openTelemetryTracer);
+    OpenTelemetryPubsubTracer tracer = new OpenTelemetryPubsubTracer(openTelemetryTracer, true);
 
     tracer.startSubscriberSpan(messageWrapper, EXACTLY_ONCE_ENABLED);
     Span subscribeModackRpcSpan =

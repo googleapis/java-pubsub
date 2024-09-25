@@ -16,8 +16,6 @@
 
 package com.google.cloud.pubsub.v1;
 
-import com.google.api.core.InternalApi;
-import com.google.common.base.Preconditions;
 import com.google.pubsub.v1.PubsubMessage;
 import com.google.pubsub.v1.SubscriptionName;
 import com.google.pubsub.v1.TopicName;
@@ -32,9 +30,9 @@ import io.opentelemetry.context.Context;
 import io.opentelemetry.semconv.trace.attributes.SemanticAttributes;
 import java.util.List;
 
-@InternalApi("For use by the google-cloud-pubsub library only")
-public class OpenTelemetryPubsubTracer implements PubsubTracer {
+public class OpenTelemetryPubsubTracer {
   private final Tracer tracer;
+  private boolean enabled = false;
 
   private static final String PUBLISH_FLOW_CONTROL_SPAN_NAME = "publisher flow control";
   private static final String PUBLISH_BATCHING_SPAN_NAME = "publisher batching";
@@ -51,12 +49,32 @@ public class OpenTelemetryPubsubTracer implements PubsubTracer {
       "messaging.gcp_pubsub.message.delivery_attempt";
   private static final String ACK_DEADLINE_ATTR_KEY = "messaging.gcp_pubsub.message.ack_deadline";
   private static final String RECEIPT_MODACK_ATTR_KEY = "messaging.gcp_pubsub.is_receipt_modack";
+  private static final String PROJECT_ATTR_KEY = "gcp.project_id";
   private static final String PUBLISH_RPC_SPAN_SUFFIX = " publish";
 
   private static final String MESSAGING_SYSTEM_VALUE = "gcp_pubsub";
 
-  OpenTelemetryPubsubTracer(Tracer tracer) {
-    this.tracer = Preconditions.checkNotNull(tracer, "OpenTelemetry tracer cannot be null");
+  OpenTelemetryPubsubTracer(Tracer tracer, boolean enableOpenTelemetry) {
+    this.tracer = tracer;
+    if (this.tracer != null && enableOpenTelemetry) {
+      this.enabled = true;
+    }
+  }
+
+  /** Populates attributes that are common the publisher parent span and publish RPC span. */
+  private static final AttributesBuilder createCommonSpanAttributesBuilder(
+      String destinationName, String projectName, String codeFunction, String operation) {
+    AttributesBuilder attributesBuilder =
+        Attributes.builder()
+            .put(SemanticAttributes.MESSAGING_SYSTEM, MESSAGING_SYSTEM_VALUE)
+            .put(SemanticAttributes.MESSAGING_DESTINATION_NAME, destinationName)
+            .put(PROJECT_ATTR_KEY, projectName)
+            .put(SemanticAttributes.CODE_FUNCTION, codeFunction);
+    if (operation != null) {
+      attributesBuilder.put(SemanticAttributes.MESSAGING_OPERATION, operation);
+    }
+
+    return attributesBuilder;
   }
 
   private Span startChildSpan(String name, Span parent) {
@@ -67,10 +85,12 @@ public class OpenTelemetryPubsubTracer implements PubsubTracer {
    * Creates and starts the parent span with the appropriate span attributes and injects the span
    * context into the {@link PubsubMessage} attributes.
    */
-  @Override
-  public void startPublisherSpan(PubsubMessageWrapper message) {
+  void startPublisherSpan(PubsubMessageWrapper message) {
+    if (!enabled) {
+      return;
+    }
     AttributesBuilder attributesBuilder =
-        OpenTelemetryUtil.createCommonSpanAttributesBuilder(
+        createCommonSpanAttributesBuilder(
             message.getTopicName(), message.getTopicProject(), "publish", "create");
 
     attributesBuilder.put(MESSAGE_SIZE_ATTR_KEY, message.getDataSize());
@@ -91,44 +111,60 @@ public class OpenTelemetryPubsubTracer implements PubsubTracer {
     }
   }
 
-  public void endPublisherSpan(PubsubMessageWrapper message) {
+  void endPublisherSpan(PubsubMessageWrapper message) {
+    if (!enabled) {
+      return;
+    }
     message.endPublisherSpan();
   }
 
-  public void setPublisherMessageIdSpanAttribute(PubsubMessageWrapper message, String messageId) {
+  void setPublisherMessageIdSpanAttribute(PubsubMessageWrapper message, String messageId) {
+    if (!enabled) {
+      return;
+    }
     message.setPublisherMessageIdSpanAttribute(messageId);
   }
 
   /** Creates a span for publish-side flow control as a child of the parent publisher span. */
-  @Override
-  public void startPublishFlowControlSpan(PubsubMessageWrapper message) {
+  void startPublishFlowControlSpan(PubsubMessageWrapper message) {
+    if (!enabled) {
+      return;
+    }
     Span publisherSpan = message.getPublisherSpan();
     if (publisherSpan != null)
       message.setPublishFlowControlSpan(
           startChildSpan(PUBLISH_FLOW_CONTROL_SPAN_NAME, publisherSpan));
   }
 
-  @Override
-  public void endPublishFlowControlSpan(PubsubMessageWrapper message) {
+  void endPublishFlowControlSpan(PubsubMessageWrapper message) {
+    if (!enabled) {
+      return;
+    }
     message.endPublishFlowControlSpan();
   }
 
-  @Override
-  public void setPublishFlowControlSpanException(PubsubMessageWrapper message, Throwable t) {
+  void setPublishFlowControlSpanException(PubsubMessageWrapper message, Throwable t) {
+    if (!enabled) {
+      return;
+    }
     message.setPublishFlowControlSpanException(t);
   }
 
   /** Creates a span for publish message batching as a child of the parent publisher span. */
-  @Override
-  public void startPublishBatchingSpan(PubsubMessageWrapper message) {
+  void startPublishBatchingSpan(PubsubMessageWrapper message) {
+    if (!enabled) {
+      return;
+    }
     Span publisherSpan = message.getPublisherSpan();
     if (publisherSpan != null) {
       message.setPublishBatchingSpan(startChildSpan(PUBLISH_BATCHING_SPAN_NAME, publisherSpan));
     }
   }
 
-  @Override
-  public void endPublishBatchingSpan(PubsubMessageWrapper message) {
+  void endPublishBatchingSpan(PubsubMessageWrapper message) {
+    if (!enabled) {
+      return;
+    }
     message.endPublishBatchingSpan();
   }
 
@@ -136,11 +172,13 @@ public class OpenTelemetryPubsubTracer implements PubsubTracer {
    * Creates, starts, and returns a publish RPC span for the given message batch. Bi-directional
    * links with the publisher parent span are created for sampled messages in the batch.
    */
-  @Override
-  public Span startPublishRpcSpan(String topic, List<PubsubMessageWrapper> messages) {
+  Span startPublishRpcSpan(String topic, List<PubsubMessageWrapper> messages) {
+    if (!enabled) {
+      return null;
+    }
     TopicName topicName = TopicName.parse(topic);
     Attributes attributes =
-        OpenTelemetryUtil.createCommonSpanAttributesBuilder(
+        createCommonSpanAttributesBuilder(
                 topicName.getTopic(), topicName.getProject(), "publishCall", "publish")
             .put(SemanticAttributes.MESSAGING_BATCH_MESSAGE_COUNT, messages.size())
             .build();
@@ -167,8 +205,10 @@ public class OpenTelemetryPubsubTracer implements PubsubTracer {
   }
 
   /** Ends the given publish RPC span if it exists. */
-  @Override
-  public void endPublishRpcSpan(Span publishRpcSpan) {
+  void endPublishRpcSpan(Span publishRpcSpan) {
+    if (!enabled) {
+      return;
+    }
     if (publishRpcSpan != null) {
       publishRpcSpan.end();
     }
@@ -178,8 +218,10 @@ public class OpenTelemetryPubsubTracer implements PubsubTracer {
    * Sets an error status and records an exception when an exception is thrown when publishing the
    * message batch.
    */
-  @Override
-  public void setPublishRpcSpanException(Span publishRpcSpan, Throwable t) {
+  void setPublishRpcSpanException(Span publishRpcSpan, Throwable t) {
+    if (!enabled) {
+      return;
+    }
     if (publishRpcSpan != null) {
       publishRpcSpan.setStatus(StatusCode.ERROR, "Exception thrown on publish RPC.");
       publishRpcSpan.recordException(t);
@@ -187,11 +229,13 @@ public class OpenTelemetryPubsubTracer implements PubsubTracer {
     }
   }
 
-  @Override
-  public void startSubscriberSpan(
+  void startSubscriberSpan(
       PubsubMessageWrapper message, boolean exactlyOnceDeliveryEnabled) {
+    if (!enabled) {
+      return;
+    }
     AttributesBuilder attributesBuilder =
-        OpenTelemetryUtil.createCommonSpanAttributesBuilder(
+        createCommonSpanAttributesBuilder(
             message.getSubscriptionName(), message.getSubscriptionProject(), "onResponse", null);
 
     attributesBuilder
@@ -217,25 +261,33 @@ public class OpenTelemetryPubsubTracer implements PubsubTracer {
             .startSpan());
   }
 
-  @Override
-  public void endSubscriberSpan(PubsubMessageWrapper message) {
+  void endSubscriberSpan(PubsubMessageWrapper message) {
+    if (!enabled) {
+      return;
+    }
     message.endSubscriberSpan();
   }
 
-  @Override
-  public void setSubscriberSpanExpirationResult(PubsubMessageWrapper message) {
+  void setSubscriberSpanExpirationResult(PubsubMessageWrapper message) {
+    if (!enabled) {
+      return;
+    }
     message.setSubscriberSpanExpirationResult();
   }
 
-  @Override
-  public void setSubscriberSpanException(
+  void setSubscriberSpanException(
       PubsubMessageWrapper message, Throwable t, String exception) {
+    if (!enabled) {
+      return;
+    }
     message.setSubscriberSpanException(t, exception);
   }
 
   /** Creates a span for subscribe concurrency control as a child of the parent subscriber span. */
-  @Override
-  public void startSubscribeConcurrencyControlSpan(PubsubMessageWrapper message) {
+  void startSubscribeConcurrencyControlSpan(PubsubMessageWrapper message) {
+    if (!enabled) {
+      return;
+    }
     Span subscriberSpan = message.getSubscriberSpan();
     if (subscriberSpan != null) {
       message.setSubscribeConcurrencyControlSpan(
@@ -243,22 +295,28 @@ public class OpenTelemetryPubsubTracer implements PubsubTracer {
     }
   }
 
-  @Override
-  public void endSubscribeConcurrencyControlSpan(PubsubMessageWrapper message) {
+  void endSubscribeConcurrencyControlSpan(PubsubMessageWrapper message) {
+    if (!enabled) {
+      return;
+    }
     message.endSubscribeConcurrencyControlSpan();
   }
 
-  @Override
-  public void setSubscribeConcurrencyControlSpanException(
+  void setSubscribeConcurrencyControlSpanException(
       PubsubMessageWrapper message, Throwable t) {
+    if (!enabled) {
+      return;
+    }
     message.setSubscribeConcurrencyControlSpanException(t);
   }
 
   /**
    * Creates a span for subscribe ordering key scheduling as a child of the parent subscriber span.
    */
-  @Override
-  public void startSubscribeSchedulerSpan(PubsubMessageWrapper message) {
+  void startSubscribeSchedulerSpan(PubsubMessageWrapper message) {
+    if (!enabled) {
+      return;
+    }
     Span subscriberSpan = message.getSubscriberSpan();
     if (subscriberSpan != null) {
       message.setSubscribeSchedulerSpan(
@@ -266,14 +324,18 @@ public class OpenTelemetryPubsubTracer implements PubsubTracer {
     }
   }
 
-  @Override
-  public void endSubscribeSchedulerSpan(PubsubMessageWrapper message) {
+  void endSubscribeSchedulerSpan(PubsubMessageWrapper message) {
+    if (!enabled) {
+      return;
+    }
     message.endSubscribeSchedulerSpan();
   }
 
   /** Creates a span for subscribe message processing as a child of the parent subscriber span. */
-  @Override
-  public void startSubscribeProcessSpan(PubsubMessageWrapper message) {
+  void startSubscribeProcessSpan(PubsubMessageWrapper message) {
+    if (!enabled) {
+      return;
+    }
     Span subscriberSpan = message.getSubscriberSpan();
     if (subscriberSpan != null) {
       Span subscribeProcessSpan =
@@ -288,8 +350,10 @@ public class OpenTelemetryPubsubTracer implements PubsubTracer {
     }
   }
 
-  @Override
-  public void endSubscribeProcessSpan(PubsubMessageWrapper message, String action) {
+  void endSubscribeProcessSpan(PubsubMessageWrapper message, String action) {
+    if (!enabled) {
+      return;
+    }
     message.endSubscribeProcessSpan(action);
   }
 
@@ -297,17 +361,19 @@ public class OpenTelemetryPubsubTracer implements PubsubTracer {
    * Creates, starts, and returns spans for ModAck, Nack, and Ack RPC requests. Bi-directional links
    * to parent subscribe span for sampled messages are added.
    */
-  @Override
-  public Span startSubscribeRpcSpan(
+  Span startSubscribeRpcSpan(
       String subscription,
       String rpcOperation,
       List<PubsubMessageWrapper> messages,
       int ackDeadline,
       boolean isReceiptModack) {
+    if (!enabled) {
+      return null;
+    }
     String codeFunction = rpcOperation == "ack" ? "sendAckOperations" : "sendModAckOperations";
     SubscriptionName subscriptionName = SubscriptionName.parse(subscription);
     AttributesBuilder attributesBuilder =
-        OpenTelemetryUtil.createCommonSpanAttributesBuilder(
+        createCommonSpanAttributesBuilder(
                 subscriptionName.getSubscription(),
                 subscriptionName.getProject(),
                 codeFunction,
@@ -355,8 +421,10 @@ public class OpenTelemetryPubsubTracer implements PubsubTracer {
   }
 
   /** Ends the given subscribe RPC span if it exists. */
-  @Override
-  public void endSubscribeRpcSpan(Span rpcSpan) {
+  void endSubscribeRpcSpan(Span rpcSpan) {
+    if (!enabled) {
+      return;
+    }
     if (rpcSpan != null) {
       rpcSpan.end();
     }
@@ -366,9 +434,11 @@ public class OpenTelemetryPubsubTracer implements PubsubTracer {
    * Sets an error status and records an exception when an exception is thrown when handling a
    * subscribe-side RPC.
    */
-  @Override
-  public void setSubscribeRpcSpanException(
+  void setSubscribeRpcSpanException(
       Span rpcSpan, boolean isModack, int ackDeadline, Throwable t) {
+    if (!enabled) {
+      return;
+    }
     if (rpcSpan != null) {
       String operation = !isModack ? "ack" : (ackDeadline == 0 ? "nack" : "modack");
       rpcSpan.setStatus(StatusCode.ERROR, "Exception thrown on " + operation + " RPC.");
@@ -378,10 +448,9 @@ public class OpenTelemetryPubsubTracer implements PubsubTracer {
   }
 
   /** Adds the appropriate subscribe-side RPC end event. */
-  @Override
-  public void addEndRpcEvent(
+  void addEndRpcEvent(
       PubsubMessageWrapper message, boolean rpcSampled, boolean isModack, int ackDeadline) {
-    if (!rpcSampled) {
+    if (!enabled || !rpcSampled) {
       return;
     }
     if (!isModack) {
