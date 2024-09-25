@@ -229,8 +229,7 @@ public class OpenTelemetryPubsubTracer {
     }
   }
 
-  void startSubscriberSpan(
-      PubsubMessageWrapper message, boolean exactlyOnceDeliveryEnabled) {
+  void startSubscriberSpan(PubsubMessageWrapper message, boolean exactlyOnceDeliveryEnabled) {
     if (!enabled) {
       return;
     }
@@ -275,8 +274,7 @@ public class OpenTelemetryPubsubTracer {
     message.setSubscriberSpanExpirationResult();
   }
 
-  void setSubscriberSpanException(
-      PubsubMessageWrapper message, Throwable t, String exception) {
+  void setSubscriberSpanException(PubsubMessageWrapper message, Throwable t, String exception) {
     if (!enabled) {
       return;
     }
@@ -302,8 +300,7 @@ public class OpenTelemetryPubsubTracer {
     message.endSubscribeConcurrencyControlSpan();
   }
 
-  void setSubscribeConcurrencyControlSpanException(
-      PubsubMessageWrapper message, Throwable t) {
+  void setSubscribeConcurrencyControlSpanException(PubsubMessageWrapper message, Throwable t) {
     if (!enabled) {
       return;
     }
@@ -434,8 +431,7 @@ public class OpenTelemetryPubsubTracer {
    * Sets an error status and records an exception when an exception is thrown when handling a
    * subscribe-side RPC.
    */
-  void setSubscribeRpcSpanException(
-      Span rpcSpan, boolean isModack, int ackDeadline, Throwable t) {
+  void setSubscribeRpcSpanException(Span rpcSpan, boolean isModack, int ackDeadline, Throwable t) {
     if (!enabled) {
       return;
     }

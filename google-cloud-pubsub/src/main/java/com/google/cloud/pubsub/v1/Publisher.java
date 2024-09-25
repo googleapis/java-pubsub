@@ -166,7 +166,8 @@ public class Publisher implements PublisherInterface {
     if (this.openTelemetry != null && this.enableOpenTelemetryTracing) {
       Tracer openTelemetryTracer = builder.openTelemetry.getTracer(OPEN_TELEMETRY_TRACER_NAME);
       if (openTelemetryTracer != null) {
-        this.tracer = new OpenTelemetryPubsubTracer(openTelemetryTracer, this.enableOpenTelemetryTracing);
+        this.tracer =
+            new OpenTelemetryPubsubTracer(openTelemetryTracer, this.enableOpenTelemetryTracing);
       }
     }
 
