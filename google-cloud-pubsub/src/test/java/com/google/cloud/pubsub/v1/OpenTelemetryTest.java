@@ -190,7 +190,8 @@ public class OpenTelemetryTest {
         .containsEntry(PROJECT_ATTR_KEY, PROJECT_NAME)
         .containsEntry(SemanticAttributes.CODE_FUNCTION, "publish")
         .containsEntry(SemanticAttributes.MESSAGING_OPERATION, "create")
-        .containsEntry(MessagingIncubatingAttributes.MESSAGING_GCP_PUBSUB_MESSAGE_ORDERING_KEY, ORDERING_KEY)
+        .containsEntry(
+            MessagingIncubatingAttributes.MESSAGING_GCP_PUBSUB_MESSAGE_ORDERING_KEY, ORDERING_KEY)
         .containsEntry(MessagingIncubatingAttributes.MESSAGING_MESSAGE_BODY_SIZE, messageSize)
         .containsEntry(SemanticAttributes.MESSAGING_MESSAGE_ID, MESSAGE_ID);
 
@@ -499,9 +500,12 @@ public class OpenTelemetryTest {
         .containsEntry(PROJECT_ATTR_KEY, PROJECT_NAME)
         .containsEntry(SemanticAttributes.CODE_FUNCTION, "onResponse")
         .containsEntry(MessagingIncubatingAttributes.MESSAGING_MESSAGE_BODY_SIZE, messageSize)
-        .containsEntry(MessagingIncubatingAttributes.MESSAGING_GCP_PUBSUB_MESSAGE_ORDERING_KEY, ORDERING_KEY)
+        .containsEntry(
+            MessagingIncubatingAttributes.MESSAGING_GCP_PUBSUB_MESSAGE_ORDERING_KEY, ORDERING_KEY)
         .containsEntry(MessagingIncubatingAttributes.MESSAGING_GCP_PUBSUB_MESSAGE_ACK_ID, ACK_ID)
-        .containsEntry(MessagingIncubatingAttributes.MESSAGING_GCP_PUBSUB_MESSAGE_DELIVERY_ATTEMPT, DELIVERY_ATTEMPT)
+        .containsEntry(
+            MessagingIncubatingAttributes.MESSAGING_GCP_PUBSUB_MESSAGE_DELIVERY_ATTEMPT,
+            DELIVERY_ATTEMPT)
         .containsEntry(MESSAGE_EXACTLY_ONCE_ATTR_KEY, EXACTLY_ONCE_ENABLED)
         .containsEntry(MESSAGE_RESULT_ATTR_KEY, PROCESS_ACTION)
         .containsEntry(SemanticAttributes.MESSAGING_MESSAGE_ID, MESSAGE_ID);

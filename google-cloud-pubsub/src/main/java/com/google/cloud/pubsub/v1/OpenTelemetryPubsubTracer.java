@@ -88,9 +88,12 @@ public class OpenTelemetryPubsubTracer {
         createCommonSpanAttributesBuilder(
             message.getTopicName(), message.getTopicProject(), "publish", "create");
 
-    attributesBuilder.put(MessagingIncubatingAttributes.MESSAGING_MESSAGE_BODY_SIZE, message.getDataSize());
+    attributesBuilder.put(
+        MessagingIncubatingAttributes.MESSAGING_MESSAGE_BODY_SIZE, message.getDataSize());
     if (!message.getOrderingKey().isEmpty()) {
-      attributesBuilder.put(MessagingIncubatingAttributes.MESSAGING_GCP_PUBSUB_MESSAGE_ORDERING_KEY, message.getOrderingKey());
+      attributesBuilder.put(
+          MessagingIncubatingAttributes.MESSAGING_GCP_PUBSUB_MESSAGE_ORDERING_KEY,
+          message.getOrderingKey());
     }
 
     Span publisherSpan =
@@ -238,10 +241,14 @@ public class OpenTelemetryPubsubTracer {
         .put(MessagingIncubatingAttributes.MESSAGING_GCP_PUBSUB_MESSAGE_ACK_ID, message.getAckId())
         .put(MESSAGE_EXACTLY_ONCE_ATTR_KEY, exactlyOnceDeliveryEnabled);
     if (!message.getOrderingKey().isEmpty()) {
-      attributesBuilder.put(MessagingIncubatingAttributes.MESSAGING_GCP_PUBSUB_MESSAGE_ORDERING_KEY, message.getOrderingKey());
+      attributesBuilder.put(
+          MessagingIncubatingAttributes.MESSAGING_GCP_PUBSUB_MESSAGE_ORDERING_KEY,
+          message.getOrderingKey());
     }
     if (message.getDeliveryAttempt() > 0) {
-      attributesBuilder.put(MessagingIncubatingAttributes.MESSAGING_GCP_PUBSUB_MESSAGE_DELIVERY_ATTEMPT, message.getDeliveryAttempt());
+      attributesBuilder.put(
+          MessagingIncubatingAttributes.MESSAGING_GCP_PUBSUB_MESSAGE_DELIVERY_ATTEMPT,
+          message.getDeliveryAttempt());
     }
     Attributes attributes = attributesBuilder.build();
     Context publisherSpanContext = message.extractSpanContext(attributes);
