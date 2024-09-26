@@ -35,6 +35,7 @@ import io.opentelemetry.sdk.testing.junit4.OpenTelemetryRule;
 import io.opentelemetry.sdk.trace.data.LinkData;
 import io.opentelemetry.sdk.trace.data.SpanData;
 import io.opentelemetry.sdk.trace.data.StatusData;
+import io.opentelemetry.semconv.incubating.MessagingIncubatingAttributes;
 import io.opentelemetry.semconv.trace.attributes.SemanticAttributes;
 import java.util.Arrays;
 import java.util.List;
@@ -84,16 +85,10 @@ public class OpenTelemetryTest {
 
   private static final String MESSAGING_SYSTEM_VALUE = "gcp_pubsub";
   private static final String PROJECT_ATTR_KEY = "gcp.project_id";
-  private static final String MESSAGE_SIZE_ATTR_KEY = "messaging.message.body.size";
-  private static final String ORDERING_KEY_ATTR_KEY = "messaging.gcp_pubsub.message.ordering_key";
-  private static final String ACK_DEADLINE_ATTR_KEY = "messaging.gcp_pubsub.message.ack_deadline";
   private static final String RECEIPT_MODACK_ATTR_KEY = "messaging.gcp_pubsub.is_receipt_modack";
-  private static final String MESSAGE_ACK_ID_ATTR_KEY = "messaging.gcp_pubsub.message.ack_id";
   private static final String MESSAGE_EXACTLY_ONCE_ATTR_KEY =
       "messaging.gcp_pubsub.message.exactly_once_delivery";
   private static final String MESSAGE_RESULT_ATTR_KEY = "messaging.gcp_pubsub.result";
-  private static final String MESSAGE_DELIVERY_ATTEMPT_ATTR_KEY =
-      "messaging.gcp_pubsub.message.delivery_attempt";
 
   private static final String TRACEPARENT_ATTRIBUTE = "googclient_traceparent";
 
@@ -195,8 +190,8 @@ public class OpenTelemetryTest {
         .containsEntry(PROJECT_ATTR_KEY, PROJECT_NAME)
         .containsEntry(SemanticAttributes.CODE_FUNCTION, "publish")
         .containsEntry(SemanticAttributes.MESSAGING_OPERATION, "create")
-        .containsEntry(ORDERING_KEY_ATTR_KEY, ORDERING_KEY)
-        .containsEntry(MESSAGE_SIZE_ATTR_KEY, messageSize)
+        .containsEntry(MessagingIncubatingAttributes.MESSAGING_GCP_PUBSUB_MESSAGE_ORDERING_KEY, ORDERING_KEY)
+        .containsEntry(MessagingIncubatingAttributes.MESSAGING_MESSAGE_BODY_SIZE, messageSize)
         .containsEntry(SemanticAttributes.MESSAGING_MESSAGE_ID, MESSAGE_ID);
 
     // Check that the message has the attribute containing the trace context.
@@ -406,7 +401,7 @@ public class OpenTelemetryTest {
         .containsEntry(SemanticAttributes.MESSAGING_OPERATION, "modack")
         .containsEntry(
             SemanticAttributes.MESSAGING_BATCH_MESSAGE_COUNT, subscribeMessageWrappers.size())
-        .containsEntry(ACK_DEADLINE_ATTR_KEY, 10)
+        .containsEntry(MessagingIncubatingAttributes.MESSAGING_GCP_PUBSUB_MESSAGE_ACK_DEADLINE, 10)
         .containsEntry(RECEIPT_MODACK_ATTR_KEY, true);
 
     // Check span data, links, and attributes for the ack RPC span
@@ -503,10 +498,10 @@ public class OpenTelemetryTest {
             SemanticAttributes.MESSAGING_DESTINATION_NAME, FULL_SUBSCRIPTION_NAME.getSubscription())
         .containsEntry(PROJECT_ATTR_KEY, PROJECT_NAME)
         .containsEntry(SemanticAttributes.CODE_FUNCTION, "onResponse")
-        .containsEntry(MESSAGE_SIZE_ATTR_KEY, messageSize)
-        .containsEntry(ORDERING_KEY_ATTR_KEY, ORDERING_KEY)
-        .containsEntry(MESSAGE_ACK_ID_ATTR_KEY, ACK_ID)
-        .containsEntry(MESSAGE_DELIVERY_ATTEMPT_ATTR_KEY, DELIVERY_ATTEMPT)
+        .containsEntry(MessagingIncubatingAttributes.MESSAGING_MESSAGE_BODY_SIZE, messageSize)
+        .containsEntry(MessagingIncubatingAttributes.MESSAGING_GCP_PUBSUB_MESSAGE_ORDERING_KEY, ORDERING_KEY)
+        .containsEntry(MessagingIncubatingAttributes.MESSAGING_GCP_PUBSUB_MESSAGE_ACK_ID, ACK_ID)
+        .containsEntry(MessagingIncubatingAttributes.MESSAGING_GCP_PUBSUB_MESSAGE_DELIVERY_ATTEMPT, DELIVERY_ATTEMPT)
         .containsEntry(MESSAGE_EXACTLY_ONCE_ATTR_KEY, EXACTLY_ONCE_ENABLED)
         .containsEntry(MESSAGE_RESULT_ATTR_KEY, PROCESS_ACTION)
         .containsEntry(SemanticAttributes.MESSAGING_MESSAGE_ID, MESSAGE_ID);

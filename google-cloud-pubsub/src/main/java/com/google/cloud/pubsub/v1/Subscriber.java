@@ -707,13 +707,21 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
       return this;
     }
 
+    /**
+     * OpenTelemetry will be enabled if setEnableOpenTelemetry is true and and instance of OpenTelemetry has been provied.
+    Warning: traces are subject to change. The name and attributes of a span might
+    change without notice. Only use run traces interactively. Don't use in
+    automation. Running non-interactive traces can cause problems if the underlying
+    trace architecture changes without notice.
+    */
+
     /** Gives the ability to enable Open Telemetry Tracing */
     public Builder setEnableOpenTelemetryTracing(boolean enableOpenTelemetryTracing) {
       this.enableOpenTelemetryTracing = enableOpenTelemetryTracing;
       return this;
     }
 
-    /** Sets the instance of OpenTelemetry for the Publisher class. */
+    /** Sets the instance of OpenTelemetry for the Subscriber class. */
     public Builder setOpenTelemetry(OpenTelemetry openTelemetry) {
       this.openTelemetry = openTelemetry;
       return this;
