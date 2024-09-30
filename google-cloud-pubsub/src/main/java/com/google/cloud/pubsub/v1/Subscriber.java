@@ -721,7 +721,7 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
       return this;
     }
 
-    /** Sets the instance of OpenTelemetry for the Subscriber class. */
+    /** Sets the instance of OpenTelemetry for the Publisher class. */
     public Builder setOpenTelemetry(OpenTelemetry openTelemetry) {
       this.openTelemetry = openTelemetry;
       return this;

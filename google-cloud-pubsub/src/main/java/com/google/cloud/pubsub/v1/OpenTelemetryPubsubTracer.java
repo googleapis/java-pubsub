@@ -27,7 +27,6 @@ import io.opentelemetry.api.trace.SpanKind;
 import io.opentelemetry.api.trace.StatusCode;
 import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.context.Context;
-import io.opentelemetry.semconv.incubating.MessagingIncubatingAttributes;
 import io.opentelemetry.semconv.trace.attributes.SemanticAttributes;
 import java.util.List;
 
@@ -41,8 +40,14 @@ public class OpenTelemetryPubsubTracer {
       "subscriber concurrency control";
   private static final String SUBSCRIBE_SCHEDULER_SPAN_NAME = "subscriber scheduler";
 
+  private static final String MESSAGE_SIZE_ATTR_KEY = "messaging.message.body.size";
+  private static final String ORDERING_KEY_ATTR_KEY = "messaging.gcp_pubsub.message.ordering_key";
+  private static final String MESSAGE_ACK_ID_ATTR_KEY = "messaging.gcp_pubsub.message.ack_id";
   private static final String MESSAGE_EXACTLY_ONCE_ATTR_KEY =
       "messaging.gcp_pubsub.message.exactly_once_delivery";
+  private static final String MESSAGE_DELIVERY_ATTEMPT_ATTR_KEY =
+      "messaging.gcp_pubsub.message.delivery_attempt";
+  private static final String ACK_DEADLINE_ATTR_KEY = "messaging.gcp_pubsub.message.ack_deadline";
   private static final String RECEIPT_MODACK_ATTR_KEY = "messaging.gcp_pubsub.is_receipt_modack";
   private static final String PROJECT_ATTR_KEY = "gcp.project_id";
   private static final String PUBLISH_RPC_SPAN_SUFFIX = " publish";
@@ -88,12 +93,9 @@ public class OpenTelemetryPubsubTracer {
         createCommonSpanAttributesBuilder(
             message.getTopicName(), message.getTopicProject(), "publish", "create");
 
-    attributesBuilder.put(
-        MessagingIncubatingAttributes.MESSAGING_MESSAGE_BODY_SIZE, message.getDataSize());
+    attributesBuilder.put(MESSAGE_SIZE_ATTR_KEY, message.getDataSize());
     if (!message.getOrderingKey().isEmpty()) {
-      attributesBuilder.put(
-          MessagingIncubatingAttributes.MESSAGING_GCP_PUBSUB_MESSAGE_ORDERING_KEY,
-          message.getOrderingKey());
+      attributesBuilder.put(ORDERING_KEY_ATTR_KEY, message.getOrderingKey());
     }
 
     Span publisherSpan =
@@ -237,18 +239,14 @@ public class OpenTelemetryPubsubTracer {
 
     attributesBuilder
         .put(SemanticAttributes.MESSAGING_MESSAGE_ID, message.getMessageId())
-        .put(MessagingIncubatingAttributes.MESSAGING_MESSAGE_BODY_SIZE, message.getDataSize())
-        .put(MessagingIncubatingAttributes.MESSAGING_GCP_PUBSUB_MESSAGE_ACK_ID, message.getAckId())
+        .put(MESSAGE_SIZE_ATTR_KEY, message.getDataSize())
+        .put(MESSAGE_ACK_ID_ATTR_KEY, message.getAckId())
         .put(MESSAGE_EXACTLY_ONCE_ATTR_KEY, exactlyOnceDeliveryEnabled);
     if (!message.getOrderingKey().isEmpty()) {
-      attributesBuilder.put(
-          MessagingIncubatingAttributes.MESSAGING_GCP_PUBSUB_MESSAGE_ORDERING_KEY,
-          message.getOrderingKey());
+      attributesBuilder.put(ORDERING_KEY_ATTR_KEY, message.getOrderingKey());
     }
     if (message.getDeliveryAttempt() > 0) {
-      attributesBuilder.put(
-          MessagingIncubatingAttributes.MESSAGING_GCP_PUBSUB_MESSAGE_DELIVERY_ATTEMPT,
-          message.getDeliveryAttempt());
+      attributesBuilder.put(MESSAGE_DELIVERY_ATTEMPT_ATTR_KEY, message.getDeliveryAttempt());
     }
     Attributes attributes = attributesBuilder.build();
     Context publisherSpanContext = message.extractSpanContext(attributes);
@@ -382,7 +380,7 @@ public class OpenTelemetryPubsubTracer {
     // Ack deadline and receipt modack are specific to the modack operation
     if (rpcOperation == "modack") {
       attributesBuilder
-          .put(MessagingIncubatingAttributes.MESSAGING_GCP_PUBSUB_MESSAGE_ACK_DEADLINE, ackDeadline)
+          .put(ACK_DEADLINE_ATTR_KEY, ackDeadline)
           .put(RECEIPT_MODACK_ATTR_KEY, isReceiptModack);
     }
 
