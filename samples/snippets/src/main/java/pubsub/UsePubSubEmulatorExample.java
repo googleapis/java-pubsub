@@ -51,7 +51,7 @@ public class UsePubSubEmulatorExample {
       CredentialsProvider credentialsProvider = NoCredentialsProvider.create();
 
       // Set the channel and credentials provider when creating a `TopicAdminClient`.
-      // Similarly for a `SubscriptionAdminClient`.
+      // Can be done similarly for a `SubscriptionAdminClient`.
       TopicAdminClient topicAdminClient =
           TopicAdminClient.create(
               TopicAdminSettings.newBuilder()
@@ -64,7 +64,7 @@ public class UsePubSubEmulatorExample {
       System.out.println("Created topic: " + topic.getName());
 
       // Set the channel and credentials provider when creating a `Publisher`.
-      // Similarly for a `Subscriber`.
+      // Can be done similarly for a `Subscriber`.
       Publisher publisher =
           Publisher.newBuilder(topicName)
               .setChannelProvider(channelProvider)
