@@ -29,11 +29,11 @@ import java.text.ParseException;
 public class CreateTopicWithCloudStorageIngestionExample {
   public static void main(String... args) throws Exception {
     // TODO(developer): Replace these variables before running the sample.
-    String projectId = "cps-prod-ingestion-prober";
-    String topicId = "mike-test-id";
+    String projectId = "your-project-id";
+    String topicId = "your-topic-id";
     // Cloud Storage ingestion settings.
     // bucket and inputFormat are required arguments.
-    String bucket = "prieto-test-bucket";
+    String bucket = "your-bucket";
     String inputFormat = "text";
     String textDelimiter = "\n";
     String matchGlob = "**.txt";
