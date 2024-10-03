@@ -53,8 +53,6 @@ public class CreateTopicWithCloudStorageIngestionExample {
       String minimumObjectCreateTime)
       throws IOException {
     try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
-      TopicName topicName = TopicName.of(projectId, topicId);
-
       IngestionDataSourceSettings.CloudStorage.Builder cloudStorageBuilder =
           IngestionDataSourceSettings.CloudStorage.newBuilder().setBucket(bucket);
       switch (inputFormat) {
@@ -93,6 +91,8 @@ public class CreateTopicWithCloudStorageIngestionExample {
           IngestionDataSourceSettings.newBuilder()
               .setCloudStorage(cloudStorageBuilder.build())
               .build();
+
+      TopicName topicName = TopicName.of(projectId, topicId);
 
       Topic topic =
           topicAdminClient.createTopic(
