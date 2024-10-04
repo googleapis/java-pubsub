@@ -77,8 +77,7 @@ public class AdminIT {
   private static final String awsRoleArn = "arn:aws:iam::111111111111:role/fake-role-name";
   private static final String gcpServiceAccount =
       "fake-service-account@fake-gcp-project.iam.gserviceaccount.com";
-  //   private static final String cloudStorageBucket = "pubsub-cloud-storage-bucket";
-  private static final String cloudStorageBucket = "mikeprieto-bucket";
+  private static final String cloudStorageBucket = "pubsub-cloud-storage-bucket";
   private static final String cloudStorageInputFormat = "text";
   private static final String cloudStorageTextDelimiter = ",";
   private static final String cloudStorageMatchGlob = "**.txt";
