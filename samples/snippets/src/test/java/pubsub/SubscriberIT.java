@@ -158,9 +158,7 @@ public class SubscriberIT {
               // Enable exactly once delivery in the subscription.
               .setEnableExactlyOnceDelivery(true)
               .build();
-      Subscription createdSubscriptionEod =
-          subscriptionAdminClient.createSubscription(subscriptionEod);
-      System.err.println("Created subscription: " + createdSubscriptionEod.getName());
+      subscriptionAdminClient.createSubscription(subscriptionEod);
     }
   }
 
