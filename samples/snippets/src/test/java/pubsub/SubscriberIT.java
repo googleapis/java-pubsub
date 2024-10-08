@@ -47,8 +47,8 @@ import org.junit.Test;
 import org.junit.rules.Timeout;
 
 public class SubscriberIT {
-  private ByteArrayOutputStream bout;
-  private PrintStream out;
+  private static ByteArrayOutputStream bout;
+  private static PrintStream out;
 
   private static final String projectId = System.getenv("GOOGLE_CLOUD_PROJECT");
   private static final String _suffix = UUID.randomUUID().toString();
@@ -131,7 +131,7 @@ public class SubscriberIT {
   }
 
   @BeforeClass
-  public void setUp() throws Exception {
+  public static void setUp() throws Exception {
     bout = new ByteArrayOutputStream();
     out = new PrintStream(bout);
     System.setOut(out);
@@ -164,7 +164,7 @@ public class SubscriberIT {
   }
 
   @AfterClass
-  public void tearDown() throws Exception {
+  public static void tearDown() throws Exception {
     try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
       subscriptionAdminClient.deleteSubscription(subscriptionName.toString());
       subscriptionAdminClient.deleteSubscription(subscriptionEodName.toString());
