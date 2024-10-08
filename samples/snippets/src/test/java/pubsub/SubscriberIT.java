@@ -129,7 +129,7 @@ public class SubscriberIT {
     requireEnvVar("GOOGLE_CLOUD_PROJECT");
   }
 
-  @Before
+  @BeforeClass
   public void setUp() throws Exception {
     bout = new ByteArrayOutputStream();
     out = new PrintStream(bout);
@@ -164,7 +164,7 @@ public class SubscriberIT {
     }
   }
 
-  @After
+  @AfterClass
   public void tearDown() throws Exception {
     try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
       subscriptionAdminClient.deleteSubscription(subscriptionName.toString());
