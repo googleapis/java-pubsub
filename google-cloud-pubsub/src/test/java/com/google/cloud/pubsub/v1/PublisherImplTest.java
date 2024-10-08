@@ -1345,21 +1345,11 @@ public class PublisherImplTest {
     shutdownTestPublisher(publisher);
 
     List<SpanData> allSpans = openTelemetryTesting.getSpans();
-    System.out.println("GETTING SPAN NAMES");
-    SpanData flowControlSpanData = allSpans.get(0);
-    System.out.println(flowControlSpanData.getName());
-    SpanData batchingSpanData = allSpans.get(1);
-    System.out.println(batchingSpanData.getName());
-    SpanData publishRpcSpanData = allSpans.get(2);
-    System.out.println(publishRpcSpanData.getName());
-    SpanData publisherSpanData = allSpans.get(3);
-    System.out.println(publisherSpanData.getName());
-
     assertEquals(4, allSpans.size());
-    // SpanData flowControlSpanData = allSpans.get(0);
-    // SpanData batchingSpanData = allSpans.get(1);
-    // SpanData publishRpcSpanData = allSpans.get(2);
-    // SpanData publisherSpanData = allSpans.get(3);
+    SpanData flowControlSpanData = allSpans.get(0);
+    SpanData batchingSpanData = allSpans.get(1);
+    SpanData publishRpcSpanData = allSpans.get(2);
+    SpanData publisherSpanData = allSpans.get(3);
 
     SpanDataAssert flowControlSpanDataAssert =
         OpenTelemetryAssertions.assertThat(flowControlSpanData);
