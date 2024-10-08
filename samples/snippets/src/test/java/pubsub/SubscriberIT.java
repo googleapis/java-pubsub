@@ -160,7 +160,7 @@ public class SubscriberIT {
               .build();
       Subscription createdSubscriptionEod =
           subscriptionAdminClient.createSubscription(subscriptionEod);
-      System.out.println("Created subscription: " + createdSubscriptionEod.getName());
+      System.err.println("Created subscription: " + createdSubscriptionEod.getName());
     }
   }
 
