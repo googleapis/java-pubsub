@@ -46,6 +46,7 @@ import com.google.cloud.pubsub.v1.stub.GrpcPublisherStub;
 import com.google.cloud.pubsub.v1.stub.PublisherStub;
 import com.google.cloud.pubsub.v1.stub.PublisherStubSettings;
 import com.google.common.base.Preconditions;
+import com.google.protobuf.CodedOutputStream;
 import com.google.pubsub.v1.PublishRequest;
 import com.google.pubsub.v1.PublishResponse;
 import com.google.pubsub.v1.PubsubMessage;
@@ -99,6 +100,7 @@ public class Publisher implements PublisherInterface {
   private static final String OPEN_TELEMETRY_TRACER_NAME = "com.google.cloud.pubsub.v1";
 
   private final String topicName;
+  private final int topicNameSize;
 
   private final BatchingSettings batchingSettings;
   private final boolean enableMessageOrdering;
@@ -145,6 +147,8 @@ public class Publisher implements PublisherInterface {
 
   private Publisher(Builder builder) throws IOException {
     topicName = builder.topicName;
+    topicNameSize =
+        CodedOutputStream.computeStringSize(PublishRequest.TOPIC_FIELD_NUMBER, this.topicName);
 
     this.batchingSettings = builder.batchingSettings;
     FlowControlSettings flowControl = this.batchingSettings.getFlowControlSettings();
@@ -636,7 +640,10 @@ public class Publisher implements PublisherInterface {
     OutstandingPublish(PubsubMessageWrapper messageWrapper) {
       this.publishResult = SettableApiFuture.create();
       this.messageWrapper = messageWrapper;
-      this.messageSize = messageWrapper.getPubsubMessage().getSerializedSize();
+      this.messageSize =
+          CodedOutputStream.computeMessageSize(
+              PublishRequest.MESSAGES_FIELD_NUMBER,
+              messageWrapper.getPubsubMessage().message);
     }
   }
 
@@ -957,7 +964,7 @@ public class Publisher implements PublisherInterface {
     }
   }
 
-  private static class MessageFlowController {
+  private class MessageFlowController {
     private final Lock lock;
     private final Long messageLimit;
     private final Long byteLimit;
@@ -976,7 +983,7 @@ public class Publisher implements PublisherInterface {
       this.lock = new ReentrantLock();
 
       this.outstandingMessages = 0L;
-      this.outstandingBytes = 0L;
+      this.outstandingBytes = (long) topicNameSize;
 
       this.awaitingMessageAcquires = new LinkedList<CountDownLatch>();
       this.awaitingBytesAcquires = new LinkedList<CountDownLatch>();
@@ -1111,7 +1118,7 @@ public class Publisher implements PublisherInterface {
 
     private void reset() {
       messages = new LinkedList<>();
-      batchedBytes = 0;
+      batchedBytes = topicNameSize;
     }
 
     private boolean isEmpty() {
@@ -1150,7 +1157,9 @@ public class Publisher implements PublisherInterface {
       // immediately.
       // Alternatively if after adding the message we have reached the batch max messages then we
       // have a batch to send.
-      if ((hasBatchingBytes() && outstandingPublish.messageSize >= getMaxBatchBytes())
+      // Note that exceeding {@link Publisher#getApiMaxRequestBytes()} will result in failed
+      // publishes without compression and may yet fail if a request is not sufficiently compressed.
+      if ((hasBatchingBytes() && getBatchedBytes() >= getMaxBatchBytes())
           || getMessagesCount() == batchingSettings.getElementCountThreshold()) {
         batchesToSend.add(popOutstandingBatch());
       }
