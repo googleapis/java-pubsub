@@ -1150,7 +1150,7 @@ public class PublisherImplTest {
                             .setLimitExceededBehavior(
                                 FlowController.LimitExceededBehavior.ThrowException)
                             .setMaxOutstandingElementCount(1L)
-                            .setMaxOutstandingRequestBytes(55L)
+                            .setMaxOutstandingRequestBytes(13L)
                             .build())
                     .build())
             .build();
@@ -1192,7 +1192,7 @@ public class PublisherImplTest {
                             .setLimitExceededBehavior(
                                 FlowController.LimitExceededBehavior.ThrowException)
                             .setMaxOutstandingElementCount(1L)
-                            .setMaxOutstandingRequestBytes(55L)
+                            .setMaxOutstandingRequestBytes(13L)
                             .build())
                     .build())
             .setEnableMessageOrdering(true)
@@ -1238,7 +1238,7 @@ public class PublisherImplTest {
                         FlowControlSettings.newBuilder()
                             .setLimitExceededBehavior(FlowController.LimitExceededBehavior.Block)
                             .setMaxOutstandingElementCount(2L)
-                            .setMaxOutstandingRequestBytes(55L)
+                            .setMaxOutstandingRequestBytes(13L)
                             .build())
                     .build())
             .build();
