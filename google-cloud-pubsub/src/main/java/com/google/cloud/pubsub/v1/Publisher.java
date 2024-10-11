@@ -313,7 +313,7 @@ public class Publisher implements PublisherInterface {
       }
       MessagesBatch messagesBatch = messagesBatches.get(orderingKey);
       if (messagesBatch == null) {
-        messagesBatch = new MessagesBatch(batchingSettings, orderingKey);
+        messagesBatch = new MessagesBatch(batchingSettings, topicNameSize, orderingKey);
         messagesBatches.put(orderingKey, messagesBatch);
       }
 
@@ -642,8 +642,7 @@ public class Publisher implements PublisherInterface {
       this.messageWrapper = messageWrapper;
       this.messageSize =
           CodedOutputStream.computeMessageSize(
-              PublishRequest.MESSAGES_FIELD_NUMBER,
-              messageWrapper.getPubsubMessage());
+              PublishRequest.MESSAGES_FIELD_NUMBER, messageWrapper.getPubsubMessage());
     }
   }
 
@@ -1100,12 +1099,15 @@ public class Publisher implements PublisherInterface {
 
   private class MessagesBatch {
     private List<OutstandingPublish> messages;
+    private int initialBatchedBytes;
     private int batchedBytes;
     private String orderingKey;
     private final BatchingSettings batchingSettings;
 
-    private MessagesBatch(BatchingSettings batchingSettings, String orderingKey) {
+    private MessagesBatch(
+        BatchingSettings batchingSettings, int initialBatchedBytes, String orderingKey) {
       this.batchingSettings = batchingSettings;
+      this.initialBatchedBytes = initialBatchedBytes;
       this.orderingKey = orderingKey;
       reset();
     }
@@ -1118,7 +1120,7 @@ public class Publisher implements PublisherInterface {
 
     private void reset() {
       messages = new LinkedList<>();
-      batchedBytes = topicNameSize;
+      batchedBytes = initialBatchedBytes;
     }
 
     private boolean isEmpty() {
