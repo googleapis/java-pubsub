@@ -643,7 +643,7 @@ public class Publisher implements PublisherInterface {
       this.messageSize =
           CodedOutputStream.computeMessageSize(
               PublishRequest.MESSAGES_FIELD_NUMBER,
-              messageWrapper.getPubsubMessage().message);
+              messageWrapper.getPubsubMessage());
     }
   }
 
