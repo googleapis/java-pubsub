@@ -77,6 +77,10 @@ public class PubsubMessageWrapper {
     return new Builder(message, topicName);
   }
 
+  static Builder newBuilder(PubsubMessage message, TopicName topicName) {
+    return new Builder(message, topicName);
+  }
+
   static Builder newBuilder(
       PubsubMessage message, String subscriptionName, String ackId, int deliveryAttempt) {
     return new Builder(message, subscriptionName, ackId, deliveryAttempt);
@@ -400,6 +404,11 @@ public class PubsubMessageWrapper {
       if (topicName != null) {
         this.topicName = TopicName.parse(topicName);
       }
+    }
+
+    public Builder(PubsubMessage message, TopicName topicName) {
+      this.message = message;
+      this.topicName = topicName;
     }
 
     public Builder(
