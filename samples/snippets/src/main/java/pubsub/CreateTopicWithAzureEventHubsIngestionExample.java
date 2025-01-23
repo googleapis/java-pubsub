@@ -62,7 +62,7 @@ public class CreateTopicWithAzureEventHubsIngestionExample {
       String subscriptionId,
       String gcpServiceAccount)
       throws IOException {
-    try (TopicAdminClient topicAdminClient = TopicAdminClient.create(TopicAdminSettings.newBuilder().setEndpoint("staging-pubsub.sandbox.googleapis.com:443").build())) {
+    try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
       TopicName topicName = TopicName.of(projectId, topicId);
 
       IngestionDataSourceSettings.AzureEventHubs azureEventHubs =
@@ -85,8 +85,8 @@ public class CreateTopicWithAzureEventHubsIngestionExample {
                   .setIngestionDataSourceSettings(ingestionDataSourceSettings)
                   .build());
 
-      System.out.println("Created topic with Azure Event Hubs ingestion settings: " +
-                         topic.getAllFields());
+      System.out.println(
+          "Created topic with Azure Event Hubs ingestion settings: " + topic.getAllFields());
     }
   }
 }

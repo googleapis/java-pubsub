@@ -98,7 +98,7 @@ public class AdminIT {
   String bootstrapServer = "fake-bootstrap-server-id.us-south1.gcp.confluent.cloud:9092";
   String clusterId = "fake-cluster-id";
   String confluentTopic = "fake-confluent-topic-name";
-  String identityPoolId = "fake-pool-id"
+  String identityPoolId = "fake-pool-id";
   // Azure Event Hubs ingestion settings.
   String resourceGroup = "fake-resource-group";
   String namespace = "fake-namespace";
@@ -447,7 +447,8 @@ public class AdminIT {
         tenantId,
         subscriptionId,
         gcpServiceAccount);
-    assertThat(bout.toString()).contains("google.pubsub.v1.Topic.name=" + azureEventHubsIngestionTopicName.toString());
+    assertThat(bout.toString()).contains(
+        "google.pubsub.v1.Topic.name=" + azureEventHubsIngestionTopicName.toString());
     assertThat(bout.toString()).contains(resourceGroup);
     assertThat(bout.toString()).contains(namespace);
     assertThat(bout.toString()).contains(eventHub);

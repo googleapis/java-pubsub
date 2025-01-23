@@ -77,8 +77,8 @@ public class CreateTopicWithConfluentCloudIngestionExample {
                   .setIngestionDataSourceSettings(ingestionDataSourceSettings)
                   .build());
 
-      System.out.println("Created topic with Confluent Cloud ingestion settings: " +
-                         topic.getAllFields());
+      System.out.println(
+          "Created topic with Confluent Cloud ingestion settings: " + topic.getAllFields());
     }
   }
 }
