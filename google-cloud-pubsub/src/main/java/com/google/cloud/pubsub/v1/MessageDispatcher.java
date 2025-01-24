@@ -28,6 +28,7 @@ import com.google.common.primitives.Ints;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.pubsub.v1.PubsubMessage;
 import com.google.pubsub.v1.ReceivedMessage;
+import com.google.pubsub.v1.SubscriptionName;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -105,6 +106,7 @@ class MessageDispatcher {
   private final Distribution ackLatencyDistribution;
 
   private final String subscriptionName;
+  private final SubscriptionName subscriptionNameObject;
   private final boolean enableOpenTelemetryTracing;
   private OpenTelemetryPubsubTracer tracer = new OpenTelemetryPubsubTracer(null, false);
 
@@ -226,6 +228,7 @@ class MessageDispatcher {
     sequentialExecutor = new SequentialExecutorService.AutoExecutor(builder.executor);
 
     subscriptionName = builder.subscriptionName;
+    subscriptionNameObject = SubscriptionName.parse(builder.subscriptionName);
     enableOpenTelemetryTracing = builder.enableOpenTelemetryTracing;
     if (builder.tracer != null) {
       tracer = builder.tracer;
@@ -408,7 +411,7 @@ class MessageDispatcher {
       PubsubMessageWrapper messageWrapper =
           PubsubMessageWrapper.newBuilder(
                   message.getMessage(),
-                  subscriptionName,
+                  subscriptionNameObject,
                   message.getAckId(),
                   message.getDeliveryAttempt())
               .build();
