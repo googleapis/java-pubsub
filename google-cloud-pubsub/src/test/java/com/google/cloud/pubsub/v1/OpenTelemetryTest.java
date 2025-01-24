@@ -117,7 +117,7 @@ public class OpenTelemetryTest {
     tracer.endPublishFlowControlSpan(messageWrapper);
     tracer.startPublishBatchingSpan(messageWrapper);
     tracer.endPublishBatchingSpan(messageWrapper);
-    Span publishRpcSpan = tracer.startPublishRpcSpan(FULL_TOPIC_NAME.toString(), messageWrappers);
+    Span publishRpcSpan = tracer.startPublishRpcSpan(FULL_TOPIC_NAME, messageWrappers);
     tracer.endPublishRpcSpan(publishRpcSpan);
     tracer.setPublisherMessageIdSpanAttribute(messageWrapper, MESSAGE_ID);
     tracer.endPublisherSpan(messageWrapper);
@@ -265,7 +265,7 @@ public class OpenTelemetryTest {
     OpenTelemetryPubsubTracer tracer = new OpenTelemetryPubsubTracer(openTelemetryTracer, true);
 
     tracer.startPublisherSpan(messageWrapper);
-    Span publishRpcSpan = tracer.startPublishRpcSpan(FULL_TOPIC_NAME.toString(), messageWrappers);
+    Span publishRpcSpan = tracer.startPublishRpcSpan(FULL_TOPIC_NAME, messageWrappers);
 
     Exception e = new Exception("test-exception");
     tracer.setPublishRpcSpanException(publishRpcSpan, e);

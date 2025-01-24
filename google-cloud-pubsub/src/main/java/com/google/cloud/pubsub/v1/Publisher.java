@@ -492,7 +492,7 @@ public class Publisher implements PublisherInterface {
       pubsubMessagesList.add(messageWrapper.getPubsubMessage());
     }
 
-    outstandingBatch.publishRpcSpan = tracer.startPublishRpcSpan(topicName, messageWrappers);
+    outstandingBatch.publishRpcSpan = tracer.startPublishRpcSpan(topicNameObject, messageWrappers);
 
     return publisherStub
         .publishCallable()
