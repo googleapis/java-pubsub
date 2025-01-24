@@ -463,6 +463,7 @@ public class MessageDispatcherTest {
             .setMinDurationPerAckExtensionDefaultUsed(true)
             .setMaxDurationPerAckExtension(Subscriber.DEFAULT_MAX_ACK_DEADLINE_EXTENSION)
             .setMaxDurationPerAckExtensionDefaultUsed(true)
+            .setSubscriptionName(MOCK_SUBSCRIPTION_NAME)
             .build();
 
     // ExactlyOnceDeliveryEnabled is turned off by default
@@ -495,6 +496,7 @@ public class MessageDispatcherTest {
             .setMinDurationPerAckExtensionDefaultUsed(true)
             .setMaxDurationPerAckExtension(Subscriber.DEFAULT_MIN_ACK_DEADLINE_EXTENSION)
             .setMaxDurationPerAckExtensionDefaultUsed(true)
+            .setSubscriptionName(MOCK_SUBSCRIPTION_NAME)
             .build();
 
     // This would normally be set from the streaming pull response in the
@@ -606,6 +608,7 @@ public class MessageDispatcherTest {
             .setMinDurationPerAckExtensionDefaultUsed(false)
             .setMaxDurationPerAckExtension(Subscriber.DEFAULT_MIN_ACK_DEADLINE_EXTENSION)
             .setMaxDurationPerAckExtensionDefaultUsed(true)
+            .setSubscriptionName(MOCK_SUBSCRIPTION_NAME)
             .build();
 
     // ExactlyOnceDeliveryEnabled is turned off by default
@@ -635,6 +638,7 @@ public class MessageDispatcherTest {
             .setMinDurationPerAckExtensionDefaultUsed(true)
             .setMaxDurationPerAckExtension(Duration.ofSeconds(customMaxSeconds))
             .setMaxDurationPerAckExtensionDefaultUsed(false)
+            .setSubscriptionName(MOCK_SUBSCRIPTION_NAME)
             .build();
 
     // ExactlyOnceDeliveryEnabled is turned off by default
