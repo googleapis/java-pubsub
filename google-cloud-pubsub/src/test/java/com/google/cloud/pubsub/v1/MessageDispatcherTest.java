@@ -35,7 +35,8 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 public class MessageDispatcherTest {
-  private static final String MOCK_SUBSCRIPTION_NAME = "projects/MOCK-PROJECT/subscriptions/MOCK-SUBSCRIPTION";
+  private static final String MOCK_SUBSCRIPTION_NAME =
+      "projects/MOCK-PROJECT/subscriptions/MOCK-SUBSCRIPTION";
   private static final ByteString MESSAGE_DATA = ByteString.copyFromUtf8("message-data");
   private static final int DELIVERY_INFO_COUNT = 3;
   private static final String ACK_ID = "ACK-ID";
