@@ -326,21 +326,17 @@ public class OpenTelemetryTest {
     tracer.endSubscribeProcessSpan(subscribeMessageWrapper, PROCESS_ACTION);
     Span subscribeModackRpcSpan =
         tracer.startSubscribeRpcSpan(
-            FULL_SUBSCRIPTION_NAME.toString(),
-            "modack",
-            subscribeMessageWrappers,
-            ACK_DEADLINE,
-            true);
+            FULL_SUBSCRIPTION_NAME, "modack", subscribeMessageWrappers, ACK_DEADLINE, true);
     tracer.endSubscribeRpcSpan(subscribeModackRpcSpan);
     tracer.addEndRpcEvent(subscribeMessageWrapper, true, true, ACK_DEADLINE);
     Span subscribeAckRpcSpan =
         tracer.startSubscribeRpcSpan(
-            FULL_SUBSCRIPTION_NAME.toString(), "ack", subscribeMessageWrappers, 0, false);
+            FULL_SUBSCRIPTION_NAME, "ack", subscribeMessageWrappers, 0, false);
     tracer.endSubscribeRpcSpan(subscribeAckRpcSpan);
     tracer.addEndRpcEvent(subscribeMessageWrapper, true, false, 0);
     Span subscribeNackRpcSpan =
         tracer.startSubscribeRpcSpan(
-            FULL_SUBSCRIPTION_NAME.toString(), "nack", subscribeMessageWrappers, 0, false);
+            FULL_SUBSCRIPTION_NAME, "nack", subscribeMessageWrappers, 0, false);
     tracer.endSubscribeRpcSpan(subscribeNackRpcSpan);
     tracer.addEndRpcEvent(subscribeMessageWrapper, true, true, 0);
     tracer.endSubscriberSpan(subscribeMessageWrapper);
@@ -604,13 +600,11 @@ public class OpenTelemetryTest {
     tracer.startSubscriberSpan(messageWrapper, EXACTLY_ONCE_ENABLED);
     Span subscribeModackRpcSpan =
         tracer.startSubscribeRpcSpan(
-            FULL_SUBSCRIPTION_NAME.toString(), "modack", messageWrappers, ACK_DEADLINE, true);
+            FULL_SUBSCRIPTION_NAME, "modack", messageWrappers, ACK_DEADLINE, true);
     Span subscribeAckRpcSpan =
-        tracer.startSubscribeRpcSpan(
-            FULL_SUBSCRIPTION_NAME.toString(), "ack", messageWrappers, 0, false);
+        tracer.startSubscribeRpcSpan(FULL_SUBSCRIPTION_NAME, "ack", messageWrappers, 0, false);
     Span subscribeNackRpcSpan =
-        tracer.startSubscribeRpcSpan(
-            FULL_SUBSCRIPTION_NAME.toString(), "nack", messageWrappers, 0, false);
+        tracer.startSubscribeRpcSpan(FULL_SUBSCRIPTION_NAME, "nack", messageWrappers, 0, false);
 
     Exception e = new Exception("test-exception");
     tracer.setSubscribeRpcSpanException(subscribeModackRpcSpan, true, ACK_DEADLINE, e);

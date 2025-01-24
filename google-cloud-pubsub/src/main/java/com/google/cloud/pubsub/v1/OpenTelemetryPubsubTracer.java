@@ -358,7 +358,7 @@ public class OpenTelemetryPubsubTracer {
    * to parent subscribe span for sampled messages are added.
    */
   Span startSubscribeRpcSpan(
-      String subscription,
+      SubscriptionName subscriptionName,
       String rpcOperation,
       List<PubsubMessageWrapper> messages,
       int ackDeadline,
@@ -367,7 +367,6 @@ public class OpenTelemetryPubsubTracer {
       return null;
     }
     String codeFunction = rpcOperation == "ack" ? "sendAckOperations" : "sendModAckOperations";
-    SubscriptionName subscriptionName = SubscriptionName.parse(subscription);
     AttributesBuilder attributesBuilder =
         createCommonSpanAttributesBuilder(
                 subscriptionName.getSubscription(),
