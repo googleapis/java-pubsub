@@ -44,7 +44,7 @@ public class AckRequestData {
    */
   public PubsubMessageWrapper getMessageWrapper() {
     if (this.messageWrapper == null) {
-      return PubsubMessageWrapper.newBuilder(null, null).build();
+      return PubsubMessageWrapper.newBuilder(null, (String) null).build();
     }
     return messageWrapper;
   }

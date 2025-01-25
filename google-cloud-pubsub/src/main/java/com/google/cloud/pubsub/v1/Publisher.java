@@ -99,7 +99,8 @@ public class Publisher implements PublisherInterface {
 
   private static final String OPEN_TELEMETRY_TRACER_NAME = "com.google.cloud.pubsub.v1";
 
-  private final String topicName;
+  private final String topicNameString;
+  private final TopicName topicName;
   private final int topicNameSize;
 
   private final BatchingSettings batchingSettings;
@@ -146,9 +147,10 @@ public class Publisher implements PublisherInterface {
   }
 
   private Publisher(Builder builder) throws IOException {
-    topicName = builder.topicName;
+    topicNameString = builder.topicName;
+    topicName = TopicName.parse(this.topicNameString);
     topicNameSize =
-        CodedOutputStream.computeStringSize(PublishRequest.TOPIC_FIELD_NUMBER, this.topicName);
+        CodedOutputStream.computeStringSize(PublishRequest.TOPIC_FIELD_NUMBER, this.topicNameString);
 
     this.batchingSettings = builder.batchingSettings;
     FlowControlSettings flowControl = this.batchingSettings.getFlowControlSettings();
@@ -234,12 +236,12 @@ public class Publisher implements PublisherInterface {
 
   /** Topic which the publisher publishes to. */
   public TopicName getTopicName() {
-    return TopicNames.parse(topicName);
+    return TopicNames.parse(topicNameString);
   }
 
   /** Topic which the publisher publishes to. */
   public String getTopicNameString() {
-    return topicName;
+    return topicNameString;
   }
 
   /**
@@ -490,13 +492,13 @@ public class Publisher implements PublisherInterface {
       pubsubMessagesList.add(messageWrapper.getPubsubMessage());
     }
 
-    outstandingBatch.publishRpcSpan = tracer.startPublishRpcSpan(topicName, messageWrappers);
+    outstandingBatch.publishRpcSpan = tracer.startPublishRpcSpan(topicNameString, messageWrappers);
 
     return publisherStub
         .publishCallable()
         .futureCall(
             PublishRequest.newBuilder()
-                .setTopic(topicName)
+                .setTopic(topicNameString)
                 .addAllMessages(pubsubMessagesList)
                 .build(),
             context);
