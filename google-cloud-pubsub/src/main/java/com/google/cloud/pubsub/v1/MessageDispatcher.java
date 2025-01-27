@@ -105,7 +105,6 @@ class MessageDispatcher {
   // To keep track of number of seconds the receiver takes to process messages.
   private final Distribution ackLatencyDistribution;
 
-  private final String subscriptionName;
   private final SubscriptionName subscriptionNameObject;
   private final boolean enableOpenTelemetryTracing;
   private OpenTelemetryPubsubTracer tracer = new OpenTelemetryPubsubTracer(null, false);
@@ -227,7 +226,6 @@ class MessageDispatcher {
     messagesWaiter = new Waiter();
     sequentialExecutor = new SequentialExecutorService.AutoExecutor(builder.executor);
 
-    subscriptionName = builder.subscriptionName;
     subscriptionNameObject = SubscriptionName.parse(builder.subscriptionName);
     enableOpenTelemetryTracing = builder.enableOpenTelemetryTracing;
     if (builder.tracer != null) {
