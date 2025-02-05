@@ -58,6 +58,7 @@ public interface JavaScriptUDFOrBuilder
    * Required. JavaScript code that contains a function `function_name` with the
    * below signature:
    *
+   * ```
    *   /&#42;*
    *   * Transforms a Pub/Sub message.
    *
@@ -83,6 +84,7 @@ public interface JavaScriptUDFOrBuilder
    *
    *   function &lt;function_name&gt;(message, metadata) {
    *   }
+   * ```
    * </pre>
    *
    * <code>string code = 2 [(.google.api.field_behavior) = REQUIRED];</code>
@@ -97,6 +99,7 @@ public interface JavaScriptUDFOrBuilder
    * Required. JavaScript code that contains a function `function_name` with the
    * below signature:
    *
+   * ```
    *   /&#42;*
    *   * Transforms a Pub/Sub message.
    *
@@ -122,6 +125,7 @@ public interface JavaScriptUDFOrBuilder
    *
    *   function &lt;function_name&gt;(message, metadata) {
    *   }
+   * ```
    * </pre>
    *
    * <code>string code = 2 [(.google.api.field_behavior) = REQUIRED];</code>

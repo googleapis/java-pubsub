@@ -129,6 +129,7 @@ public final class JavaScriptUDF extends com.google.protobuf.GeneratedMessageV3
    * Required. JavaScript code that contains a function `function_name` with the
    * below signature:
    *
+   * ```
    *   /&#42;*
    *   * Transforms a Pub/Sub message.
    *
@@ -154,6 +155,7 @@ public final class JavaScriptUDF extends com.google.protobuf.GeneratedMessageV3
    *
    *   function &lt;function_name&gt;(message, metadata) {
    *   }
+   * ```
    * </pre>
    *
    * <code>string code = 2 [(.google.api.field_behavior) = REQUIRED];</code>
@@ -179,6 +181,7 @@ public final class JavaScriptUDF extends com.google.protobuf.GeneratedMessageV3
    * Required. JavaScript code that contains a function `function_name` with the
    * below signature:
    *
+   * ```
    *   /&#42;*
    *   * Transforms a Pub/Sub message.
    *
@@ -204,6 +207,7 @@ public final class JavaScriptUDF extends com.google.protobuf.GeneratedMessageV3
    *
    *   function &lt;function_name&gt;(message, metadata) {
    *   }
+   * ```
    * </pre>
    *
    * <code>string code = 2 [(.google.api.field_behavior) = REQUIRED];</code>
@@ -705,6 +709,7 @@ public final class JavaScriptUDF extends com.google.protobuf.GeneratedMessageV3
      * Required. JavaScript code that contains a function `function_name` with the
      * below signature:
      *
+     * ```
      *   /&#42;*
      *   * Transforms a Pub/Sub message.
      *
@@ -730,6 +735,7 @@ public final class JavaScriptUDF extends com.google.protobuf.GeneratedMessageV3
      *
      *   function &lt;function_name&gt;(message, metadata) {
      *   }
+     * ```
      * </pre>
      *
      * <code>string code = 2 [(.google.api.field_behavior) = REQUIRED];</code>
@@ -754,6 +760,7 @@ public final class JavaScriptUDF extends com.google.protobuf.GeneratedMessageV3
      * Required. JavaScript code that contains a function `function_name` with the
      * below signature:
      *
+     * ```
      *   /&#42;*
      *   * Transforms a Pub/Sub message.
      *
@@ -779,6 +786,7 @@ public final class JavaScriptUDF extends com.google.protobuf.GeneratedMessageV3
      *
      *   function &lt;function_name&gt;(message, metadata) {
      *   }
+     * ```
      * </pre>
      *
      * <code>string code = 2 [(.google.api.field_behavior) = REQUIRED];</code>
@@ -803,6 +811,7 @@ public final class JavaScriptUDF extends com.google.protobuf.GeneratedMessageV3
      * Required. JavaScript code that contains a function `function_name` with the
      * below signature:
      *
+     * ```
      *   /&#42;*
      *   * Transforms a Pub/Sub message.
      *
@@ -828,6 +837,7 @@ public final class JavaScriptUDF extends com.google.protobuf.GeneratedMessageV3
      *
      *   function &lt;function_name&gt;(message, metadata) {
      *   }
+     * ```
      * </pre>
      *
      * <code>string code = 2 [(.google.api.field_behavior) = REQUIRED];</code>
@@ -851,6 +861,7 @@ public final class JavaScriptUDF extends com.google.protobuf.GeneratedMessageV3
      * Required. JavaScript code that contains a function `function_name` with the
      * below signature:
      *
+     * ```
      *   /&#42;*
      *   * Transforms a Pub/Sub message.
      *
@@ -876,6 +887,7 @@ public final class JavaScriptUDF extends com.google.protobuf.GeneratedMessageV3
      *
      *   function &lt;function_name&gt;(message, metadata) {
      *   }
+     * ```
      * </pre>
      *
      * <code>string code = 2 [(.google.api.field_behavior) = REQUIRED];</code>
@@ -895,6 +907,7 @@ public final class JavaScriptUDF extends com.google.protobuf.GeneratedMessageV3
      * Required. JavaScript code that contains a function `function_name` with the
      * below signature:
      *
+     * ```
      *   /&#42;*
      *   * Transforms a Pub/Sub message.
      *
@@ -920,6 +933,7 @@ public final class JavaScriptUDF extends com.google.protobuf.GeneratedMessageV3
      *
      *   function &lt;function_name&gt;(message, metadata) {
      *   }
+     * ```
      * </pre>
      *
      * <code>string code = 2 [(.google.api.field_behavior) = REQUIRED];</code>
