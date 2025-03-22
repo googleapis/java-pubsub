@@ -120,7 +120,7 @@ public class Publisher implements PublisherInterface {
 
   private final AtomicBoolean shutdown;
   private final BackgroundResource backgroundResources;
-  private final Waiter messagesWaiter;
+  private final Waiter pendingPublishesTracker;
   private ScheduledFuture<?> currentAlarmFuture;
   private final ApiFunction<PubsubMessage, PubsubMessage> messageTransform;
 
@@ -227,7 +227,7 @@ public class Publisher implements PublisherInterface {
     backgroundResourceList.add(publisherStub);
     backgroundResources = new BackgroundResourceAggregation(backgroundResourceList);
     shutdown = new AtomicBoolean(false);
-    messagesWaiter = new Waiter();
+    pendingPublishesTracker = new Waiter();
     this.publishContext = GrpcCallContext.createDefault();
     this.publishContextWithCompression =
         GrpcCallContext.createDefault()
@@ -338,7 +338,7 @@ public class Publisher implements PublisherInterface {
       messagesBatchLock.unlock();
     }
 
-    messagesWaiter.incrementPendingCount(1);
+    pendingPublishesTracker.incrementPendingCount(1);
 
     // For messages without ordering keys, it is okay to send batches without holding
     // messagesBatchLock.
@@ -535,7 +535,7 @@ public class Publisher implements PublisherInterface {
                 }
               }
             } finally {
-              messagesWaiter.incrementPendingCount(-outstandingBatch.size());
+              pendingPublishesTracker.incrementPendingCount(-outstandingBatch.size());
             }
           }
 
@@ -559,7 +559,7 @@ public class Publisher implements PublisherInterface {
               }
               outstandingBatch.onFailure(t);
             } finally {
-              messagesWaiter.incrementPendingCount(-outstandingBatch.size());
+              pendingPublishesTracker.incrementPendingCount(-outstandingBatch.size());
             }
           }
         };
@@ -671,7 +671,7 @@ public class Publisher implements PublisherInterface {
       currentAlarmFuture.cancel(false);
     }
     publishAllOutstanding();
-    messagesWaiter.waitComplete();
+    pendingPublishesTracker.waitComplete();
     backgroundResources.shutdown();
   }
 
@@ -1122,7 +1122,7 @@ public class Publisher implements PublisherInterface {
   private class MessagesBatch {
     private List<OutstandingPublish> messages;
     private int initialBatchedBytes;
-    private int batchedBytes;
+    private int totalMessageBytesInBatch;
     private String orderingKey;
     private final BatchingSettings batchingSettings;
 
@@ -1135,14 +1135,14 @@ public class Publisher implements PublisherInterface {
     }
 
     private OutstandingBatch popOutstandingBatch() {
-      OutstandingBatch batch = new OutstandingBatch(messages, batchedBytes, orderingKey);
+      OutstandingBatch batch = new OutstandingBatch(messages, totalMessageBytesInBatch, orderingKey);
       reset();
       return batch;
     }
 
     private void reset() {
       messages = new LinkedList<>();
-      batchedBytes = initialBatchedBytes;
+      totalMessageBytesInBatch = initialBatchedBytes;
     }
 
     private boolean isEmpty() {
@@ -1150,7 +1150,7 @@ public class Publisher implements PublisherInterface {
     }
 
     private int getBatchedBytes() {
-      return batchedBytes;
+      return totalMessageBytesInBatch;
     }
 
     private int getMessagesCount() {
@@ -1175,7 +1175,7 @@ public class Publisher implements PublisherInterface {
       }
 
       messages.add(outstandingPublish);
-      batchedBytes += outstandingPublish.messageSize;
+      totalMessageBytesInBatch += outstandingPublish.messageSize;
 
       // Border case: If the message to send is greater or equals to the max batch size then send it
       // immediately.
