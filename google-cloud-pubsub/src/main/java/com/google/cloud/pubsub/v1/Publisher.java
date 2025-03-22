@@ -524,9 +524,13 @@ public class Publisher implements PublisherInterface {
                             result.getMessageIdsCount(), outstandingBatch.size())));
               } else {
                 outstandingBatch.onSuccess(result.getMessageIdsList());
-                if (!activeAlarm.get()
-                    && outstandingBatch.orderingKey != null
-                    && !outstandingBatch.orderingKey.isEmpty()) {
+
+                // Break down the complex conditional into descriptive variables
+                boolean noActiveAlarm = !activeAlarm.get();
+                boolean orderingKeyNotEmpty = outstandingBatch.orderingKey != null && !outstandingBatch.orderingKey.isEmpty();
+
+                // Simplified and readable condition
+                if (noActiveAlarm && orderingKeyNotEmpty) {
                   publishAllWithoutInflightForKey(outstandingBatch.orderingKey);
                 }
               }
