@@ -43,19 +43,25 @@ import java.util.logging.Logger;
  */
 public class OpenCensusUtil {
   private static final Logger logger = Logger.getLogger(OpenCensusUtil.class.getName());
-
+  private static final OpenCensusUtil INSTANCE = new OpenCensusUtil();
   public static final String TAG_CONTEXT_KEY = "googclient_OpenCensusTagContextKey";
   public static final String TRACE_CONTEXT_KEY = "googclient_OpenCensusTraceContextKey";
   @VisibleForTesting static final String MESSAGE_RECEIVER_SPAN_NAME = "OpenCensusMessageReceiver";
   private static final String TRACEPARENT_KEY = "traceparent";
 
-  private static final Tagger tagger = Tags.getTagger();
-  private static final TagContextBinarySerializer serializer =
-      Tags.getTagPropagationComponent().getBinarySerializer();
 
-  private static final Tracer tracer = Tracing.getTracer();
-  private static final TextFormat traceContextTextFormat =
-      Tracing.getPropagationComponent().getTraceContextFormat();
+  private final Tagger tagger;
+  private final TagContextBinarySerializer serializer ;
+
+  private final Tracer tracer;
+  private final TextFormat traceContextTextFormat ;
+
+  public OpenCensusUtil() {
+    this.tagger = Tags.getTagger();
+    this.serializer = Tags.getTagPropagationComponent().getBinarySerializer();
+    this.tracer = Tracing.getTracer();
+    this.traceContextTextFormat = Tracing.getPropagationComponent().getTraceContextFormat();
+  }
 
   /**
    * Propagates active OpenCensus trace and tag contexts from the Publisher by adding them as
@@ -66,8 +72,8 @@ public class OpenCensusUtil {
         @Override
         public PubsubMessage apply(PubsubMessage message) {
           PubsubMessage.Builder builder = PubsubMessage.newBuilder(message);
-          String encodedSpanContext = encodeSpanContext(tracer.getCurrentSpan().getContext());
-          String encodedTagContext = encodeTagContext(tagger.getCurrentTagContext());
+          String encodedSpanContext = encodeSpanContext(INSTANCE.tracer.getCurrentSpan().getContext());
+          String encodedTagContext = encodeTagContext(INSTANCE.tagger.getCurrentTagContext());
           if (encodedSpanContext.isEmpty() && encodedTagContext.isEmpty()) {
             return message;
           }
@@ -102,7 +108,7 @@ public class OpenCensusUtil {
   @VisibleForTesting
   static String encodeSpanContext(SpanContext ctxt) {
     StringBuilder builder = new StringBuilder();
-    traceContextTextFormat.inject(ctxt, builder, setter);
+    INSTANCE.traceContextTextFormat.inject(ctxt, builder, setter);
     return builder.toString();
   }
 
@@ -115,14 +121,14 @@ public class OpenCensusUtil {
   // TODO: update this code once the text encoding of tags has been resolved
   // (https://github.com/census-instrumentation/opencensus-specs/issues/65).
   private static Scope createScopedTagContext(String encodedTags) {
-    return tagger.withTagContext(tagger.getCurrentTagContext());
+    return INSTANCE.tagger.withTagContext(INSTANCE.tagger.getCurrentTagContext());
   }
 
   @VisibleForTesting
   @MustBeClosed
   static Scope createScopedSpan(String name) {
-    return tracer
-        .spanBuilderWithExplicitParent(name, tracer.getCurrentSpan())
+    return INSTANCE.tracer
+        .spanBuilderWithExplicitParent(name, INSTANCE.tracer.getCurrentSpan())
         .setRecordEvents(true)
         // Note: we preserve the sampling decision from the publisher.
         .setSampler(Samplers.alwaysSample())
@@ -131,8 +137,8 @@ public class OpenCensusUtil {
 
   private static void addParentLink(String encodedParentSpanContext) {
     try {
-      SpanContext ctxt = traceContextTextFormat.extract(encodedParentSpanContext, getter);
-      tracer.getCurrentSpan().addLink(Link.fromSpanContext(ctxt, Link.Type.PARENT_LINKED_SPAN));
+      SpanContext ctxt = INSTANCE.traceContextTextFormat.extract(encodedParentSpanContext, getter);
+      INSTANCE.tracer.getCurrentSpan().addLink(Link.fromSpanContext(ctxt, Link.Type.PARENT_LINKED_SPAN));
     } catch (SpanContextParseException exn) {
       logger.log(Level.INFO, "OpenCensus: Trace Context Deserialization Exception: " + exn);
     }
