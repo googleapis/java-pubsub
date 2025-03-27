@@ -53,22 +53,12 @@ public final class SchemaServiceGrpc {
       synchronized (SchemaServiceGrpc.class) {
         if ((getCreateSchemaMethod = SchemaServiceGrpc.getCreateSchemaMethod) == null) {
           SchemaServiceGrpc.getCreateSchemaMethod =
-              getCreateSchemaMethod =
-                  io.grpc.MethodDescriptor
-                      .<com.google.pubsub.v1.CreateSchemaRequest, com.google.pubsub.v1.Schema>
-                          newBuilder()
-                      .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
-                      .setFullMethodName(generateFullMethodName(SERVICE_NAME, "CreateSchema"))
-                      .setSampledToLocalTracing(true)
-                      .setRequestMarshaller(
-                          io.grpc.protobuf.ProtoUtils.marshaller(
-                              com.google.pubsub.v1.CreateSchemaRequest.getDefaultInstance()))
-                      .setResponseMarshaller(
-                          io.grpc.protobuf.ProtoUtils.marshaller(
-                              com.google.pubsub.v1.Schema.getDefaultInstance()))
-                      .setSchemaDescriptor(
-                          new SchemaServiceMethodDescriptorSupplier("CreateSchema"))
-                      .build();
+                  getCreateSchemaMethod =
+                          MethodDescriptorFactory.createUnaryMethodDescriptor(
+                                  SERVICE_NAME,
+                                  "CreateSchema",
+                                  com.google.pubsub.v1.CreateSchemaRequest.getDefaultInstance(),
+                                  com.google.pubsub.v1.Schema.getDefaultInstance());
         }
       }
     }
@@ -93,21 +83,12 @@ public final class SchemaServiceGrpc {
       synchronized (SchemaServiceGrpc.class) {
         if ((getGetSchemaMethod = SchemaServiceGrpc.getGetSchemaMethod) == null) {
           SchemaServiceGrpc.getGetSchemaMethod =
-              getGetSchemaMethod =
-                  io.grpc.MethodDescriptor
-                      .<com.google.pubsub.v1.GetSchemaRequest, com.google.pubsub.v1.Schema>
-                          newBuilder()
-                      .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
-                      .setFullMethodName(generateFullMethodName(SERVICE_NAME, "GetSchema"))
-                      .setSampledToLocalTracing(true)
-                      .setRequestMarshaller(
-                          io.grpc.protobuf.ProtoUtils.marshaller(
-                              com.google.pubsub.v1.GetSchemaRequest.getDefaultInstance()))
-                      .setResponseMarshaller(
-                          io.grpc.protobuf.ProtoUtils.marshaller(
-                              com.google.pubsub.v1.Schema.getDefaultInstance()))
-                      .setSchemaDescriptor(new SchemaServiceMethodDescriptorSupplier("GetSchema"))
-                      .build();
+                  getGetSchemaMethod =
+                          MethodDescriptorFactory.createUnaryMethodDescriptor(
+                                  SERVICE_NAME,
+                                  "GetSchema",
+                                  com.google.pubsub.v1.GetSchemaRequest.getDefaultInstance(),
+                                  com.google.pubsub.v1.Schema.getDefaultInstance());
         }
       }
     }
@@ -133,22 +114,12 @@ public final class SchemaServiceGrpc {
       synchronized (SchemaServiceGrpc.class) {
         if ((getListSchemasMethod = SchemaServiceGrpc.getListSchemasMethod) == null) {
           SchemaServiceGrpc.getListSchemasMethod =
-              getListSchemasMethod =
-                  io.grpc.MethodDescriptor
-                      .<com.google.pubsub.v1.ListSchemasRequest,
-                          com.google.pubsub.v1.ListSchemasResponse>
-                          newBuilder()
-                      .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
-                      .setFullMethodName(generateFullMethodName(SERVICE_NAME, "ListSchemas"))
-                      .setSampledToLocalTracing(true)
-                      .setRequestMarshaller(
-                          io.grpc.protobuf.ProtoUtils.marshaller(
-                              com.google.pubsub.v1.ListSchemasRequest.getDefaultInstance()))
-                      .setResponseMarshaller(
-                          io.grpc.protobuf.ProtoUtils.marshaller(
-                              com.google.pubsub.v1.ListSchemasResponse.getDefaultInstance()))
-                      .setSchemaDescriptor(new SchemaServiceMethodDescriptorSupplier("ListSchemas"))
-                      .build();
+                  getListSchemasMethod =
+                          MethodDescriptorFactory.createUnaryMethodDescriptor(
+                                  SERVICE_NAME,
+                                  "ListSchemas",
+                                  com.google.pubsub.v1.ListSchemasRequest.getDefaultInstance(),
+                                  com.google.pubsub.v1.ListSchemasResponse.getDefaultInstance());
         }
       }
     }
@@ -178,25 +149,12 @@ public final class SchemaServiceGrpc {
         if ((getListSchemaRevisionsMethod = SchemaServiceGrpc.getListSchemaRevisionsMethod)
             == null) {
           SchemaServiceGrpc.getListSchemaRevisionsMethod =
-              getListSchemaRevisionsMethod =
-                  io.grpc.MethodDescriptor
-                      .<com.google.pubsub.v1.ListSchemaRevisionsRequest,
-                          com.google.pubsub.v1.ListSchemaRevisionsResponse>
-                          newBuilder()
-                      .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
-                      .setFullMethodName(
-                          generateFullMethodName(SERVICE_NAME, "ListSchemaRevisions"))
-                      .setSampledToLocalTracing(true)
-                      .setRequestMarshaller(
-                          io.grpc.protobuf.ProtoUtils.marshaller(
-                              com.google.pubsub.v1.ListSchemaRevisionsRequest.getDefaultInstance()))
-                      .setResponseMarshaller(
-                          io.grpc.protobuf.ProtoUtils.marshaller(
-                              com.google.pubsub.v1.ListSchemaRevisionsResponse
-                                  .getDefaultInstance()))
-                      .setSchemaDescriptor(
-                          new SchemaServiceMethodDescriptorSupplier("ListSchemaRevisions"))
-                      .build();
+                  getListSchemaRevisionsMethod =
+                          MethodDescriptorFactory.createUnaryMethodDescriptor(
+                                  SERVICE_NAME,
+                                  "ListSchemaRevisions",
+                                  com.google.pubsub.v1.ListSchemaRevisionsRequest.getDefaultInstance(),
+                                  com.google.pubsub.v1.ListSchemaRevisionsResponse.getDefaultInstance());
         }
       }
     }
@@ -221,22 +179,12 @@ public final class SchemaServiceGrpc {
       synchronized (SchemaServiceGrpc.class) {
         if ((getCommitSchemaMethod = SchemaServiceGrpc.getCommitSchemaMethod) == null) {
           SchemaServiceGrpc.getCommitSchemaMethod =
-              getCommitSchemaMethod =
-                  io.grpc.MethodDescriptor
-                      .<com.google.pubsub.v1.CommitSchemaRequest, com.google.pubsub.v1.Schema>
-                          newBuilder()
-                      .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
-                      .setFullMethodName(generateFullMethodName(SERVICE_NAME, "CommitSchema"))
-                      .setSampledToLocalTracing(true)
-                      .setRequestMarshaller(
-                          io.grpc.protobuf.ProtoUtils.marshaller(
-                              com.google.pubsub.v1.CommitSchemaRequest.getDefaultInstance()))
-                      .setResponseMarshaller(
-                          io.grpc.protobuf.ProtoUtils.marshaller(
-                              com.google.pubsub.v1.Schema.getDefaultInstance()))
-                      .setSchemaDescriptor(
-                          new SchemaServiceMethodDescriptorSupplier("CommitSchema"))
-                      .build();
+                  getCommitSchemaMethod =
+                          MethodDescriptorFactory.createUnaryMethodDescriptor(
+                                  SERVICE_NAME,
+                                  "CommitSchema",
+                                  com.google.pubsub.v1.CommitSchemaRequest.getDefaultInstance(),
+                                  com.google.pubsub.v1.Schema.getDefaultInstance());
         }
       }
     }
@@ -262,22 +210,12 @@ public final class SchemaServiceGrpc {
       synchronized (SchemaServiceGrpc.class) {
         if ((getRollbackSchemaMethod = SchemaServiceGrpc.getRollbackSchemaMethod) == null) {
           SchemaServiceGrpc.getRollbackSchemaMethod =
-              getRollbackSchemaMethod =
-                  io.grpc.MethodDescriptor
-                      .<com.google.pubsub.v1.RollbackSchemaRequest, com.google.pubsub.v1.Schema>
-                          newBuilder()
-                      .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
-                      .setFullMethodName(generateFullMethodName(SERVICE_NAME, "RollbackSchema"))
-                      .setSampledToLocalTracing(true)
-                      .setRequestMarshaller(
-                          io.grpc.protobuf.ProtoUtils.marshaller(
-                              com.google.pubsub.v1.RollbackSchemaRequest.getDefaultInstance()))
-                      .setResponseMarshaller(
-                          io.grpc.protobuf.ProtoUtils.marshaller(
-                              com.google.pubsub.v1.Schema.getDefaultInstance()))
-                      .setSchemaDescriptor(
-                          new SchemaServiceMethodDescriptorSupplier("RollbackSchema"))
-                      .build();
+                  getRollbackSchemaMethod =
+                          MethodDescriptorFactory.createUnaryMethodDescriptor(
+                                  SERVICE_NAME,
+                                  "RollbackSchema",
+                                  com.google.pubsub.v1.RollbackSchemaRequest.getDefaultInstance(),
+                                  com.google.pubsub.v1.Schema.getDefaultInstance());
         }
       }
     }
@@ -304,25 +242,12 @@ public final class SchemaServiceGrpc {
         if ((getDeleteSchemaRevisionMethod = SchemaServiceGrpc.getDeleteSchemaRevisionMethod)
             == null) {
           SchemaServiceGrpc.getDeleteSchemaRevisionMethod =
-              getDeleteSchemaRevisionMethod =
-                  io.grpc.MethodDescriptor
-                      .<com.google.pubsub.v1.DeleteSchemaRevisionRequest,
-                          com.google.pubsub.v1.Schema>
-                          newBuilder()
-                      .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
-                      .setFullMethodName(
-                          generateFullMethodName(SERVICE_NAME, "DeleteSchemaRevision"))
-                      .setSampledToLocalTracing(true)
-                      .setRequestMarshaller(
-                          io.grpc.protobuf.ProtoUtils.marshaller(
-                              com.google.pubsub.v1.DeleteSchemaRevisionRequest
-                                  .getDefaultInstance()))
-                      .setResponseMarshaller(
-                          io.grpc.protobuf.ProtoUtils.marshaller(
-                              com.google.pubsub.v1.Schema.getDefaultInstance()))
-                      .setSchemaDescriptor(
-                          new SchemaServiceMethodDescriptorSupplier("DeleteSchemaRevision"))
-                      .build();
+                  getDeleteSchemaRevisionMethod =
+                          MethodDescriptorFactory.createUnaryMethodDescriptor(
+                                  SERVICE_NAME,
+                                  "DeleteSchemaRevision",
+                                  com.google.pubsub.v1.DeleteSchemaRevisionRequest.getDefaultInstance(),
+                                  com.google.pubsub.v1.Schema.getDefaultInstance());
         }
       }
     }
@@ -347,22 +272,12 @@ public final class SchemaServiceGrpc {
       synchronized (SchemaServiceGrpc.class) {
         if ((getDeleteSchemaMethod = SchemaServiceGrpc.getDeleteSchemaMethod) == null) {
           SchemaServiceGrpc.getDeleteSchemaMethod =
-              getDeleteSchemaMethod =
-                  io.grpc.MethodDescriptor
-                      .<com.google.pubsub.v1.DeleteSchemaRequest, com.google.protobuf.Empty>
-                          newBuilder()
-                      .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
-                      .setFullMethodName(generateFullMethodName(SERVICE_NAME, "DeleteSchema"))
-                      .setSampledToLocalTracing(true)
-                      .setRequestMarshaller(
-                          io.grpc.protobuf.ProtoUtils.marshaller(
-                              com.google.pubsub.v1.DeleteSchemaRequest.getDefaultInstance()))
-                      .setResponseMarshaller(
-                          io.grpc.protobuf.ProtoUtils.marshaller(
-                              com.google.protobuf.Empty.getDefaultInstance()))
-                      .setSchemaDescriptor(
-                          new SchemaServiceMethodDescriptorSupplier("DeleteSchema"))
-                      .build();
+                  getDeleteSchemaMethod =
+                          MethodDescriptorFactory.createUnaryMethodDescriptor(
+                                  SERVICE_NAME,
+                                  "DeleteSchema",
+                                  com.google.pubsub.v1.DeleteSchemaRequest.getDefaultInstance(),
+                                  com.google.protobuf.Empty.getDefaultInstance());
         }
       }
     }
@@ -388,23 +303,12 @@ public final class SchemaServiceGrpc {
       synchronized (SchemaServiceGrpc.class) {
         if ((getValidateSchemaMethod = SchemaServiceGrpc.getValidateSchemaMethod) == null) {
           SchemaServiceGrpc.getValidateSchemaMethod =
-              getValidateSchemaMethod =
-                  io.grpc.MethodDescriptor
-                      .<com.google.pubsub.v1.ValidateSchemaRequest,
-                          com.google.pubsub.v1.ValidateSchemaResponse>
-                          newBuilder()
-                      .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
-                      .setFullMethodName(generateFullMethodName(SERVICE_NAME, "ValidateSchema"))
-                      .setSampledToLocalTracing(true)
-                      .setRequestMarshaller(
-                          io.grpc.protobuf.ProtoUtils.marshaller(
-                              com.google.pubsub.v1.ValidateSchemaRequest.getDefaultInstance()))
-                      .setResponseMarshaller(
-                          io.grpc.protobuf.ProtoUtils.marshaller(
-                              com.google.pubsub.v1.ValidateSchemaResponse.getDefaultInstance()))
-                      .setSchemaDescriptor(
-                          new SchemaServiceMethodDescriptorSupplier("ValidateSchema"))
-                      .build();
+                  getValidateSchemaMethod =
+                          MethodDescriptorFactory.createUnaryMethodDescriptor(
+                                  SERVICE_NAME,
+                                  "ValidateSchema",
+                                  com.google.pubsub.v1.ValidateSchemaRequest.getDefaultInstance(),
+                                  com.google.pubsub.v1.ValidateSchemaResponse.getDefaultInstance());
         }
       }
     }
@@ -431,23 +335,12 @@ public final class SchemaServiceGrpc {
       synchronized (SchemaServiceGrpc.class) {
         if ((getValidateMessageMethod = SchemaServiceGrpc.getValidateMessageMethod) == null) {
           SchemaServiceGrpc.getValidateMessageMethod =
-              getValidateMessageMethod =
-                  io.grpc.MethodDescriptor
-                      .<com.google.pubsub.v1.ValidateMessageRequest,
-                          com.google.pubsub.v1.ValidateMessageResponse>
-                          newBuilder()
-                      .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
-                      .setFullMethodName(generateFullMethodName(SERVICE_NAME, "ValidateMessage"))
-                      .setSampledToLocalTracing(true)
-                      .setRequestMarshaller(
-                          io.grpc.protobuf.ProtoUtils.marshaller(
-                              com.google.pubsub.v1.ValidateMessageRequest.getDefaultInstance()))
-                      .setResponseMarshaller(
-                          io.grpc.protobuf.ProtoUtils.marshaller(
-                              com.google.pubsub.v1.ValidateMessageResponse.getDefaultInstance()))
-                      .setSchemaDescriptor(
-                          new SchemaServiceMethodDescriptorSupplier("ValidateMessage"))
-                      .build();
+                  getValidateMessageMethod =
+                          MethodDescriptorFactory.createUnaryMethodDescriptor(
+                                  SERVICE_NAME,
+                                  "ValidateMessage",
+                                  com.google.pubsub.v1.ValidateMessageRequest.getDefaultInstance(),
+                                  com.google.pubsub.v1.ValidateMessageResponse.getDefaultInstance());
         }
       }
     }
@@ -1331,7 +1224,7 @@ public final class SchemaServiceGrpc {
     SchemaServiceFileDescriptorSupplier() {}
   }
 
-  private static final class SchemaServiceMethodDescriptorSupplier
+  static final class SchemaServiceMethodDescriptorSupplier
       extends SchemaServiceBaseDescriptorSupplier
       implements io.grpc.protobuf.ProtoMethodDescriptorSupplier {
     private final java.lang.String methodName;
