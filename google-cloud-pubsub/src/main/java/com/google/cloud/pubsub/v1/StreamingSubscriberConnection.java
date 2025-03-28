@@ -638,7 +638,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
                       logger.log(Level.INFO, "Transient error message, will resend", errorMessage);
                       ackRequestDataArrayRetryList.add(ackRequestData);
                     } else if (errorMessage.equals(PERMANENT_FAILURE_INVALID_ACK_ID_METADATA)) {
-                      // Permanent failure, send
+                      // Permanent failure
                       logger.log(
                           Level.INFO,
                           "Permanent error invalid ack id message, will not resend",
