@@ -616,10 +616,15 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
                     ackRequestData
                         .getMessageWrapper()
                         .setSubscriberSpanException(t, "Error with no metadata map");
+                    pendingRequests.remove(ackRequestData);
                   });
             } else {
               logger.log(Level.INFO, "Retryable error on " + operation + ", will resend", t);
               ackRequestDataArrayRetryList.addAll(ackRequestDataList);
+              ackRequestDataList.forEach(
+                  ackRequestData -> {
+                    pendingRequests.remove(ackRequestData);
+                  });
             }
           } else {
             ackRequestDataList.forEach(
