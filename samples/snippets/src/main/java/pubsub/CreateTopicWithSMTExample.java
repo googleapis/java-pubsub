@@ -20,7 +20,6 @@ package pubsub;
 
 import com.google.api.gax.rpc.AlreadyExistsException;
 import com.google.cloud.pubsub.v1.TopicAdminClient;
-import com.google.cloud.pubsub.v1.TopicAdminSettings;
 import com.google.pubsub.v1.JavaScriptUDF;
 import com.google.pubsub.v1.MessageTransform;
 import com.google.pubsub.v1.Topic;
