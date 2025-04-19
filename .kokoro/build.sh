@@ -42,6 +42,19 @@ if [[ ! -z "${GOOGLE_APPLICATION_CREDENTIALS}" && "${GOOGLE_APPLICATION_CREDENTI
     export GOOGLE_APPLICATION_CREDENTIALS=$(realpath ${KOKORO_GFILE_DIR}/${GOOGLE_APPLICATION_CREDENTIALS})
 fi
 
+# TODO: We have to figure out how to pass this version
+if [ -z "${INTEGRATION_TEST_ARGS}" ];then
+  INTEGRATION_TEST_ARGS="-V"
+fi
+# maven.main.skip skips recompiling the project with modified dependency versions. This
+# makes the build similar to users' environment where they would upgrade their dependencies
+# (without recompiling Cloud Java libraries).
+INTEGRATION_TEST_ARGS="${INTEGRATION_TEST_ARGS} -Dmaven.main.skip -Dgrpc.version=1.72.0 -Dprotobuf.version=4.30.2"
+echo "Start dependency tree of modified dependencies by: ${INTEGRATION_TEST_ARGS}"
+mvn -B -ntp dependency:tree ${INTEGRATION_TEST_ARGS}
+echo "End of dependency tree"
+echo
+
 RETURN_CODE=0
 set +e
 
