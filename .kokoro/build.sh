@@ -49,7 +49,8 @@ fi
 # maven.main.skip skips recompiling the project with modified dependency versions. This
 # makes the build similar to users' environment where they would upgrade their dependencies
 # (without recompiling Cloud Java libraries).
-INTEGRATION_TEST_ARGS="${INTEGRATION_TEST_ARGS} -Dmaven.main.skip -Dgrpc.version=1.72.0 -Dprotobuf.version=4.30.2"
+# Protobuf runtime 3.21.0 was released on 2022-05-25
+INTEGRATION_TEST_ARGS="${INTEGRATION_TEST_ARGS} -Dmaven.main.skip -Danimal.sniffer.skip -Dgrpc.version=1.72.0 -Dprotobuf.version=3.21.0"
 echo "Start dependency tree of modified dependencies by: ${INTEGRATION_TEST_ARGS}"
 mvn -B -ntp dependency:tree ${INTEGRATION_TEST_ARGS}
 echo "End of dependency tree"
