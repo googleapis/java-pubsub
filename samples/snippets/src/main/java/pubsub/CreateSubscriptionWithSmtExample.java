@@ -18,36 +18,38 @@ package pubsub;
 
 // [START pubsub_create_subscription_with_smt]
 import com.google.cloud.pubsub.v1.SubscriptionAdminClient;
-import com.google.pubsub.v1.ProjectSubscriptionName;
 import com.google.pubsub.v1.JavaScriptUDF;
 import com.google.pubsub.v1.MessageTransform;
+import com.google.pubsub.v1.ProjectSubscriptionName;
 import com.google.pubsub.v1.ProjectTopicName;
 import com.google.pubsub.v1.Subscription;
 import java.io.IOException;
 
-public class CreateSubscriptionWithSMTExample {
+public class CreateSubscriptionWithSmtExample {
   public static void main(String... args) throws Exception {
     // TODO(developer): Replace these variables before running the sample.
     String projectId = "your-project-id";
     String topicId = "your-topic-id";
     String subscriptionId = "your-subscription-id";
 
-    createSubscriptionWithSMTExample(projectId, topicId, subscriptionId);
+    createSubscriptionWithSmtExample(projectId, topicId, subscriptionId);
   }
 
-  public static void createSubscriptionWithSMTExample(
+  public static void createSubscriptionWithSmtExample(
       String projectId, String topicId, String subscriptionId) throws IOException {
 
     // UDF that removes the 'ssn' field, if present
-    String code = "function redactSSN(message, metadata) {" +
-                  "  const data = JSON.parse(message.data);" +
-                  "  delete data['ssn'];" +
-                  "  message.data = JSON.stringify(data);" +
-                  "  return message;" +
-                  "}";
+    String code =
+        "function redactSSN(message, metadata) {"
+            + "  const data = JSON.parse(message.data);"
+            + "  delete data['ssn'];"
+            + "  message.data = JSON.stringify(data);"
+            + "  return message;"
+            + "}";
     String functionName = "redactSSN";
 
-    JavaScriptUDF udf = JavaScriptUDF.newBuilder().setCode(code).setFunctionName(functionName).build();
+    JavaScriptUDF udf =
+        JavaScriptUDF.newBuilder().setCode(code).setFunctionName(functionName).build();
     MessageTransform transform = MessageTransform.newBuilder().setJavascriptUdf(udf).build();
 
     try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
@@ -65,8 +67,7 @@ public class CreateSubscriptionWithSMTExample {
                   .addMessageTransforms(transform)
                   .build());
 
-      System.out.println(
-          "Created subscription with SMT: " + subscription.getAllFields());
+      System.out.println("Created subscription with SMT: " + subscription.getAllFields());
     }
   }
 }

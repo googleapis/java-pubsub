@@ -26,30 +26,32 @@ import com.google.pubsub.v1.Topic;
 import com.google.pubsub.v1.TopicName;
 import java.io.IOException;
 
-public class CreateTopicWithSMTExample {
+public class CreateTopicWithSmtExample {
 
   public static void main(String... args) throws Exception {
     // TODO(developer): Replace these variables before running the sample.
     String projectId = "your-project-id";
     String topicId = "your-topic-id";
 
-    createTopicWithSMTExample(projectId, topicId);
+    createTopicWithSmtExample(projectId, topicId);
   }
 
-  public static void createTopicWithSMTExample(
-      String projectId, String topicId) throws IOException {
+  public static void createTopicWithSmtExample(String projectId, String topicId)
+      throws IOException {
     TopicName topicName = TopicName.of(projectId, topicId);
 
     // UDF that removes the 'ssn' field, if present
-    String code = "function redactSSN(message, metadata) {" +
-                  "  const data = JSON.parse(message.data);" +
-                  "  delete data['ssn'];" +
-                  "  message.data = JSON.stringify(data);" +
-                  "  return message;" +
-                  "}";
+    String code =
+        "function redactSSN(message, metadata) {"
+            + "  const data = JSON.parse(message.data);"
+            + "  delete data['ssn'];"
+            + "  message.data = JSON.stringify(data);"
+            + "  return message;"
+            + "}";
     String functionName = "redactSSN";
 
-    JavaScriptUDF udf = JavaScriptUDF.newBuilder().setCode(code).setFunctionName(functionName).build();
+    JavaScriptUDF udf =
+        JavaScriptUDF.newBuilder().setCode(code).setFunctionName(functionName).build();
     MessageTransform transform = MessageTransform.newBuilder().setJavascriptUdf(udf).build();
     try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
 
@@ -67,4 +69,4 @@ public class CreateTopicWithSMTExample {
     }
   }
 }
-// [END pubsub_create_topic_with_smt]
+ // [END pubsub_create_topic_with_smt]

@@ -465,14 +465,14 @@ public class AdminIT {
 
     bout.reset();
     // Test create topic with an SMT.
-    CreateTopicWithSMTExample.createTopicWithSMTExample(
+    CreateTopicWithSmtExample.createTopicWithSmtExample(
         projectId, smtTopicId);
     assertThat(bout.toString())
         .contains("Created topic with SMT: " + smtTopicName.toString());
 
     bout.reset();
     // Test create topic with an SMT.
-    CreateSubscriptionWithSMTExample.createSubscriptionWithSMTExample(
+    CreateSubscriptionWithSmtExample.createSubscriptionWithSmtExample(
         projectId, smtTopicId, smtSubscriptionId);
     assertThat(bout.toString())
         .contains("Created subscription with SMT");
