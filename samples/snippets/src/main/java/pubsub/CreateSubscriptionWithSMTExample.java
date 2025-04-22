@@ -50,7 +50,7 @@ public class CreateSubscriptionWithSMTExample {
     JavaScriptUDF udf = JavaScriptUDF.newBuilder().setCode(code).setFunctionName(functionName).build();
     MessageTransform transform = MessageTransform.newBuilder().setJavascriptUdf(udf).build();
 
-    try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create() {
+    try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
 
       ProjectTopicName topicName = ProjectTopicName.of(projectId, topicId);
       ProjectSubscriptionName subscriptionName =
