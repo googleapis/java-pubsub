@@ -95,7 +95,10 @@ public class SubscribeWithExactlyOnceConsumerWithResponseExample {
 
     Subscriber subscriber = null;
     try {
-      subscriber = Subscriber.newBuilder(subscriptionName, receiverWithResponse).build();
+      subscriber =
+          Subscriber.newBuilder(subscriptionName, receiverWithResponse)
+              .setEndpoint("us-west1-pubsub.googleapis.com:443")
+              .build();
       // Start the subscriber.
       subscriber.startAsync().awaitRunning();
       System.out.printf("Listening for messages on %s:\n", subscriptionName.toString());
