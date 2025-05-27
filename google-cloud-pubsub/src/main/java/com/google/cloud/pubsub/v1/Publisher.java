@@ -120,7 +120,7 @@ public class Publisher implements PublisherInterface {
 
   private final AtomicBoolean shutdown;
   private final BackgroundResource backgroundResources;
-  private final Waiter messagesWaiter;
+  private final Waiter pendingPublishesTracker;
   private ScheduledFuture<?> currentAlarmFuture;
   private final ApiFunction<PubsubMessage, PubsubMessage> messageTransform;
 
@@ -227,7 +227,7 @@ public class Publisher implements PublisherInterface {
     backgroundResourceList.add(publisherStub);
     backgroundResources = new BackgroundResourceAggregation(backgroundResourceList);
     shutdown = new AtomicBoolean(false);
-    messagesWaiter = new Waiter();
+    pendingPublishesTracker = new Waiter();
     this.publishContext = GrpcCallContext.createDefault();
     this.publishContextWithCompression =
         GrpcCallContext.createDefault()
@@ -338,7 +338,7 @@ public class Publisher implements PublisherInterface {
       messagesBatchLock.unlock();
     }
 
-    messagesWaiter.incrementPendingCount(1);
+    pendingPublishesTracker.incrementPendingCount(1);
 
     // For messages without ordering keys, it is okay to send batches without holding
     // messagesBatchLock.
@@ -524,14 +524,18 @@ public class Publisher implements PublisherInterface {
                             result.getMessageIdsCount(), outstandingBatch.size())));
               } else {
                 outstandingBatch.onSuccess(result.getMessageIdsList());
-                if (!activeAlarm.get()
-                    && outstandingBatch.orderingKey != null
-                    && !outstandingBatch.orderingKey.isEmpty()) {
+
+                // Break down the complex conditional into descriptive variables
+                boolean noActiveAlarm = !activeAlarm.get();
+                boolean orderingKeyNotEmpty = outstandingBatch.orderingKey != null && !outstandingBatch.orderingKey.isEmpty();
+
+                // Simplified and readable condition
+                if (noActiveAlarm && orderingKeyNotEmpty) {
                   publishAllWithoutInflightForKey(outstandingBatch.orderingKey);
                 }
               }
             } finally {
-              messagesWaiter.incrementPendingCount(-outstandingBatch.size());
+              pendingPublishesTracker.incrementPendingCount(-outstandingBatch.size());
             }
           }
 
@@ -555,7 +559,7 @@ public class Publisher implements PublisherInterface {
               }
               outstandingBatch.onFailure(t);
             } finally {
-              messagesWaiter.incrementPendingCount(-outstandingBatch.size());
+              pendingPublishesTracker.incrementPendingCount(-outstandingBatch.size());
             }
           }
         };
@@ -667,7 +671,7 @@ public class Publisher implements PublisherInterface {
       currentAlarmFuture.cancel(false);
     }
     publishAllOutstanding();
-    messagesWaiter.waitComplete();
+    pendingPublishesTracker.waitComplete();
     backgroundResources.shutdown();
   }
 
@@ -990,92 +994,108 @@ public class Publisher implements PublisherInterface {
       this.awaitingBytesAcquires = new LinkedList<CountDownLatch>();
     }
 
+
     void acquire(long messageSize) throws FlowController.FlowControlException {
+      // Check if the message size exceeds the byte limit outright
       if (messageSize > byteLimit) {
-        logger.log(
-            Level.WARNING,
-            "Attempted to publish message with byte size > request byte flow control limit.");
+        logger.log(Level.WARNING, "Attempted to publish message with byte size > request byte flow control limit.");
         throw new FlowController.MaxOutstandingRequestBytesReachedException(byteLimit);
       }
+
+      // Acquire the lock for thread safety
       lock.lock();
       try {
-        if (outstandingMessages >= messageLimit
-            && limitBehavior == FlowController.LimitExceededBehavior.ThrowException) {
-          throw new FlowController.MaxOutstandingElementCountReachedException(messageLimit);
-        }
-        if (outstandingBytes + messageSize >= byteLimit
-            && limitBehavior == FlowController.LimitExceededBehavior.ThrowException) {
-          throw new FlowController.MaxOutstandingRequestBytesReachedException(byteLimit);
-        }
+        // Validate limits and throw exceptions if necessary
+        checkMessageLimit();
+        checkByteLimit(messageSize);
 
-        // We can acquire or we should wait until we can acquire.
-        // Start by acquiring a slot for a message.
-        CountDownLatch messageWaiter = null;
-        while (outstandingMessages >= messageLimit) {
-          if (messageWaiter == null) {
-            // This message gets added to the back of the line.
-            messageWaiter = new CountDownLatch(1);
-            awaitingMessageAcquires.addLast(messageWaiter);
-          } else {
-            // This message already in line stays at the head of the line.
-            messageWaiter = new CountDownLatch(1);
-            awaitingMessageAcquires.set(0, messageWaiter);
-          }
-          lock.unlock();
-          try {
-            messageWaiter.await();
-          } catch (InterruptedException e) {
-            logger.log(Level.WARNING, "Interrupted while waiting to acquire flow control tokens");
-          }
-          lock.lock();
-        }
-        ++outstandingMessages;
-        if (messageWaiter != null) {
-          awaitingMessageAcquires.removeFirst();
-        }
-
-        // There may be some surplus messages left; let the next message waiting for a token have
-        // one.
-        if (!awaitingMessageAcquires.isEmpty() && outstandingMessages < messageLimit) {
-          awaitingMessageAcquires.getFirst().countDown();
-        }
-
-        // Now acquire space for bytes.
-        CountDownLatch bytesWaiter = null;
-        Long bytesRemaining = messageSize;
-        while (outstandingBytes + bytesRemaining >= byteLimit) {
-          // Take what is available.
-          Long available = byteLimit - outstandingBytes;
-          bytesRemaining -= available;
-          outstandingBytes = byteLimit;
-          if (bytesWaiter == null) {
-            // This message gets added to the back of the line.
-            bytesWaiter = new CountDownLatch(1);
-            awaitingBytesAcquires.addLast(bytesWaiter);
-          } else {
-            // This message already in line stays at the head of the line.
-            bytesWaiter = new CountDownLatch(1);
-            awaitingBytesAcquires.set(0, bytesWaiter);
-          }
-          lock.unlock();
-          try {
-            bytesWaiter.await();
-          } catch (InterruptedException e) {
-            logger.log(Level.WARNING, "Interrupted while waiting to acquire flow control tokens");
-          }
-          lock.lock();
-        }
-
-        outstandingBytes += bytesRemaining;
-        if (bytesWaiter != null) {
-          awaitingBytesAcquires.removeFirst();
-        }
-        // There may be some surplus bytes left; let the next message waiting for bytes have some.
-        if (!awaitingBytesAcquires.isEmpty() && outstandingBytes < byteLimit) {
-          awaitingBytesAcquires.getFirst().countDown();
-        }
+        // Acquire resources, potentially waiting if limits are reached
+        acquireMessageSlot();
+        acquireByteSpace(messageSize);
       } finally {
+        // Always release the lock
         lock.unlock();
+      }
+    }
+
+    /**
+     * Checks if the outstanding message count has reached the limit and throws an exception
+     * if the limit behavior is set to ThrowException.
+     *
+     * @throws FlowController.FlowControlException if the message limit is exceeded
+     */
+    private void checkMessageLimit() throws FlowController.FlowControlException {
+      if (outstandingMessages >= messageLimit && limitBehavior == FlowController.LimitExceededBehavior.ThrowException) {
+        throw new FlowController.MaxOutstandingElementCountReachedException(messageLimit);
+      }
+    }
+
+    /**
+     * Checks if adding the message size would exceed the byte limit and throws an exception
+     * if the limit behavior is set to ThrowException.
+     *
+     * @param messageSize the size of the message in bytes
+     * @throws FlowController.FlowControlException if the byte limit would be exceeded
+     */
+    private void checkByteLimit(long messageSize) throws FlowController.FlowControlException {
+      if (outstandingBytes + messageSize >= byteLimit && limitBehavior == FlowController.LimitExceededBehavior.ThrowException) {
+        throw new FlowController.MaxOutstandingRequestBytesReachedException(byteLimit);
+      }
+    }
+
+    /**
+     * Acquires a slot for a message, waiting if the message limit is reached until a slot becomes available.
+     */
+    private void acquireMessageSlot() {
+      if (outstandingMessages < messageLimit) {
+        outstandingMessages++;
+        return;
+      }
+
+      // Wait for a slot if the limit is reached
+      CountDownLatch messageWaiter = new CountDownLatch(1);
+      awaitingMessageAcquires.addLast(messageWaiter);
+      waitForResource(messageWaiter);
+      outstandingMessages++;
+      awaitingMessageAcquires.removeFirst();
+
+      // Notify the next waiter if there's still room
+      if (!awaitingMessageAcquires.isEmpty() && outstandingMessages < messageLimit) {
+        awaitingMessageAcquires.getFirst().countDown();
+      }
+    }
+
+    private void acquireByteSpace(long messageSize) {
+      long bytesRemaining = messageSize;
+      while (outstandingBytes + bytesRemaining >= byteLimit) {
+        long available = byteLimit - outstandingBytes;
+        bytesRemaining -= available;
+        outstandingBytes = byteLimit;
+
+        // Wait for enough byte space to become available
+        CountDownLatch bytesWaiter = new CountDownLatch(1);
+        awaitingBytesAcquires.addLast(bytesWaiter);
+        waitForResource(bytesWaiter);
+        awaitingBytesAcquires.removeFirst();
+      }
+
+      // Add the remaining bytes
+      outstandingBytes += bytesRemaining;
+
+      // Notify the next waiter if there's still space
+      if (!awaitingBytesAcquires.isEmpty() && outstandingBytes < byteLimit) {
+        awaitingBytesAcquires.getFirst().countDown();
+      }
+    }
+
+    private void waitForResource(CountDownLatch waiter) {
+      lock.unlock();
+      try {
+        waiter.await();
+      } catch (InterruptedException e) {
+        logger.log(Level.WARNING, "Interrupted while waiting to acquire flow control tokens");
+      } finally {
+        lock.lock();
       }
     }
 
@@ -1102,7 +1122,7 @@ public class Publisher implements PublisherInterface {
   private class MessagesBatch {
     private List<OutstandingPublish> messages;
     private int initialBatchedBytes;
-    private int batchedBytes;
+    private int totalMessageBytesInBatch;
     private String orderingKey;
     private final BatchingSettings batchingSettings;
 
@@ -1115,14 +1135,14 @@ public class Publisher implements PublisherInterface {
     }
 
     private OutstandingBatch popOutstandingBatch() {
-      OutstandingBatch batch = new OutstandingBatch(messages, batchedBytes, orderingKey);
+      OutstandingBatch batch = new OutstandingBatch(messages, totalMessageBytesInBatch, orderingKey);
       reset();
       return batch;
     }
 
     private void reset() {
       messages = new LinkedList<>();
-      batchedBytes = initialBatchedBytes;
+      totalMessageBytesInBatch = initialBatchedBytes;
     }
 
     private boolean isEmpty() {
@@ -1130,7 +1150,7 @@ public class Publisher implements PublisherInterface {
     }
 
     private int getBatchedBytes() {
-      return batchedBytes;
+      return totalMessageBytesInBatch;
     }
 
     private int getMessagesCount() {
@@ -1155,7 +1175,7 @@ public class Publisher implements PublisherInterface {
       }
 
       messages.add(outstandingPublish);
-      batchedBytes += outstandingPublish.messageSize;
+      totalMessageBytesInBatch += outstandingPublish.messageSize;
 
       // Border case: If the message to send is greater or equals to the max batch size then send it
       // immediately.
