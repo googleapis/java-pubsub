@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.140.2](https://github.com/googleapis/java-pubsub/compare/v1.140.1...v1.140.2) (2025-06-11)
+
+
+### Dependencies
+
+* Update dependency org.easymock:easymock to v5.6.0 ([#2069](https://github.com/googleapis/java-pubsub/issues/2069)) ([5f144a4](https://github.com/googleapis/java-pubsub/commit/5f144a461c6749ec7e2cf900399f386094451244))
+
 ## [1.140.1](https://github.com/googleapis/java-pubsub/compare/v1.140.0...v1.140.1) (2025-06-05)
 
 
