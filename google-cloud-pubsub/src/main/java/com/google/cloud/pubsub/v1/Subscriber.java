@@ -52,6 +52,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -150,6 +151,7 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
   // An instantiation of the SystemExecutorProvider used for processing acks
   // and other system actions.
   @Nullable private final ScheduledExecutorService alarmsExecutor;
+  private final ExecutorService eodAckCallbackExecutor;
   private final Distribution ackLatencyDistribution =
       new Distribution(Math.toIntExact(MAX_STREAM_ACK_DEADLINE.getSeconds()) + 1);
 
@@ -199,6 +201,9 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
     if (systemExecutorProvider.shouldAutoClose()) {
       backgroundResources.add(new ExecutorAsBackgroundResource((alarmsExecutor)));
     }
+
+    ExecutorProvider eodAckCallbackExecutorProvider = InstantiatingExecutorProvider.newBuilder().setExecutorThreadCount(2).build();
+    eodAckCallbackExecutor = eodAckCallbackExecutorProvider.getExecutor();
 
     TransportChannelProvider channelProvider = builder.channelProvider;
     if (channelProvider.acceptsPoolSize()) {
@@ -416,6 +421,7 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
                 .setUseLegacyFlowControl(useLegacyFlowControl)
                 .setExecutor(executor)
                 .setSystemExecutor(alarmsExecutor)
+                .setEodAckCallbackExecutor(eodAckCallbackExecutor)
                 .setClock(clock)
                 .setEnableOpenTelemetryTracing(enableOpenTelemetryTracing)
                 .setTracer(tracer)

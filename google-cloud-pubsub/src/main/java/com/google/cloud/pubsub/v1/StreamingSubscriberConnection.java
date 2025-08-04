@@ -61,7 +61,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -98,6 +98,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
   private final String subscription;
   private final SubscriptionName subscriptionNameObject;
   private final ScheduledExecutorService systemExecutor;
+  private final ExecutorService eodAckCallbackExecutor;
   private final MessageDispatcher messageDispatcher;
 
   private final FlowControlSettings flowControlSettings;
@@ -129,6 +130,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     subscription = builder.subscription;
     subscriptionNameObject = SubscriptionName.parse(builder.subscription);
     systemExecutor = builder.systemExecutor;
+    eodAckCallbackExecutor = builder.eodAckCallbackExecutor;
 
     // We need to set the default stream ack deadline on the initial request, this will be
     // updated by modack requests in the message dispatcher
@@ -457,9 +459,10 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
                       .addAllAckIds(ackIdsInRequest)
                       .build());
       if (getExactlyOnceDeliveryEnabled()) {
-        // When exatly-once delivery is enabled, a lock is acquired on this callback which can cause deadlock when
-        // using MoreExecutors.directExecutor(). We use a new, single-thread executor to avoid this.
-        ApiFutures.addCallback(ackFuture, callback, Executors.newSingleThreadExecutor());
+        // When exatly-once delivery is enabled, a lock is acquired on this callback which can cause
+        // deadlock when using MoreExecutors.directExecutor(). We use a separate executor to avoid
+        // this.
+        ApiFutures.addCallback(ackFuture, callback, eodAckCallbackExecutor);
       } else {
         ApiFutures.addCallback(ackFuture, callback, directExecutor());
       }
@@ -512,9 +515,10 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
                         .setAckDeadlineSeconds(modackRequestData.getDeadlineExtensionSeconds())
                         .build());
         if (getExactlyOnceDeliveryEnabled()) {
-          // When exatly-once delivery is enabled, a lock is acquired on this callback which can cause deadlock when
-          // using MoreExecutors.directExecutor(). We use a new, single-thread executor to avoid this.
-          ApiFutures.addCallback(modackFuture, callback, Executors.newSingleThreadExecutor());
+          // When exatly-once delivery is enabled, a lock is acquired on this callback which can
+          // cause deadlock when using MoreExecutors.directExecutor(). We use a separate executor to
+          // avoid this.
+          ApiFutures.addCallback(modackFuture, callback, eodAckCallbackExecutor);
         } else {
           ApiFutures.addCallback(modackFuture, callback, directExecutor());
         }
@@ -749,6 +753,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     private boolean useLegacyFlowControl;
     private ScheduledExecutorService executor;
     private ScheduledExecutorService systemExecutor;
+    private ExecutorService eodAckCallbackExecutor;
     private ApiClock clock;
 
     private boolean enableOpenTelemetryTracing;
@@ -836,6 +841,11 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
 
     public Builder setSystemExecutor(ScheduledExecutorService systemExecutor) {
       this.systemExecutor = systemExecutor;
+      return this;
+    }
+
+    public Builder setEodAckCallbackExecutor(ExecutorService eodAckCallbackExecutor) {
+      this.eodAckCallbackExecutor = eodAckCallbackExecutor;
       return this;
     }
 
