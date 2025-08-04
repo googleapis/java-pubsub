@@ -202,9 +202,12 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
       backgroundResources.add(new ExecutorAsBackgroundResource((alarmsExecutor)));
     }
 
-    ExecutorProvider eodAckCallbackExecutorProvider =
-        InstantiatingExecutorProvider.newBuilder().setExecutorThreadCount(5).build();
-    eodAckCallbackExecutor = eodAckCallbackExecutorProvider.getExecutor();
+    // When exactly-once delivery is enabled, we use a different executor from the system executor
+    // for handling ack and modack responses to prevent deadlock.
+    ThreadFactory eodAckCallbackThreadFactory = new ThreadFactoryBuilder().setDaemon(true).build();
+    int eodAckCallbackThreadCount = Math.max(6, 2 * numPullers);
+    eodAckCallbackExecutor =
+        Executors.newFixedThreadPool(eodAckCallbackThreadCount, eodAckCallbackThreadFactory);
 
     TransportChannelProvider channelProvider = builder.channelProvider;
     if (channelProvider.acceptsPoolSize()) {
