@@ -61,6 +61,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -455,7 +456,13 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
                       .setSubscription(subscription)
                       .addAllAckIds(ackIdsInRequest)
                       .build());
-      ApiFutures.addCallback(ackFuture, callback, directExecutor());
+      if (getExactlyOnceDeliveryEnabled()) {
+        // When exatly-once delivery is enabled, a lock is acquired on this callback which can cause deadlock when
+        // using MoreExecutors.directExecutor(). We use a new, single-thread executor to avoid this.
+        ApiFutures.addCallback(ackFuture, callback, Executors.newSingleThreadExecutor());
+      } else {
+        ApiFutures.addCallback(ackFuture, callback, directExecutor());
+      }
       pendingOperations++;
     }
     ackOperationsWaiter.incrementPendingCount(pendingOperations);
@@ -504,7 +511,13 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
                         .addAllAckIds(ackIdsInRequest)
                         .setAckDeadlineSeconds(modackRequestData.getDeadlineExtensionSeconds())
                         .build());
-        ApiFutures.addCallback(modackFuture, callback, directExecutor());
+        if (getExactlyOnceDeliveryEnabled()) {
+          // When exatly-once delivery is enabled, a lock is acquired on this callback which can cause deadlock when
+          // using MoreExecutors.directExecutor(). We use a new, single-thread executor to avoid this.
+          ApiFutures.addCallback(modackFuture, callback, Executors.newSingleThreadExecutor());
+        } else {
+          ApiFutures.addCallback(modackFuture, callback, directExecutor());
+        }
         pendingOperations++;
       }
     }
