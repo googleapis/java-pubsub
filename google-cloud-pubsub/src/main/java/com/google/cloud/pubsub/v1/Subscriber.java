@@ -51,8 +51,8 @@ import io.opentelemetry.api.trace.Tracer;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -202,7 +202,8 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
       backgroundResources.add(new ExecutorAsBackgroundResource((alarmsExecutor)));
     }
 
-    ExecutorProvider eodAckCallbackExecutorProvider = InstantiatingExecutorProvider.newBuilder().setExecutorThreadCount(2).build();
+    ExecutorProvider eodAckCallbackExecutorProvider =
+        InstantiatingExecutorProvider.newBuilder().setExecutorThreadCount(5).build();
     eodAckCallbackExecutor = eodAckCallbackExecutorProvider.getExecutor();
 
     TransportChannelProvider channelProvider = builder.channelProvider;
