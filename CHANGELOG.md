@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.141.3](https://github.com/googleapis/java-pubsub/compare/v1.141.2...v1.141.3) (2025-08-11)
+
+
+### Dependencies
+
+* Update actions/checkout action to v5 ([#2520](https://github.com/googleapis/java-pubsub/issues/2520)) ([409398a](https://github.com/googleapis/java-pubsub/commit/409398a40f71866d5a84b4542d582777ee240a08))
+* Update dependency com.google.cloud:google-cloud-storage to v2.55.0 ([#2517](https://github.com/googleapis/java-pubsub/issues/2517)) ([b67acf1](https://github.com/googleapis/java-pubsub/commit/b67acf1294249be308568f49f287897ae55ced08))
+* Update dependency org.assertj:assertj-core to v3.27.4 ([#2518](https://github.com/googleapis/java-pubsub/issues/2518)) ([67695bc](https://github.com/googleapis/java-pubsub/commit/67695bc50eafc475866eb6c300b3359083ecfe00))
+
 ## [1.141.2](https://github.com/googleapis/java-pubsub/compare/v1.141.1...v1.141.2) (2025-08-05)
 
 
