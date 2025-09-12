@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.141.5](https://github.com/googleapis/java-pubsub/compare/v1.141.4...v1.141.5) (2025-09-12)
+
+
+### Dependencies
+
+* Update actions/checkout action to v5 ([#2539](https://github.com/googleapis/java-pubsub/issues/2539)) ([83144e6](https://github.com/googleapis/java-pubsub/commit/83144e6d4110fbe15f4357270a292cfcbcc35dd6))
+* Update actions/github-script action to v8 ([#2542](https://github.com/googleapis/java-pubsub/issues/2542)) ([0e6f0da](https://github.com/googleapis/java-pubsub/commit/0e6f0daccfdca248b3b80ef7dfb0bd7a4baa607c))
+* Update dependency com.google.cloud:google-cloud-core to v2.60.1 ([#2543](https://github.com/googleapis/java-pubsub/issues/2543)) ([fbb45ce](https://github.com/googleapis/java-pubsub/commit/fbb45cee9e3740f8ac94b5fbaa65b97b8db09b1e))
+* Update dependency com.google.cloud:google-cloud-storage to v2.57.0 ([#2547](https://github.com/googleapis/java-pubsub/issues/2547)) ([133f8c7](https://github.com/googleapis/java-pubsub/commit/133f8c7995880c2d1e75b69d61c50254d4f9fede))
+* Update dependency com.google.protobuf:protobuf-java-util to v4.32.1 ([#2551](https://github.com/googleapis/java-pubsub/issues/2551)) ([49722cb](https://github.com/googleapis/java-pubsub/commit/49722cb65e3b7cad01cf4389e1cf716a6ac1eb03))
+
 ## [1.141.4](https://github.com/googleapis/java-pubsub/compare/v1.141.3...v1.141.4) (2025-09-11)
 
 
