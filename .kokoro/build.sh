@@ -72,12 +72,18 @@ integration)
     ;;
 graalvm)
     # Run Unit and Integration Tests with Native Image
-    set -ex
-    microdnf install zip
-    curl -s "https://get.sdkman.io" | bash -e
-    source "/root/.sdkman/bin/sdkman-init.sh"
-    sdk install java 25-graalce -Y
+    echo "Install GraalVM 25"
+    echo "$JAVA_HOME"
+    pwd
+    mkdir -p ~/tools/jdk
+    cd ~/tools/jdk
+    wget https://download.oracle.com/graalvm/25/latest/graalvm-jdk-25_linux-x64_bin.tar.gz
+    tar -xf graalvm-jdk-25_linux-x64_bin.tar.gz
+    export JAVA_HOME=~/tools/jdk/graalvm-jdk-25+37.1
+    export PATH=$JAVA_HOME/bin:$PATH
     java -version
+    echo "Running native image tests..."
+    cd "${scriptDir}/.."
     mvn -B ${INTEGRATION_TEST_ARGS} -ntp -Pnative -Penable-integration-tests test
     RETURN_CODE=$?
     ;;
