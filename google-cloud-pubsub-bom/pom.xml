@@ -3,12 +3,12 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.google.cloud</groupId>
   <artifactId>google-cloud-pubsub-bom</artifactId>
-  <version>1.141.5-SNAPSHOT</version><!-- {x-version-update:google-cloud-pubsub:current} -->
+  <version>1.141.5</version><!-- {x-version-update:google-cloud-pubsub:current} -->
   <packaging>pom</packaging>
   <parent>
     <groupId>com.google.cloud</groupId>
     <artifactId>sdk-platform-java-config</artifactId>
-    <version>3.52.1</version>
+    <version>3.52.2</version>
   </parent>
 
   <name>Google Cloud pubsub BOM</name>
@@ -52,17 +52,17 @@
       <dependency>
         <groupId>com.google.cloud</groupId>
         <artifactId>google-cloud-pubsub</artifactId>
-        <version>1.141.5-SNAPSHOT</version><!-- {x-version-update:google-cloud-pubsub:current} -->
+        <version>1.141.5</version><!-- {x-version-update:google-cloud-pubsub:current} -->
       </dependency>
       <dependency>
         <groupId>com.google.api.grpc</groupId>
         <artifactId>grpc-google-cloud-pubsub-v1</artifactId>
-        <version>1.123.5-SNAPSHOT</version><!-- {x-version-update:grpc-google-cloud-pubsub-v1:current} -->
+        <version>1.123.5</version><!-- {x-version-update:grpc-google-cloud-pubsub-v1:current} -->
       </dependency>
       <dependency>
         <groupId>com.google.api.grpc</groupId>
         <artifactId>proto-google-cloud-pubsub-v1</artifactId>
-        <version>1.123.5-SNAPSHOT</version><!-- {x-version-update:proto-google-cloud-pubsub-v1:current} -->
+        <version>1.123.5</version><!-- {x-version-update:proto-google-cloud-pubsub-v1:current} -->
       </dependency>
     </dependencies>
   </dependencyManagement>

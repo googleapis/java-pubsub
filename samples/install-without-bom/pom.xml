@@ -44,7 +44,7 @@
     <dependency>
       <groupId>com.google.cloud</groupId>
       <artifactId>google-cloud-pubsub</artifactId>
-      <version>1.141.4</version>
+      <version>1.141.5</version>
     </dependency>
     <!-- [END pubsub_install_without_bom] -->
 
@@ -80,18 +80,18 @@
     <dependency>
       <groupId>com.google.cloud</groupId>
       <artifactId>google-cloud-core</artifactId>
-      <version>2.60.1</version>
+      <version>2.60.2</version>
       <classifier>tests</classifier>
     </dependency>
     <dependency>
       <groupId>com.google.cloud</groupId>
       <artifactId>google-cloud-bigquery</artifactId>
-      <version>2.54.2</version>
+      <version>2.55.1</version>
     </dependency>
     <dependency>
       <groupId>com.google.cloud</groupId>
       <artifactId>google-cloud-storage</artifactId>
-      <version>2.57.0</version>
+      <version>2.58.0</version>
     </dependency>
     <dependency>
       <groupId>com.google.cloud.opentelemetry</groupId>
