@@ -4,7 +4,7 @@
   <groupId>com.google.cloud</groupId>
   <artifactId>google-cloud-pubsub-parent</artifactId>
   <packaging>pom</packaging>
-  <version>1.141.5-SNAPSHOT</version><!-- {x-version-update:google-cloud-pubsub:current} -->
+  <version>1.141.5</version><!-- {x-version-update:google-cloud-pubsub:current} -->
   <name>Google Cloud Pub/Sub Parent</name>
   <url>https://github.com/googleapis/java-pubsub</url>
   <description>
@@ -14,7 +14,7 @@
   <parent>
     <groupId>com.google.cloud</groupId>
     <artifactId>sdk-platform-java-config</artifactId>
-    <version>3.52.2</version>
+    <version>3.52.3</version>
   </parent>
 
   <developers>
@@ -69,17 +69,17 @@
       <dependency>
         <groupId>com.google.api.grpc</groupId>
         <artifactId>proto-google-cloud-pubsub-v1</artifactId>
-        <version>1.123.5-SNAPSHOT</version><!-- {x-version-update:proto-google-cloud-pubsub-v1:current} -->
+        <version>1.123.5</version><!-- {x-version-update:proto-google-cloud-pubsub-v1:current} -->
       </dependency>
       <dependency>
         <groupId>com.google.api.grpc</groupId>
         <artifactId>grpc-google-cloud-pubsub-v1</artifactId>
-        <version>1.123.5-SNAPSHOT</version><!-- {x-version-update:grpc-google-cloud-pubsub-v1:current} -->
+        <version>1.123.5</version><!-- {x-version-update:grpc-google-cloud-pubsub-v1:current} -->
       </dependency>
       <dependency>
         <groupId>com.google.cloud</groupId>
         <artifactId>google-cloud-pubsub</artifactId>
-        <version>1.141.5-SNAPSHOT</version><!-- {x-version-update:google-cloud-pubsub:current} -->
+        <version>1.141.5</version><!-- {x-version-update:google-cloud-pubsub:current} -->
       </dependency>
 
       <!-- Test dependencies -->
@@ -116,7 +116,7 @@
       <dependency>
         <groupId>org.assertj</groupId>
         <artifactId>assertj-core</artifactId>
-        <version>3.27.4</version>
+        <version>3.27.6</version>
         <scope>test</scope>
       </dependency>
     </dependencies>
