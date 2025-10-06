@@ -565,7 +565,7 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
      * {@code ChannelProvider} to use to create Channels, which must point at Cloud Pub/Sub
      * endpoint.
      *
-     * <p>For performance, this client bene/fits from having multiple channels open at once. Users
+     * <p>For performance, this client benefits from having multiple channels open at once. Users
      * are encouraged to provide instances of {@code ChannelProvider} that creates new channels
      * instead of returning pre-initialized ones.
      */
