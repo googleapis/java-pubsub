@@ -63,15 +63,15 @@ public class WaiterTest {
     final Thread mainThread = Thread.currentThread();
     Thread t =
         new Thread(
-          new Runnable() {
-            @Override
-            public void run() {
-              while (mainThread.getState() != Thread.State.WAITING) {
-                Thread.yield();
+            new Runnable() {
+              @Override
+              public void run() {
+                while (mainThread.getState() == Thread.State.NEW) {
+                  Thread.yield();
+                }
+                waiter.incrementPendingCount(-1);
               }
-              waiter.incrementPendingCount(-1);
-            }
-          });
+            });
     t.start();
 
     assertTrue(waiter.tryWait(500, clock));
@@ -81,7 +81,7 @@ public class WaiterTest {
   }
 
   @Test
-  public void testTryWait_TimesOut() {
+  public void testTryWait_TimesOut() throws Exception {
     final Waiter waiter = new Waiter();
     waiter.incrementPendingCount(1);
     final FakeClock clock = new FakeClock();
@@ -89,19 +89,20 @@ public class WaiterTest {
     final Thread mainThread = Thread.currentThread();
     Thread t =
         new Thread(
-          new Runnable() {
-            @Override
-            public void run() {
-              while (mainThread.getState() != Thread.State.WAITING) {
-                Thread.yield();
+            new Runnable() {
+              @Override
+              public void run() {
+                while (mainThread.getState() == Thread.State.NEW) {
+                  Thread.yield();
+                }
+                clock.advance(200, TimeUnit.MILLISECONDS);
               }
-              clock.advance(200, TimeUnit.MILLISECONDS);
-            }
-          }
-        );
+            });
     t.start();
 
     assertFalse(waiter.tryWait(100, clock));
+    t.join();
+
     assertEquals(1, waiter.pendingCount());
   }
 
