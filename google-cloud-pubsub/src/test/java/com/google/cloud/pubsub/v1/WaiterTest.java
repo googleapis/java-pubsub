@@ -55,23 +55,29 @@ public class WaiterTest {
   }
 
   @Test
-  public void testTryWait_Completes() {
+  public void testTryWait_Completes() throws Exception {
     final Waiter waiter = new Waiter();
     waiter.incrementPendingCount(1);
     final FakeClock clock = new FakeClock();
 
+    final Thread mainThread = Thread.currentThread();
     Thread t =
         new Thread(
-            () -> {
-              try {
-                Thread.sleep(100);
-              } catch (InterruptedException e) {
+          new Runnable() {
+            @Override
+            public void run() {
+              while (mainThread.getState() != Thread.State.WAITING) {
+                Thread.yield();
               }
               waiter.incrementPendingCount(-1);
-            });
+            }
+          });
     t.start();
 
     assertTrue(waiter.tryWait(500, clock));
+    t.join();
+
+    assertEquals(0, waiter.pendingCount());
   }
 
   @Test
@@ -80,14 +86,23 @@ public class WaiterTest {
     waiter.incrementPendingCount(1);
     final FakeClock clock = new FakeClock();
 
+    final Thread mainThread = Thread.currentThread();
     Thread t =
         new Thread(
-            () -> {
-              clock.advance(100, TimeUnit.MILLISECONDS);
-            });
+          new Runnable() {
+            @Override
+            public void run() {
+              while (mainThread.getState() != Thread.State.WAITING) {
+                Thread.yield();
+              }
+              clock.advance(200, TimeUnit.MILLISECONDS);
+            }
+          }
+        );
     t.start();
 
     assertFalse(waiter.tryWait(100, clock));
+    assertEquals(1, waiter.pendingCount());
   }
 
   @Test
