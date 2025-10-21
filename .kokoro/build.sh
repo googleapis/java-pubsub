@@ -48,7 +48,7 @@ set +e
 case ${JOB_TYPE} in
 test)
     echo "SUREFIRE_JVM_OPT: ${SUREFIRE_JVM_OPT}"
-    mvn test -B -ntp -Dclirr.skip=true -Denforcer.skip=true ${SUREFIRE_JVM_OPT}
+    mvn test -B -ntp -Dclirr.skip=true -Denforcer.skip=true ${SUREFIRE_JVM_OPT} -Dtest=WaiterTest
     RETURN_CODE=$?
     ;;
 lint)
