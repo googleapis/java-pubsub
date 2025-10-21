@@ -96,8 +96,7 @@ public class WaiterTest {
                   Thread.yield();
                 }
                 try {
-                  Thread.sleep(100);
-                  clock.advance(200, TimeUnit.MILLISECONDS);
+                  // Waits some additional time to ensure that the waiter is actually waiting.
                   Thread.sleep(100);
                   clock.advance(200, TimeUnit.MILLISECONDS);
                 } catch (InterruptedException e) {
