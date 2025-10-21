@@ -95,7 +95,14 @@ public class WaiterTest {
                 while (mainThread.getState() == Thread.State.NEW) {
                   Thread.yield();
                 }
-                clock.advance(200, TimeUnit.MILLISECONDS);
+                try {
+                  Thread.sleep(100);
+                  clock.advance(200, TimeUnit.MILLISECONDS);
+                  Thread.sleep(100);
+                  clock.advance(200, TimeUnit.MILLISECONDS);
+                } catch (InterruptedException e) {
+                  // Ignored.
+                }
               }
             });
     t.start();
