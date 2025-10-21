@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.143.1](https://github.com/googleapis/java-pubsub/compare/v1.143.0...v1.143.1) (2025-10-21)
+
+
+### Bug Fixes
+
+* Deflake WaiterTest ([#2600](https://github.com/googleapis/java-pubsub/issues/2600)) ([298c8db](https://github.com/googleapis/java-pubsub/commit/298c8db04616341da040935636b1a04ce5f022a0))
+
 ## [1.143.0](https://github.com/googleapis/java-pubsub/compare/v1.142.0...v1.143.0) (2025-10-20)
 
 
