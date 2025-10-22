@@ -13,33 +13,33 @@
 # limitations under the License.
 # GitHub action job to test core java library features on
 # downstream client libraries before they are released.
-name: Hermetic library generation upon generation config change through pull requests
-on:
-  pull_request:
-
-env:
-  REPO_FULL_NAME: ${{ github.event.pull_request.head.repo.full_name }}
-  GITHUB_REPOSITORY: ${{ github.repository }}
-jobs:
-  library_generation:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Determine whether the pull request comes from a fork
-      run: |
-        if [[ "${GITHUB_REPOSITORY}" != "${REPO_FULL_NAME}" ]]; then
-          echo "This PR comes from a fork. Skip library generation."
-          echo "SHOULD_RUN=false" >> $GITHUB_ENV
-        else
-          echo "SHOULD_RUN=true" >> $GITHUB_ENV
-        fi
-    - uses: actions/checkout@v5
-      if: env.SHOULD_RUN == 'true'
-      with:
-        fetch-depth: 0
-        token: ${{ secrets.CLOUD_JAVA_BOT_TOKEN }}
-    - uses: googleapis/sdk-platform-java/.github/scripts@v2.63.0
-      if: env.SHOULD_RUN == 'true'
-      with:
-        base_ref: ${{ github.base_ref }}
-        head_ref: ${{ github.head_ref }}
-        token: ${{ secrets.CLOUD_JAVA_BOT_TOKEN }}
+#name: Hermetic library generation upon generation config change through pull requests
+#on:
+#  pull_request:
+#
+#env:
+#  REPO_FULL_NAME: ${{ github.event.pull_request.head.repo.full_name }}
+#  GITHUB_REPOSITORY: ${{ github.repository }}
+#jobs:
+#  library_generation:
+#    runs-on: ubuntu-latest
+#    steps:
+#    - name: Determine whether the pull request comes from a fork
+#      run: |
+#        if [[ "${GITHUB_REPOSITORY}" != "${REPO_FULL_NAME}" ]]; then
+#          echo "This PR comes from a fork. Skip library generation."
+#          echo "SHOULD_RUN=false" >> $GITHUB_ENV
+#        else
+#          echo "SHOULD_RUN=true" >> $GITHUB_ENV
+#        fi
+#    - uses: actions/checkout@v5
+#      if: env.SHOULD_RUN == 'true'
+#      with:
+#        fetch-depth: 0
+#        token: ${{ secrets.CLOUD_JAVA_BOT_TOKEN }}
+#    - uses: googleapis/sdk-platform-java/.github/scripts@v2.63.0
+#      if: env.SHOULD_RUN == 'true'
+#      with:
+#        base_ref: ${{ github.base_ref }}
+#        head_ref: ${{ github.head_ref }}
+#        token: ${{ secrets.CLOUD_JAVA_BOT_TOKEN }}
