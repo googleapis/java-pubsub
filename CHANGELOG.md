@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.143.1](https://github.com/googleapis/java-pubsub/compare/v1.143.0...v1.143.1) (2025-10-28)
+
+
+### Bug Fixes
+
+* Deflake WaiterTest ([#2600](https://github.com/googleapis/java-pubsub/issues/2600)) ([298c8db](https://github.com/googleapis/java-pubsub/commit/298c8db04616341da040935636b1a04ce5f022a0))
+
+
+### Dependencies
+
+* Update actions/checkout action to v5 ([#2592](https://github.com/googleapis/java-pubsub/issues/2592)) ([6ca466d](https://github.com/googleapis/java-pubsub/commit/6ca466d382ddde9780ae1c8627092d731e314f90))
+* Update dependency com.google.cloud:google-cloud-bigquery to v2.55.3 ([#2602](https://github.com/googleapis/java-pubsub/issues/2602)) ([d14106c](https://github.com/googleapis/java-pubsub/commit/d14106cc278c98d3f954f959e2dd3764ebd20fc2))
+* Update dependency com.google.cloud:google-cloud-core to v2.61.0 ([#2588](https://github.com/googleapis/java-pubsub/issues/2588)) ([244cf75](https://github.com/googleapis/java-pubsub/commit/244cf758bf46f8431a17b1d8e76d1d90c494fc76))
+* Update dependency com.google.cloud:google-cloud-storage to v2.59.0 ([#2603](https://github.com/googleapis/java-pubsub/issues/2603)) ([d9d05bf](https://github.com/googleapis/java-pubsub/commit/d9d05bfa18580cdacdfa9378d30b56ce0ae0d4d2))
+* Update dependency com.google.protobuf:protobuf-java-util to v4.33.0 ([#2587](https://github.com/googleapis/java-pubsub/issues/2587)) ([33724ce](https://github.com/googleapis/java-pubsub/commit/33724cef79e3f7e798c5ef222ee7dff3565555f8))
+
 ## [1.143.0](https://github.com/googleapis/java-pubsub/compare/v1.142.0...v1.143.0) (2025-10-20)
 
 
