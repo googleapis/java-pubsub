@@ -405,8 +405,7 @@ public class OpenTelemetryTest {
         .containsEntry(PROJECT_ATTR_KEY, FULL_TOPIC_NAME.getProject())
         .containsEntry(CODE_FUNCTION_ATTR_KEY, "sendModAckOperations")
         .containsEntry(MESSAGING_OPERATION_ATTR_KEY, "modack")
-        .containsEntry(
-            MESSAGING_BATCH_MESSAGE_COUNT_ATTR_KEY, subscribeMessageWrappers.size())
+        .containsEntry(MESSAGING_BATCH_MESSAGE_COUNT_ATTR_KEY, subscribeMessageWrappers.size())
         .containsEntry(ACK_DEADLINE_ATTR_KEY, 10)
         .containsEntry(RECEIPT_MODACK_ATTR_KEY, true);
 
@@ -432,8 +431,7 @@ public class OpenTelemetryTest {
         .containsEntry(PROJECT_ATTR_KEY, FULL_TOPIC_NAME.getProject())
         .containsEntry(CODE_FUNCTION_ATTR_KEY, "sendAckOperations")
         .containsEntry(MESSAGING_OPERATION_ATTR_KEY, "ack")
-        .containsEntry(
-            MESSAGING_BATCH_MESSAGE_COUNT_ATTR_KEY, subscribeMessageWrappers.size());
+        .containsEntry(MESSAGING_BATCH_MESSAGE_COUNT_ATTR_KEY, subscribeMessageWrappers.size());
 
     // Check span data, links, and attributes for the nack RPC span
     SpanDataAssert nackRpcSpanDataAssert = OpenTelemetryAssertions.assertThat(nackRpcSpanData);
@@ -457,8 +455,7 @@ public class OpenTelemetryTest {
         .containsEntry(PROJECT_ATTR_KEY, FULL_TOPIC_NAME.getProject())
         .containsEntry(CODE_FUNCTION_ATTR_KEY, "sendModAckOperations")
         .containsEntry(MESSAGING_OPERATION_ATTR_KEY, "nack")
-        .containsEntry(
-            MESSAGING_BATCH_MESSAGE_COUNT_ATTR_KEY, subscribeMessageWrappers.size());
+        .containsEntry(MESSAGING_BATCH_MESSAGE_COUNT_ATTR_KEY, subscribeMessageWrappers.size());
 
     // Check span data, events, links, and attributes for the publisher create span
     SpanDataAssert subscriberSpanDataAssert =
