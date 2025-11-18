@@ -387,6 +387,8 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
     }
 
     if (enableKeepalive) {
+      lastServerResponseTime.set(clock.nanoTime());
+      lastClientPingTime.set(-1L);
       startClientPinger();
       startServerMonitor();
     }
