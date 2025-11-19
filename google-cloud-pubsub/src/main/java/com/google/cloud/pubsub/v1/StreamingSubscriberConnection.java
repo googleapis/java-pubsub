@@ -134,7 +134,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
   private static final Duration CLIENT_PING_INTERVAL = Duration.ofSeconds(30);
   private ScheduledFuture<?> pingSchedulerHandle;
 
-  private static final Duration SERVER_MONITOR_INTERVAL = Duration.ofSeconds(15);
+  private static final Duration SERVER_MONITOR_INTERVAL = Duration.ofSeconds(10);
   private static final Duration SERVER_PING_TIMEOUT_DURATION = Duration.ofSeconds(15);
   private final AtomicLong lastServerResponseTime;
   private final AtomicLong lastClientPingTime;
@@ -480,7 +480,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
                 logger.log(Level.FINE, "Error sending client keepalive ping", e);
               }
             },
-            CLIENT_PING_INTERVAL.getSeconds(),
+            0,
             CLIENT_PING_INTERVAL.getSeconds(),
             TimeUnit.SECONDS);
   }
@@ -514,13 +514,13 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
                 }
 
                 Duration elapsedSincePing = Duration.ofNanos(now - lastPing);
-                if (elapsedSincePing.compareTo(SERVER_PING_TIMEOUT_DURATION) <= 0) {
+                if (elapsedSincePing.compareTo(SERVER_PING_TIMEOUT_DURATION) < 0) {
                   return;
                 }
 
                 logger.log(
                     Level.WARNING,
-                    "No response from server for {0} seconds. Closing stream.",
+                    "No response from server for {0} seconds since last ping. Closing stream.",
                     elapsedSincePing.getSeconds());
 
                 lock.lock();
