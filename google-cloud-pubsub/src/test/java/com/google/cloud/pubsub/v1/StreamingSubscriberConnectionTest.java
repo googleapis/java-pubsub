@@ -96,7 +96,6 @@ public class StreamingSubscriberConnectionTest {
 
   private static final long KEEP_ALIVE_SUPPORT_VERSION = 1;
   private static final Duration CLIENT_PING_INTERVAL = Duration.ofSeconds(30);
-  private static final Duration SERVER_TIMEOUT_DURATION = Duration.ofSeconds(45);
   private static final Duration MAX_ACK_EXTENSION_PERIOD = Duration.ofMinutes(60);
 
   @Before
@@ -703,8 +702,8 @@ public class StreamingSubscriberConnectionTest {
 
     ArgumentCaptor<StreamingPullRequest> requestCaptor =
         ArgumentCaptor.forClass(StreamingPullRequest.class);
-    // 1 initial request + 2 pings
-    verify(mockClientStream, times(3)).send(requestCaptor.capture());
+    // 1 initial request + 3 pings
+    verify(mockClientStream, times(4)).send(requestCaptor.capture());
     List<StreamingPullRequest> requests = requestCaptor.getAllValues();
 
     StreamingPullRequest initialRequest = requests.get(0);
@@ -723,7 +722,7 @@ public class StreamingSubscriberConnectionTest {
 
     // No more pings
     systemExecutor.advanceTime(CLIENT_PING_INTERVAL);
-    verify(mockClientStream, times(3)).send(any(StreamingPullRequest.class));
+    verify(mockClientStream, times(4)).send(any(StreamingPullRequest.class));
   }
 
   @Test
@@ -769,7 +768,7 @@ public class StreamingSubscriberConnectionTest {
               StreamingPullRequest req = invocation.getArgument(0);
               // Pings are empty requests
               if (req.getSubscription().isEmpty()) {
-                if (pingCount.incrementAndGet() > 1) { // allow first ping
+                if (pingCount.incrementAndGet() > 2) { // allow first 2 pings
                   throw new RuntimeException("ping failed");
                 }
               }
@@ -788,15 +787,10 @@ public class StreamingSubscriberConnectionTest {
     StreamController mockController = mock(StreamController.class);
     observer.onStart(mockController);
 
-    // Pings are sent every 30s, monitor checks every 15s. Timeout is 15s after ping if no response.
-    // t=30s: first ping sent, lastClientPingTime=30s.
-    // t=45s: monitor check. now=45, lastPing=30. 45-30=15. 15>15 is false. No timeout.
-    systemExecutor.advanceTime(SERVER_TIMEOUT_DURATION);
+    systemExecutor.advanceTime(CLIENT_PING_INTERVAL);
     verify(mockClientStream, never()).closeSendWithError(any(Exception.class));
 
-    // t=60s: second ping fails to send. lastClientPingTime remains 30s.
-    // t=60s: monitor check. now=60, lastPing=30. 60-30=30. 30>15 is true. Timeout.
-    systemExecutor.advanceTime(Duration.ofSeconds(16));
+    systemExecutor.advanceTime(CLIENT_PING_INTERVAL);
     ArgumentCaptor<Exception> exceptionCaptor = ArgumentCaptor.forClass(Exception.class);
     verify(mockClientStream, times(1)).closeSendWithError(exceptionCaptor.capture());
     StatusException exception = (StatusException) exceptionCaptor.getValue();
@@ -832,6 +826,7 @@ public class StreamingSubscriberConnectionTest {
     systemExecutor.advanceTime(Duration.ofSeconds(40));
     observer.onResponse(StreamingPullResponse.getDefaultInstance());
     systemExecutor.advanceTime(Duration.ofSeconds(20)); // to t=60s
+    observer.onResponse(StreamingPullResponse.getDefaultInstance());
 
     verify(mockClientStream, never()).closeSendWithError(any(Exception.class));
   }
