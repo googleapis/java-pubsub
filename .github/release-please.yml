@@ -50,3 +50,8 @@ branches:
     handleGHRelease: true
     releaseType: java-backport
     branch: 1.140.x
+  - bumpMinorPreMajor: true
+    handleGHRelease: true
+    releaseType: java-backport
+    branch: protobuf-4.x-rc
+    manifest: true
