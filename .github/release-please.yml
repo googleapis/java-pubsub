@@ -25,3 +25,5 @@ branches:
       branch: 1.137.x
     - releaseType: java-backport
       branch: 1.140.x
+    - branch: protobuf-4.x-rc
+      manifest: true
