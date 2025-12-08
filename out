@@ -1,0 +1,1132 @@
+command stderr:
++ source /usr/local/lib/python3.13/site-packages/library_generation/utils/utilities.sh
+++ set -eo pipefail
+++++ realpath /usr/local/lib/python3.13/site-packages/library_generation/utils/utilities.sh
++++ dirname /usr/local/lib/python3.13/site-packages/library_generation/utils/utilities.sh
+++ utilities_script_dir=/usr/local/lib/python3.13/site-packages/library_generation/utils
++ get_output_folder
++++ pwd
+++ basename /workspace/java-pubsub
++ [[ java-pubsub != \o\u\t\p\u\t ]]
+++ pwd
++ echo /workspace/java-pubsub/output
+command stdout:
+/workspace/java-pubsub/output
+output_folder: /workspace/java-pubsub/output
+generating library pubsub
+command stderr:
++ source /usr/local/lib/python3.13/site-packages/library_generation/utils/utilities.sh
+++ set -eo pipefail
+++++ realpath /usr/local/lib/python3.13/site-packages/library_generation/utils/utilities.sh
++++ dirname /usr/local/lib/python3.13/site-packages/library_generation/utils/utilities.sh
+++ utilities_script_dir=/usr/local/lib/python3.13/site-packages/library_generation/utils
++ mktemp -d
+command stdout:
+/tmp/tmp.ef9nHdZPYy
+build_file_folder: /workspace/java-pubsub/output/google/pubsub/v1
+arguments: 
+['--proto_path', 'google/pubsub/v1', '--proto_only', 'false', '--gapic_additional_protos', '  google/cloud/common_resources.proto google/iam/v1/iam_policy.proto', '--transport', 'grpc+rest', '--rest_numeric_enums', 'true', '--gapic_yaml', 'google/pubsub/v1/pubsub_gapic.yaml', '--service_config', 'google/pubsub/v1/pubsub_grpc_service_config.json', '--service_yaml', 'google/pubsub/v1/pubsub_v1.yaml', '--include_samples', 'true', '--destination_path', 'java-google-pubsub-v1']
+Generating library from google/pubsub/v1 to /workspace/java-pubsub
+/workspace/java-pubsub/output /workspace/java-pubsub
+Dec 08, 2025 7:12:15 PM com.google.api.generator.gapic.protoparser.Parser getMethodSelectiveGapicType
+WARNING: Service yaml config is misconfigured. Version in publishing.library_settings (google.pubsub.v1) does not match proto package (google.iam.v1).Disregarding selective generation settings.
+Dec 08, 2025 7:12:15 PM com.google.api.generator.gapic.protoparser.Parser getMethodSelectiveGapicType
+WARNING: Service yaml config is misconfigured. Version in publishing.library_settings (google.pubsub.v1) does not match proto package (google.iam.v1).Disregarding selective generation settings.
+Dec 08, 2025 7:12:15 PM com.google.api.generator.gapic.protoparser.Parser getMethodSelectiveGapicType
+WARNING: Service yaml config is misconfigured. Version in publishing.library_settings (google.pubsub.v1) does not match proto package (google.iam.v1).Disregarding selective generation settings.
+Dec 08, 2025 7:12:15 PM com.google.api.generator.gapic.protoparser.Parser getMethodSelectiveGapicType
+WARNING: Service yaml config is misconfigured. Version in publishing.library_settings (google.pubsub.v1) does not match proto package (google.iam.v1).Disregarding selective generation settings.
+Dec 08, 2025 7:12:15 PM com.google.api.generator.gapic.protoparser.Parser getMethodSelectiveGapicType
+WARNING: Service yaml config is misconfigured. Version in publishing.library_settings (google.pubsub.v1) does not match proto package (google.iam.v1).Disregarding selective generation settings.
+Dec 08, 2025 7:12:15 PM com.google.api.generator.gapic.protoparser.Parser getMethodSelectiveGapicType
+WARNING: Service yaml config is misconfigured. Version in publishing.library_settings (google.pubsub.v1) does not match proto package (google.iam.v1).Disregarding selective generation settings.
+/workspace/java-pubsub
+/workspace/java-pubsub/output/temp_preprocessed-15472 /workspace/java-pubsub
+/workspace/java-pubsub
+Library generation finished successfully
+command stderr:
++ source /usr/local/lib/python3.13/site-packages/library_generation/utils/utilities.sh
+++ set -eo pipefail
+++++ realpath /usr/local/lib/python3.13/site-packages/library_generation/utils/utilities.sh
++++ dirname /usr/local/lib/python3.13/site-packages/library_generation/utils/utilities.sh
+++ utilities_script_dir=/usr/local/lib/python3.13/site-packages/library_generation/utils
++ build_owlbot_cli_source_folder /workspace/java-pubsub /tmp/tmp.ef9nHdZPYy /workspace/java-pubsub/output/java-google-pubsub-v1 google/pubsub/v1
++ local postprocessing_target=/workspace/java-pubsub
++ local target_folder=/tmp/tmp.ef9nHdZPYy
++ local preprocessed_sources_path=/workspace/java-pubsub/output/java-google-pubsub-v1
++ local proto_path=google/pubsub/v1
++ [[ -z google/pubsub/v1 ]]
++ owlbot_staging_folder=/workspace/java-pubsub/owl-bot-staging
++ mkdir -p /workspace/java-pubsub/owl-bot-staging
++ mkdir -p /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java
++ copy_directory_if_exists /workspace/java-pubsub/output/java-google-pubsub-v1 proto /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library
++ local base_folder=/workspace/java-pubsub/output/java-google-pubsub-v1
++ local folder_prefix=proto
++ local destination_folder=/tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library
++ '[' '!' -d /workspace/java-pubsub/output/java-google-pubsub-v1 ']'
++ pushd /workspace/java-pubsub/output/java-google-pubsub-v1
+++ find . -maxdepth 1 -type d -name 'proto*'
+++ wc -l
++ [[ 1 -gt 0 ]]
++ cp -r /workspace/java-pubsub/output/java-google-pubsub-v1/proto-java-google-pubsub-v1 /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library
++ popd
++ copy_directory_if_exists /workspace/java-pubsub/output/java-google-pubsub-v1 grpc /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/grpc-google-cloud-library
++ local base_folder=/workspace/java-pubsub/output/java-google-pubsub-v1
++ local folder_prefix=grpc
++ local destination_folder=/tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/grpc-google-cloud-library
++ '[' '!' -d /workspace/java-pubsub/output/java-google-pubsub-v1 ']'
++ pushd /workspace/java-pubsub/output/java-google-pubsub-v1
+++ find . -maxdepth 1 -type d -name 'grpc*'
+++ wc -l
++ [[ 1 -gt 0 ]]
++ cp -r /workspace/java-pubsub/output/java-google-pubsub-v1/grpc-java-google-pubsub-v1 /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/grpc-google-cloud-library
++ popd
++ copy_directory_if_exists /workspace/java-pubsub/output/java-google-pubsub-v1 gapic /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/gapic-google-cloud-library
++ local base_folder=/workspace/java-pubsub/output/java-google-pubsub-v1
++ local folder_prefix=gapic
++ local destination_folder=/tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/gapic-google-cloud-library
++ '[' '!' -d /workspace/java-pubsub/output/java-google-pubsub-v1 ']'
++ pushd /workspace/java-pubsub/output/java-google-pubsub-v1
+++ find . -maxdepth 1 -type d -name 'gapic*'
+++ wc -l
++ [[ 1 -gt 0 ]]
++ cp -r /workspace/java-pubsub/output/java-google-pubsub-v1/gapic-java-google-pubsub-v1 /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/gapic-google-cloud-library
++ popd
++ copy_directory_if_exists /workspace/java-pubsub/output/java-google-pubsub-v1 samples /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/samples
++ local base_folder=/workspace/java-pubsub/output/java-google-pubsub-v1
++ local folder_prefix=samples
++ local destination_folder=/tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/samples
++ '[' '!' -d /workspace/java-pubsub/output/java-google-pubsub-v1 ']'
++ pushd /workspace/java-pubsub/output/java-google-pubsub-v1
+++ find . -maxdepth 1 -type d -name 'samples*'
+++ wc -l
++ [[ 1 -gt 0 ]]
++ cp -r /workspace/java-pubsub/output/java-google-pubsub-v1/samples /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/samples
++ popd
++ pushd /tmp/tmp.ef9nHdZPYy
++ git init
+hint: Using 'master' as the name for the initial branch. This default branch name
+hint: is subject to change. To configure the initial branch name to use in all
+hint: of your new repositories, which will suppress this warning, call:
+hint: 
+hint: 	git config --global init.defaultBranch <name>
+hint: 
+hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+hint: 'development'. The just-created branch can be renamed via this command:
+hint: 
+hint: 	git branch -m <name>
++ git commit --allow-empty -m 'empty commit'
++ popd
+command stdout:
+/workspace/java-pubsub/output/java-google-pubsub-v1 /workspace/java-pubsub/output
+/workspace/java-pubsub/output
+/workspace/java-pubsub/output/java-google-pubsub-v1 /workspace/java-pubsub/output
+/workspace/java-pubsub/output
+/workspace/java-pubsub/output/java-google-pubsub-v1 /workspace/java-pubsub/output
+/workspace/java-pubsub/output
+/workspace/java-pubsub/output/java-google-pubsub-v1 /workspace/java-pubsub/output
+/workspace/java-pubsub/output
+/tmp/tmp.ef9nHdZPYy /workspace/java-pubsub/output
+Initialized empty Git repository in /tmp/tmp.ef9nHdZPYy/.git/
+[master (root-commit) 26ee76a] empty commit
+/workspace/java-pubsub/output
++++ readlink -f /usr/local/lib/python3.13/site-packages/library_generation/postprocess_library.sh
+++ dirname /usr/local/lib/python3.13/site-packages/library_generation/postprocess_library.sh
++ scripts_root=/usr/local/lib/python3.13/site-packages/library_generation
++ postprocessing_target=/workspace/java-pubsub
++ preprocessed_sources_path=
++ versions_file=/workspace/java-pubsub/versions.txt
++ owlbot_cli_source_folder=/tmp/tmp.ef9nHdZPYy
++ is_monorepo=false
++ libraries_bom_version=26.71.0
++ library_version=1.143.1
++ owlbot_yaml_file_name=.OwlBot-hermetic.yaml
++ source /usr/local/lib/python3.13/site-packages/library_generation/utils/utilities.sh
+++ set -eo pipefail
+++++ realpath /usr/local/lib/python3.13/site-packages/library_generation/utils/utilities.sh
++++ dirname /usr/local/lib/python3.13/site-packages/library_generation/utils/utilities.sh
+++ utilities_script_dir=/usr/local/lib/python3.13/site-packages/library_generation/utils
++ required_inputs=('postprocessing_target' 'versions_file' 'is_monorepo')
++ declare -a required_inputs
++ for required_input in "${required_inputs[@]}"
++ [[ -z /workspace/java-pubsub ]]
++ for required_input in "${required_inputs[@]}"
++ [[ -z /workspace/java-pubsub/versions.txt ]]
++ for required_input in "${required_inputs[@]}"
++ [[ -z false ]]
++ for owlbot_file in ".repo-metadata.json" "owlbot.py" "${owlbot_yaml_file_name}"
+++ find /workspace/java-pubsub -name .repo-metadata.json
+++ wc -l
++ [[ 1 -eq 0 ]]
++ for owlbot_file in ".repo-metadata.json" "owlbot.py" "${owlbot_yaml_file_name}"
+++ find /workspace/java-pubsub -name owlbot.py
+++ wc -l
++ [[ 1 -eq 0 ]]
++ for owlbot_file in ".repo-metadata.json" "owlbot.py" "${owlbot_yaml_file_name}"
+++ find /workspace/java-pubsub -name .OwlBot-hermetic.yaml
+++ wc -l
++ [[ 1 -eq 0 ]]
++ [[ -z /tmp/tmp.ef9nHdZPYy ]]
++ [[ false == \t\r\u\e ]]
++ owlbot_yaml_relative_path=.github/.OwlBot-hermetic.yaml
++ repo_workspace=/workspace
++ preprocessed_libraries_binding=/tmp/tmp.ef9nHdZPYy
++ pushd /workspace/java-pubsub
+/workspace/java-pubsub /workspace/java-pubsub
++ owl-bot copy-code --source-repo-commit-hash=none --source-repo=/tmp/tmp.ef9nHdZPYy --config-file=.github/.OwlBot-hermetic.yaml
+Using local source repo directory /tmp/tmp.ef9nHdZPYy
+git config --global --add safe.directory /tmp/tmp.ef9nHdZPYy
+Excluding /proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/DeletedTopic.java.
+Excluding /proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ProjectSnapshotName.java.
+Excluding /proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ProjectSubscriptionName.java.
+Excluding /proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ProjectTopicName.java.
+Excluding /proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/TopicNames.java.
+Excluding /proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/UntypedTopicName.java.
+Excluding /google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/AckReplyConsumer.java.
+Excluding /google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/AckReplyConsumerImpl.java.
+Excluding /google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/AckReplyConsumerWithResponse.java.
+Excluding /google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/AckReplyConsumerWithResponseImpl.java.
+Excluding /google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/AckRequestData.java.
+Excluding /google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/AckResponse.java.
+Excluding /google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/MessageDispatcher.java.
+Excluding /google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/MessageReceiver.java.
+Excluding /google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/MessageReceiverWithAckResponse.java.
+Excluding /google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/ModackRequestData.java.
+Excluding /google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/OpenCensusUtil.java.
+Excluding /google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/OpenTelemetryPubsubTracer.java.
+Excluding /google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/Publisher.java.
+Excluding /google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/PublisherInterface.java.
+Excluding /google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/PubsubMessageWrapper.java.
+Excluding /google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/SequentialExecutorService.java.
+Excluding /google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/StatusUtil.java.
+Excluding /google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/StreamingSubscriberConnection.java.
+Excluding /google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/Subscriber.java.
+Excluding /google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/SubscriberInterface.java.
+Excluding /google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/SubscriberShutdownSettings.java.
+Excluding /google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/SubscriberStats.java.
+Excluding /google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/Waiter.java.
+Excluding /google-cloud-pubsub/src/test/java/com/google/cloud/pubsub/it/ITPubSubTest.java.
+Excluding /google-cloud-pubsub/src/test/java/com/google/cloud/pubsub/v1/CustomArgumentMatchers.java.
+Excluding /google-cloud-pubsub/src/test/java/com/google/cloud/pubsub/v1/FakeClock.java.
+Excluding /google-cloud-pubsub/src/test/java/com/google/cloud/pubsub/v1/FakePublisherServiceImpl.java.
+Excluding /google-cloud-pubsub/src/test/java/com/google/cloud/pubsub/v1/FakeScheduledExecutorService.java.
+Excluding /google-cloud-pubsub/src/test/java/com/google/cloud/pubsub/v1/FakeSubscriberServiceImpl.java.
+Excluding /google-cloud-pubsub/src/test/java/com/google/cloud/pubsub/v1/MessageDataMatcher.java.
+Excluding /google-cloud-pubsub/src/test/java/com/google/cloud/pubsub/v1/MessageDispatcherTest.java.
+Excluding /google-cloud-pubsub/src/test/java/com/google/cloud/pubsub/v1/OpenCensusUtilTest.java.
+Excluding /google-cloud-pubsub/src/test/java/com/google/cloud/pubsub/v1/OpenTelemetryTest.java.
+Excluding /google-cloud-pubsub/src/test/java/com/google/cloud/pubsub/v1/PublisherImplTest.java.
+Excluding /google-cloud-pubsub/src/test/java/com/google/cloud/pubsub/v1/SequentialExecutorServiceTest.java.
+Excluding /google-cloud-pubsub/src/test/java/com/google/cloud/pubsub/v1/StatusUtilTest.java.
+Excluding /google-cloud-pubsub/src/test/java/com/google/cloud/pubsub/v1/StreamingSubscriberConnectionTest.java.
+Excluding /google-cloud-pubsub/src/test/java/com/google/cloud/pubsub/v1/SubscriberShutdownSettingsTest.java.
+Excluding /google-cloud-pubsub/src/test/java/com/google/cloud/pubsub/v1/SubscriberTest.java.
+Excluding /google-cloud-pubsub/src/test/java/com/google/cloud/pubsub/v1/TopicAdminSmokeTest.java.
+Excluding /google-cloud-pubsub/src/test/java/com/google/cloud/pubsub/v1/WaiterTest.java.
+Excluding /google-cloud-pubsub/src/test/resources/META-INF/native-image/com.google.cloud.
+Excluding /google-cloud-pubsub/src/test/resources/META-INF/native-image/com.google.cloud/google-cloud-pubsub.
+Excluding /google-cloud-pubsub/src/test/resources/META-INF/native-image/com.google.cloud/google-cloud-pubsub/native-image.properties.
+rm  /workspace/java-pubsub/grpc-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/PublisherGrpc.java
+rm  /workspace/java-pubsub/grpc-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/SchemaServiceGrpc.java
+rm  /workspace/java-pubsub/grpc-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/SubscriberGrpc.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/AcknowledgeRequest.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/AcknowledgeRequestOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/BigQueryConfig.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/BigQueryConfigOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/CloudStorageConfig.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/CloudStorageConfigOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/CommitSchemaRequest.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/CommitSchemaRequestOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/CreateSchemaRequest.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/CreateSchemaRequestOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/CreateSnapshotRequest.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/CreateSnapshotRequestOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/CryptoKeyName.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/DeadLetterPolicy.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/DeadLetterPolicyOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/DeleteSchemaRequest.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/DeleteSchemaRequestOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/DeleteSchemaRevisionRequest.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/DeleteSchemaRevisionRequestOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/DeleteSnapshotRequest.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/DeleteSnapshotRequestOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/DeleteSubscriptionRequest.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/DeleteSubscriptionRequestOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/DeleteTopicRequest.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/DeleteTopicRequestOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/DetachSubscriptionRequest.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/DetachSubscriptionRequestOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/DetachSubscriptionResponse.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/DetachSubscriptionResponseOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/Encoding.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ExpirationPolicy.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ExpirationPolicyOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/GetSchemaRequest.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/GetSchemaRequestOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/GetSnapshotRequest.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/GetSnapshotRequestOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/GetSubscriptionRequest.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/GetSubscriptionRequestOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/GetTopicRequest.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/GetTopicRequestOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/IngestionDataSourceSettings.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/IngestionDataSourceSettingsOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/IngestionFailureEvent.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/IngestionFailureEventOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/JavaScriptUDF.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/JavaScriptUDFOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ListSchemaRevisionsRequest.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ListSchemaRevisionsRequestOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ListSchemaRevisionsResponse.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ListSchemaRevisionsResponseOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ListSchemasRequest.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ListSchemasRequestOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ListSchemasResponse.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ListSchemasResponseOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ListSnapshotsRequest.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ListSnapshotsRequestOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ListSnapshotsResponse.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ListSnapshotsResponseOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ListSubscriptionsRequest.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ListSubscriptionsRequestOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ListSubscriptionsResponse.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ListSubscriptionsResponseOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ListTopicSnapshotsRequest.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ListTopicSnapshotsRequestOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ListTopicSnapshotsResponse.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ListTopicSnapshotsResponseOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ListTopicsRequest.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ListTopicsRequestOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ListTopicsResponse.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ListTopicsResponseOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ListTopicSubscriptionsRequest.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ListTopicSubscriptionsRequestOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ListTopicSubscriptionsResponse.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ListTopicSubscriptionsResponseOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/MessageStoragePolicy.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/MessageStoragePolicyOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/MessageTransform.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/MessageTransformOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ModifyAckDeadlineRequest.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ModifyAckDeadlineRequestOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ModifyPushConfigRequest.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ModifyPushConfigRequestOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/PlatformLogsSettings.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/PlatformLogsSettingsOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ProjectName.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/PublishRequest.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/PublishRequestOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/PublishResponse.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/PublishResponseOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/PubsubMessage.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/PubsubMessageOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/PubsubProto.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/PullRequest.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/PullRequestOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/PullResponse.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/PullResponseOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/PushConfig.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/PushConfigOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ReceivedMessage.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ReceivedMessageOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/RetryPolicy.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/RetryPolicyOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/RollbackSchemaRequest.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/RollbackSchemaRequestOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/Schema.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/SchemaName.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/SchemaOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/SchemaProto.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/SchemaSettings.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/SchemaSettingsOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/SchemaView.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/SeekRequest.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/SeekRequestOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/SeekResponse.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/SeekResponseOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/Snapshot.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/SnapshotName.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/SnapshotOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/StreamingPullRequest.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/StreamingPullRequestOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/StreamingPullResponse.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/StreamingPullResponseOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/Subscription.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/SubscriptionName.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/SubscriptionOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/Topic.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/TopicName.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/TopicOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/UpdateSnapshotRequest.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/UpdateSnapshotRequestOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/UpdateSubscriptionRequest.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/UpdateSubscriptionRequestOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/UpdateTopicRequest.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/UpdateTopicRequestOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ValidateMessageRequest.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ValidateMessageRequestOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ValidateMessageResponse.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ValidateMessageResponseOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ValidateSchemaRequest.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ValidateSchemaRequestOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ValidateSchemaResponse.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ValidateSchemaResponseOrBuilder.java
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/proto/google/pubsub/v1/pubsub.proto
+rm  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/proto/google/pubsub/v1/schema.proto
+rm  /workspace/java-pubsub/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/gapic_metadata.json
+rm  /workspace/java-pubsub/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/package-info.java
+rm  /workspace/java-pubsub/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/SchemaServiceClient.java
+rm  /workspace/java-pubsub/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/SchemaServiceSettings.java
+rm  /workspace/java-pubsub/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/stub/GrpcPublisherCallableFactory.java
+rm  /workspace/java-pubsub/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/stub/GrpcPublisherStub.java
+rm  /workspace/java-pubsub/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/stub/GrpcSchemaServiceCallableFactory.java
+rm  /workspace/java-pubsub/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/stub/GrpcSchemaServiceStub.java
+rm  /workspace/java-pubsub/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/stub/GrpcSubscriberCallableFactory.java
+rm  /workspace/java-pubsub/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/stub/GrpcSubscriberStub.java
+rm  /workspace/java-pubsub/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/stub/HttpJsonPublisherCallableFactory.java
+rm  /workspace/java-pubsub/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/stub/HttpJsonPublisherStub.java
+rm  /workspace/java-pubsub/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/stub/HttpJsonSchemaServiceCallableFactory.java
+rm  /workspace/java-pubsub/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/stub/HttpJsonSchemaServiceStub.java
+rm  /workspace/java-pubsub/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/stub/HttpJsonSubscriberCallableFactory.java
+rm  /workspace/java-pubsub/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/stub/HttpJsonSubscriberStub.java
+rm  /workspace/java-pubsub/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/stub/PublisherStub.java
+rm  /workspace/java-pubsub/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/stub/PublisherStubSettings.java
+rm  /workspace/java-pubsub/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/stub/SchemaServiceStub.java
+rm  /workspace/java-pubsub/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/stub/SchemaServiceStubSettings.java
+rm  /workspace/java-pubsub/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/stub/SubscriberStub.java
+rm  /workspace/java-pubsub/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/stub/SubscriberStubSettings.java
+rm  /workspace/java-pubsub/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/SubscriptionAdminClient.java
+rm  /workspace/java-pubsub/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/SubscriptionAdminSettings.java
+rm  /workspace/java-pubsub/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/TopicAdminClient.java
+rm  /workspace/java-pubsub/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/TopicAdminSettings.java
+rm  /workspace/java-pubsub/google-cloud-pubsub/src/main/resources/META-INF/native-image/com.google.cloud.pubsub.v1/reflect-config.json
+rm  /workspace/java-pubsub/google-cloud-pubsub/src/test/java/com/google/cloud/pubsub/v1/MockIAMPolicy.java
+rm  /workspace/java-pubsub/google-cloud-pubsub/src/test/java/com/google/cloud/pubsub/v1/MockIAMPolicyImpl.java
+rm  /workspace/java-pubsub/google-cloud-pubsub/src/test/java/com/google/cloud/pubsub/v1/MockPublisher.java
+rm  /workspace/java-pubsub/google-cloud-pubsub/src/test/java/com/google/cloud/pubsub/v1/MockPublisherImpl.java
+rm  /workspace/java-pubsub/google-cloud-pubsub/src/test/java/com/google/cloud/pubsub/v1/MockSchemaService.java
+rm  /workspace/java-pubsub/google-cloud-pubsub/src/test/java/com/google/cloud/pubsub/v1/MockSchemaServiceImpl.java
+rm  /workspace/java-pubsub/google-cloud-pubsub/src/test/java/com/google/cloud/pubsub/v1/MockSubscriber.java
+rm  /workspace/java-pubsub/google-cloud-pubsub/src/test/java/com/google/cloud/pubsub/v1/MockSubscriberImpl.java
+rm  /workspace/java-pubsub/google-cloud-pubsub/src/test/java/com/google/cloud/pubsub/v1/SchemaServiceClientHttpJsonTest.java
+rm  /workspace/java-pubsub/google-cloud-pubsub/src/test/java/com/google/cloud/pubsub/v1/SchemaServiceClientTest.java
+rm  /workspace/java-pubsub/google-cloud-pubsub/src/test/java/com/google/cloud/pubsub/v1/SubscriptionAdminClientHttpJsonTest.java
+rm  /workspace/java-pubsub/google-cloud-pubsub/src/test/java/com/google/cloud/pubsub/v1/SubscriptionAdminClientTest.java
+rm  /workspace/java-pubsub/google-cloud-pubsub/src/test/java/com/google/cloud/pubsub/v1/TopicAdminClientHttpJsonTest.java
+rm  /workspace/java-pubsub/google-cloud-pubsub/src/test/java/com/google/cloud/pubsub/v1/TopicAdminClientTest.java
+rmdir  /workspace/java-pubsub/google-cloud-pubsub/src/main/resources/META-INF/native-image/com.google.cloud.pubsub.v1
+rmdir  /workspace/java-pubsub/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/stub
+rmdir  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1
+Error: ENOTEMPTY: directory not empty, rmdir '/workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1'
+    at Object.rmdirSync (node:fs:1222:10)
+    at copyFiles (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:825:16)
+    at copyDirs (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:772:12)
+    at copyCode (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:727:9)
+    at Object.handler (/tools/repo-automation-bots/packages/owl-bot/build/src/bin/commands/copy-code.js:59:40) {
+  errno: -39,
+  syscall: 'rmdir',
+  code: 'ENOTEMPTY',
+  path: '/workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1'
+}
+rmdir  /workspace/java-pubsub/grpc-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1
+rmdir  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub
+Error: ENOTEMPTY: directory not empty, rmdir '/workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub'
+    at Object.rmdirSync (node:fs:1222:10)
+    at copyFiles (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:825:16)
+    at copyDirs (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:772:12)
+    at copyCode (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:727:9)
+    at Object.handler (/tools/repo-automation-bots/packages/owl-bot/build/src/bin/commands/copy-code.js:59:40) {
+  errno: -39,
+  syscall: 'rmdir',
+  code: 'ENOTEMPTY',
+  path: '/workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub'
+}
+rmdir  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/proto/google/pubsub/v1
+rmdir  /workspace/java-pubsub/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1
+Error: ENOTEMPTY: directory not empty, rmdir '/workspace/java-pubsub/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1'
+    at Object.rmdirSync (node:fs:1222:10)
+    at copyFiles (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:825:16)
+    at copyDirs (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:772:12)
+    at copyCode (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:727:9)
+    at Object.handler (/tools/repo-automation-bots/packages/owl-bot/build/src/bin/commands/copy-code.js:59:40) {
+  errno: -39,
+  syscall: 'rmdir',
+  code: 'ENOTEMPTY',
+  path: '/workspace/java-pubsub/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1'
+}
+rmdir  /workspace/java-pubsub/google-cloud-pubsub/src/main/resources/META-INF/native-image
+rmdir  /workspace/java-pubsub/google-cloud-pubsub/src/test/java/com/google/cloud/pubsub/it
+Error: ENOTEMPTY: directory not empty, rmdir '/workspace/java-pubsub/google-cloud-pubsub/src/test/java/com/google/cloud/pubsub/it'
+    at Object.rmdirSync (node:fs:1222:10)
+    at copyFiles (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:825:16)
+    at copyDirs (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:772:12)
+    at copyCode (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:727:9)
+    at Object.handler (/tools/repo-automation-bots/packages/owl-bot/build/src/bin/commands/copy-code.js:59:40) {
+  errno: -39,
+  syscall: 'rmdir',
+  code: 'ENOTEMPTY',
+  path: '/workspace/java-pubsub/google-cloud-pubsub/src/test/java/com/google/cloud/pubsub/it'
+}
+rmdir  /workspace/java-pubsub/google-cloud-pubsub/src/test/java/com/google/cloud/pubsub/v1
+Error: ENOTEMPTY: directory not empty, rmdir '/workspace/java-pubsub/google-cloud-pubsub/src/test/java/com/google/cloud/pubsub/v1'
+    at Object.rmdirSync (node:fs:1222:10)
+    at copyFiles (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:825:16)
+    at copyDirs (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:772:12)
+    at copyCode (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:727:9)
+    at Object.handler (/tools/repo-automation-bots/packages/owl-bot/build/src/bin/commands/copy-code.js:59:40) {
+  errno: -39,
+  syscall: 'rmdir',
+  code: 'ENOTEMPTY',
+  path: '/workspace/java-pubsub/google-cloud-pubsub/src/test/java/com/google/cloud/pubsub/v1'
+}
+rmdir  /workspace/java-pubsub/google-cloud-pubsub/src/test/resources/META-INF/native-image
+Error: ENOTEMPTY: directory not empty, rmdir '/workspace/java-pubsub/google-cloud-pubsub/src/test/resources/META-INF/native-image'
+    at Object.rmdirSync (node:fs:1222:10)
+    at copyFiles (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:825:16)
+    at copyDirs (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:772:12)
+    at copyCode (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:727:9)
+    at Object.handler (/tools/repo-automation-bots/packages/owl-bot/build/src/bin/commands/copy-code.js:59:40) {
+  errno: -39,
+  syscall: 'rmdir',
+  code: 'ENOTEMPTY',
+  path: '/workspace/java-pubsub/google-cloud-pubsub/src/test/resources/META-INF/native-image'
+}
+rmdir  /workspace/java-pubsub/grpc-google-cloud-pubsub-v1/src/main/java/com/google/pubsub
+rmdir  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/proto/google/pubsub
+rmdir  /workspace/java-pubsub/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub
+Error: ENOTEMPTY: directory not empty, rmdir '/workspace/java-pubsub/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub'
+    at Object.rmdirSync (node:fs:1222:10)
+    at copyFiles (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:825:16)
+    at copyDirs (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:772:12)
+    at copyCode (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:727:9)
+    at Object.handler (/tools/repo-automation-bots/packages/owl-bot/build/src/bin/commands/copy-code.js:59:40) {
+  errno: -39,
+  syscall: 'rmdir',
+  code: 'ENOTEMPTY',
+  path: '/workspace/java-pubsub/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub'
+}
+rmdir  /workspace/java-pubsub/google-cloud-pubsub/src/test/java/com/google/cloud/pubsub
+Error: ENOTEMPTY: directory not empty, rmdir '/workspace/java-pubsub/google-cloud-pubsub/src/test/java/com/google/cloud/pubsub'
+    at Object.rmdirSync (node:fs:1222:10)
+    at copyFiles (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:825:16)
+    at copyDirs (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:772:12)
+    at copyCode (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:727:9)
+    at Object.handler (/tools/repo-automation-bots/packages/owl-bot/build/src/bin/commands/copy-code.js:59:40) {
+  errno: -39,
+  syscall: 'rmdir',
+  code: 'ENOTEMPTY',
+  path: '/workspace/java-pubsub/google-cloud-pubsub/src/test/java/com/google/cloud/pubsub'
+}
+rmdir  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google
+Error: ENOTEMPTY: directory not empty, rmdir '/workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google'
+    at Object.rmdirSync (node:fs:1222:10)
+    at copyFiles (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:825:16)
+    at copyDirs (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:772:12)
+    at copyCode (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:727:9)
+    at Object.handler (/tools/repo-automation-bots/packages/owl-bot/build/src/bin/commands/copy-code.js:59:40) {
+  errno: -39,
+  syscall: 'rmdir',
+  code: 'ENOTEMPTY',
+  path: '/workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com/google'
+}
+rmdir  /workspace/java-pubsub/grpc-google-cloud-pubsub-v1/src/main/java/com/google
+rmdir  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/proto/google
+rmdir  /workspace/java-pubsub/google-cloud-pubsub/src/main/java/com/google/cloud
+Error: ENOTEMPTY: directory not empty, rmdir '/workspace/java-pubsub/google-cloud-pubsub/src/main/java/com/google/cloud'
+    at Object.rmdirSync (node:fs:1222:10)
+    at copyFiles (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:825:16)
+    at copyDirs (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:772:12)
+    at copyCode (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:727:9)
+    at Object.handler (/tools/repo-automation-bots/packages/owl-bot/build/src/bin/commands/copy-code.js:59:40) {
+  errno: -39,
+  syscall: 'rmdir',
+  code: 'ENOTEMPTY',
+  path: '/workspace/java-pubsub/google-cloud-pubsub/src/main/java/com/google/cloud'
+}
+rmdir  /workspace/java-pubsub/google-cloud-pubsub/src/test/java/com/google/cloud
+Error: ENOTEMPTY: directory not empty, rmdir '/workspace/java-pubsub/google-cloud-pubsub/src/test/java/com/google/cloud'
+    at Object.rmdirSync (node:fs:1222:10)
+    at copyFiles (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:825:16)
+    at copyDirs (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:772:12)
+    at copyCode (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:727:9)
+    at Object.handler (/tools/repo-automation-bots/packages/owl-bot/build/src/bin/commands/copy-code.js:59:40) {
+  errno: -39,
+  syscall: 'rmdir',
+  code: 'ENOTEMPTY',
+  path: '/workspace/java-pubsub/google-cloud-pubsub/src/test/java/com/google/cloud'
+}
+rmdir  /workspace/java-pubsub/google-cloud-pubsub/src/main/resources/META-INF
+rmdir  /workspace/java-pubsub/google-cloud-pubsub/src/test/resources/META-INF
+Error: ENOTEMPTY: directory not empty, rmdir '/workspace/java-pubsub/google-cloud-pubsub/src/test/resources/META-INF'
+    at Object.rmdirSync (node:fs:1222:10)
+    at copyFiles (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:825:16)
+    at copyDirs (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:772:12)
+    at copyCode (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:727:9)
+    at Object.handler (/tools/repo-automation-bots/packages/owl-bot/build/src/bin/commands/copy-code.js:59:40) {
+  errno: -39,
+  syscall: 'rmdir',
+  code: 'ENOTEMPTY',
+  path: '/workspace/java-pubsub/google-cloud-pubsub/src/test/resources/META-INF'
+}
+rmdir  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com
+Error: ENOTEMPTY: directory not empty, rmdir '/workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com'
+    at Object.rmdirSync (node:fs:1222:10)
+    at copyFiles (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:825:16)
+    at copyDirs (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:772:12)
+    at copyCode (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:727:9)
+    at Object.handler (/tools/repo-automation-bots/packages/owl-bot/build/src/bin/commands/copy-code.js:59:40) {
+  errno: -39,
+  syscall: 'rmdir',
+  code: 'ENOTEMPTY',
+  path: '/workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java/com'
+}
+rmdir  /workspace/java-pubsub/grpc-google-cloud-pubsub-v1/src/main/java/com
+rmdir  /workspace/java-pubsub/google-cloud-pubsub/src/main/java/com/google
+Error: ENOTEMPTY: directory not empty, rmdir '/workspace/java-pubsub/google-cloud-pubsub/src/main/java/com/google'
+    at Object.rmdirSync (node:fs:1222:10)
+    at copyFiles (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:825:16)
+    at copyDirs (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:772:12)
+    at copyCode (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:727:9)
+    at Object.handler (/tools/repo-automation-bots/packages/owl-bot/build/src/bin/commands/copy-code.js:59:40) {
+  errno: -39,
+  syscall: 'rmdir',
+  code: 'ENOTEMPTY',
+  path: '/workspace/java-pubsub/google-cloud-pubsub/src/main/java/com/google'
+}
+rmdir  /workspace/java-pubsub/google-cloud-pubsub/src/test/java/com/google
+Error: ENOTEMPTY: directory not empty, rmdir '/workspace/java-pubsub/google-cloud-pubsub/src/test/java/com/google'
+    at Object.rmdirSync (node:fs:1222:10)
+    at copyFiles (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:825:16)
+    at copyDirs (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:772:12)
+    at copyCode (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:727:9)
+    at Object.handler (/tools/repo-automation-bots/packages/owl-bot/build/src/bin/commands/copy-code.js:59:40) {
+  errno: -39,
+  syscall: 'rmdir',
+  code: 'ENOTEMPTY',
+  path: '/workspace/java-pubsub/google-cloud-pubsub/src/test/java/com/google'
+}
+rmdir  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/proto
+rmdir  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java
+Error: ENOTEMPTY: directory not empty, rmdir '/workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java'
+    at Object.rmdirSync (node:fs:1222:10)
+    at copyFiles (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:825:16)
+    at copyDirs (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:772:12)
+    at copyCode (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:727:9)
+    at Object.handler (/tools/repo-automation-bots/packages/owl-bot/build/src/bin/commands/copy-code.js:59:40) {
+  errno: -39,
+  syscall: 'rmdir',
+  code: 'ENOTEMPTY',
+  path: '/workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main/java'
+}
+rmdir  /workspace/java-pubsub/grpc-google-cloud-pubsub-v1/src/main/java
+rmdir  /workspace/java-pubsub/google-cloud-pubsub/src/main/resources
+rmdir  /workspace/java-pubsub/google-cloud-pubsub/src/test/resources
+Error: ENOTEMPTY: directory not empty, rmdir '/workspace/java-pubsub/google-cloud-pubsub/src/test/resources'
+    at Object.rmdirSync (node:fs:1222:10)
+    at copyFiles (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:825:16)
+    at copyDirs (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:772:12)
+    at copyCode (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:727:9)
+    at Object.handler (/tools/repo-automation-bots/packages/owl-bot/build/src/bin/commands/copy-code.js:59:40) {
+  errno: -39,
+  syscall: 'rmdir',
+  code: 'ENOTEMPTY',
+  path: '/workspace/java-pubsub/google-cloud-pubsub/src/test/resources'
+}
+rmdir  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main
+Error: ENOTEMPTY: directory not empty, rmdir '/workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main'
+    at Object.rmdirSync (node:fs:1222:10)
+    at copyFiles (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:825:16)
+    at copyDirs (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:772:12)
+    at copyCode (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:727:9)
+    at Object.handler (/tools/repo-automation-bots/packages/owl-bot/build/src/bin/commands/copy-code.js:59:40) {
+  errno: -39,
+  syscall: 'rmdir',
+  code: 'ENOTEMPTY',
+  path: '/workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/main'
+}
+rmdir  /workspace/java-pubsub/google-cloud-pubsub/src/main/java/com
+Error: ENOTEMPTY: directory not empty, rmdir '/workspace/java-pubsub/google-cloud-pubsub/src/main/java/com'
+    at Object.rmdirSync (node:fs:1222:10)
+    at copyFiles (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:825:16)
+    at copyDirs (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:772:12)
+    at copyCode (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:727:9)
+    at Object.handler (/tools/repo-automation-bots/packages/owl-bot/build/src/bin/commands/copy-code.js:59:40) {
+  errno: -39,
+  syscall: 'rmdir',
+  code: 'ENOTEMPTY',
+  path: '/workspace/java-pubsub/google-cloud-pubsub/src/main/java/com'
+}
+rmdir  /workspace/java-pubsub/google-cloud-pubsub/src/test/java/com
+Error: ENOTEMPTY: directory not empty, rmdir '/workspace/java-pubsub/google-cloud-pubsub/src/test/java/com'
+    at Object.rmdirSync (node:fs:1222:10)
+    at copyFiles (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:825:16)
+    at copyDirs (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:772:12)
+    at copyCode (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:727:9)
+    at Object.handler (/tools/repo-automation-bots/packages/owl-bot/build/src/bin/commands/copy-code.js:59:40) {
+  errno: -39,
+  syscall: 'rmdir',
+  code: 'ENOTEMPTY',
+  path: '/workspace/java-pubsub/google-cloud-pubsub/src/test/java/com'
+}
+rmdir  /workspace/java-pubsub/grpc-google-cloud-pubsub-v1/src/main
+rmdir  /workspace/java-pubsub/google-cloud-pubsub/src/main/java
+Error: ENOTEMPTY: directory not empty, rmdir '/workspace/java-pubsub/google-cloud-pubsub/src/main/java'
+    at Object.rmdirSync (node:fs:1222:10)
+    at copyFiles (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:825:16)
+    at copyDirs (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:772:12)
+    at copyCode (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:727:9)
+    at Object.handler (/tools/repo-automation-bots/packages/owl-bot/build/src/bin/commands/copy-code.js:59:40) {
+  errno: -39,
+  syscall: 'rmdir',
+  code: 'ENOTEMPTY',
+  path: '/workspace/java-pubsub/google-cloud-pubsub/src/main/java'
+}
+rmdir  /workspace/java-pubsub/google-cloud-pubsub/src/test/java
+Error: ENOTEMPTY: directory not empty, rmdir '/workspace/java-pubsub/google-cloud-pubsub/src/test/java'
+    at Object.rmdirSync (node:fs:1222:10)
+    at copyFiles (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:825:16)
+    at copyDirs (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:772:12)
+    at copyCode (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:727:9)
+    at Object.handler (/tools/repo-automation-bots/packages/owl-bot/build/src/bin/commands/copy-code.js:59:40) {
+  errno: -39,
+  syscall: 'rmdir',
+  code: 'ENOTEMPTY',
+  path: '/workspace/java-pubsub/google-cloud-pubsub/src/test/java'
+}
+rmdir  /workspace/java-pubsub/proto-google-cloud-pubsub-v1/src
+Error: ENOTEMPTY: directory not empty, rmdir '/workspace/java-pubsub/proto-google-cloud-pubsub-v1/src'
+    at Object.rmdirSync (node:fs:1222:10)
+    at copyFiles (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:825:16)
+    at copyDirs (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:772:12)
+    at copyCode (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:727:9)
+    at Object.handler (/tools/repo-automation-bots/packages/owl-bot/build/src/bin/commands/copy-code.js:59:40) {
+  errno: -39,
+  syscall: 'rmdir',
+  code: 'ENOTEMPTY',
+  path: '/workspace/java-pubsub/proto-google-cloud-pubsub-v1/src'
+}
+rmdir  /workspace/java-pubsub/grpc-google-cloud-pubsub-v1/src
+rmdir  /workspace/java-pubsub/google-cloud-pubsub/src/main
+Error: ENOTEMPTY: directory not empty, rmdir '/workspace/java-pubsub/google-cloud-pubsub/src/main'
+    at Object.rmdirSync (node:fs:1222:10)
+    at copyFiles (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:825:16)
+    at copyDirs (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:772:12)
+    at copyCode (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:727:9)
+    at Object.handler (/tools/repo-automation-bots/packages/owl-bot/build/src/bin/commands/copy-code.js:59:40) {
+  errno: -39,
+  syscall: 'rmdir',
+  code: 'ENOTEMPTY',
+  path: '/workspace/java-pubsub/google-cloud-pubsub/src/main'
+}
+rmdir  /workspace/java-pubsub/google-cloud-pubsub/src/test
+Error: ENOTEMPTY: directory not empty, rmdir '/workspace/java-pubsub/google-cloud-pubsub/src/test'
+    at Object.rmdirSync (node:fs:1222:10)
+    at copyFiles (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:825:16)
+    at copyDirs (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:772:12)
+    at copyCode (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:727:9)
+    at Object.handler (/tools/repo-automation-bots/packages/owl-bot/build/src/bin/commands/copy-code.js:59:40) {
+  errno: -39,
+  syscall: 'rmdir',
+  code: 'ENOTEMPTY',
+  path: '/workspace/java-pubsub/google-cloud-pubsub/src/test'
+}
+rmdir  /workspace/java-pubsub/google-cloud-pubsub/src
+Error: ENOTEMPTY: directory not empty, rmdir '/workspace/java-pubsub/google-cloud-pubsub/src'
+    at Object.rmdirSync (node:fs:1222:10)
+    at copyFiles (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:825:16)
+    at copyDirs (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:772:12)
+    at copyCode (/tools/repo-automation-bots/packages/owl-bot/build/src/copy-code.js:727:9)
+    at Object.handler (/tools/repo-automation-bots/packages/owl-bot/build/src/bin/commands/copy-code.js:59:40) {
+  errno: -39,
+  syscall: 'rmdir',
+  code: 'ENOTEMPTY',
+  path: '/workspace/java-pubsub/google-cloud-pubsub/src'
+}
+mkdir /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src
+mkdir /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main
+mkdir /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java
+mkdir /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com
+mkdir /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google
+mkdir /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub
+mkdir /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/AcknowledgeRequest.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/AcknowledgeRequest.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/AcknowledgeRequestOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/AcknowledgeRequestOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/BigQueryConfig.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/BigQueryConfig.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/BigQueryConfigOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/BigQueryConfigOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/CloudStorageConfig.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/CloudStorageConfig.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/CloudStorageConfigOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/CloudStorageConfigOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/CommitSchemaRequest.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/CommitSchemaRequest.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/CommitSchemaRequestOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/CommitSchemaRequestOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/CreateSchemaRequest.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/CreateSchemaRequest.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/CreateSchemaRequestOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/CreateSchemaRequestOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/CreateSnapshotRequest.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/CreateSnapshotRequest.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/CreateSnapshotRequestOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/CreateSnapshotRequestOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/CryptoKeyName.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/CryptoKeyName.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/DeadLetterPolicy.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/DeadLetterPolicy.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/DeadLetterPolicyOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/DeadLetterPolicyOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/DeleteSchemaRequest.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/DeleteSchemaRequest.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/DeleteSchemaRequestOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/DeleteSchemaRequestOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/DeleteSchemaRevisionRequest.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/DeleteSchemaRevisionRequest.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/DeleteSchemaRevisionRequestOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/DeleteSchemaRevisionRequestOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/DeleteSnapshotRequest.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/DeleteSnapshotRequest.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/DeleteSnapshotRequestOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/DeleteSnapshotRequestOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/DeleteSubscriptionRequest.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/DeleteSubscriptionRequest.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/DeleteSubscriptionRequestOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/DeleteSubscriptionRequestOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/DeleteTopicRequest.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/DeleteTopicRequest.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/DeleteTopicRequestOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/DeleteTopicRequestOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/DetachSubscriptionRequest.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/DetachSubscriptionRequest.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/DetachSubscriptionRequestOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/DetachSubscriptionRequestOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/DetachSubscriptionResponse.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/DetachSubscriptionResponse.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/DetachSubscriptionResponseOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/DetachSubscriptionResponseOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/Encoding.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/Encoding.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/ExpirationPolicy.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ExpirationPolicy.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/ExpirationPolicyOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ExpirationPolicyOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/GetSchemaRequest.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/GetSchemaRequest.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/GetSchemaRequestOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/GetSchemaRequestOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/GetSnapshotRequest.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/GetSnapshotRequest.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/GetSnapshotRequestOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/GetSnapshotRequestOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/GetSubscriptionRequest.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/GetSubscriptionRequest.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/GetSubscriptionRequestOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/GetSubscriptionRequestOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/GetTopicRequest.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/GetTopicRequest.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/GetTopicRequestOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/GetTopicRequestOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/IngestionDataSourceSettings.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/IngestionDataSourceSettings.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/IngestionDataSourceSettingsOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/IngestionDataSourceSettingsOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/IngestionFailureEvent.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/IngestionFailureEvent.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/IngestionFailureEventOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/IngestionFailureEventOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/JavaScriptUDF.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/JavaScriptUDF.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/JavaScriptUDFOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/JavaScriptUDFOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/ListSchemaRevisionsRequest.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ListSchemaRevisionsRequest.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/ListSchemaRevisionsRequestOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ListSchemaRevisionsRequestOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/ListSchemaRevisionsResponse.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ListSchemaRevisionsResponse.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/ListSchemaRevisionsResponseOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ListSchemaRevisionsResponseOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/ListSchemasRequest.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ListSchemasRequest.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/ListSchemasRequestOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ListSchemasRequestOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/ListSchemasResponse.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ListSchemasResponse.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/ListSchemasResponseOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ListSchemasResponseOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/ListSnapshotsRequest.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ListSnapshotsRequest.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/ListSnapshotsRequestOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ListSnapshotsRequestOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/ListSnapshotsResponse.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ListSnapshotsResponse.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/ListSnapshotsResponseOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ListSnapshotsResponseOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/ListSubscriptionsRequest.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ListSubscriptionsRequest.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/ListSubscriptionsRequestOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ListSubscriptionsRequestOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/ListSubscriptionsResponse.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ListSubscriptionsResponse.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/ListSubscriptionsResponseOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ListSubscriptionsResponseOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/ListTopicSnapshotsRequest.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ListTopicSnapshotsRequest.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/ListTopicSnapshotsRequestOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ListTopicSnapshotsRequestOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/ListTopicSnapshotsResponse.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ListTopicSnapshotsResponse.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/ListTopicSnapshotsResponseOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ListTopicSnapshotsResponseOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/ListTopicsRequest.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ListTopicsRequest.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/ListTopicsRequestOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ListTopicsRequestOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/ListTopicsResponse.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ListTopicsResponse.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/ListTopicsResponseOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ListTopicsResponseOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/ListTopicSubscriptionsRequest.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ListTopicSubscriptionsRequest.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/ListTopicSubscriptionsRequestOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ListTopicSubscriptionsRequestOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/ListTopicSubscriptionsResponse.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ListTopicSubscriptionsResponse.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/ListTopicSubscriptionsResponseOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ListTopicSubscriptionsResponseOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/MessageStoragePolicy.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/MessageStoragePolicy.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/MessageStoragePolicyOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/MessageStoragePolicyOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/MessageTransform.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/MessageTransform.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/MessageTransformOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/MessageTransformOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/ModifyAckDeadlineRequest.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ModifyAckDeadlineRequest.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/ModifyAckDeadlineRequestOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ModifyAckDeadlineRequestOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/ModifyPushConfigRequest.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ModifyPushConfigRequest.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/ModifyPushConfigRequestOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ModifyPushConfigRequestOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/PlatformLogsSettings.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/PlatformLogsSettings.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/PlatformLogsSettingsOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/PlatformLogsSettingsOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/ProjectName.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ProjectName.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/PublishRequest.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/PublishRequest.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/PublishRequestOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/PublishRequestOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/PublishResponse.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/PublishResponse.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/PublishResponseOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/PublishResponseOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/PubsubMessage.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/PubsubMessage.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/PubsubMessageOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/PubsubMessageOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/PubsubProto.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/PubsubProto.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/PullRequest.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/PullRequest.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/PullRequestOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/PullRequestOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/PullResponse.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/PullResponse.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/PullResponseOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/PullResponseOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/PushConfig.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/PushConfig.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/PushConfigOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/PushConfigOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/ReceivedMessage.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ReceivedMessage.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/ReceivedMessageOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ReceivedMessageOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/RetryPolicy.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/RetryPolicy.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/RetryPolicyOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/RetryPolicyOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/RollbackSchemaRequest.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/RollbackSchemaRequest.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/RollbackSchemaRequestOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/RollbackSchemaRequestOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/Schema.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/Schema.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/SchemaName.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/SchemaName.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/SchemaOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/SchemaOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/SchemaProto.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/SchemaProto.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/SchemaSettings.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/SchemaSettings.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/SchemaSettingsOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/SchemaSettingsOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/SchemaView.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/SchemaView.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/SeekRequest.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/SeekRequest.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/SeekRequestOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/SeekRequestOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/SeekResponse.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/SeekResponse.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/SeekResponseOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/SeekResponseOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/Snapshot.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/Snapshot.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/SnapshotName.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/SnapshotName.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/SnapshotOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/SnapshotOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/StreamingPullRequest.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/StreamingPullRequest.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/StreamingPullRequestOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/StreamingPullRequestOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/StreamingPullResponse.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/StreamingPullResponse.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/StreamingPullResponseOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/StreamingPullResponseOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/Subscription.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/Subscription.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/SubscriptionName.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/SubscriptionName.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/SubscriptionOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/SubscriptionOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/Topic.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/Topic.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/TopicName.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/TopicName.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/TopicOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/TopicOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/UpdateSnapshotRequest.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/UpdateSnapshotRequest.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/UpdateSnapshotRequestOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/UpdateSnapshotRequestOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/UpdateSubscriptionRequest.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/UpdateSubscriptionRequest.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/UpdateSubscriptionRequestOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/UpdateSubscriptionRequestOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/UpdateTopicRequest.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/UpdateTopicRequest.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/UpdateTopicRequestOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/UpdateTopicRequestOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/ValidateMessageRequest.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ValidateMessageRequest.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/ValidateMessageRequestOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ValidateMessageRequestOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/ValidateMessageResponse.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ValidateMessageResponse.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/ValidateMessageResponseOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ValidateMessageResponseOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/ValidateSchemaRequest.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ValidateSchemaRequest.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/ValidateSchemaRequestOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ValidateSchemaRequestOrBuilder.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/ValidateSchemaResponse.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ValidateSchemaResponse.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/java/com/google/pubsub/v1/ValidateSchemaResponseOrBuilder.java /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/ValidateSchemaResponseOrBuilder.java
+mkdir /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/proto
+mkdir /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/proto/google
+mkdir /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/proto/google/pubsub
+mkdir /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/proto/google/pubsub/v1
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/proto/google/pubsub/v1/pubsub.proto /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/proto/google/pubsub/v1/pubsub.proto
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/proto-google-cloud-library/src/main/proto/google/pubsub/v1/schema.proto /workspace/java-pubsub/owl-bot-staging/v1/proto-google-cloud-pubsub-v1/src/main/proto/google/pubsub/v1/schema.proto
+mkdir /workspace/java-pubsub/owl-bot-staging/v1/grpc-google-cloud-pubsub-v1/src
+mkdir /workspace/java-pubsub/owl-bot-staging/v1/grpc-google-cloud-pubsub-v1/src/main
+mkdir /workspace/java-pubsub/owl-bot-staging/v1/grpc-google-cloud-pubsub-v1/src/main/java
+mkdir /workspace/java-pubsub/owl-bot-staging/v1/grpc-google-cloud-pubsub-v1/src/main/java/com
+mkdir /workspace/java-pubsub/owl-bot-staging/v1/grpc-google-cloud-pubsub-v1/src/main/java/com/google
+mkdir /workspace/java-pubsub/owl-bot-staging/v1/grpc-google-cloud-pubsub-v1/src/main/java/com/google/pubsub
+mkdir /workspace/java-pubsub/owl-bot-staging/v1/grpc-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/grpc-google-cloud-library/src/main/java/com/google/pubsub/v1/PublisherGrpc.java /workspace/java-pubsub/owl-bot-staging/v1/grpc-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/PublisherGrpc.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/grpc-google-cloud-library/src/main/java/com/google/pubsub/v1/SchemaServiceGrpc.java /workspace/java-pubsub/owl-bot-staging/v1/grpc-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/SchemaServiceGrpc.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/grpc-google-cloud-library/src/main/java/com/google/pubsub/v1/SubscriberGrpc.java /workspace/java-pubsub/owl-bot-staging/v1/grpc-google-cloud-pubsub-v1/src/main/java/com/google/pubsub/v1/SubscriberGrpc.java
+mkdir /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src
+mkdir /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src/main
+mkdir /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src/main/java
+mkdir /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src/main/java/com
+mkdir /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src/main/java/com/google
+mkdir /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src/main/java/com/google/cloud
+mkdir /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub
+mkdir /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/gapic-google-cloud-library/src/main/java/com/google/cloud/pubsub/v1/gapic_metadata.json /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/gapic_metadata.json
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/gapic-google-cloud-library/src/main/java/com/google/cloud/pubsub/v1/package-info.java /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/package-info.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/gapic-google-cloud-library/src/main/java/com/google/cloud/pubsub/v1/SchemaServiceClient.java /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/SchemaServiceClient.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/gapic-google-cloud-library/src/main/java/com/google/cloud/pubsub/v1/SchemaServiceSettings.java /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/SchemaServiceSettings.java
+mkdir /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/stub
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/gapic-google-cloud-library/src/main/java/com/google/cloud/pubsub/v1/stub/GrpcPublisherCallableFactory.java /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/stub/GrpcPublisherCallableFactory.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/gapic-google-cloud-library/src/main/java/com/google/cloud/pubsub/v1/stub/GrpcPublisherStub.java /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/stub/GrpcPublisherStub.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/gapic-google-cloud-library/src/main/java/com/google/cloud/pubsub/v1/stub/GrpcSchemaServiceCallableFactory.java /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/stub/GrpcSchemaServiceCallableFactory.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/gapic-google-cloud-library/src/main/java/com/google/cloud/pubsub/v1/stub/GrpcSchemaServiceStub.java /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/stub/GrpcSchemaServiceStub.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/gapic-google-cloud-library/src/main/java/com/google/cloud/pubsub/v1/stub/GrpcSubscriberCallableFactory.java /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/stub/GrpcSubscriberCallableFactory.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/gapic-google-cloud-library/src/main/java/com/google/cloud/pubsub/v1/stub/GrpcSubscriberStub.java /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/stub/GrpcSubscriberStub.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/gapic-google-cloud-library/src/main/java/com/google/cloud/pubsub/v1/stub/HttpJsonPublisherCallableFactory.java /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/stub/HttpJsonPublisherCallableFactory.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/gapic-google-cloud-library/src/main/java/com/google/cloud/pubsub/v1/stub/HttpJsonPublisherStub.java /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/stub/HttpJsonPublisherStub.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/gapic-google-cloud-library/src/main/java/com/google/cloud/pubsub/v1/stub/HttpJsonSchemaServiceCallableFactory.java /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/stub/HttpJsonSchemaServiceCallableFactory.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/gapic-google-cloud-library/src/main/java/com/google/cloud/pubsub/v1/stub/HttpJsonSchemaServiceStub.java /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/stub/HttpJsonSchemaServiceStub.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/gapic-google-cloud-library/src/main/java/com/google/cloud/pubsub/v1/stub/HttpJsonSubscriberCallableFactory.java /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/stub/HttpJsonSubscriberCallableFactory.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/gapic-google-cloud-library/src/main/java/com/google/cloud/pubsub/v1/stub/HttpJsonSubscriberStub.java /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/stub/HttpJsonSubscriberStub.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/gapic-google-cloud-library/src/main/java/com/google/cloud/pubsub/v1/stub/PublisherStub.java /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/stub/PublisherStub.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/gapic-google-cloud-library/src/main/java/com/google/cloud/pubsub/v1/stub/PublisherStubSettings.java /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/stub/PublisherStubSettings.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/gapic-google-cloud-library/src/main/java/com/google/cloud/pubsub/v1/stub/SchemaServiceStub.java /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/stub/SchemaServiceStub.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/gapic-google-cloud-library/src/main/java/com/google/cloud/pubsub/v1/stub/SchemaServiceStubSettings.java /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/stub/SchemaServiceStubSettings.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/gapic-google-cloud-library/src/main/java/com/google/cloud/pubsub/v1/stub/SubscriberStub.java /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/stub/SubscriberStub.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/gapic-google-cloud-library/src/main/java/com/google/cloud/pubsub/v1/stub/SubscriberStubSettings.java /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/stub/SubscriberStubSettings.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/gapic-google-cloud-library/src/main/java/com/google/cloud/pubsub/v1/SubscriptionAdminClient.java /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/SubscriptionAdminClient.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/gapic-google-cloud-library/src/main/java/com/google/cloud/pubsub/v1/SubscriptionAdminSettings.java /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/SubscriptionAdminSettings.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/gapic-google-cloud-library/src/main/java/com/google/cloud/pubsub/v1/TopicAdminClient.java /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/TopicAdminClient.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/gapic-google-cloud-library/src/main/java/com/google/cloud/pubsub/v1/TopicAdminSettings.java /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/TopicAdminSettings.java
+mkdir /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src/main/resources
+mkdir /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src/main/resources/META-INF
+mkdir /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src/main/resources/META-INF/native-image
+mkdir /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src/main/resources/META-INF/native-image/com.google.cloud.pubsub.v1
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/gapic-google-cloud-library/src/main/resources/META-INF/native-image/com.google.cloud.pubsub.v1/reflect-config.json /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src/main/resources/META-INF/native-image/com.google.cloud.pubsub.v1/reflect-config.json
+mkdir /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src/test
+mkdir /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src/test/java
+mkdir /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src/test/java/com
+mkdir /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src/test/java/com/google
+mkdir /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src/test/java/com/google/cloud
+mkdir /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src/test/java/com/google/cloud/pubsub
+mkdir /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src/test/java/com/google/cloud/pubsub/v1
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/gapic-google-cloud-library/src/test/java/com/google/cloud/pubsub/v1/MockIAMPolicy.java /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src/test/java/com/google/cloud/pubsub/v1/MockIAMPolicy.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/gapic-google-cloud-library/src/test/java/com/google/cloud/pubsub/v1/MockIAMPolicyImpl.java /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src/test/java/com/google/cloud/pubsub/v1/MockIAMPolicyImpl.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/gapic-google-cloud-library/src/test/java/com/google/cloud/pubsub/v1/MockPublisher.java /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src/test/java/com/google/cloud/pubsub/v1/MockPublisher.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/gapic-google-cloud-library/src/test/java/com/google/cloud/pubsub/v1/MockPublisherImpl.java /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src/test/java/com/google/cloud/pubsub/v1/MockPublisherImpl.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/gapic-google-cloud-library/src/test/java/com/google/cloud/pubsub/v1/MockSchemaService.java /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src/test/java/com/google/cloud/pubsub/v1/MockSchemaService.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/gapic-google-cloud-library/src/test/java/com/google/cloud/pubsub/v1/MockSchemaServiceImpl.java /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src/test/java/com/google/cloud/pubsub/v1/MockSchemaServiceImpl.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/gapic-google-cloud-library/src/test/java/com/google/cloud/pubsub/v1/MockSubscriber.java /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src/test/java/com/google/cloud/pubsub/v1/MockSubscriber.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/gapic-google-cloud-library/src/test/java/com/google/cloud/pubsub/v1/MockSubscriberImpl.java /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src/test/java/com/google/cloud/pubsub/v1/MockSubscriberImpl.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/gapic-google-cloud-library/src/test/java/com/google/cloud/pubsub/v1/SchemaServiceClientHttpJsonTest.java /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src/test/java/com/google/cloud/pubsub/v1/SchemaServiceClientHttpJsonTest.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/gapic-google-cloud-library/src/test/java/com/google/cloud/pubsub/v1/SchemaServiceClientTest.java /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src/test/java/com/google/cloud/pubsub/v1/SchemaServiceClientTest.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/gapic-google-cloud-library/src/test/java/com/google/cloud/pubsub/v1/SubscriptionAdminClientHttpJsonTest.java /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src/test/java/com/google/cloud/pubsub/v1/SubscriptionAdminClientHttpJsonTest.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/gapic-google-cloud-library/src/test/java/com/google/cloud/pubsub/v1/SubscriptionAdminClientTest.java /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src/test/java/com/google/cloud/pubsub/v1/SubscriptionAdminClientTest.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/gapic-google-cloud-library/src/test/java/com/google/cloud/pubsub/v1/TopicAdminClientHttpJsonTest.java /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src/test/java/com/google/cloud/pubsub/v1/TopicAdminClientHttpJsonTest.java
+cp /tmp/tmp.ef9nHdZPYy/google/pubsub/v1/generated-java/gapic-google-cloud-library/src/test/java/com/google/cloud/pubsub/v1/TopicAdminClientTest.java /workspace/java-pubsub/owl-bot-staging/v1/google-cloud-pubsub/src/test/java/com/google/cloud/pubsub/v1/TopicAdminClientTest.java
+git log -1 --format=%B
+Wrote commit message to /tmp/tmp-192-L5xsSPHe1Y0r/commit-msg--192-1mOFWTjBpM2W-.txt
++ [[ false == \t\r\u\e ]]
++ echo 'running owl-bot post-processor'
+running owl-bot post-processor
++ pushd /workspace/java-pubsub
+/workspace/java-pubsub /workspace/java-pubsub /workspace/java-pubsub
++ bash /usr/local/lib/python3.13/site-packages/library_generation/owlbot/bin/entrypoint.sh /usr/local/lib/python3.13/site-packages/library_generation /workspace/java-pubsub/versions.txt false 26.71.0 1.143.1
++ scripts_root=/usr/local/lib/python3.13/site-packages/library_generation
++ versions_file=/workspace/java-pubsub/versions.txt
++ is_monorepo=false
++ libraries_bom_version=26.71.0
++ library_version=1.143.1
++ [[ false == \t\r\u\e ]]
++ echo 'Retrieving files from owl-bot-staging directory...'
+Retrieving files from owl-bot-staging directory...
++ '[' -f owlbot.py ']'
++ export SYNTHTOOL_TEMPLATES=/usr/local/lib/python3.13/site-packages/library_generation/owlbot/templates
++ SYNTHTOOL_TEMPLATES=/usr/local/lib/python3.13/site-packages/library_generation/owlbot/templates
++ export SYNTHTOOL_LIBRARIES_BOM_VERSION=26.71.0
++ SYNTHTOOL_LIBRARIES_BOM_VERSION=26.71.0
++ export SYNTHTOOL_LIBRARY_VERSION=1.143.1
++ SYNTHTOOL_LIBRARY_VERSION=1.143.1
++ python3 owlbot.py
+/workspace/java-pubsub/owlbot.py:1081: SyntaxWarning: invalid escape sequence '\g'
+  "\g<1>\n\n" + GET_IAM_POLICY_TOPIC
+/workspace/java-pubsub/owlbot.py:1087: SyntaxWarning: invalid escape sequence '\g'
+  "\g<1>\n\n" + SET_IAM_POLICY_TOPIC
+/workspace/java-pubsub/owlbot.py:1093: SyntaxWarning: invalid escape sequence '\g'
+  "\g<1>\n\n" + TEST_IAM_PERMISSIONS_TOPIC
+/workspace/java-pubsub/owlbot.py:1099: SyntaxWarning: invalid escape sequence '\g'
+  "\g<1>\n\n" + GET_IAM_POLICY_SUBSCRIPTION
+/workspace/java-pubsub/owlbot.py:1105: SyntaxWarning: invalid escape sequence '\g'
+  "\g<1>\n\n" + SET_IAM_POLICY_SUBSCRIPTION
+/workspace/java-pubsub/owlbot.py:1111: SyntaxWarning: invalid escape sequence '\g'
+  "\g<1>\n\n" + TEST_IAM_PERMISSIONS_SUBSCRIPTION
+/workspace/java-pubsub/owlbot.py:1117: SyntaxWarning: invalid escape sequence '\g'
+  "\g<1>\n\n" + CREATE_TOPIC
+/workspace/java-pubsub/owlbot.py:1123: SyntaxWarning: invalid escape sequence '\g'
+  "\g<1>\n\n" + DELETE_TOPIC
+/workspace/java-pubsub/owlbot.py:1129: SyntaxWarning: invalid escape sequence '\g'
+  "\g<1>\n\n" + LIST_TOPIC_SUBSCRIPTIONS
+/workspace/java-pubsub/owlbot.py:1135: SyntaxWarning: invalid escape sequence '\g'
+  "\g<1>\n\n" + GET_TOPIC
+/workspace/java-pubsub/owlbot.py:1141: SyntaxWarning: invalid escape sequence '\g'
+  "\g<1>\n\n" + CREATE_SUBSCRIPTION
+/workspace/java-pubsub/owlbot.py:1147: SyntaxWarning: invalid escape sequence '\g'
+  "\g<1>\n\n" + DELETE_SUBSCRIPTION
+/workspace/java-pubsub/owlbot.py:1153: SyntaxWarning: invalid escape sequence '\g'
+  "\g<1>\n\n" + GET_SUBSCRIPTION
+/workspace/java-pubsub/owlbot.py:1159: SyntaxWarning: invalid escape sequence '\g'
+  "\g<1>\n\n" + MODIFY_ACK_DEADLINE
+/workspace/java-pubsub/owlbot.py:1165: SyntaxWarning: invalid escape sequence '\g'
+  "\g<1>\n\n" + ACKNOWLEDGE
+/workspace/java-pubsub/owlbot.py:1171: SyntaxWarning: invalid escape sequence '\g'
+  "\g<1>\n\n" + PULL
+/workspace/java-pubsub/owlbot.py:1177: SyntaxWarning: invalid escape sequence '\g'
+  "\g<1>\n\n" + MODIFY_PUSH_CONFIG
+/workspace/java-pubsub/owlbot.py:1183: SyntaxWarning: invalid escape sequence '\g'
+  "\g<1>\n\n" + CREATE_SNAPSHOT
+/workspace/java-pubsub/owlbot.py:1189: SyntaxWarning: invalid escape sequence '\g'
+  "\g<1>\n\n" + GET_SNAPSHOT
+/workspace/java-pubsub/owlbot.py:1195: SyntaxWarning: invalid escape sequence '\g'
+  "\g<1>\n\n" + DELETE_SNAPSHOT
+No replacements made in proto-google-cloud-pubsub-v1/src/**/*.java for pattern /\*
+ \* Copyright \d{4} Google LLC
+ \*
+ \* Licensed under the Apache License, Version 2.0 \(the "License"\); you may not use this file except
+ \* in compliance with the License. You may obtain a copy of the License at
+ \*
+ \* http://www.apache.org/licenses/LICENSE-2.0
+ \*
+ \* Unless required by applicable law or agreed to in writing, software distributed under the License
+ \* is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ \* or implied. See the License for the specific language governing permissions and limitations under
+ \* the License.
+ \*/
+, maybe replacement is no longer needed?
+.github/ISSUE_TEMPLATE/bug_report.md
+.github/ISSUE_TEMPLATE/feature_request.md
+.github/ISSUE_TEMPLATE/support_request.md
+.github/PULL_REQUEST_TEMPLATE.md
+.github/auto-label.yaml
+.github/blunderbuss.yml
+.github/dependabot.yml
+.github/generated-files-bot.yml
+.github/release-please.yml
+.github/release-trigger.yml
+.github/scripts/update_generation_config.sh
+.github/snippet-bot.yml
+.github/sync-repo-settings.yaml
+.github/trusted-contribution.yml
+.github/workflows/approve-readme.yaml
+.github/workflows/ci.yaml
+.github/workflows/renovate_config_check.yaml
+.github/workflows/samples.yaml
+.github/workflows/update_generation_config.yaml
+.kokoro/build.sh
+.kokoro/presubmit/graalvm-native-a.cfg
+.kokoro/presubmit/graalvm-native-b.cfg
+.kokoro/presubmit/graalvm-native-c.cfg
+CODE_OF_CONDUCT.md
+CONTRIBUTING.md
+LICENSE
+README.md
+SECURITY.md
+java.header
+license-checks.xml
+renovate.json
+samples/install-without-bom/pom.xml
+samples/pom.xml
+samples/snapshot/pom.xml
+samples/snippets/pom.xml
++ unset SYNTHTOOL_TEMPLATES
++ unset SYNTHTOOL_LIBRARIES_BOM_VERSION
++ unset SYNTHTOOL_LIBRARY_VERSION
++ echo ...done
+...done
++ echo 'Generating missing pom.xml...'
+Generating missing pom.xml...
++ python3 /usr/local/lib/python3.13/site-packages/library_generation/owlbot/src/fix_poms.py /workspace/java-pubsub/versions.txt false
+/usr/local/lib/python3.13/site-packages/library_generation/owlbot
+working directory: /workspace/java-pubsub
+monorepo? False
+updating modules in cloud pom.xml
+updating modules in bom pom.xml
+updating modules in parent pom.xml
+updating modules in /workspace/java-pubsub/versions.txt
++ echo ...done
+...done
++ echo 'Generating clirr-ignored-differences.xml...'
+Generating clirr-ignored-differences.xml...
++ /usr/local/lib/python3.13/site-packages/library_generation/owlbot/bin/write_clirr_ignore.sh /usr/local/lib/python3.13/site-packages/library_generation
++ echo ...done
+...done
++ echo 'Fixing missing license headers...'
+Fixing missing license headers...
++ python3 /usr/local/lib/python3.13/site-packages/library_generation/owlbot/src/fix-license-headers.py
+No replacements made in [PosixPath('/workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/**/*Name.java'), PosixPath('/workspace/java-pubsub/proto-google-cloud-pubsub-v1/src/**/*Names.java')] for pattern /\*
+ \* Copyright \d{4} Google LLC
+ \*
+ \* Licensed under the Apache License, Version 2.0 \(the "License"\); you may not use this file except
+ \* in compliance with the License. You may obtain a copy of the License at
+ \*
+ \* http://www.apache.org/licenses/LICENSE-2.0
+ \*
+ \* Unless required by applicable law or agreed to in writing, software distributed under the License
+ \* is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ \* or implied. See the License for the specific language governing permissions and limitations under
+ \* the License.
+ \*/
+, maybe replacement is no longer needed?
++ echo ...done
+...done
++ echo 'Reformatting source...'
+Reformatting source...
++ /usr/local/lib/python3.13/site-packages/library_generation/owlbot/bin/format_source.sh /usr/local/lib/python3.13/site-packages/library_generation
++ echo ...done
+...done
++ popd
+/workspace/java-pubsub /workspace/java-pubsub
+Library postprocessing finished successfully
