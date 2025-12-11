@@ -144,6 +144,7 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
   private final boolean maxDurationPerAckExtensionDefaultUsed;
   private final java.time.Duration minDurationPerAckExtension;
   private final boolean minDurationPerAckExtensionDefaultUsed;
+  private final long protocolVersion = 1L;
 
   // The ExecutorProvider used to generate executors for processing messages.
   private final ExecutorProvider executorProvider;
@@ -428,6 +429,7 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
                 .setEnableOpenTelemetryTracing(enableOpenTelemetryTracing)
                 .setTracer(tracer)
                 .setSubscriberShutdownSettings(subscriberShutdownSettings)
+                .setProtocolVersion(protocolVersion)
                 .build();
 
         streamingSubscriberConnections.add(streamingSubscriberConnection);
