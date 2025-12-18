@@ -371,6 +371,8 @@ public final class CreateSnapshotRequest extends com.google.protobuf.GeneratedMe
    * resource. For example:
    * "123/environment": "production",
    * "123/costCenter": "marketing"
+   * See https://docs.cloud.google.com/pubsub/docs/tags for more information on
+   * using tags with Pub/Sub resources.
    * </pre>
    *
    * <code>
@@ -400,6 +402,8 @@ public final class CreateSnapshotRequest extends com.google.protobuf.GeneratedMe
    * resource. For example:
    * "123/environment": "production",
    * "123/costCenter": "marketing"
+   * See https://docs.cloud.google.com/pubsub/docs/tags for more information on
+   * using tags with Pub/Sub resources.
    * </pre>
    *
    * <code>
@@ -419,6 +423,8 @@ public final class CreateSnapshotRequest extends com.google.protobuf.GeneratedMe
    * resource. For example:
    * "123/environment": "production",
    * "123/costCenter": "marketing"
+   * See https://docs.cloud.google.com/pubsub/docs/tags for more information on
+   * using tags with Pub/Sub resources.
    * </pre>
    *
    * <code>
@@ -445,6 +451,8 @@ public final class CreateSnapshotRequest extends com.google.protobuf.GeneratedMe
    * resource. For example:
    * "123/environment": "production",
    * "123/costCenter": "marketing"
+   * See https://docs.cloud.google.com/pubsub/docs/tags for more information on
+   * using tags with Pub/Sub resources.
    * </pre>
    *
    * <code>
@@ -1411,6 +1419,8 @@ public final class CreateSnapshotRequest extends com.google.protobuf.GeneratedMe
      * resource. For example:
      * "123/environment": "production",
      * "123/costCenter": "marketing"
+     * See https://docs.cloud.google.com/pubsub/docs/tags for more information on
+     * using tags with Pub/Sub resources.
      * </pre>
      *
      * <code>
@@ -1440,6 +1450,8 @@ public final class CreateSnapshotRequest extends com.google.protobuf.GeneratedMe
      * resource. For example:
      * "123/environment": "production",
      * "123/costCenter": "marketing"
+     * See https://docs.cloud.google.com/pubsub/docs/tags for more information on
+     * using tags with Pub/Sub resources.
      * </pre>
      *
      * <code>
@@ -1459,6 +1471,8 @@ public final class CreateSnapshotRequest extends com.google.protobuf.GeneratedMe
      * resource. For example:
      * "123/environment": "production",
      * "123/costCenter": "marketing"
+     * See https://docs.cloud.google.com/pubsub/docs/tags for more information on
+     * using tags with Pub/Sub resources.
      * </pre>
      *
      * <code>
@@ -1485,6 +1499,8 @@ public final class CreateSnapshotRequest extends com.google.protobuf.GeneratedMe
      * resource. For example:
      * "123/environment": "production",
      * "123/costCenter": "marketing"
+     * See https://docs.cloud.google.com/pubsub/docs/tags for more information on
+     * using tags with Pub/Sub resources.
      * </pre>
      *
      * <code>
@@ -1517,6 +1533,8 @@ public final class CreateSnapshotRequest extends com.google.protobuf.GeneratedMe
      * resource. For example:
      * "123/environment": "production",
      * "123/costCenter": "marketing"
+     * See https://docs.cloud.google.com/pubsub/docs/tags for more information on
+     * using tags with Pub/Sub resources.
      * </pre>
      *
      * <code>
@@ -1546,6 +1564,8 @@ public final class CreateSnapshotRequest extends com.google.protobuf.GeneratedMe
      * resource. For example:
      * "123/environment": "production",
      * "123/costCenter": "marketing"
+     * See https://docs.cloud.google.com/pubsub/docs/tags for more information on
+     * using tags with Pub/Sub resources.
      * </pre>
      *
      * <code>
@@ -1572,6 +1592,8 @@ public final class CreateSnapshotRequest extends com.google.protobuf.GeneratedMe
      * resource. For example:
      * "123/environment": "production",
      * "123/costCenter": "marketing"
+     * See https://docs.cloud.google.com/pubsub/docs/tags for more information on
+     * using tags with Pub/Sub resources.
      * </pre>
      *
      * <code>
