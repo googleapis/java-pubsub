@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import com.google.pubsub.v1.ProjectName;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 @javax.annotation.Generated("by GAPIC")
 public class TopicAdminSmokeTest {

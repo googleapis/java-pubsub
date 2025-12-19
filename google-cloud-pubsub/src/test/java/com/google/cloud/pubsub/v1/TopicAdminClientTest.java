@@ -19,6 +19,9 @@ package com.google.cloud.pubsub.v1;
 import static com.google.cloud.pubsub.v1.TopicAdminClient.ListTopicSnapshotsPagedResponse;
 import static com.google.cloud.pubsub.v1.TopicAdminClient.ListTopicSubscriptionsPagedResponse;
 import static com.google.cloud.pubsub.v1.TopicAdminClient.ListTopicsPagedResponse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import com.google.api.gax.core.NoCredentialsProvider;
 import com.google.api.gax.grpc.GaxGrpcProperties;
@@ -73,12 +76,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import javax.annotation.Generated;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 @Generated("by gapic-generator-java")
 public class TopicAdminClientTest {
@@ -88,7 +90,7 @@ public class TopicAdminClientTest {
   private LocalChannelProvider channelProvider;
   private TopicAdminClient client;
 
-  @BeforeClass
+  @BeforeAll
   public static void startStaticServer() {
     mockPublisher = new MockPublisher();
     mockIAMPolicy = new MockIAMPolicy();
@@ -99,12 +101,12 @@ public class TopicAdminClientTest {
     mockServiceHelper.start();
   }
 
-  @AfterClass
+  @AfterAll
   public static void stopServer() {
     mockServiceHelper.stop();
   }
 
-  @Before
+  @BeforeEach
   public void setUp() throws IOException {
     mockServiceHelper.reset();
     channelProvider = mockServiceHelper.createChannelProvider();
@@ -116,7 +118,7 @@ public class TopicAdminClientTest {
     client = TopicAdminClient.create(settings);
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
     client.close();
   }
@@ -143,14 +145,14 @@ public class TopicAdminClientTest {
     TopicName name = TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]");
 
     Topic actualResponse = client.createTopic(name);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<AbstractMessage> actualRequests = mockPublisher.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     Topic actualRequest = ((Topic) actualRequests.get(0));
 
-    Assert.assertEquals(name.toString(), actualRequest.getName());
-    Assert.assertTrue(
+    assertEquals(name.toString(), actualRequest.getName());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -164,7 +166,7 @@ public class TopicAdminClientTest {
     try {
       TopicName name = TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]");
       client.createTopic(name);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -192,14 +194,14 @@ public class TopicAdminClientTest {
     String name = "name3373707";
 
     Topic actualResponse = client.createTopic(name);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<AbstractMessage> actualRequests = mockPublisher.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     Topic actualRequest = ((Topic) actualRequests.get(0));
 
-    Assert.assertEquals(name, actualRequest.getName());
-    Assert.assertTrue(
+    assertEquals(name, actualRequest.getName());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -213,7 +215,7 @@ public class TopicAdminClientTest {
     try {
       String name = "name3373707";
       client.createTopic(name);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -242,15 +244,15 @@ public class TopicAdminClientTest {
     FieldMask updateMask = FieldMask.newBuilder().build();
 
     Topic actualResponse = client.updateTopic(topic, updateMask);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<AbstractMessage> actualRequests = mockPublisher.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     UpdateTopicRequest actualRequest = ((UpdateTopicRequest) actualRequests.get(0));
 
-    Assert.assertEquals(topic, actualRequest.getTopic());
-    Assert.assertEquals(updateMask, actualRequest.getUpdateMask());
-    Assert.assertTrue(
+    assertEquals(topic, actualRequest.getTopic());
+    assertEquals(updateMask, actualRequest.getUpdateMask());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -265,7 +267,7 @@ public class TopicAdminClientTest {
       Topic topic = Topic.newBuilder().build();
       FieldMask updateMask = FieldMask.newBuilder().build();
       client.updateTopic(topic, updateMask);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -281,15 +283,15 @@ public class TopicAdminClientTest {
     List<PubsubMessage> messages = new ArrayList<>();
 
     PublishResponse actualResponse = client.publish(topic, messages);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<AbstractMessage> actualRequests = mockPublisher.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     PublishRequest actualRequest = ((PublishRequest) actualRequests.get(0));
 
-    Assert.assertEquals(topic.toString(), actualRequest.getTopic());
-    Assert.assertEquals(messages, actualRequest.getMessagesList());
-    Assert.assertTrue(
+    assertEquals(topic.toString(), actualRequest.getTopic());
+    assertEquals(messages, actualRequest.getMessagesList());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -304,7 +306,7 @@ public class TopicAdminClientTest {
       TopicName topic = TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]");
       List<PubsubMessage> messages = new ArrayList<>();
       client.publish(topic, messages);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -320,15 +322,15 @@ public class TopicAdminClientTest {
     List<PubsubMessage> messages = new ArrayList<>();
 
     PublishResponse actualResponse = client.publish(topic, messages);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<AbstractMessage> actualRequests = mockPublisher.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     PublishRequest actualRequest = ((PublishRequest) actualRequests.get(0));
 
-    Assert.assertEquals(topic, actualRequest.getTopic());
-    Assert.assertEquals(messages, actualRequest.getMessagesList());
-    Assert.assertTrue(
+    assertEquals(topic, actualRequest.getTopic());
+    assertEquals(messages, actualRequest.getMessagesList());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -343,7 +345,7 @@ public class TopicAdminClientTest {
       String topic = "topic110546223";
       List<PubsubMessage> messages = new ArrayList<>();
       client.publish(topic, messages);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -371,14 +373,14 @@ public class TopicAdminClientTest {
     TopicName topic = TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]");
 
     Topic actualResponse = client.getTopic(topic);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<AbstractMessage> actualRequests = mockPublisher.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     GetTopicRequest actualRequest = ((GetTopicRequest) actualRequests.get(0));
 
-    Assert.assertEquals(topic.toString(), actualRequest.getTopic());
-    Assert.assertTrue(
+    assertEquals(topic.toString(), actualRequest.getTopic());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -392,7 +394,7 @@ public class TopicAdminClientTest {
     try {
       TopicName topic = TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]");
       client.getTopic(topic);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -420,14 +422,14 @@ public class TopicAdminClientTest {
     String topic = "topic110546223";
 
     Topic actualResponse = client.getTopic(topic);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<AbstractMessage> actualRequests = mockPublisher.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     GetTopicRequest actualRequest = ((GetTopicRequest) actualRequests.get(0));
 
-    Assert.assertEquals(topic, actualRequest.getTopic());
-    Assert.assertTrue(
+    assertEquals(topic, actualRequest.getTopic());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -441,7 +443,7 @@ public class TopicAdminClientTest {
     try {
       String topic = "topic110546223";
       client.getTopic(topic);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -463,15 +465,15 @@ public class TopicAdminClientTest {
 
     List<Topic> resources = Lists.newArrayList(pagedListResponse.iterateAll());
 
-    Assert.assertEquals(1, resources.size());
-    Assert.assertEquals(expectedResponse.getTopicsList().get(0), resources.get(0));
+    assertEquals(1, resources.size());
+    assertEquals(expectedResponse.getTopicsList().get(0), resources.get(0));
 
     List<AbstractMessage> actualRequests = mockPublisher.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     ListTopicsRequest actualRequest = ((ListTopicsRequest) actualRequests.get(0));
 
-    Assert.assertEquals(project.toString(), actualRequest.getProject());
-    Assert.assertTrue(
+    assertEquals(project.toString(), actualRequest.getProject());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -485,7 +487,7 @@ public class TopicAdminClientTest {
     try {
       ProjectName project = ProjectName.of("[PROJECT]");
       client.listTopics(project);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -507,15 +509,15 @@ public class TopicAdminClientTest {
 
     List<Topic> resources = Lists.newArrayList(pagedListResponse.iterateAll());
 
-    Assert.assertEquals(1, resources.size());
-    Assert.assertEquals(expectedResponse.getTopicsList().get(0), resources.get(0));
+    assertEquals(1, resources.size());
+    assertEquals(expectedResponse.getTopicsList().get(0), resources.get(0));
 
     List<AbstractMessage> actualRequests = mockPublisher.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     ListTopicsRequest actualRequest = ((ListTopicsRequest) actualRequests.get(0));
 
-    Assert.assertEquals(project, actualRequest.getProject());
-    Assert.assertTrue(
+    assertEquals(project, actualRequest.getProject());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -529,7 +531,7 @@ public class TopicAdminClientTest {
     try {
       String project = "project-309310695";
       client.listTopics(project);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -551,16 +553,16 @@ public class TopicAdminClientTest {
 
     List<String> resources = Lists.newArrayList(pagedListResponse.iterateAll());
 
-    Assert.assertEquals(1, resources.size());
-    Assert.assertEquals(expectedResponse.getSubscriptionsList().get(0), resources.get(0));
+    assertEquals(1, resources.size());
+    assertEquals(expectedResponse.getSubscriptionsList().get(0), resources.get(0));
 
     List<AbstractMessage> actualRequests = mockPublisher.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     ListTopicSubscriptionsRequest actualRequest =
         ((ListTopicSubscriptionsRequest) actualRequests.get(0));
 
-    Assert.assertEquals(topic.toString(), actualRequest.getTopic());
-    Assert.assertTrue(
+    assertEquals(topic.toString(), actualRequest.getTopic());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -574,7 +576,7 @@ public class TopicAdminClientTest {
     try {
       TopicName topic = TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]");
       client.listTopicSubscriptions(topic);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -596,16 +598,16 @@ public class TopicAdminClientTest {
 
     List<String> resources = Lists.newArrayList(pagedListResponse.iterateAll());
 
-    Assert.assertEquals(1, resources.size());
-    Assert.assertEquals(expectedResponse.getSubscriptionsList().get(0), resources.get(0));
+    assertEquals(1, resources.size());
+    assertEquals(expectedResponse.getSubscriptionsList().get(0), resources.get(0));
 
     List<AbstractMessage> actualRequests = mockPublisher.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     ListTopicSubscriptionsRequest actualRequest =
         ((ListTopicSubscriptionsRequest) actualRequests.get(0));
 
-    Assert.assertEquals(topic, actualRequest.getTopic());
-    Assert.assertTrue(
+    assertEquals(topic, actualRequest.getTopic());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -619,7 +621,7 @@ public class TopicAdminClientTest {
     try {
       String topic = "topic110546223";
       client.listTopicSubscriptions(topic);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -641,15 +643,15 @@ public class TopicAdminClientTest {
 
     List<String> resources = Lists.newArrayList(pagedListResponse.iterateAll());
 
-    Assert.assertEquals(1, resources.size());
-    Assert.assertEquals(expectedResponse.getSnapshotsList().get(0), resources.get(0));
+    assertEquals(1, resources.size());
+    assertEquals(expectedResponse.getSnapshotsList().get(0), resources.get(0));
 
     List<AbstractMessage> actualRequests = mockPublisher.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     ListTopicSnapshotsRequest actualRequest = ((ListTopicSnapshotsRequest) actualRequests.get(0));
 
-    Assert.assertEquals(topic.toString(), actualRequest.getTopic());
-    Assert.assertTrue(
+    assertEquals(topic.toString(), actualRequest.getTopic());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -663,7 +665,7 @@ public class TopicAdminClientTest {
     try {
       TopicName topic = TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]");
       client.listTopicSnapshots(topic);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -685,15 +687,15 @@ public class TopicAdminClientTest {
 
     List<String> resources = Lists.newArrayList(pagedListResponse.iterateAll());
 
-    Assert.assertEquals(1, resources.size());
-    Assert.assertEquals(expectedResponse.getSnapshotsList().get(0), resources.get(0));
+    assertEquals(1, resources.size());
+    assertEquals(expectedResponse.getSnapshotsList().get(0), resources.get(0));
 
     List<AbstractMessage> actualRequests = mockPublisher.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     ListTopicSnapshotsRequest actualRequest = ((ListTopicSnapshotsRequest) actualRequests.get(0));
 
-    Assert.assertEquals(topic, actualRequest.getTopic());
-    Assert.assertTrue(
+    assertEquals(topic, actualRequest.getTopic());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -707,7 +709,7 @@ public class TopicAdminClientTest {
     try {
       String topic = "topic110546223";
       client.listTopicSnapshots(topic);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -723,11 +725,11 @@ public class TopicAdminClientTest {
     client.deleteTopic(topic);
 
     List<AbstractMessage> actualRequests = mockPublisher.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     DeleteTopicRequest actualRequest = ((DeleteTopicRequest) actualRequests.get(0));
 
-    Assert.assertEquals(topic.toString(), actualRequest.getTopic());
-    Assert.assertTrue(
+    assertEquals(topic.toString(), actualRequest.getTopic());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -741,7 +743,7 @@ public class TopicAdminClientTest {
     try {
       TopicName topic = TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]");
       client.deleteTopic(topic);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -757,11 +759,11 @@ public class TopicAdminClientTest {
     client.deleteTopic(topic);
 
     List<AbstractMessage> actualRequests = mockPublisher.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     DeleteTopicRequest actualRequest = ((DeleteTopicRequest) actualRequests.get(0));
 
-    Assert.assertEquals(topic, actualRequest.getTopic());
-    Assert.assertTrue(
+    assertEquals(topic, actualRequest.getTopic());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -775,7 +777,7 @@ public class TopicAdminClientTest {
     try {
       String topic = "topic110546223";
       client.deleteTopic(topic);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -792,14 +794,14 @@ public class TopicAdminClientTest {
             .build();
 
     DetachSubscriptionResponse actualResponse = client.detachSubscription(request);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<AbstractMessage> actualRequests = mockPublisher.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     DetachSubscriptionRequest actualRequest = ((DetachSubscriptionRequest) actualRequests.get(0));
 
-    Assert.assertEquals(request.getSubscription(), actualRequest.getSubscription());
-    Assert.assertTrue(
+    assertEquals(request.getSubscription(), actualRequest.getSubscription());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -816,7 +818,7 @@ public class TopicAdminClientTest {
               .setSubscription(SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
               .build();
       client.detachSubscription(request);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -841,16 +843,16 @@ public class TopicAdminClientTest {
             .build();
 
     Policy actualResponse = client.setIamPolicy(request);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<AbstractMessage> actualRequests = mockIAMPolicy.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     SetIamPolicyRequest actualRequest = ((SetIamPolicyRequest) actualRequests.get(0));
 
-    Assert.assertEquals(request.getResource(), actualRequest.getResource());
-    Assert.assertEquals(request.getPolicy(), actualRequest.getPolicy());
-    Assert.assertEquals(request.getUpdateMask(), actualRequest.getUpdateMask());
-    Assert.assertTrue(
+    assertEquals(request.getResource(), actualRequest.getResource());
+    assertEquals(request.getPolicy(), actualRequest.getPolicy());
+    assertEquals(request.getUpdateMask(), actualRequest.getUpdateMask());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -869,7 +871,7 @@ public class TopicAdminClientTest {
               .setUpdateMask(FieldMask.newBuilder().build())
               .build();
       client.setIamPolicy(request);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -893,15 +895,15 @@ public class TopicAdminClientTest {
             .build();
 
     Policy actualResponse = client.getIamPolicy(request);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<AbstractMessage> actualRequests = mockIAMPolicy.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     GetIamPolicyRequest actualRequest = ((GetIamPolicyRequest) actualRequests.get(0));
 
-    Assert.assertEquals(request.getResource(), actualRequest.getResource());
-    Assert.assertEquals(request.getOptions(), actualRequest.getOptions());
-    Assert.assertTrue(
+    assertEquals(request.getResource(), actualRequest.getResource());
+    assertEquals(request.getOptions(), actualRequest.getOptions());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -919,7 +921,7 @@ public class TopicAdminClientTest {
               .setOptions(GetPolicyOptions.newBuilder().build())
               .build();
       client.getIamPolicy(request);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -938,15 +940,15 @@ public class TopicAdminClientTest {
             .build();
 
     TestIamPermissionsResponse actualResponse = client.testIamPermissions(request);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<AbstractMessage> actualRequests = mockIAMPolicy.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     TestIamPermissionsRequest actualRequest = ((TestIamPermissionsRequest) actualRequests.get(0));
 
-    Assert.assertEquals(request.getResource(), actualRequest.getResource());
-    Assert.assertEquals(request.getPermissionsList(), actualRequest.getPermissionsList());
-    Assert.assertTrue(
+    assertEquals(request.getResource(), actualRequest.getResource());
+    assertEquals(request.getPermissionsList(), actualRequest.getPermissionsList());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -964,7 +966,7 @@ public class TopicAdminClientTest {
               .addAllPermissions(new ArrayList<String>())
               .build();
       client.testIamPermissions(request);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
