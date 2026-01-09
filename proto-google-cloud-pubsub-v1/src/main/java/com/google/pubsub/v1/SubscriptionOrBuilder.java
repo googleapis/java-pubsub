@@ -780,7 +780,7 @@ public interface SubscriptionOrBuilder
    *
    * <pre>
    * Output only. Information about the associated Analytics Hub subscription.
-   * Only set if the subscritpion is created by Analytics Hub.
+   * Only set if the subscription is created by Analytics Hub.
    * </pre>
    *
    * <code>
@@ -796,7 +796,7 @@ public interface SubscriptionOrBuilder
    *
    * <pre>
    * Output only. Information about the associated Analytics Hub subscription.
-   * Only set if the subscritpion is created by Analytics Hub.
+   * Only set if the subscription is created by Analytics Hub.
    * </pre>
    *
    * <code>
@@ -812,7 +812,7 @@ public interface SubscriptionOrBuilder
    *
    * <pre>
    * Output only. Information about the associated Analytics Hub subscription.
-   * Only set if the subscritpion is created by Analytics Hub.
+   * Only set if the subscription is created by Analytics Hub.
    * </pre>
    *
    * <code>

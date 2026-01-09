@@ -80,12 +80,12 @@ public final class PublishRequest extends com.google.protobuf.GeneratedMessage
    *
    *
    * <pre>
-   * Required. Identifier. The messages in the request will be published on this
-   * topic. Format is `projects/{project}/topics/{topic}`.
+   * Required. The messages in the request will be published on this topic.
+   * Format is `projects/{project}/topics/{topic}`.
    * </pre>
    *
    * <code>
-   * string topic = 1 [(.google.api.field_behavior) = REQUIRED, (.google.api.field_behavior) = IDENTIFIER, (.google.api.resource_reference) = { ... }
+   * string topic = 1 [(.google.api.field_behavior) = REQUIRED, (.google.api.resource_reference) = { ... }
    * </code>
    *
    * @return The topic.
@@ -107,12 +107,12 @@ public final class PublishRequest extends com.google.protobuf.GeneratedMessage
    *
    *
    * <pre>
-   * Required. Identifier. The messages in the request will be published on this
-   * topic. Format is `projects/{project}/topics/{topic}`.
+   * Required. The messages in the request will be published on this topic.
+   * Format is `projects/{project}/topics/{topic}`.
    * </pre>
    *
    * <code>
-   * string topic = 1 [(.google.api.field_behavior) = REQUIRED, (.google.api.field_behavior) = IDENTIFIER, (.google.api.resource_reference) = { ... }
+   * string topic = 1 [(.google.api.field_behavior) = REQUIRED, (.google.api.resource_reference) = { ... }
    * </code>
    *
    * @return The bytes for topic.
@@ -599,12 +599,12 @@ public final class PublishRequest extends com.google.protobuf.GeneratedMessage
      *
      *
      * <pre>
-     * Required. Identifier. The messages in the request will be published on this
-     * topic. Format is `projects/{project}/topics/{topic}`.
+     * Required. The messages in the request will be published on this topic.
+     * Format is `projects/{project}/topics/{topic}`.
      * </pre>
      *
      * <code>
-     * string topic = 1 [(.google.api.field_behavior) = REQUIRED, (.google.api.field_behavior) = IDENTIFIER, (.google.api.resource_reference) = { ... }
+     * string topic = 1 [(.google.api.field_behavior) = REQUIRED, (.google.api.resource_reference) = { ... }
      * </code>
      *
      * @return The topic.
@@ -625,12 +625,12 @@ public final class PublishRequest extends com.google.protobuf.GeneratedMessage
      *
      *
      * <pre>
-     * Required. Identifier. The messages in the request will be published on this
-     * topic. Format is `projects/{project}/topics/{topic}`.
+     * Required. The messages in the request will be published on this topic.
+     * Format is `projects/{project}/topics/{topic}`.
      * </pre>
      *
      * <code>
-     * string topic = 1 [(.google.api.field_behavior) = REQUIRED, (.google.api.field_behavior) = IDENTIFIER, (.google.api.resource_reference) = { ... }
+     * string topic = 1 [(.google.api.field_behavior) = REQUIRED, (.google.api.resource_reference) = { ... }
      * </code>
      *
      * @return The bytes for topic.
@@ -651,12 +651,12 @@ public final class PublishRequest extends com.google.protobuf.GeneratedMessage
      *
      *
      * <pre>
-     * Required. Identifier. The messages in the request will be published on this
-     * topic. Format is `projects/{project}/topics/{topic}`.
+     * Required. The messages in the request will be published on this topic.
+     * Format is `projects/{project}/topics/{topic}`.
      * </pre>
      *
      * <code>
-     * string topic = 1 [(.google.api.field_behavior) = REQUIRED, (.google.api.field_behavior) = IDENTIFIER, (.google.api.resource_reference) = { ... }
+     * string topic = 1 [(.google.api.field_behavior) = REQUIRED, (.google.api.resource_reference) = { ... }
      * </code>
      *
      * @param value The topic to set.
@@ -676,12 +676,12 @@ public final class PublishRequest extends com.google.protobuf.GeneratedMessage
      *
      *
      * <pre>
-     * Required. Identifier. The messages in the request will be published on this
-     * topic. Format is `projects/{project}/topics/{topic}`.
+     * Required. The messages in the request will be published on this topic.
+     * Format is `projects/{project}/topics/{topic}`.
      * </pre>
      *
      * <code>
-     * string topic = 1 [(.google.api.field_behavior) = REQUIRED, (.google.api.field_behavior) = IDENTIFIER, (.google.api.resource_reference) = { ... }
+     * string topic = 1 [(.google.api.field_behavior) = REQUIRED, (.google.api.resource_reference) = { ... }
      * </code>
      *
      * @return This builder for chaining.
@@ -697,12 +697,12 @@ public final class PublishRequest extends com.google.protobuf.GeneratedMessage
      *
      *
      * <pre>
-     * Required. Identifier. The messages in the request will be published on this
-     * topic. Format is `projects/{project}/topics/{topic}`.
+     * Required. The messages in the request will be published on this topic.
+     * Format is `projects/{project}/topics/{topic}`.
      * </pre>
      *
      * <code>
-     * string topic = 1 [(.google.api.field_behavior) = REQUIRED, (.google.api.field_behavior) = IDENTIFIER, (.google.api.resource_reference) = { ... }
+     * string topic = 1 [(.google.api.field_behavior) = REQUIRED, (.google.api.resource_reference) = { ... }
      * </code>
      *
      * @param value The bytes for topic to set.

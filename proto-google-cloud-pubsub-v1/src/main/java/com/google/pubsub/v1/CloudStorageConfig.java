@@ -148,6 +148,18 @@ public final class CloudStorageConfig extends com.google.protobuf.GeneratedMessa
      * <code>SCHEMA_MISMATCH = 5;</code>
      */
     SCHEMA_MISMATCH(5),
+    /**
+     *
+     *
+     * <pre>
+     * Cannot write to the Cloud Storage bucket because the bucket is not in the
+     * same location as where Vertex AI models used in `message_transform`s are
+     * deployed.
+     * </pre>
+     *
+     * <code>VERTEX_AI_LOCATION_RESTRICTION = 6;</code>
+     */
+    VERTEX_AI_LOCATION_RESTRICTION(6),
     UNRECOGNIZED(-1),
     ;
 
@@ -230,6 +242,19 @@ public final class CloudStorageConfig extends com.google.protobuf.GeneratedMessa
      */
     public static final int SCHEMA_MISMATCH_VALUE = 5;
 
+    /**
+     *
+     *
+     * <pre>
+     * Cannot write to the Cloud Storage bucket because the bucket is not in the
+     * same location as where Vertex AI models used in `message_transform`s are
+     * deployed.
+     * </pre>
+     *
+     * <code>VERTEX_AI_LOCATION_RESTRICTION = 6;</code>
+     */
+    public static final int VERTEX_AI_LOCATION_RESTRICTION_VALUE = 6;
+
     public final int getNumber() {
       if (this == UNRECOGNIZED) {
         throw new java.lang.IllegalArgumentException(
@@ -266,6 +291,8 @@ public final class CloudStorageConfig extends com.google.protobuf.GeneratedMessa
           return IN_TRANSIT_LOCATION_RESTRICTION;
         case 5:
           return SCHEMA_MISMATCH;
+        case 6:
+          return VERTEX_AI_LOCATION_RESTRICTION;
         default:
           return null;
       }

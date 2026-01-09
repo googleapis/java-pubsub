@@ -148,6 +148,18 @@ public final class BigQueryConfig extends com.google.protobuf.GeneratedMessage
      * <code>IN_TRANSIT_LOCATION_RESTRICTION = 5;</code>
      */
     IN_TRANSIT_LOCATION_RESTRICTION(5),
+    /**
+     *
+     *
+     * <pre>
+     * Cannot write to the BigQuery table because the table is not in the same
+     * location as where Vertex AI models used in `message_transform`s are
+     * deployed.
+     * </pre>
+     *
+     * <code>VERTEX_AI_LOCATION_RESTRICTION = 6;</code>
+     */
+    VERTEX_AI_LOCATION_RESTRICTION(6),
     UNRECOGNIZED(-1),
     ;
 
@@ -233,6 +245,19 @@ public final class BigQueryConfig extends com.google.protobuf.GeneratedMessage
      */
     public static final int IN_TRANSIT_LOCATION_RESTRICTION_VALUE = 5;
 
+    /**
+     *
+     *
+     * <pre>
+     * Cannot write to the BigQuery table because the table is not in the same
+     * location as where Vertex AI models used in `message_transform`s are
+     * deployed.
+     * </pre>
+     *
+     * <code>VERTEX_AI_LOCATION_RESTRICTION = 6;</code>
+     */
+    public static final int VERTEX_AI_LOCATION_RESTRICTION_VALUE = 6;
+
     public final int getNumber() {
       if (this == UNRECOGNIZED) {
         throw new java.lang.IllegalArgumentException(
@@ -269,6 +294,8 @@ public final class BigQueryConfig extends com.google.protobuf.GeneratedMessage
           return SCHEMA_MISMATCH;
         case 5:
           return IN_TRANSIT_LOCATION_RESTRICTION;
+        case 6:
+          return VERTEX_AI_LOCATION_RESTRICTION;
         default:
           return null;
       }
