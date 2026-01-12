@@ -60,61 +60,76 @@ import java.util.logging.Logger;
 import javax.annotation.Nullable;
 
 /**
- * A Cloud Pub/Sub <a href="https://cloud.google.com/pubsub/docs/subscriber">subscriber</a> that is
+ * A Cloud Pub/Sub
+ * <a href="https://cloud.google.com/pubsub/docs/subscriber">subscriber</a> that
+ * is
  * associated with a specific subscription at creation.
  *
- * <p>A {@link Subscriber} allows you to provide an implementation of a {@link MessageReceiver
- * receiver} to which messages are going to be delivered as soon as they are received by the
- * subscriber. The delivered messages then can be {@link AckReplyConsumer#ack() acked} or {@link
- * AckReplyConsumer#nack() nacked} at will as they get processed by the receiver. Nacking a messages
+ * <p>
+ * A {@link Subscriber} allows you to provide an implementation of a
+ * {@link MessageReceiver
+ * receiver} to which messages are going to be delivered as soon as they are
+ * received by the
+ * subscriber. The delivered messages then can be {@link AckReplyConsumer#ack()
+ * acked} or {@link
+ * AckReplyConsumer#nack() nacked} at will as they get processed by the
+ * receiver. Nacking a messages
  * implies a later redelivery of such message.
  *
- * <p>The subscriber handles the ack management, by automatically extending the ack deadline while
- * the message is being processed, to then issue the ack or nack of such message when the processing
- * is done (see {@link Builder#setMaxAckExtensionPeriod(Duration)}). <strong>Note:</strong> message
+ * <p>
+ * The subscriber handles the ack management, by automatically extending the ack
+ * deadline while
+ * the message is being processed, to then issue the ack or nack of such message
+ * when the processing
+ * is done (see {@link Builder#setMaxAckExtensionPeriod(Duration)}).
+ * <strong>Note:</strong> message
  * redelivery is still possible.
  *
- * <p>It also provides customizable options that control:
+ * <p>
+ * It also provides customizable options that control:
  *
  * <ul>
- *   <li>Ack deadline extension: such as the amount of time ahead to trigger the extension of
- *       message acknowledgement expiration.
- *   <li>Flow control: such as the maximum outstanding messages or maximum outstanding bytes to keep
- *       in memory before the receiver either ack or nack them.
+ * <li>Ack deadline extension: such as the amount of time ahead to trigger the
+ * extension of
+ * message acknowledgement expiration.
+ * <li>Flow control: such as the maximum outstanding messages or maximum
+ * outstanding bytes to keep
+ * in memory before the receiver either ack or nack them.
  * </ul>
  *
- * <p>{@link Subscriber} will use the credentials set on the channel, which uses application default
- * credentials through {@link GoogleCredentials#getApplicationDefault} by default.
+ * <p>
+ * {@link Subscriber} will use the credentials set on the channel, which uses
+ * application default
+ * credentials through {@link GoogleCredentials#getApplicationDefault} by
+ * default.
  *
- * <p>{@code Subscriber} is implemented using <a
- * href="http://google.github.io/guava/releases/snapshot/api/docs/com/google/common/util/concurrent/Service.html">Guava's
+ * <p>
+ * {@code Subscriber} is implemented using <a
+ * href=
+ * "http://google.github.io/guava/releases/snapshot/api/docs/com/google/common/util/concurrent/Service.html">Guava's
  * Service</a> and provides the same methods. See <a
- * href="https://github.com/google/guava/wiki/ServiceExplained">Guava documentation</a> for more
+ * href="https://github.com/google/guava/wiki/ServiceExplained">Guava
+ * documentation</a> for more
  * details.
  */
 public class Subscriber extends AbstractApiService implements SubscriberInterface {
   private static final int THREADS_PER_CHANNEL = 5;
-  private static final int MAX_INBOUND_MESSAGE_SIZE =
-      20 * 1024 * 1024; // 20MB API maximum message size.
+  private static final int MAX_INBOUND_MESSAGE_SIZE = 20 * 1024 * 1024; // 20MB API maximum message size.
 
-  private static final int MAX_INBOUND_METADATA_SIZE =
-      4 * 1024 * 1024; // 4MB API maximum metadata size
+  private static final int MAX_INBOUND_METADATA_SIZE = 4 * 1024 * 1024; // 4MB API maximum metadata size
 
   @InternalApi
-  static final java.time.Duration DEFAULT_MAX_ACK_EXTENSION_PERIOD =
-      java.time.Duration.ofMinutes(60);
+  static final java.time.Duration DEFAULT_MAX_ACK_EXTENSION_PERIOD = java.time.Duration.ofMinutes(60);
 
   @InternalApi
-  static final java.time.Duration DEFAULT_MIN_ACK_DEADLINE_EXTENSION_EXACTLY_ONCE_DELIVERY =
-      java.time.Duration.ofMinutes(1);
+  static final java.time.Duration DEFAULT_MIN_ACK_DEADLINE_EXTENSION_EXACTLY_ONCE_DELIVERY = java.time.Duration
+      .ofMinutes(1);
 
   @InternalApi
-  static final java.time.Duration DEFAULT_MIN_ACK_DEADLINE_EXTENSION =
-      java.time.Duration.ofMinutes(0);
+  static final java.time.Duration DEFAULT_MIN_ACK_DEADLINE_EXTENSION = java.time.Duration.ofMinutes(0);
 
   @InternalApi
-  static final java.time.Duration DEFAULT_MAX_ACK_DEADLINE_EXTENSION =
-      java.time.Duration.ofSeconds(0);
+  static final java.time.Duration DEFAULT_MAX_ACK_DEADLINE_EXTENSION = java.time.Duration.ofSeconds(0);
 
   @InternalApi
   static final java.time.Duration MIN_STREAM_ACK_DEADLINE = java.time.Duration.ofSeconds(10);
@@ -126,8 +141,7 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
   static final java.time.Duration STREAM_ACK_DEADLINE_DEFAULT = java.time.Duration.ofSeconds(60);
 
   @InternalApi
-  static final java.time.Duration STREAM_ACK_DEADLINE_EXACTLY_ONCE_DELIVERY_DEFAULT =
-      java.time.Duration.ofSeconds(60);
+  static final java.time.Duration STREAM_ACK_DEADLINE_EXACTLY_ONCE_DELIVERY_DEFAULT = java.time.Duration.ofSeconds(60);
 
   @InternalApi
   static final java.time.Duration ACK_EXPIRATION_PADDING_DEFAULT = java.time.Duration.ofSeconds(5);
@@ -150,10 +164,11 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
   private final ExecutorProvider executorProvider;
   // An instantiation of the SystemExecutorProvider used for processing acks
   // and other system actions.
-  @Nullable private final ScheduledExecutorService alarmsExecutor;
+  @Nullable
+  private final ScheduledExecutorService alarmsExecutor;
 
-  private final Distribution ackLatencyDistribution =
-      new Distribution(Math.toIntExact(MAX_STREAM_ACK_DEADLINE.getSeconds()) + 1);
+  private final Distribution ackLatencyDistribution = new Distribution(
+      Math.toIntExact(MAX_STREAM_ACK_DEADLINE.getSeconds()) + 1);
 
   private SubscriberStub subscriberStub;
   private final SubscriberStubSettings subStubSettings;
@@ -183,15 +198,13 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
     maxDurationPerAckExtensionDefaultUsed = builder.maxDurationPerAckExtensionDefaultUsed;
     minDurationPerAckExtension = builder.minDurationPerAckExtension;
     minDurationPerAckExtensionDefaultUsed = builder.minDurationPerAckExtensionDefaultUsed;
-    protocolVersion = builder.protocolVersion;
 
     clock = builder.clock.isPresent() ? builder.clock.get() : CurrentMillisClock.getDefaultClock();
 
-    flowController =
-        new FlowController(
-            builder.flowControlSettings.toBuilder()
-                .setLimitExceededBehavior(LimitExceededBehavior.Block)
-                .build());
+    flowController = new FlowController(
+        builder.flowControlSettings.toBuilder()
+            .setLimitExceededBehavior(LimitExceededBehavior.Block)
+            .build());
 
     this.numPullers = builder.parallelPullCount;
 
@@ -210,15 +223,14 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
     }
 
     try {
-      this.subStubSettings =
-          SubscriberStubSettings.newBuilder()
-              .setExecutorProvider(systemExecutorProvider)
-              .setCredentialsProvider(builder.credentialsProvider)
-              .setTransportChannelProvider(channelProvider)
-              .setHeaderProvider(builder.headerProvider)
-              .setEndpoint(builder.endpoint)
-              .setUniverseDomain(builder.universeDomain)
-              .build();
+      this.subStubSettings = SubscriberStubSettings.newBuilder()
+          .setExecutorProvider(systemExecutorProvider)
+          .setCredentialsProvider(builder.credentialsProvider)
+          .setTransportChannelProvider(channelProvider)
+          .setHeaderProvider(builder.headerProvider)
+          .setEndpoint(builder.endpoint)
+          .setUniverseDomain(builder.universeDomain)
+          .build();
       // TODO(pongad): what about internal header??
     } catch (Exception e) {
       throw new IllegalStateException(e);
@@ -230,8 +242,7 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
     if (this.openTelemetry != null && this.enableOpenTelemetryTracing) {
       Tracer openTelemetryTracer = builder.openTelemetry.getTracer(OPEN_TELEMETRY_TRACER_NAME);
       if (openTelemetryTracer != null) {
-        this.tracer =
-            new OpenTelemetryPubsubTracer(openTelemetryTracer, this.enableOpenTelemetryTracing);
+        this.tracer = new OpenTelemetryPubsubTracer(openTelemetryTracer, this.enableOpenTelemetryTracing);
       }
     }
 
@@ -239,7 +250,8 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
 
     // We regularly look up the distribution for a good subscription deadline.
     // So we seed the distribution with the minimum value to start with.
-    // Distribution is percentile-based, so this value will eventually lose importance.
+    // Distribution is percentile-based, so this value will eventually lose
+    // importance.
     ackLatencyDistribution.record(Math.toIntExact(MIN_STREAM_ACK_DEADLINE.getSeconds()));
   }
 
@@ -247,8 +259,9 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
    * Constructs a new {@link Builder}.
    *
    * @param subscription Cloud Pub/Sub subscription to bind the subscriber to
-   * @param receiver an implementation of {@link MessageReceiver} used to process the received
-   *     messages
+   * @param receiver     an implementation of {@link MessageReceiver} used to
+   *                     process the received
+   *                     messages
    */
   public static Builder newBuilder(ProjectSubscriptionName subscription, MessageReceiver receiver) {
     return newBuilder(subscription.toString(), receiver);
@@ -263,8 +276,9 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
    * Constructs a new {@link Builder}.
    *
    * @param subscription Cloud Pub/Sub subscription to bind the subscriber to
-   * @param receiver an implementation of {@link MessageReceiver} used to process the received
-   *     messages
+   * @param receiver     an implementation of {@link MessageReceiver} used to
+   *                     process the received
+   *                     messages
    */
   public static Builder newBuilder(String subscription, MessageReceiver receiver) {
     return new Builder(subscription, receiver);
@@ -295,7 +309,8 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
   /**
    * Initiates service startup and returns immediately.
    *
-   * <p>Example of receiving a specific number of messages.
+   * <p>
+   * Example of receiving a specific number of messages.
    *
    * <pre>{@code
    * Subscriber subscriber = Subscriber.newBuilder(subscription, receiver).build();
@@ -312,14 +327,16 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
    * //
    * // By default, Subscriber uses daemon threads (see
    * // https://docs.oracle.com/javase/7/docs/api/java/lang/Thread.html).
-   * // Consequently, once other threads have terminated, Subscriber will not stop the JVM from
+   * // Consequently, once other threads have terminated, Subscriber will not
+   * // stop the JVM from
    * // exiting.
-   * // If the Subscriber should simply run forever, either use the setExecutorProvider method in
+   * // If the Subscriber should simply run forever, either use the
+   * // setExecutorProvider method in
    * // Subscriber.Builder
    * // to use non-daemon threads or run
-   * //   for (;;) {
-   * //     Thread.sleep(Long.MAX_VALUE);
-   * //   }
+   * // for (;;) {
+   * // Thread.sleep(Long.MAX_VALUE);
+   * // }
    * // at the end of main() to previent the main thread from exiting.
    * done.get();
    * subscriber.stopAsync().awaitTerminated();
@@ -338,45 +355,50 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
     try {
       this.subscriberStub = GrpcSubscriberStub.create(subStubSettings);
     } catch (IOException e) {
-      // doesn't matter what we throw, the Service will just catch it and fail to start.
+      // doesn't matter what we throw, the Service will just catch it and fail to
+      // start.
       throw new IllegalStateException(e);
     }
 
     // When started, connections submit tasks to the executor.
-    // These tasks must finish before the connections can declare themselves running.
-    // If we have a single-thread executor and call startStreamingConnections from the
-    // same executor, it will deadlock: the thread will be stuck waiting for connections
+    // These tasks must finish before the connections can declare themselves
+    // running.
+    // If we have a single-thread executor and call startStreamingConnections from
+    // the
+    // same executor, it will deadlock: the thread will be stuck waiting for
+    // connections
     // to start but cannot start the connections.
-    // For this reason, we spawn a dedicated thread. Starting subscriber should be rare.
+    // For this reason, we spawn a dedicated thread. Starting subscriber should be
+    // rare.
     new Thread(
-            new Runnable() {
-              @Override
-              public void run() {
-                try {
-                  startStreamingConnections();
-                  notifyStarted();
-                } catch (Throwable t) {
-                  notifyFailed(t);
-                }
-              }
-            })
+        new Runnable() {
+          @Override
+          public void run() {
+            try {
+              startStreamingConnections();
+              notifyStarted();
+            } catch (Throwable t) {
+              notifyFailed(t);
+            }
+          }
+        })
         .start();
   }
 
   @Override
   protected void doStop() {
     new Thread(
-            new Runnable() {
-              @Override
-              public void run() {
-                try {
-                  runShutdown();
-                  notifyStopped();
-                } catch (Exception e) {
-                  notifyFailed(e);
-                }
-              }
-            })
+        new Runnable() {
+          @Override
+          public void run() {
+            try {
+              runShutdown();
+              notifyStopped();
+            } catch (Exception e) {
+              notifyFailed(e);
+            }
+          }
+        })
         .start();
   }
 
@@ -403,35 +425,33 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
         StreamingSubscriberConnection.Builder streamingSubscriberConnectionBuilder;
 
         if (receiverWithAckResponse != null) {
-          streamingSubscriberConnectionBuilder =
-              StreamingSubscriberConnection.newBuilder(receiverWithAckResponse);
+          streamingSubscriberConnectionBuilder = StreamingSubscriberConnection.newBuilder(receiverWithAckResponse);
         } else {
           streamingSubscriberConnectionBuilder = StreamingSubscriberConnection.newBuilder(receiver);
         }
 
-        StreamingSubscriberConnection streamingSubscriberConnection =
-            streamingSubscriberConnectionBuilder
-                .setSubscription(subscriptionName)
-                .setAckExpirationPadding(ACK_EXPIRATION_PADDING_DEFAULT)
-                .setMaxAckExtensionPeriod(maxAckExtensionPeriod)
-                .setMinDurationPerAckExtension(minDurationPerAckExtension)
-                .setMinDurationPerAckExtensionDefaultUsed(minDurationPerAckExtensionDefaultUsed)
-                .setMaxDurationPerAckExtension(maxDurationPerAckExtension)
-                .setMaxDurationPerAckExtensionDefaultUsed(maxDurationPerAckExtensionDefaultUsed)
-                .setAckLatencyDistribution(ackLatencyDistribution)
-                .setSubscriberStub(subscriberStub)
-                .setChannelAffinity(i)
-                .setFlowControlSettings(flowControlSettings)
-                .setFlowController(flowController)
-                .setUseLegacyFlowControl(useLegacyFlowControl)
-                .setExecutor(executor)
-                .setSystemExecutor(alarmsExecutor)
-                .setClock(clock)
-                .setEnableOpenTelemetryTracing(enableOpenTelemetryTracing)
-                .setTracer(tracer)
-                .setSubscriberShutdownSettings(subscriberShutdownSettings)
-                .setProtocolVersion(protocolVersion)
-                .build();
+        StreamingSubscriberConnection streamingSubscriberConnection = streamingSubscriberConnectionBuilder
+            .setSubscription(subscriptionName)
+            .setAckExpirationPadding(ACK_EXPIRATION_PADDING_DEFAULT)
+            .setMaxAckExtensionPeriod(maxAckExtensionPeriod)
+            .setMinDurationPerAckExtension(minDurationPerAckExtension)
+            .setMinDurationPerAckExtensionDefaultUsed(minDurationPerAckExtensionDefaultUsed)
+            .setMaxDurationPerAckExtension(maxDurationPerAckExtension)
+            .setMaxDurationPerAckExtensionDefaultUsed(maxDurationPerAckExtensionDefaultUsed)
+            .setAckLatencyDistribution(ackLatencyDistribution)
+            .setSubscriberStub(subscriberStub)
+            .setChannelAffinity(i)
+            .setFlowControlSettings(flowControlSettings)
+            .setFlowController(flowController)
+            .setUseLegacyFlowControl(useLegacyFlowControl)
+            .setExecutor(executor)
+            .setSystemExecutor(alarmsExecutor)
+            .setClock(clock)
+            .setEnableOpenTelemetryTracing(enableOpenTelemetryTracing)
+            .setTracer(tracer)
+            .setSubscriberShutdownSettings(subscriberShutdownSettings)
+            .setProtocolVersion(protocolVersion)
+            .build();
 
         streamingSubscriberConnections.add(streamingSubscriberConnection);
       }
@@ -507,16 +527,14 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
 
   /** Builder of {@link Subscriber Subscribers}. */
   public static final class Builder {
-    static final FlowControlSettings DEFAULT_FLOW_CONTROL_SETTINGS =
-        FlowControlSettings.newBuilder()
-            .setMaxOutstandingElementCount(1000L)
-            .setMaxOutstandingRequestBytes(100L * 1024L * 1024L) // 100MB
-            .build();
+    static final FlowControlSettings DEFAULT_FLOW_CONTROL_SETTINGS = FlowControlSettings.newBuilder()
+        .setMaxOutstandingElementCount(1000L)
+        .setMaxOutstandingRequestBytes(100L * 1024L * 1024L) // 100MB
+        .build();
 
-    private static final ExecutorProvider DEFAULT_EXECUTOR_PROVIDER =
-        InstantiatingExecutorProvider.newBuilder()
-            .setExecutorThreadCount(THREADS_PER_CHANNEL)
-            .build();
+    private static final ExecutorProvider DEFAULT_EXECUTOR_PROVIDER = InstantiatingExecutorProvider.newBuilder()
+        .setExecutorThreadCount(THREADS_PER_CHANNEL)
+        .build();
     private static final AtomicInteger SYSTEM_EXECUTOR_COUNTER = new AtomicInteger();
 
     private String subscription;
@@ -534,15 +552,14 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
 
     private ExecutorProvider executorProvider = DEFAULT_EXECUTOR_PROVIDER;
     private ExecutorProvider systemExecutorProvider = null;
-    private TransportChannelProvider channelProvider =
-        SubscriptionAdminSettings.defaultGrpcTransportProviderBuilder()
-            .setMaxInboundMessageSize(MAX_INBOUND_MESSAGE_SIZE)
-            .setMaxInboundMetadataSize(MAX_INBOUND_METADATA_SIZE)
-            .setKeepAliveTimeDuration(java.time.Duration.ofMinutes(5))
-            .build();
+    private TransportChannelProvider channelProvider = SubscriptionAdminSettings.defaultGrpcTransportProviderBuilder()
+        .setMaxInboundMessageSize(MAX_INBOUND_MESSAGE_SIZE)
+        .setMaxInboundMetadataSize(MAX_INBOUND_METADATA_SIZE)
+        .setKeepAliveTimeDuration(java.time.Duration.ofMinutes(5))
+        .build();
     private HeaderProvider headerProvider = new NoHeaderProvider();
-    private CredentialsProvider credentialsProvider =
-        SubscriptionAdminSettings.defaultCredentialsProviderBuilder().build();
+    private CredentialsProvider credentialsProvider = SubscriptionAdminSettings.defaultCredentialsProviderBuilder()
+        .build();
     private Optional<ApiClock> clock = Optional.absent();
     private int parallelPullCount = 1;
     private String endpoint = null;
@@ -553,8 +570,7 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
 
     private long protocolVersion = 0L;
 
-    private SubscriberShutdownSettings subscriberShutdownSettings =
-        SubscriberShutdownSettings.newBuilder().build();
+    private SubscriberShutdownSettings subscriberShutdownSettings = SubscriberShutdownSettings.newBuilder().build();
 
     Builder(String subscription, MessageReceiver receiver) {
       this.subscription = subscription;
@@ -567,11 +583,15 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
     }
 
     /**
-     * {@code ChannelProvider} to use to create Channels, which must point at Cloud Pub/Sub
+     * {@code ChannelProvider} to use to create Channels, which must point at Cloud
+     * Pub/Sub
      * endpoint.
      *
-     * <p>For performance, this client benefits from having multiple channels open at once. Users
-     * are encouraged to provide instances of {@code ChannelProvider} that creates new channels
+     * <p>
+     * For performance, this client benefits from having multiple channels open at
+     * once. Users
+     * are encouraged to provide instances of {@code ChannelProvider} that creates
+     * new channels
      * instead of returning pre-initialized ones.
      */
     public Builder setChannelProvider(TransportChannelProvider channelProvider) {
@@ -580,10 +600,14 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
     }
 
     /**
-     * Sets the static header provider. The header provider will be called during client
-     * construction only once. The headers returned by the provider will be cached and supplied as
-     * is for each request issued by the constructed client. Some reserved headers can be overridden
-     * (e.g. Content-Type) or merged with the default value (e.g. User-Agent) by the underlying
+     * Sets the static header provider. The header provider will be called during
+     * client
+     * construction only once. The headers returned by the provider will be cached
+     * and supplied as
+     * is for each request issued by the constructed client. Some reserved headers
+     * can be overridden
+     * (e.g. Content-Type) or merged with the default value (e.g. User-Agent) by the
+     * underlying
      * transport layer.
      *
      * @param headerProvider the header provider
@@ -598,26 +622,26 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
     /**
      * Sets the flow control settings.
      *
-     * <p>In the example below, the {@link Subscriber} will make sure that
+     * <p>
+     * In the example below, the {@link Subscriber} will make sure that
      *
      * <ul>
-     *   <li>there are at most ten thousand outstanding messages, and
-     *   <li>the combined size of outstanding messages does not exceed 1GB.
+     * <li>there are at most ten thousand outstanding messages, and
+     * <li>the combined size of outstanding messages does not exceed 1GB.
      * </ul>
      *
-     * "Outstanding messages" here means the messages that have already been given to {@link
+     * "Outstanding messages" here means the messages that have already been given
+     * to {@link
      * MessageReceiver} but not yet {@code acked()} or {@code nacked()}.
      *
      * <pre>{@code
-     * FlowControlSettings flowControlSettings =
-     *  FlowControlSettings.newBuilder()
-     *      .setMaxOutstandingElementCount(10_000L)
-     *      .setMaxOutstandingRequestBytes(1_000_000_000L)
-     *      .build();
-     * Subscriber subscriber =
-     *     Subscriber.newBuilder(subscriptionName, receiver)
-     *         .setFlowControlSettings(flowControlSettings)
-     *         .build();
+     * FlowControlSettings flowControlSettings = FlowControlSettings.newBuilder()
+     *     .setMaxOutstandingElementCount(10_000L)
+     *     .setMaxOutstandingRequestBytes(1_000_000_000L)
+     *     .build();
+     * Subscriber subscriber = Subscriber.newBuilder(subscriptionName, receiver)
+     *     .setFlowControlSettings(flowControlSettings)
+     *     .build();
      * }</pre>
      */
     public Builder setFlowControlSettings(FlowControlSettings flowControlSettings) {
@@ -626,7 +650,8 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
     }
 
     /**
-     * Disables enforcing flow control settings at the Cloud PubSub server and uses the less
+     * Disables enforcing flow control settings at the Cloud PubSub server and uses
+     * the less
      * accurate method of only enforcing flow control at the client side.
      */
     public Builder setUseLegacyFlowControl(boolean value) {
@@ -635,7 +660,8 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
     }
 
     /**
-     * This method is obsolete. Use {@link #setMaxAckExtensionPeriodDuration(java.time.Duration)}
+     * This method is obsolete. Use
+     * {@link #setMaxAckExtensionPeriodDuration(java.time.Duration)}
      * instead.
      */
     @ObsoleteApi("Use setMaxAckExtensionPeriodDuration(java.time.Duration) instead")
@@ -644,13 +670,18 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
     }
 
     /**
-     * Set the maximum period a message ack deadline will be extended. Defaults to one hour.
+     * Set the maximum period a message ack deadline will be extended. Defaults to
+     * one hour.
      *
-     * <p>It is recommended to set this value to a reasonable upper bound of the subscriber time to
-     * process any message. This maximum period avoids messages to be <i>locked</i> by a subscriber
+     * <p>
+     * It is recommended to set this value to a reasonable upper bound of the
+     * subscriber time to
+     * process any message. This maximum period avoids messages to be <i>locked</i>
+     * by a subscriber
      * in cases when the ack reply is lost.
      *
-     * <p>A zero duration effectively disables auto deadline extensions.
+     * <p>
+     * A zero duration effectively disables auto deadline extensions.
      */
     public Builder setMaxAckExtensionPeriodDuration(java.time.Duration maxAckExtensionPeriod) {
       Preconditions.checkArgument(maxAckExtensionPeriod.toMillis() >= 0);
@@ -671,12 +702,17 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
     /**
      * Set the upper bound for a single mod ack extention period.
      *
-     * <p>The ack deadline will continue to be extended by up to this duration until
-     * MaxAckExtensionPeriod is reached. Setting MaxDurationPerAckExtension bounds the maximum
-     * amount of time before a mesage re-delivery in the event the Subscriber fails to extend the
+     * <p>
+     * The ack deadline will continue to be extended by up to this duration until
+     * MaxAckExtensionPeriod is reached. Setting MaxDurationPerAckExtension bounds
+     * the maximum
+     * amount of time before a mesage re-delivery in the event the Subscriber fails
+     * to extend the
      * deadline.
      *
-     * <p>MaxDurationPerAckExtension configuration can be disabled by specifying a zero duration.
+     * <p>
+     * MaxDurationPerAckExtension configuration can be disabled by specifying a zero
+     * duration.
      */
     public Builder setMaxDurationPerAckExtensionDuration(
         java.time.Duration maxDurationPerAckExtension) {
@@ -684,8 +720,7 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
       Preconditions.checkArgument(
           maxDurationPerAckExtension.toMillis() >= 0
               && (this.minDurationPerAckExtensionDefaultUsed
-                  || (this.minDurationPerAckExtension.toMillis()
-                      < maxDurationPerAckExtension.toMillis())));
+                  || (this.minDurationPerAckExtension.toMillis() < maxDurationPerAckExtension.toMillis())));
       this.maxDurationPerAckExtension = maxDurationPerAckExtension;
       this.maxDurationPerAckExtensionDefaultUsed = false;
       return this;
@@ -704,12 +739,17 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
     /**
      * Set the lower bound for a single mod ack extention period.
      *
-     * <p>The ack deadline will continue to be extended by up to this duration until
-     * MinAckExtensionPeriod is reached. Setting MinDurationPerAckExtension bounds the minimum
-     * amount of time before a mesage re-delivery in the event the Subscriber fails to extend the
+     * <p>
+     * The ack deadline will continue to be extended by up to this duration until
+     * MinAckExtensionPeriod is reached. Setting MinDurationPerAckExtension bounds
+     * the minimum
+     * amount of time before a mesage re-delivery in the event the Subscriber fails
+     * to extend the
      * deadline.
      *
-     * <p>MinDurationPerAckExtension configuration can be disabled by specifying a zero duration.
+     * <p>
+     * MinDurationPerAckExtension configuration can be disabled by specifying a zero
+     * duration.
      */
     public Builder setMinDurationPerAckExtensionDuration(
         java.time.Duration minDurationPerAckExtension) {
@@ -717,8 +757,7 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
       Preconditions.checkArgument(
           minDurationPerAckExtension.toMillis() >= 0
               && (this.maxDurationPerAckExtensionDefaultUsed
-                  || (minDurationPerAckExtension.toMillis()
-                      < this.maxDurationPerAckExtension.toMillis())));
+                  || (minDurationPerAckExtension.toMillis() < this.maxDurationPerAckExtension.toMillis())));
 
       this.minDurationPerAckExtension = minDurationPerAckExtension;
       this.minDurationPerAckExtensionDefaultUsed = false;
@@ -726,7 +765,8 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
     }
 
     /**
-     * Gives the ability to set a custom executor. {@link ExecutorProvider#getExecutor()} will be
+     * Gives the ability to set a custom executor.
+     * {@link ExecutorProvider#getExecutor()} will be
      * called {@link Builder#parallelPullCount} times.
      */
     public Builder setExecutorProvider(ExecutorProvider executorProvider) {
@@ -734,14 +774,18 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
       return this;
     }
 
-    /** {@code CredentialsProvider} to use to create Credentials to authenticate calls. */
+    /**
+     * {@code CredentialsProvider} to use to create Credentials to authenticate
+     * calls.
+     */
     public Builder setCredentialsProvider(CredentialsProvider credentialsProvider) {
       this.credentialsProvider = Preconditions.checkNotNull(credentialsProvider);
       return this;
     }
 
     /**
-     * Gives the ability to set a custom executor for managing lease extensions. If none is provided
+     * Gives the ability to set a custom executor for managing lease extensions. If
+     * none is provided
      * a shared one will be used by all {@link Subscriber} instances.
      */
     public Builder setSystemExecutorProvider(ExecutorProvider executorProvider) {
@@ -750,7 +794,8 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
     }
 
     /**
-     * Sets the number of StreamingPull streams to pull messages from the subscription. Defaults to
+     * Sets the number of StreamingPull streams to pull messages from the
+     * subscription. Defaults to
      * one.
      */
     public Builder setParallelPullCount(int parallelPullCount) {
@@ -783,10 +828,14 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
     }
 
     /**
-     * OpenTelemetry will be enabled if setEnableOpenTelemetry is true and and instance of
-     * OpenTelemetry has been provied. Warning: traces are subject to change. The name and
-     * attributes of a span might change without notice. Only use run traces interactively. Don't
-     * use in automation. Running non-interactive traces can cause problems if the underlying trace
+     * OpenTelemetry will be enabled if setEnableOpenTelemetry is true and and
+     * instance of
+     * OpenTelemetry has been provied. Warning: traces are subject to change. The
+     * name and
+     * attributes of a span might change without notice. Only use run traces
+     * interactively. Don't
+     * use in automation. Running non-interactive traces can cause problems if the
+     * underlying trace
      * architecture changes without notice.
      */
 
@@ -806,42 +855,41 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
      * Sets the shutdown settings for the subscriber. Defaults to {@link
      * SubscriberShutdownSettings#newBuilder() default settings}.
      */
-    @BetaApi(
-        "The surface for SubscriberShutdownSettings is not stable yet and may be changed in the"
-            + " future.")
+    @BetaApi("The surface for SubscriberShutdownSettings is not stable yet and may be changed in the"
+        + " future.")
     public Builder setSubscriberShutdownSettings(
         SubscriberShutdownSettings subscriberShutdownSettings) {
       this.subscriberShutdownSettings = Preconditions.checkNotNull(subscriberShutdownSettings);
       return this;
     }
 
-    /** Returns the default FlowControlSettings used by the client if settings are not provided. */
+    /**
+     * Returns the default FlowControlSettings used by the client if settings are
+     * not provided.
+     */
     public static FlowControlSettings getDefaultFlowControlSettings() {
       return DEFAULT_FLOW_CONTROL_SETTINGS;
     }
 
     public Subscriber build() {
       if (systemExecutorProvider == null) {
-        ThreadFactory threadFactory =
-            new ThreadFactoryBuilder()
-                .setDaemon(true)
-                .setNameFormat("Subscriber-SE-" + SYSTEM_EXECUTOR_COUNTER.incrementAndGet() + "-%d")
-                .build();
+        ThreadFactory threadFactory = new ThreadFactoryBuilder()
+            .setDaemon(true)
+            .setNameFormat("Subscriber-SE-" + SYSTEM_EXECUTOR_COUNTER.incrementAndGet() + "-%d")
+            .build();
         int threadCount = Math.max(6, 2 * parallelPullCount);
-        final ScheduledExecutorService executor =
-            Executors.newScheduledThreadPool(threadCount, threadFactory);
-        systemExecutorProvider =
-            new ExecutorProvider() {
-              @Override
-              public boolean shouldAutoClose() {
-                return true;
-              }
+        final ScheduledExecutorService executor = Executors.newScheduledThreadPool(threadCount, threadFactory);
+        systemExecutorProvider = new ExecutorProvider() {
+          @Override
+          public boolean shouldAutoClose() {
+            return true;
+          }
 
-              @Override
-              public ScheduledExecutorService getExecutor() {
-                return executor;
-              }
-            };
+          @Override
+          public ScheduledExecutorService getExecutor() {
+            return executor;
+          }
+        };
       }
       return new Subscriber(this);
     }
