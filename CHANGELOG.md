@@ -1,5 +1,62 @@
 # Changelog
 
+## [1.144.1](https://github.com/googleapis/java-pubsub/compare/v1.144.0...v1.144.1) (2025-12-22)
+
+
+### Bug Fixes
+
+* Lower the Subscriber protocol version to disable the streaming pull keepalive feature ([#2652](https://github.com/googleapis/java-pubsub/issues/2652)) ([ca99c2a](https://github.com/googleapis/java-pubsub/commit/ca99c2a2cea8201ea6f71e7383bd6123ec32ebdc))
+
+## [1.144.0](https://github.com/googleapis/java-pubsub/compare/v1.143.1...v1.144.0) (2025-12-11)
+
+
+### Features
+
+* Add keepalive feature to tear down streams in their absence ([#2605](https://github.com/googleapis/java-pubsub/issues/2605)) ([99aca4f](https://github.com/googleapis/java-pubsub/commit/99aca4f3fd1792b02da78320bed39e53dc8af23c))
+* Make v1 the default protocolVersion ([#2623](https://github.com/googleapis/java-pubsub/issues/2623)) ([12f014d](https://github.com/googleapis/java-pubsub/commit/12f014d9030b2472e508fa75a71f43e671a64583))
+
+
+### Bug Fixes
+
+* **deps:** Update the Java code generator (gapic-generator-java) to 2.64.2 ([b4b7f83](https://github.com/googleapis/java-pubsub/commit/b4b7f839b2be1ce003667018a10d9c460e4b63b1))
+
+
+### Dependencies
+
+* Update actions/checkout action to v5 ([#2613](https://github.com/googleapis/java-pubsub/issues/2613)) ([a69ffdd](https://github.com/googleapis/java-pubsub/commit/a69ffdd9ecb5dae557a847ae7ec5c1a06431bef7))
+* Update actions/checkout action to v6 ([#2619](https://github.com/googleapis/java-pubsub/issues/2619)) ([6cd2bb6](https://github.com/googleapis/java-pubsub/commit/6cd2bb6e9c927dd192833efc7c3549dfa9c84f57))
+* Update dependency com.google.cloud:google-cloud-bigquery to v2.56.0 ([#2617](https://github.com/googleapis/java-pubsub/issues/2617)) ([13d5e3d](https://github.com/googleapis/java-pubsub/commit/13d5e3d8e4069a0e94db3cf825eb821d06cc9345))
+* Update dependency com.google.cloud:google-cloud-core to v2.62.1 ([#2608](https://github.com/googleapis/java-pubsub/issues/2608)) ([fee0500](https://github.com/googleapis/java-pubsub/commit/fee0500bf6a0e309ca5f162810e22a2ca4c5b7eb))
+* Update dependency com.google.cloud:google-cloud-core to v2.62.2 ([#2632](https://github.com/googleapis/java-pubsub/issues/2632)) ([2d567d1](https://github.com/googleapis/java-pubsub/commit/2d567d16f7f546586156e2e2ee17c433fbec5fc2))
+* Update dependency com.google.cloud:google-cloud-storage to v2.60.0 ([#2610](https://github.com/googleapis/java-pubsub/issues/2610)) ([1cae247](https://github.com/googleapis/java-pubsub/commit/1cae247322fff1b6588a4b523e601e41a4284c64))
+* Update dependency com.google.cloud:sdk-platform-java-config to v3.54.2 ([#2633](https://github.com/googleapis/java-pubsub/issues/2633)) ([5081aac](https://github.com/googleapis/java-pubsub/commit/5081aac1fc26fcaca004c730982d0e56ed36e32f))
+* Update dependency com.google.protobuf:protobuf-java-util to v4.33.1 ([#2612](https://github.com/googleapis/java-pubsub/issues/2612)) ([e92debc](https://github.com/googleapis/java-pubsub/commit/e92debccf9e87971c2d9fee34baffb4b534f24a3))
+* Update dependency com.google.protobuf:protobuf-java-util to v4.33.2 ([#2625](https://github.com/googleapis/java-pubsub/issues/2625)) ([900783f](https://github.com/googleapis/java-pubsub/commit/900783ff8b135b42088c37b48cdc1a7ee44d4e08))
+
+
+### Documentation
+
+* Add the IDENTIFIER field behavior annotation to fields of Cloud Pub/Sub methods that represent a specific identity and need to be sourced with additional care ([b4b7f83](https://github.com/googleapis/java-pubsub/commit/b4b7f839b2be1ce003667018a10d9c460e4b63b1))
+
+## [1.143.1](https://github.com/googleapis/java-pubsub/compare/v1.143.0...v1.143.1) (2025-11-13)
+
+
+### Bug Fixes
+
+* Deflake WaiterTest ([#2600](https://github.com/googleapis/java-pubsub/issues/2600)) ([298c8db](https://github.com/googleapis/java-pubsub/commit/298c8db04616341da040935636b1a04ce5f022a0))
+* **deps:** Update the Java code generator (gapic-generator-java) to 2.64.1 ([b210251](https://github.com/googleapis/java-pubsub/commit/b2102516bf833c2704c85cb348b67bb7cbfdb3a6))
+
+
+### Dependencies
+
+* Remove OpenTelemetry semconv dependency ([#2611](https://github.com/googleapis/java-pubsub/issues/2611)) ([240fc37](https://github.com/googleapis/java-pubsub/commit/240fc3784db3860eb2668946fbf861beed2647d7))
+* Update actions/checkout action to v5 ([#2592](https://github.com/googleapis/java-pubsub/issues/2592)) ([6ca466d](https://github.com/googleapis/java-pubsub/commit/6ca466d382ddde9780ae1c8627092d731e314f90))
+* Update dependency com.google.cloud:google-cloud-bigquery to v2.55.3 ([#2602](https://github.com/googleapis/java-pubsub/issues/2602)) ([d14106c](https://github.com/googleapis/java-pubsub/commit/d14106cc278c98d3f954f959e2dd3764ebd20fc2))
+* Update dependency com.google.cloud:google-cloud-core to v2.61.0 ([#2588](https://github.com/googleapis/java-pubsub/issues/2588)) ([244cf75](https://github.com/googleapis/java-pubsub/commit/244cf758bf46f8431a17b1d8e76d1d90c494fc76))
+* Update dependency com.google.cloud:google-cloud-storage to v2.59.0 ([#2603](https://github.com/googleapis/java-pubsub/issues/2603)) ([d9d05bf](https://github.com/googleapis/java-pubsub/commit/d9d05bfa18580cdacdfa9378d30b56ce0ae0d4d2))
+* Update dependency com.google.cloud:sdk-platform-java-config to v3.54.1 ([#2609](https://github.com/googleapis/java-pubsub/issues/2609)) ([c99373f](https://github.com/googleapis/java-pubsub/commit/c99373f2d25c6b9f1bcb6aace3c6625375310a16))
+* Update dependency com.google.protobuf:protobuf-java-util to v4.33.0 ([#2587](https://github.com/googleapis/java-pubsub/issues/2587)) ([33724ce](https://github.com/googleapis/java-pubsub/commit/33724cef79e3f7e798c5ef222ee7dff3565555f8))
+
 ## [1.143.0](https://github.com/googleapis/java-pubsub/compare/v1.142.0...v1.143.0) (2025-10-20)
 
 
