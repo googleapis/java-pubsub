@@ -18,6 +18,9 @@ package com.google.cloud.pubsub.v1;
 
 import static com.google.cloud.pubsub.v1.SchemaServiceClient.ListSchemaRevisionsPagedResponse;
 import static com.google.cloud.pubsub.v1.SchemaServiceClient.ListSchemasPagedResponse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import com.google.api.gax.core.NoCredentialsProvider;
 import com.google.api.gax.httpjson.GaxHttpJsonProperties;
@@ -56,19 +59,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javax.annotation.Generated;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 @Generated("by gapic-generator-java")
 public class SchemaServiceClientHttpJsonTest {
   private static MockHttpService mockService;
   private static SchemaServiceClient client;
 
-  @BeforeClass
+  @BeforeAll
   public static void startStaticServer() throws IOException {
     mockService =
         new MockHttpService(
@@ -85,15 +87,15 @@ public class SchemaServiceClientHttpJsonTest {
     client = SchemaServiceClient.create(settings);
   }
 
-  @AfterClass
+  @AfterAll
   public static void stopServer() {
     client.close();
   }
 
-  @Before
+  @BeforeEach
   public void setUp() {}
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
     mockService.reset();
   }
@@ -114,10 +116,10 @@ public class SchemaServiceClientHttpJsonTest {
     String schemaId = "schemaId-697673060";
 
     Schema actualResponse = client.createSchema(parent, schema, schemaId);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<String> actualRequests = mockService.getRequestPaths();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
 
     String apiClientHeaderKey =
         mockService
@@ -125,7 +127,7 @@ public class SchemaServiceClientHttpJsonTest {
             .get(ApiClientHeaderProvider.getDefaultApiClientHeaderKey())
             .iterator()
             .next();
-    Assert.assertTrue(
+    assertTrue(
         GaxHttpJsonProperties.getDefaultApiClientHeaderPattern()
             .matcher(apiClientHeaderKey)
             .matches());
@@ -143,7 +145,7 @@ public class SchemaServiceClientHttpJsonTest {
       Schema schema = Schema.newBuilder().build();
       String schemaId = "schemaId-697673060";
       client.createSchema(parent, schema, schemaId);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -165,10 +167,10 @@ public class SchemaServiceClientHttpJsonTest {
     String schemaId = "schemaId-697673060";
 
     Schema actualResponse = client.createSchema(parent, schema, schemaId);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<String> actualRequests = mockService.getRequestPaths();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
 
     String apiClientHeaderKey =
         mockService
@@ -176,7 +178,7 @@ public class SchemaServiceClientHttpJsonTest {
             .get(ApiClientHeaderProvider.getDefaultApiClientHeaderKey())
             .iterator()
             .next();
-    Assert.assertTrue(
+    assertTrue(
         GaxHttpJsonProperties.getDefaultApiClientHeaderPattern()
             .matcher(apiClientHeaderKey)
             .matches());
@@ -194,7 +196,7 @@ public class SchemaServiceClientHttpJsonTest {
       Schema schema = Schema.newBuilder().build();
       String schemaId = "schemaId-697673060";
       client.createSchema(parent, schema, schemaId);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -214,10 +216,10 @@ public class SchemaServiceClientHttpJsonTest {
     SchemaName name = SchemaName.of("[PROJECT]", "[SCHEMA]");
 
     Schema actualResponse = client.getSchema(name);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<String> actualRequests = mockService.getRequestPaths();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
 
     String apiClientHeaderKey =
         mockService
@@ -225,7 +227,7 @@ public class SchemaServiceClientHttpJsonTest {
             .get(ApiClientHeaderProvider.getDefaultApiClientHeaderKey())
             .iterator()
             .next();
-    Assert.assertTrue(
+    assertTrue(
         GaxHttpJsonProperties.getDefaultApiClientHeaderPattern()
             .matcher(apiClientHeaderKey)
             .matches());
@@ -241,7 +243,7 @@ public class SchemaServiceClientHttpJsonTest {
     try {
       SchemaName name = SchemaName.of("[PROJECT]", "[SCHEMA]");
       client.getSchema(name);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -261,10 +263,10 @@ public class SchemaServiceClientHttpJsonTest {
     String name = "projects/project-5662/schemas/schema-5662";
 
     Schema actualResponse = client.getSchema(name);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<String> actualRequests = mockService.getRequestPaths();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
 
     String apiClientHeaderKey =
         mockService
@@ -272,7 +274,7 @@ public class SchemaServiceClientHttpJsonTest {
             .get(ApiClientHeaderProvider.getDefaultApiClientHeaderKey())
             .iterator()
             .next();
-    Assert.assertTrue(
+    assertTrue(
         GaxHttpJsonProperties.getDefaultApiClientHeaderPattern()
             .matcher(apiClientHeaderKey)
             .matches());
@@ -288,7 +290,7 @@ public class SchemaServiceClientHttpJsonTest {
     try {
       String name = "projects/project-5662/schemas/schema-5662";
       client.getSchema(name);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -310,11 +312,11 @@ public class SchemaServiceClientHttpJsonTest {
 
     List<Schema> resources = Lists.newArrayList(pagedListResponse.iterateAll());
 
-    Assert.assertEquals(1, resources.size());
-    Assert.assertEquals(expectedResponse.getSchemasList().get(0), resources.get(0));
+    assertEquals(1, resources.size());
+    assertEquals(expectedResponse.getSchemasList().get(0), resources.get(0));
 
     List<String> actualRequests = mockService.getRequestPaths();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
 
     String apiClientHeaderKey =
         mockService
@@ -322,7 +324,7 @@ public class SchemaServiceClientHttpJsonTest {
             .get(ApiClientHeaderProvider.getDefaultApiClientHeaderKey())
             .iterator()
             .next();
-    Assert.assertTrue(
+    assertTrue(
         GaxHttpJsonProperties.getDefaultApiClientHeaderPattern()
             .matcher(apiClientHeaderKey)
             .matches());
@@ -338,7 +340,7 @@ public class SchemaServiceClientHttpJsonTest {
     try {
       ProjectName parent = ProjectName.of("[PROJECT]");
       client.listSchemas(parent);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -360,11 +362,11 @@ public class SchemaServiceClientHttpJsonTest {
 
     List<Schema> resources = Lists.newArrayList(pagedListResponse.iterateAll());
 
-    Assert.assertEquals(1, resources.size());
-    Assert.assertEquals(expectedResponse.getSchemasList().get(0), resources.get(0));
+    assertEquals(1, resources.size());
+    assertEquals(expectedResponse.getSchemasList().get(0), resources.get(0));
 
     List<String> actualRequests = mockService.getRequestPaths();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
 
     String apiClientHeaderKey =
         mockService
@@ -372,7 +374,7 @@ public class SchemaServiceClientHttpJsonTest {
             .get(ApiClientHeaderProvider.getDefaultApiClientHeaderKey())
             .iterator()
             .next();
-    Assert.assertTrue(
+    assertTrue(
         GaxHttpJsonProperties.getDefaultApiClientHeaderPattern()
             .matcher(apiClientHeaderKey)
             .matches());
@@ -388,7 +390,7 @@ public class SchemaServiceClientHttpJsonTest {
     try {
       String parent = "projects/project-2353";
       client.listSchemas(parent);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -410,11 +412,11 @@ public class SchemaServiceClientHttpJsonTest {
 
     List<Schema> resources = Lists.newArrayList(pagedListResponse.iterateAll());
 
-    Assert.assertEquals(1, resources.size());
-    Assert.assertEquals(expectedResponse.getSchemasList().get(0), resources.get(0));
+    assertEquals(1, resources.size());
+    assertEquals(expectedResponse.getSchemasList().get(0), resources.get(0));
 
     List<String> actualRequests = mockService.getRequestPaths();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
 
     String apiClientHeaderKey =
         mockService
@@ -422,7 +424,7 @@ public class SchemaServiceClientHttpJsonTest {
             .get(ApiClientHeaderProvider.getDefaultApiClientHeaderKey())
             .iterator()
             .next();
-    Assert.assertTrue(
+    assertTrue(
         GaxHttpJsonProperties.getDefaultApiClientHeaderPattern()
             .matcher(apiClientHeaderKey)
             .matches());
@@ -438,7 +440,7 @@ public class SchemaServiceClientHttpJsonTest {
     try {
       SchemaName name = SchemaName.of("[PROJECT]", "[SCHEMA]");
       client.listSchemaRevisions(name);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -460,11 +462,11 @@ public class SchemaServiceClientHttpJsonTest {
 
     List<Schema> resources = Lists.newArrayList(pagedListResponse.iterateAll());
 
-    Assert.assertEquals(1, resources.size());
-    Assert.assertEquals(expectedResponse.getSchemasList().get(0), resources.get(0));
+    assertEquals(1, resources.size());
+    assertEquals(expectedResponse.getSchemasList().get(0), resources.get(0));
 
     List<String> actualRequests = mockService.getRequestPaths();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
 
     String apiClientHeaderKey =
         mockService
@@ -472,7 +474,7 @@ public class SchemaServiceClientHttpJsonTest {
             .get(ApiClientHeaderProvider.getDefaultApiClientHeaderKey())
             .iterator()
             .next();
-    Assert.assertTrue(
+    assertTrue(
         GaxHttpJsonProperties.getDefaultApiClientHeaderPattern()
             .matcher(apiClientHeaderKey)
             .matches());
@@ -488,7 +490,7 @@ public class SchemaServiceClientHttpJsonTest {
     try {
       String name = "projects/project-5662/schemas/schema-5662";
       client.listSchemaRevisions(name);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -509,10 +511,10 @@ public class SchemaServiceClientHttpJsonTest {
     Schema schema = Schema.newBuilder().build();
 
     Schema actualResponse = client.commitSchema(name, schema);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<String> actualRequests = mockService.getRequestPaths();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
 
     String apiClientHeaderKey =
         mockService
@@ -520,7 +522,7 @@ public class SchemaServiceClientHttpJsonTest {
             .get(ApiClientHeaderProvider.getDefaultApiClientHeaderKey())
             .iterator()
             .next();
-    Assert.assertTrue(
+    assertTrue(
         GaxHttpJsonProperties.getDefaultApiClientHeaderPattern()
             .matcher(apiClientHeaderKey)
             .matches());
@@ -537,7 +539,7 @@ public class SchemaServiceClientHttpJsonTest {
       SchemaName name = SchemaName.of("[PROJECT]", "[SCHEMA]");
       Schema schema = Schema.newBuilder().build();
       client.commitSchema(name, schema);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -558,10 +560,10 @@ public class SchemaServiceClientHttpJsonTest {
     Schema schema = Schema.newBuilder().build();
 
     Schema actualResponse = client.commitSchema(name, schema);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<String> actualRequests = mockService.getRequestPaths();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
 
     String apiClientHeaderKey =
         mockService
@@ -569,7 +571,7 @@ public class SchemaServiceClientHttpJsonTest {
             .get(ApiClientHeaderProvider.getDefaultApiClientHeaderKey())
             .iterator()
             .next();
-    Assert.assertTrue(
+    assertTrue(
         GaxHttpJsonProperties.getDefaultApiClientHeaderPattern()
             .matcher(apiClientHeaderKey)
             .matches());
@@ -586,7 +588,7 @@ public class SchemaServiceClientHttpJsonTest {
       String name = "projects/project-5662/schemas/schema-5662";
       Schema schema = Schema.newBuilder().build();
       client.commitSchema(name, schema);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -607,10 +609,10 @@ public class SchemaServiceClientHttpJsonTest {
     String revisionId = "revisionId-1507445162";
 
     Schema actualResponse = client.rollbackSchema(name, revisionId);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<String> actualRequests = mockService.getRequestPaths();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
 
     String apiClientHeaderKey =
         mockService
@@ -618,7 +620,7 @@ public class SchemaServiceClientHttpJsonTest {
             .get(ApiClientHeaderProvider.getDefaultApiClientHeaderKey())
             .iterator()
             .next();
-    Assert.assertTrue(
+    assertTrue(
         GaxHttpJsonProperties.getDefaultApiClientHeaderPattern()
             .matcher(apiClientHeaderKey)
             .matches());
@@ -635,7 +637,7 @@ public class SchemaServiceClientHttpJsonTest {
       SchemaName name = SchemaName.of("[PROJECT]", "[SCHEMA]");
       String revisionId = "revisionId-1507445162";
       client.rollbackSchema(name, revisionId);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -656,10 +658,10 @@ public class SchemaServiceClientHttpJsonTest {
     String revisionId = "revisionId-1507445162";
 
     Schema actualResponse = client.rollbackSchema(name, revisionId);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<String> actualRequests = mockService.getRequestPaths();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
 
     String apiClientHeaderKey =
         mockService
@@ -667,7 +669,7 @@ public class SchemaServiceClientHttpJsonTest {
             .get(ApiClientHeaderProvider.getDefaultApiClientHeaderKey())
             .iterator()
             .next();
-    Assert.assertTrue(
+    assertTrue(
         GaxHttpJsonProperties.getDefaultApiClientHeaderPattern()
             .matcher(apiClientHeaderKey)
             .matches());
@@ -684,7 +686,7 @@ public class SchemaServiceClientHttpJsonTest {
       String name = "projects/project-5662/schemas/schema-5662";
       String revisionId = "revisionId-1507445162";
       client.rollbackSchema(name, revisionId);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -705,10 +707,10 @@ public class SchemaServiceClientHttpJsonTest {
     String revisionId = "revisionId-1507445162";
 
     Schema actualResponse = client.deleteSchemaRevision(name, revisionId);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<String> actualRequests = mockService.getRequestPaths();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
 
     String apiClientHeaderKey =
         mockService
@@ -716,7 +718,7 @@ public class SchemaServiceClientHttpJsonTest {
             .get(ApiClientHeaderProvider.getDefaultApiClientHeaderKey())
             .iterator()
             .next();
-    Assert.assertTrue(
+    assertTrue(
         GaxHttpJsonProperties.getDefaultApiClientHeaderPattern()
             .matcher(apiClientHeaderKey)
             .matches());
@@ -733,7 +735,7 @@ public class SchemaServiceClientHttpJsonTest {
       SchemaName name = SchemaName.of("[PROJECT]", "[SCHEMA]");
       String revisionId = "revisionId-1507445162";
       client.deleteSchemaRevision(name, revisionId);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -754,10 +756,10 @@ public class SchemaServiceClientHttpJsonTest {
     String revisionId = "revisionId-1507445162";
 
     Schema actualResponse = client.deleteSchemaRevision(name, revisionId);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<String> actualRequests = mockService.getRequestPaths();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
 
     String apiClientHeaderKey =
         mockService
@@ -765,7 +767,7 @@ public class SchemaServiceClientHttpJsonTest {
             .get(ApiClientHeaderProvider.getDefaultApiClientHeaderKey())
             .iterator()
             .next();
-    Assert.assertTrue(
+    assertTrue(
         GaxHttpJsonProperties.getDefaultApiClientHeaderPattern()
             .matcher(apiClientHeaderKey)
             .matches());
@@ -782,7 +784,7 @@ public class SchemaServiceClientHttpJsonTest {
       String name = "projects/project-5662/schemas/schema-5662";
       String revisionId = "revisionId-1507445162";
       client.deleteSchemaRevision(name, revisionId);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -798,7 +800,7 @@ public class SchemaServiceClientHttpJsonTest {
     client.deleteSchema(name);
 
     List<String> actualRequests = mockService.getRequestPaths();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
 
     String apiClientHeaderKey =
         mockService
@@ -806,7 +808,7 @@ public class SchemaServiceClientHttpJsonTest {
             .get(ApiClientHeaderProvider.getDefaultApiClientHeaderKey())
             .iterator()
             .next();
-    Assert.assertTrue(
+    assertTrue(
         GaxHttpJsonProperties.getDefaultApiClientHeaderPattern()
             .matcher(apiClientHeaderKey)
             .matches());
@@ -822,7 +824,7 @@ public class SchemaServiceClientHttpJsonTest {
     try {
       SchemaName name = SchemaName.of("[PROJECT]", "[SCHEMA]");
       client.deleteSchema(name);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -838,7 +840,7 @@ public class SchemaServiceClientHttpJsonTest {
     client.deleteSchema(name);
 
     List<String> actualRequests = mockService.getRequestPaths();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
 
     String apiClientHeaderKey =
         mockService
@@ -846,7 +848,7 @@ public class SchemaServiceClientHttpJsonTest {
             .get(ApiClientHeaderProvider.getDefaultApiClientHeaderKey())
             .iterator()
             .next();
-    Assert.assertTrue(
+    assertTrue(
         GaxHttpJsonProperties.getDefaultApiClientHeaderPattern()
             .matcher(apiClientHeaderKey)
             .matches());
@@ -862,7 +864,7 @@ public class SchemaServiceClientHttpJsonTest {
     try {
       String name = "projects/project-5662/schemas/schema-5662";
       client.deleteSchema(name);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -877,10 +879,10 @@ public class SchemaServiceClientHttpJsonTest {
     Schema schema = Schema.newBuilder().build();
 
     ValidateSchemaResponse actualResponse = client.validateSchema(parent, schema);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<String> actualRequests = mockService.getRequestPaths();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
 
     String apiClientHeaderKey =
         mockService
@@ -888,7 +890,7 @@ public class SchemaServiceClientHttpJsonTest {
             .get(ApiClientHeaderProvider.getDefaultApiClientHeaderKey())
             .iterator()
             .next();
-    Assert.assertTrue(
+    assertTrue(
         GaxHttpJsonProperties.getDefaultApiClientHeaderPattern()
             .matcher(apiClientHeaderKey)
             .matches());
@@ -905,7 +907,7 @@ public class SchemaServiceClientHttpJsonTest {
       ProjectName parent = ProjectName.of("[PROJECT]");
       Schema schema = Schema.newBuilder().build();
       client.validateSchema(parent, schema);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -920,10 +922,10 @@ public class SchemaServiceClientHttpJsonTest {
     Schema schema = Schema.newBuilder().build();
 
     ValidateSchemaResponse actualResponse = client.validateSchema(parent, schema);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<String> actualRequests = mockService.getRequestPaths();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
 
     String apiClientHeaderKey =
         mockService
@@ -931,7 +933,7 @@ public class SchemaServiceClientHttpJsonTest {
             .get(ApiClientHeaderProvider.getDefaultApiClientHeaderKey())
             .iterator()
             .next();
-    Assert.assertTrue(
+    assertTrue(
         GaxHttpJsonProperties.getDefaultApiClientHeaderPattern()
             .matcher(apiClientHeaderKey)
             .matches());
@@ -948,7 +950,7 @@ public class SchemaServiceClientHttpJsonTest {
       String parent = "projects/project-2353";
       Schema schema = Schema.newBuilder().build();
       client.validateSchema(parent, schema);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -967,10 +969,10 @@ public class SchemaServiceClientHttpJsonTest {
             .build();
 
     ValidateMessageResponse actualResponse = client.validateMessage(request);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<String> actualRequests = mockService.getRequestPaths();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
 
     String apiClientHeaderKey =
         mockService
@@ -978,7 +980,7 @@ public class SchemaServiceClientHttpJsonTest {
             .get(ApiClientHeaderProvider.getDefaultApiClientHeaderKey())
             .iterator()
             .next();
-    Assert.assertTrue(
+    assertTrue(
         GaxHttpJsonProperties.getDefaultApiClientHeaderPattern()
             .matcher(apiClientHeaderKey)
             .matches());
@@ -999,7 +1001,7 @@ public class SchemaServiceClientHttpJsonTest {
               .setEncoding(Encoding.forNumber(0))
               .build();
       client.validateMessage(request);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -1024,10 +1026,10 @@ public class SchemaServiceClientHttpJsonTest {
             .build();
 
     Policy actualResponse = client.setIamPolicy(request);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<String> actualRequests = mockService.getRequestPaths();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
 
     String apiClientHeaderKey =
         mockService
@@ -1035,7 +1037,7 @@ public class SchemaServiceClientHttpJsonTest {
             .get(ApiClientHeaderProvider.getDefaultApiClientHeaderKey())
             .iterator()
             .next();
-    Assert.assertTrue(
+    assertTrue(
         GaxHttpJsonProperties.getDefaultApiClientHeaderPattern()
             .matcher(apiClientHeaderKey)
             .matches());
@@ -1056,7 +1058,7 @@ public class SchemaServiceClientHttpJsonTest {
               .setUpdateMask(FieldMask.newBuilder().build())
               .build();
       client.setIamPolicy(request);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -1080,10 +1082,10 @@ public class SchemaServiceClientHttpJsonTest {
             .build();
 
     Policy actualResponse = client.getIamPolicy(request);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<String> actualRequests = mockService.getRequestPaths();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
 
     String apiClientHeaderKey =
         mockService
@@ -1091,7 +1093,7 @@ public class SchemaServiceClientHttpJsonTest {
             .get(ApiClientHeaderProvider.getDefaultApiClientHeaderKey())
             .iterator()
             .next();
-    Assert.assertTrue(
+    assertTrue(
         GaxHttpJsonProperties.getDefaultApiClientHeaderPattern()
             .matcher(apiClientHeaderKey)
             .matches());
@@ -1111,7 +1113,7 @@ public class SchemaServiceClientHttpJsonTest {
               .setOptions(GetPolicyOptions.newBuilder().build())
               .build();
       client.getIamPolicy(request);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -1130,10 +1132,10 @@ public class SchemaServiceClientHttpJsonTest {
             .build();
 
     TestIamPermissionsResponse actualResponse = client.testIamPermissions(request);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<String> actualRequests = mockService.getRequestPaths();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
 
     String apiClientHeaderKey =
         mockService
@@ -1141,7 +1143,7 @@ public class SchemaServiceClientHttpJsonTest {
             .get(ApiClientHeaderProvider.getDefaultApiClientHeaderKey())
             .iterator()
             .next();
-    Assert.assertTrue(
+    assertTrue(
         GaxHttpJsonProperties.getDefaultApiClientHeaderPattern()
             .matcher(apiClientHeaderKey)
             .matches());
@@ -1161,7 +1163,7 @@ public class SchemaServiceClientHttpJsonTest {
               .addAllPermissions(new ArrayList<String>())
               .build();
       client.testIamPermissions(request);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }

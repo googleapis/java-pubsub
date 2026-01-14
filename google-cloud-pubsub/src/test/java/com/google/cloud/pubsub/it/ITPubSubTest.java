@@ -17,9 +17,10 @@
 package com.google.cloud.pubsub.it;
 
 import static com.google.common.truth.Truth.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assume.assumeTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import com.google.api.gax.rpc.PermissionDeniedException;
 import com.google.auto.value.AutoValue;
@@ -40,9 +41,12 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
-import org.junit.*;
-import org.junit.rules.Timeout;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
+@Timeout(value = 300)
 public class ITPubSubTest {
 
   private static final String NAME_SUFFIX = UUID.randomUUID().toString();
@@ -54,8 +58,6 @@ public class ITPubSubTest {
           && System.getenv("GOOGLE_CLOUD_TESTS_IN_VPCSC").equalsIgnoreCase("true");
 
   private static final int MAX_INBOUND_MESSAGE_SIZE = 20 * 1024 * 1024;
-
-  @Rule public Timeout globalTimeout = Timeout.seconds(300);
 
   @AutoValue
   abstract static class MessageAndConsumer {
@@ -81,14 +83,14 @@ public class ITPubSubTest {
     }
   }
 
-  @BeforeClass
+  @BeforeAll
   public static void setupClass() throws Exception {
     topicAdminClient = TopicAdminClient.create();
     subscriptionAdminClient = SubscriptionAdminClient.create();
     projectId = ServiceOptions.getDefaultProjectId();
   }
 
-  @AfterClass
+  @AfterAll
   public static void tearDownClass() {
     topicAdminClient.close();
     subscriptionAdminClient.close();
@@ -171,7 +173,7 @@ public class ITPubSubTest {
               10,
               false));
       subscriptionAdminClient.deleteSubscription(subscriptionName);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (PermissionDeniedException e) {
       // expected
     }
