@@ -18,6 +18,9 @@ package com.google.cloud.pubsub.v1;
 
 import static com.google.cloud.pubsub.v1.SchemaServiceClient.ListSchemaRevisionsPagedResponse;
 import static com.google.cloud.pubsub.v1.SchemaServiceClient.ListSchemasPagedResponse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import com.google.api.gax.core.NoCredentialsProvider;
 import com.google.api.gax.grpc.GaxGrpcProperties;
@@ -65,12 +68,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import javax.annotation.Generated;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 @Generated("by gapic-generator-java")
 public class SchemaServiceClientTest {
@@ -80,7 +82,7 @@ public class SchemaServiceClientTest {
   private LocalChannelProvider channelProvider;
   private SchemaServiceClient client;
 
-  @BeforeClass
+  @BeforeAll
   public static void startStaticServer() {
     mockSchemaService = new MockSchemaService();
     mockIAMPolicy = new MockIAMPolicy();
@@ -91,12 +93,12 @@ public class SchemaServiceClientTest {
     mockServiceHelper.start();
   }
 
-  @AfterClass
+  @AfterAll
   public static void stopServer() {
     mockServiceHelper.stop();
   }
 
-  @Before
+  @BeforeEach
   public void setUp() throws IOException {
     mockServiceHelper.reset();
     channelProvider = mockServiceHelper.createChannelProvider();
@@ -108,7 +110,7 @@ public class SchemaServiceClientTest {
     client = SchemaServiceClient.create(settings);
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
     client.close();
   }
@@ -129,16 +131,16 @@ public class SchemaServiceClientTest {
     String schemaId = "schemaId-697673060";
 
     Schema actualResponse = client.createSchema(parent, schema, schemaId);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<AbstractMessage> actualRequests = mockSchemaService.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     CreateSchemaRequest actualRequest = ((CreateSchemaRequest) actualRequests.get(0));
 
-    Assert.assertEquals(parent.toString(), actualRequest.getParent());
-    Assert.assertEquals(schema, actualRequest.getSchema());
-    Assert.assertEquals(schemaId, actualRequest.getSchemaId());
-    Assert.assertTrue(
+    assertEquals(parent.toString(), actualRequest.getParent());
+    assertEquals(schema, actualRequest.getSchema());
+    assertEquals(schemaId, actualRequest.getSchemaId());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -154,7 +156,7 @@ public class SchemaServiceClientTest {
       Schema schema = Schema.newBuilder().build();
       String schemaId = "schemaId-697673060";
       client.createSchema(parent, schema, schemaId);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -176,16 +178,16 @@ public class SchemaServiceClientTest {
     String schemaId = "schemaId-697673060";
 
     Schema actualResponse = client.createSchema(parent, schema, schemaId);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<AbstractMessage> actualRequests = mockSchemaService.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     CreateSchemaRequest actualRequest = ((CreateSchemaRequest) actualRequests.get(0));
 
-    Assert.assertEquals(parent, actualRequest.getParent());
-    Assert.assertEquals(schema, actualRequest.getSchema());
-    Assert.assertEquals(schemaId, actualRequest.getSchemaId());
-    Assert.assertTrue(
+    assertEquals(parent, actualRequest.getParent());
+    assertEquals(schema, actualRequest.getSchema());
+    assertEquals(schemaId, actualRequest.getSchemaId());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -201,7 +203,7 @@ public class SchemaServiceClientTest {
       Schema schema = Schema.newBuilder().build();
       String schemaId = "schemaId-697673060";
       client.createSchema(parent, schema, schemaId);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -221,14 +223,14 @@ public class SchemaServiceClientTest {
     SchemaName name = SchemaName.of("[PROJECT]", "[SCHEMA]");
 
     Schema actualResponse = client.getSchema(name);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<AbstractMessage> actualRequests = mockSchemaService.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     GetSchemaRequest actualRequest = ((GetSchemaRequest) actualRequests.get(0));
 
-    Assert.assertEquals(name.toString(), actualRequest.getName());
-    Assert.assertTrue(
+    assertEquals(name.toString(), actualRequest.getName());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -242,7 +244,7 @@ public class SchemaServiceClientTest {
     try {
       SchemaName name = SchemaName.of("[PROJECT]", "[SCHEMA]");
       client.getSchema(name);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -262,14 +264,14 @@ public class SchemaServiceClientTest {
     String name = "name3373707";
 
     Schema actualResponse = client.getSchema(name);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<AbstractMessage> actualRequests = mockSchemaService.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     GetSchemaRequest actualRequest = ((GetSchemaRequest) actualRequests.get(0));
 
-    Assert.assertEquals(name, actualRequest.getName());
-    Assert.assertTrue(
+    assertEquals(name, actualRequest.getName());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -283,7 +285,7 @@ public class SchemaServiceClientTest {
     try {
       String name = "name3373707";
       client.getSchema(name);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -305,15 +307,15 @@ public class SchemaServiceClientTest {
 
     List<Schema> resources = Lists.newArrayList(pagedListResponse.iterateAll());
 
-    Assert.assertEquals(1, resources.size());
-    Assert.assertEquals(expectedResponse.getSchemasList().get(0), resources.get(0));
+    assertEquals(1, resources.size());
+    assertEquals(expectedResponse.getSchemasList().get(0), resources.get(0));
 
     List<AbstractMessage> actualRequests = mockSchemaService.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     ListSchemasRequest actualRequest = ((ListSchemasRequest) actualRequests.get(0));
 
-    Assert.assertEquals(parent.toString(), actualRequest.getParent());
-    Assert.assertTrue(
+    assertEquals(parent.toString(), actualRequest.getParent());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -327,7 +329,7 @@ public class SchemaServiceClientTest {
     try {
       ProjectName parent = ProjectName.of("[PROJECT]");
       client.listSchemas(parent);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -349,15 +351,15 @@ public class SchemaServiceClientTest {
 
     List<Schema> resources = Lists.newArrayList(pagedListResponse.iterateAll());
 
-    Assert.assertEquals(1, resources.size());
-    Assert.assertEquals(expectedResponse.getSchemasList().get(0), resources.get(0));
+    assertEquals(1, resources.size());
+    assertEquals(expectedResponse.getSchemasList().get(0), resources.get(0));
 
     List<AbstractMessage> actualRequests = mockSchemaService.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     ListSchemasRequest actualRequest = ((ListSchemasRequest) actualRequests.get(0));
 
-    Assert.assertEquals(parent, actualRequest.getParent());
-    Assert.assertTrue(
+    assertEquals(parent, actualRequest.getParent());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -371,7 +373,7 @@ public class SchemaServiceClientTest {
     try {
       String parent = "parent-995424086";
       client.listSchemas(parent);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -393,15 +395,15 @@ public class SchemaServiceClientTest {
 
     List<Schema> resources = Lists.newArrayList(pagedListResponse.iterateAll());
 
-    Assert.assertEquals(1, resources.size());
-    Assert.assertEquals(expectedResponse.getSchemasList().get(0), resources.get(0));
+    assertEquals(1, resources.size());
+    assertEquals(expectedResponse.getSchemasList().get(0), resources.get(0));
 
     List<AbstractMessage> actualRequests = mockSchemaService.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     ListSchemaRevisionsRequest actualRequest = ((ListSchemaRevisionsRequest) actualRequests.get(0));
 
-    Assert.assertEquals(name.toString(), actualRequest.getName());
-    Assert.assertTrue(
+    assertEquals(name.toString(), actualRequest.getName());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -415,7 +417,7 @@ public class SchemaServiceClientTest {
     try {
       SchemaName name = SchemaName.of("[PROJECT]", "[SCHEMA]");
       client.listSchemaRevisions(name);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -437,15 +439,15 @@ public class SchemaServiceClientTest {
 
     List<Schema> resources = Lists.newArrayList(pagedListResponse.iterateAll());
 
-    Assert.assertEquals(1, resources.size());
-    Assert.assertEquals(expectedResponse.getSchemasList().get(0), resources.get(0));
+    assertEquals(1, resources.size());
+    assertEquals(expectedResponse.getSchemasList().get(0), resources.get(0));
 
     List<AbstractMessage> actualRequests = mockSchemaService.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     ListSchemaRevisionsRequest actualRequest = ((ListSchemaRevisionsRequest) actualRequests.get(0));
 
-    Assert.assertEquals(name, actualRequest.getName());
-    Assert.assertTrue(
+    assertEquals(name, actualRequest.getName());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -459,7 +461,7 @@ public class SchemaServiceClientTest {
     try {
       String name = "name3373707";
       client.listSchemaRevisions(name);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -480,15 +482,15 @@ public class SchemaServiceClientTest {
     Schema schema = Schema.newBuilder().build();
 
     Schema actualResponse = client.commitSchema(name, schema);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<AbstractMessage> actualRequests = mockSchemaService.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     CommitSchemaRequest actualRequest = ((CommitSchemaRequest) actualRequests.get(0));
 
-    Assert.assertEquals(name.toString(), actualRequest.getName());
-    Assert.assertEquals(schema, actualRequest.getSchema());
-    Assert.assertTrue(
+    assertEquals(name.toString(), actualRequest.getName());
+    assertEquals(schema, actualRequest.getSchema());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -503,7 +505,7 @@ public class SchemaServiceClientTest {
       SchemaName name = SchemaName.of("[PROJECT]", "[SCHEMA]");
       Schema schema = Schema.newBuilder().build();
       client.commitSchema(name, schema);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -524,15 +526,15 @@ public class SchemaServiceClientTest {
     Schema schema = Schema.newBuilder().build();
 
     Schema actualResponse = client.commitSchema(name, schema);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<AbstractMessage> actualRequests = mockSchemaService.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     CommitSchemaRequest actualRequest = ((CommitSchemaRequest) actualRequests.get(0));
 
-    Assert.assertEquals(name, actualRequest.getName());
-    Assert.assertEquals(schema, actualRequest.getSchema());
-    Assert.assertTrue(
+    assertEquals(name, actualRequest.getName());
+    assertEquals(schema, actualRequest.getSchema());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -547,7 +549,7 @@ public class SchemaServiceClientTest {
       String name = "name3373707";
       Schema schema = Schema.newBuilder().build();
       client.commitSchema(name, schema);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -568,15 +570,15 @@ public class SchemaServiceClientTest {
     String revisionId = "revisionId-1507445162";
 
     Schema actualResponse = client.rollbackSchema(name, revisionId);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<AbstractMessage> actualRequests = mockSchemaService.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     RollbackSchemaRequest actualRequest = ((RollbackSchemaRequest) actualRequests.get(0));
 
-    Assert.assertEquals(name.toString(), actualRequest.getName());
-    Assert.assertEquals(revisionId, actualRequest.getRevisionId());
-    Assert.assertTrue(
+    assertEquals(name.toString(), actualRequest.getName());
+    assertEquals(revisionId, actualRequest.getRevisionId());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -591,7 +593,7 @@ public class SchemaServiceClientTest {
       SchemaName name = SchemaName.of("[PROJECT]", "[SCHEMA]");
       String revisionId = "revisionId-1507445162";
       client.rollbackSchema(name, revisionId);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -612,15 +614,15 @@ public class SchemaServiceClientTest {
     String revisionId = "revisionId-1507445162";
 
     Schema actualResponse = client.rollbackSchema(name, revisionId);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<AbstractMessage> actualRequests = mockSchemaService.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     RollbackSchemaRequest actualRequest = ((RollbackSchemaRequest) actualRequests.get(0));
 
-    Assert.assertEquals(name, actualRequest.getName());
-    Assert.assertEquals(revisionId, actualRequest.getRevisionId());
-    Assert.assertTrue(
+    assertEquals(name, actualRequest.getName());
+    assertEquals(revisionId, actualRequest.getRevisionId());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -635,7 +637,7 @@ public class SchemaServiceClientTest {
       String name = "name3373707";
       String revisionId = "revisionId-1507445162";
       client.rollbackSchema(name, revisionId);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -656,16 +658,16 @@ public class SchemaServiceClientTest {
     String revisionId = "revisionId-1507445162";
 
     Schema actualResponse = client.deleteSchemaRevision(name, revisionId);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<AbstractMessage> actualRequests = mockSchemaService.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     DeleteSchemaRevisionRequest actualRequest =
         ((DeleteSchemaRevisionRequest) actualRequests.get(0));
 
-    Assert.assertEquals(name.toString(), actualRequest.getName());
-    Assert.assertEquals(revisionId, actualRequest.getRevisionId());
-    Assert.assertTrue(
+    assertEquals(name.toString(), actualRequest.getName());
+    assertEquals(revisionId, actualRequest.getRevisionId());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -680,7 +682,7 @@ public class SchemaServiceClientTest {
       SchemaName name = SchemaName.of("[PROJECT]", "[SCHEMA]");
       String revisionId = "revisionId-1507445162";
       client.deleteSchemaRevision(name, revisionId);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -701,16 +703,16 @@ public class SchemaServiceClientTest {
     String revisionId = "revisionId-1507445162";
 
     Schema actualResponse = client.deleteSchemaRevision(name, revisionId);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<AbstractMessage> actualRequests = mockSchemaService.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     DeleteSchemaRevisionRequest actualRequest =
         ((DeleteSchemaRevisionRequest) actualRequests.get(0));
 
-    Assert.assertEquals(name, actualRequest.getName());
-    Assert.assertEquals(revisionId, actualRequest.getRevisionId());
-    Assert.assertTrue(
+    assertEquals(name, actualRequest.getName());
+    assertEquals(revisionId, actualRequest.getRevisionId());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -725,7 +727,7 @@ public class SchemaServiceClientTest {
       String name = "name3373707";
       String revisionId = "revisionId-1507445162";
       client.deleteSchemaRevision(name, revisionId);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -741,11 +743,11 @@ public class SchemaServiceClientTest {
     client.deleteSchema(name);
 
     List<AbstractMessage> actualRequests = mockSchemaService.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     DeleteSchemaRequest actualRequest = ((DeleteSchemaRequest) actualRequests.get(0));
 
-    Assert.assertEquals(name.toString(), actualRequest.getName());
-    Assert.assertTrue(
+    assertEquals(name.toString(), actualRequest.getName());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -759,7 +761,7 @@ public class SchemaServiceClientTest {
     try {
       SchemaName name = SchemaName.of("[PROJECT]", "[SCHEMA]");
       client.deleteSchema(name);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -775,11 +777,11 @@ public class SchemaServiceClientTest {
     client.deleteSchema(name);
 
     List<AbstractMessage> actualRequests = mockSchemaService.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     DeleteSchemaRequest actualRequest = ((DeleteSchemaRequest) actualRequests.get(0));
 
-    Assert.assertEquals(name, actualRequest.getName());
-    Assert.assertTrue(
+    assertEquals(name, actualRequest.getName());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -793,7 +795,7 @@ public class SchemaServiceClientTest {
     try {
       String name = "name3373707";
       client.deleteSchema(name);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -808,15 +810,15 @@ public class SchemaServiceClientTest {
     Schema schema = Schema.newBuilder().build();
 
     ValidateSchemaResponse actualResponse = client.validateSchema(parent, schema);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<AbstractMessage> actualRequests = mockSchemaService.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     ValidateSchemaRequest actualRequest = ((ValidateSchemaRequest) actualRequests.get(0));
 
-    Assert.assertEquals(parent.toString(), actualRequest.getParent());
-    Assert.assertEquals(schema, actualRequest.getSchema());
-    Assert.assertTrue(
+    assertEquals(parent.toString(), actualRequest.getParent());
+    assertEquals(schema, actualRequest.getSchema());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -831,7 +833,7 @@ public class SchemaServiceClientTest {
       ProjectName parent = ProjectName.of("[PROJECT]");
       Schema schema = Schema.newBuilder().build();
       client.validateSchema(parent, schema);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -846,15 +848,15 @@ public class SchemaServiceClientTest {
     Schema schema = Schema.newBuilder().build();
 
     ValidateSchemaResponse actualResponse = client.validateSchema(parent, schema);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<AbstractMessage> actualRequests = mockSchemaService.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     ValidateSchemaRequest actualRequest = ((ValidateSchemaRequest) actualRequests.get(0));
 
-    Assert.assertEquals(parent, actualRequest.getParent());
-    Assert.assertEquals(schema, actualRequest.getSchema());
-    Assert.assertTrue(
+    assertEquals(parent, actualRequest.getParent());
+    assertEquals(schema, actualRequest.getSchema());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -869,7 +871,7 @@ public class SchemaServiceClientTest {
       String parent = "parent-995424086";
       Schema schema = Schema.newBuilder().build();
       client.validateSchema(parent, schema);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -888,18 +890,18 @@ public class SchemaServiceClientTest {
             .build();
 
     ValidateMessageResponse actualResponse = client.validateMessage(request);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<AbstractMessage> actualRequests = mockSchemaService.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     ValidateMessageRequest actualRequest = ((ValidateMessageRequest) actualRequests.get(0));
 
-    Assert.assertEquals(request.getParent(), actualRequest.getParent());
-    Assert.assertEquals(request.getName(), actualRequest.getName());
-    Assert.assertEquals(request.getSchema(), actualRequest.getSchema());
-    Assert.assertEquals(request.getMessage(), actualRequest.getMessage());
-    Assert.assertEquals(request.getEncoding(), actualRequest.getEncoding());
-    Assert.assertTrue(
+    assertEquals(request.getParent(), actualRequest.getParent());
+    assertEquals(request.getName(), actualRequest.getName());
+    assertEquals(request.getSchema(), actualRequest.getSchema());
+    assertEquals(request.getMessage(), actualRequest.getMessage());
+    assertEquals(request.getEncoding(), actualRequest.getEncoding());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -918,7 +920,7 @@ public class SchemaServiceClientTest {
               .setEncoding(Encoding.forNumber(0))
               .build();
       client.validateMessage(request);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -943,16 +945,16 @@ public class SchemaServiceClientTest {
             .build();
 
     Policy actualResponse = client.setIamPolicy(request);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<AbstractMessage> actualRequests = mockIAMPolicy.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     SetIamPolicyRequest actualRequest = ((SetIamPolicyRequest) actualRequests.get(0));
 
-    Assert.assertEquals(request.getResource(), actualRequest.getResource());
-    Assert.assertEquals(request.getPolicy(), actualRequest.getPolicy());
-    Assert.assertEquals(request.getUpdateMask(), actualRequest.getUpdateMask());
-    Assert.assertTrue(
+    assertEquals(request.getResource(), actualRequest.getResource());
+    assertEquals(request.getPolicy(), actualRequest.getPolicy());
+    assertEquals(request.getUpdateMask(), actualRequest.getUpdateMask());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -971,7 +973,7 @@ public class SchemaServiceClientTest {
               .setUpdateMask(FieldMask.newBuilder().build())
               .build();
       client.setIamPolicy(request);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -995,15 +997,15 @@ public class SchemaServiceClientTest {
             .build();
 
     Policy actualResponse = client.getIamPolicy(request);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<AbstractMessage> actualRequests = mockIAMPolicy.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     GetIamPolicyRequest actualRequest = ((GetIamPolicyRequest) actualRequests.get(0));
 
-    Assert.assertEquals(request.getResource(), actualRequest.getResource());
-    Assert.assertEquals(request.getOptions(), actualRequest.getOptions());
-    Assert.assertTrue(
+    assertEquals(request.getResource(), actualRequest.getResource());
+    assertEquals(request.getOptions(), actualRequest.getOptions());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -1021,7 +1023,7 @@ public class SchemaServiceClientTest {
               .setOptions(GetPolicyOptions.newBuilder().build())
               .build();
       client.getIamPolicy(request);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -1040,15 +1042,15 @@ public class SchemaServiceClientTest {
             .build();
 
     TestIamPermissionsResponse actualResponse = client.testIamPermissions(request);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<AbstractMessage> actualRequests = mockIAMPolicy.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     TestIamPermissionsRequest actualRequest = ((TestIamPermissionsRequest) actualRequests.get(0));
 
-    Assert.assertEquals(request.getResource(), actualRequest.getResource());
-    Assert.assertEquals(request.getPermissionsList(), actualRequest.getPermissionsList());
-    Assert.assertTrue(
+    assertEquals(request.getResource(), actualRequest.getResource());
+    assertEquals(request.getPermissionsList(), actualRequest.getPermissionsList());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -1066,7 +1068,7 @@ public class SchemaServiceClientTest {
               .addAllPermissions(new ArrayList<String>())
               .build();
       client.testIamPermissions(request);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
