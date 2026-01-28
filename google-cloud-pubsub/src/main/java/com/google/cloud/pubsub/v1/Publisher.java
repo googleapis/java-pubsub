@@ -509,6 +509,11 @@ public class Publisher implements PublisherInterface {
       logger.log(Level.WARNING, "Attempted to publish batch with zero messages.");
       return;
     }
+    logger.log(
+        Level.FINE,
+        "pubsub:publish-batch - Attempting to publish batch {0} messages.",
+        outstandingBatch.size());
+
     final ApiFutureCallback<PublishResponse> futureCallback =
         new ApiFutureCallback<PublishResponse>() {
           @Override
