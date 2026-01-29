@@ -1,5 +1,5 @@
 gapic_generator_version: 2.66.0
-googleapis_commitish: cfe62b3c5ceb9f81879c61480f26707980534462
+googleapis_commitish: 598c395b092f184974f5b5fe625bc605ec2364b3
 libraries_bom_version: 26.74.0
 libraries:
   - api_shortname: pubsub
