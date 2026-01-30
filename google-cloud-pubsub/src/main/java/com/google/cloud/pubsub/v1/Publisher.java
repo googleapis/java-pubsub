@@ -512,7 +512,8 @@ public class Publisher implements PublisherInterface {
     }
 
     if (publishBatchLogger.isLoggable(Level.FINE)) {
-      String logPrefix = LoggingUtil.getPublisherLogPrefix(outstandingBatch.getMessageWrappers().get(0));
+      String logPrefix =
+          LoggingUtil.getPublisherLogPrefix(outstandingBatch.getMessageWrappers().get(0));
       publishBatchLogger.log(
           Level.FINE,
           "pubsub:publish-batch - " + logPrefix + " - Attempting to publish batch {0} messages.",

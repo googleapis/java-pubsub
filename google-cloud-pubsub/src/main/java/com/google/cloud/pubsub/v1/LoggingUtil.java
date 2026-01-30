@@ -19,12 +19,15 @@ package com.google.cloud.pubsub.v1;
 import com.google.pubsub.v1.PubsubMessage;
 
 final class LoggingUtil {
-  private LoggingUtil() {
-  }
+  private LoggingUtil() {}
 
-  static String getLogPrefix(PubsubMessageWrapper messageWrapper, String ackId, boolean exactlyOnceDeliveryEnabled) {
+  static String getLogPrefix(
+      PubsubMessageWrapper messageWrapper, String ackId, boolean exactlyOnceDeliveryEnabled) {
     if (messageWrapper == null || messageWrapper.getPubsubMessage() == null) {
-      return " Ack ID: " + ackId + ", Exactly Once Delivery: " + exactlyOnceDeliveryEnabled
+      return " Ack ID: "
+          + ackId
+          + ", Exactly Once Delivery: "
+          + exactlyOnceDeliveryEnabled
           + " (Message details not available)";
     }
 

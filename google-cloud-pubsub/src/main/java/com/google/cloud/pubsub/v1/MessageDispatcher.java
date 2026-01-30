@@ -64,7 +64,8 @@ class MessageDispatcher {
   private static final Logger expiryLogger = Logger.getLogger("expiry");
   private static final Logger callbackExceptionsLogger = Logger.getLogger("callback-exceptions");
   private static final Logger ackBatchLogger = Logger.getLogger("ack-batch");
-  private static final Logger subscriberFlowControlLogger = Logger.getLogger("subscriber-flow-control");
+  private static final Logger subscriberFlowControlLogger =
+      Logger.getLogger("subscriber-flow-control");
   private static final Logger ackNackLogger = Logger.getLogger("ack-nack");
 
   @InternalApi static final double PERCENTILE_FOR_ACK_DEADLINE_UPDATES = 99.9;
@@ -167,9 +168,13 @@ class MessageDispatcher {
     @Override
     public void onFailure(Throwable t) {
       if (callbackExceptionsLogger.isLoggable(Level.WARNING)) {
-        String prefix = LoggingUtil.getLogPrefix(this.ackRequestData.getMessageWrapper(), 
-          this.getAckRequestData().getAckId(), exactlyOnceDeliveryEnabled.get());
-        callbackExceptionsLogger.log(Level.WARNING, "pubsub:callback-exceptions - MessageReceiver exception. " + prefix, t);
+        String prefix =
+            LoggingUtil.getLogPrefix(
+                this.ackRequestData.getMessageWrapper(),
+                this.getAckRequestData().getAckId(),
+                exactlyOnceDeliveryEnabled.get());
+        callbackExceptionsLogger.log(
+            Level.WARNING, "pubsub:callback-exceptions - MessageReceiver exception. " + prefix, t);
       }
       this.ackRequestData.setResponse(AckResponse.OTHER, false);
       pendingNacks.add(this.ackRequestData);
@@ -183,8 +188,11 @@ class MessageDispatcher {
           Ints.saturatedCast((long) Math.ceil((clock.millisTime() - receivedTimeMillis) / 1000D));
       String logPrefix = "";
       if (slowAckLogger.isLoggable(Level.FINE) || ackNackLogger.isLoggable(Level.FINE)) {
-        logPrefix = LoggingUtil.getLogPrefix(this.ackRequestData.getMessageWrapper(), 
-              this.ackRequestData.getAckId(), exactlyOnceDeliveryEnabled.get());
+        logPrefix =
+            LoggingUtil.getLogPrefix(
+                this.ackRequestData.getMessageWrapper(),
+                this.ackRequestData.getAckId(),
+                exactlyOnceDeliveryEnabled.get());
       }
       if (ackLatency >= ackLatencyDistribution.getPercentile(slowAckPercentile)) {
         slowAckLogger.log(Level.FINE, "pubsub:slow-ack - " + logPrefix);
@@ -587,18 +595,31 @@ class MessageDispatcher {
       // shutdown will block on processing of all these messages anyway.
       String logPrefix = "";
       if (subscriberFlowControlLogger.isLoggable(Level.FINE)) {
-        logPrefix = LoggingUtil.getLogPrefix(message.messageWrapper(), 
-            message.messageWrapper().getAckId(), exactlyOnceDeliveryEnabled.get());
+        logPrefix =
+            LoggingUtil.getLogPrefix(
+                message.messageWrapper(),
+                message.messageWrapper().getAckId(),
+                exactlyOnceDeliveryEnabled.get());
       }
       tracer.startSubscribeConcurrencyControlSpan(message.messageWrapper());
       try {
-        subscriberFlowControlLogger.log(Level.FINE, "pubsub:subscriber-flow-control - " + logPrefix + " - Flow controller is blocking.");
+        subscriberFlowControlLogger.log(
+            Level.FINE,
+            "pubsub:subscriber-flow-control - " + logPrefix + " - Flow controller is blocking.");
         flowController.reserve(1, message.messageWrapper().getPubsubMessage().getSerializedSize());
-        subscriberFlowControlLogger.log(Level.FINE, "pubsub:subscriber-flow-control - " + logPrefix + " - Flow controller is done blocking.");
+        subscriberFlowControlLogger.log(
+            Level.FINE,
+            "pubsub:subscriber-flow-control - "
+                + logPrefix
+                + " - Flow controller is done blocking.");
         tracer.endSubscribeConcurrencyControlSpan(message.messageWrapper());
       } catch (FlowControlException unexpectedException) {
         // This should be a blocking flow controller and never throw an exception.
-        subscriberFlowControlLogger.log(Level.FINE, "pubsub:subscriber-flow-control - " + logPrefix + " - Flow controller unexpected exception.");
+        subscriberFlowControlLogger.log(
+            Level.FINE,
+            "pubsub:subscriber-flow-control - "
+                + logPrefix
+                + " - Flow controller unexpected exception.");
         tracer.setSubscribeConcurrencyControlSpanException(
             message.messageWrapper(), unexpectedException);
         throw new IllegalStateException("Flow control unexpected exception", unexpectedException);
@@ -638,9 +659,13 @@ class MessageDispatcher {
           public void run() {
             try {
               String logPrefix = "";
-              if (expiryLogger.isLoggable(Level.FINE) || callbackDeliveryLogger.isLoggable(Level.FINE)) {
-                logPrefix = LoggingUtil.getLogPrefix(messageWrapper, 
-                ackHandler.ackRequestData.getAckId(), exactlyOnceDeliveryEnabled.get());
+              if (expiryLogger.isLoggable(Level.FINE)
+                  || callbackDeliveryLogger.isLoggable(Level.FINE)) {
+                logPrefix =
+                    LoggingUtil.getLogPrefix(
+                        messageWrapper,
+                        ackHandler.ackRequestData.getAckId(),
+                        exactlyOnceDeliveryEnabled.get());
               }
               if (ackHandler
                   .totalExpiration
@@ -773,8 +798,15 @@ class MessageDispatcher {
 
     List<AckRequestData> ackRequestDataList = new ArrayList<AckRequestData>();
     pendingAcks.drainTo(ackRequestDataList);
-    ackBatchLogger.log(Level.FINE, "pubsub:ack-batch - Sending {0} ACKs, {1} NACKs, {2} receipts. Exactly Once Delivery: {3}",
-      new Object[]{ackRequestDataList.size(), nackRequestDataList.size(), ackRequestDataList.size(), exactlyOnceDeliveryEnabled.get()});
+    ackBatchLogger.log(
+        Level.FINE,
+        "pubsub:ack-batch - Sending {0} ACKs, {1} NACKs, {2} receipts. Exactly Once Delivery: {3}",
+        new Object[] {
+          ackRequestDataList.size(),
+          nackRequestDataList.size(),
+          ackRequestDataList.size(),
+          exactlyOnceDeliveryEnabled.get()
+        });
 
     ackProcessor.sendAckOperations(ackRequestDataList);
   }
