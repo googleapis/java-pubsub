@@ -77,6 +77,7 @@ import javax.annotation.Nullable;
 final class StreamingSubscriberConnection extends AbstractApiService implements AckProcessor {
   private static final Logger logger =
       Logger.getLogger(StreamingSubscriberConnection.class.getName());
+  private static final Logger subscriberStreamsLogger = Logger.getLogger("subscriber-streams");
 
   private static final Duration INITIAL_CHANNEL_RECONNECT_BACKOFF = Duration.ofMillis(100);
   private static final Duration MAX_CHANNEL_RECONNECT_BACKOFF = Duration.ofSeconds(10);
@@ -222,7 +223,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
   @Override
   protected void doStart() {
     logger.config("Starting subscriber.");
-    logger.log(Level.FINER, "pubsub:subscriber-streams - Opening stream.");
+    subscriberStreamsLogger.log(Level.FINE, "pubsub:subscriber-streams - Opening stream.");
     messageDispatcher.start();
     initialize();
     notifyStarted();
@@ -230,7 +231,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
 
   @Override
   protected void doStop() {
-    logger.log(Level.FINER, "pubsub:subscriber-streams - Closing stream.");
+    subscriberStreamsLogger.log(Level.FINE, "pubsub:subscriber-streams - Closing stream.");
     lock.lock();
     try {
       clientStream.closeSendWithError(Status.CANCELLED.asException());
