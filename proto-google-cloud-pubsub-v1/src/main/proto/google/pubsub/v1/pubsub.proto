@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import "google/api/resource.proto";
 import "google/protobuf/duration.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/field_mask.proto";
+import "google/protobuf/struct.proto";
 import "google/protobuf/timestamp.proto";
 import "google/pubsub/v1/schema.proto";
 
@@ -805,6 +806,39 @@ message JavaScriptUDF {
   string code = 2 [(google.api.field_behavior) = REQUIRED];
 }
 
+// Configuration for making inference requests against Vertex AI models.
+message AIInference {
+  // Configuration for making inferences using arbitrary JSON payloads.
+  message UnstructuredInference {
+    // Optional. A parameters object to be included in each inference request.
+    // The parameters object is combined with the data field of the Pub/Sub
+    // message to form the inference request.
+    google.protobuf.Struct parameters = 1
+        [(google.api.field_behavior) = OPTIONAL];
+  }
+
+  // Required. An endpoint to a Vertex AI model of the form
+  // `projects/{project}/locations/{location}/endpoints/{endpoint}` or
+  // `projects/{project}/locations/{location}/publishers/{publisher}/models/{model}`.
+  // Vertex AI API requests will be sent to this endpoint.
+  string endpoint = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // The format of inference requests made to the endpoint.
+  oneof inference_mode {
+    // Optional. Requests and responses can be any arbitrary JSON object.
+    UnstructuredInference unstructured_inference = 2
+        [(google.api.field_behavior) = OPTIONAL];
+  }
+
+  // Optional. The service account to use to make prediction requests against
+  // endpoints. The resource creator or updater that specifies this field must
+  // have `iam.serviceAccounts.actAs` permission on the service account. If not
+  // specified, the Pub/Sub [service
+  // agent]({$universe.dns_names.final_documentation_domain}/iam/docs/service-agents),
+  // service-{project_number}@gcp-sa-pubsub.iam.gserviceaccount.com, is used.
+  string service_account_email = 3 [(google.api.field_behavior) = OPTIONAL];
+}
+
 // All supported message transforms types.
 message MessageTransform {
   // The type of transform to apply to messages.
@@ -812,6 +846,11 @@ message MessageTransform {
     // Optional. JavaScript User Defined Function. If multiple JavaScriptUDF's
     // are specified on a resource, each must have a unique `function_name`.
     JavaScriptUDF javascript_udf = 2 [(google.api.field_behavior) = OPTIONAL];
+
+    // Optional. AI Inference. Specifies the Vertex AI endpoint that inference
+    // requests built from the Pub/Sub message data and provided parameters will
+    // be sent to.
+    AIInference ai_inference = 6 [(google.api.field_behavior) = OPTIONAL];
   }
 
   // Optional. This field is deprecated, use the `disabled` field to disable
@@ -847,13 +886,16 @@ message Topic {
     INGESTION_RESOURCE_ERROR = 2;
   }
 
-  // Required. The name of the topic. It must have the format
+  // Required. Identifier. The name of the topic. It must have the format
   // `"projects/{project}/topics/{topic}"`. `{topic}` must start with a letter,
   // and contain only letters (`[A-Za-z]`), numbers (`[0-9]`), dashes (`-`),
   // underscores (`_`), periods (`.`), tildes (`~`), plus (`+`) or percent
   // signs (`%`). It must be between 3 and 255 characters in length, and it
   // must not start with `"goog"`.
-  string name = 1 [(google.api.field_behavior) = REQUIRED];
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.field_behavior) = IDENTIFIER
+  ];
 
   // Optional. See [Creating and managing labels]
   // (https://cloud.google.com/pubsub/docs/labels).
@@ -911,6 +953,8 @@ message Topic {
   // resource. For example:
   //   "123/environment": "production",
   //   "123/costCenter": "marketing"
+  // See https://docs.cloud.google.com/pubsub/docs/tags for more information on
+  // using tags with Pub/Sub resources.
   map<string, string> tags = 14 [
     (google.api.field_behavior) = INPUT_ONLY,
     (google.api.field_behavior) = IMMUTABLE,
@@ -1399,13 +1443,16 @@ message Subscription {
     string subscription = 2 [(google.api.field_behavior) = OPTIONAL];
   }
 
-  // Required. The name of the subscription. It must have the format
+  // Required. Identifier. The name of the subscription. It must have the format
   // `"projects/{project}/subscriptions/{subscription}"`. `{subscription}` must
   // start with a letter, and contain only letters (`[A-Za-z]`), numbers
   // (`[0-9]`), dashes (`-`), underscores (`_`), periods (`.`), tildes (`~`),
   // plus (`+`) or percent signs (`%`). It must be between 3 and 255 characters
   // in length, and it must not start with `"goog"`.
-  string name = 1 [(google.api.field_behavior) = REQUIRED];
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.field_behavior) = IDENTIFIER
+  ];
 
   // Required. The name of the topic from which this subscription is receiving
   // messages. Format is `projects/{project}/topics/{topic}`. The value of this
@@ -1549,7 +1596,7 @@ message Subscription {
   State state = 19 [(google.api.field_behavior) = OUTPUT_ONLY];
 
   // Output only. Information about the associated Analytics Hub subscription.
-  // Only set if the subscritpion is created by Analytics Hub.
+  // Only set if the subscription is created by Analytics Hub.
   AnalyticsHubSubscriptionInfo analytics_hub_subscription_info = 23
       [(google.api.field_behavior) = OUTPUT_ONLY];
 
@@ -1562,6 +1609,8 @@ message Subscription {
   // resource. For example:
   //   "123/environment": "production",
   //   "123/costCenter": "marketing"
+  // See https://docs.cloud.google.com/pubsub/docs/tags for more information on
+  // using tags with Pub/Sub resources.
   map<string, string> tags = 26 [
     (google.api.field_behavior) = INPUT_ONLY,
     (google.api.field_behavior) = IMMUTABLE,
@@ -1756,6 +1805,11 @@ message BigQueryConfig {
     // Cannot write to the destination because enforce_in_transit is set to true
     // and the destination locations are not in the allowed regions.
     IN_TRANSIT_LOCATION_RESTRICTION = 5;
+
+    // Cannot write to the BigQuery table because the table is not in the same
+    // location as where Vertex AI models used in `message_transform`s are
+    // deployed.
+    VERTEX_AI_LOCATION_RESTRICTION = 6;
   }
 
   // Optional. The name of the table to which to write data, of the form
@@ -1844,6 +1898,11 @@ message CloudStorageConfig {
     // Cannot write to the Cloud Storage bucket due to an incompatibility
     // between the topic schema and subscription settings.
     SCHEMA_MISMATCH = 5;
+
+    // Cannot write to the Cloud Storage bucket because the bucket is not in the
+    // same location as where Vertex AI models used in `message_transform`s are
+    // deployed.
+    VERTEX_AI_LOCATION_RESTRICTION = 6;
   }
 
   // Required. User-provided name for the Cloud Storage bucket.
@@ -2295,6 +2354,8 @@ message CreateSnapshotRequest {
   // resource. For example:
   //   "123/environment": "production",
   //   "123/costCenter": "marketing"
+  // See https://docs.cloud.google.com/pubsub/docs/tags for more information on
+  // using tags with Pub/Sub resources.
   map<string, string> tags = 4 [
     (google.api.field_behavior) = INPUT_ONLY,
     (google.api.field_behavior) = IMMUTABLE,
