@@ -964,6 +964,22 @@ public class PublisherImplTest {
     } catch (IllegalArgumentException expected) {
       // Expected
     }
+    try {
+      builder.setBatchingSettings(
+          Publisher.Builder.DEFAULT_BATCHING_SETTINGS.toBuilder()
+              .setElementCountThreshold(1001L)
+              .build());
+    } catch (IllegalArgumentException expected) {
+      // Expected
+    }
+    try {
+      builder.setBatchingSettings(
+          Publisher.Builder.DEFAULT_BATCHING_SETTINGS.toBuilder()
+              .setElementCountThreshold((10L * 1000L * 1000L) + 1L)
+              .build());
+    } catch (IllegalArgumentException expected) {
+      // Expected
+    }
   }
 
   @Test
