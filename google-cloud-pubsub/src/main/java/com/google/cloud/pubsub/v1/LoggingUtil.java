@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,48 @@
 package com.google.cloud.pubsub.v1;
 
 import com.google.pubsub.v1.PubsubMessage;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-final class LoggingUtil {
-  private LoggingUtil() {}
+public final class LoggingUtil {
+  // Instantiate all  loggers as static final fields to maintain strong references
 
-  static String getLogPrefix(
+  private static final Logger slowAckLogger = Logger.getLogger("slow-ack");
+  private static final Logger callbackDeliveryLogger = Logger.getLogger("callback-delivery");
+  private static final Logger expiryLogger = Logger.getLogger("expiry");
+  private static final Logger callbackExceptionsLogger = Logger.getLogger("callback-exceptions");
+  private static final Logger ackBatchLogger = Logger.getLogger("ack-batch");
+  private static final Logger subscriberFlowControlLogger =
+      Logger.getLogger("subscriber-flow-control");
+  private static final Logger ackNackLogger = Logger.getLogger("ack-nack");
+  private static final Logger publishBatchLogger = Logger.getLogger("publish-batch");
+  private static final Logger subscriberStreamsLogger = Logger.getLogger("subscriber-streams");
+
+  public enum SubSytem {
+    SLOW_ACK(slowAckLogger),
+    CALLBACK_DELIVERY(callbackDeliveryLogger),
+    EXPIRY(expiryLogger),
+    CALLBACK_EXCEPTIONS(callbackExceptionsLogger),
+    ACK_BATCH(ackBatchLogger),
+    SUBSCRIBER_FLOW_CONTROL(subscriberFlowControlLogger),
+    ACK_NACK(ackNackLogger),
+    PUBLISH_BATCH(publishBatchLogger),
+    SUBSCRIBER_STREAMS(subscriberStreamsLogger);
+
+    private final Logger logger;
+
+    SubSytem(Logger logger) {
+      this.logger = logger;
+    }
+
+    public Logger getLogger() {
+      return logger;
+    }
+  }
+
+  public LoggingUtil() {}
+
+  private String getSubscriptionLogPrefix(
       PubsubMessageWrapper messageWrapper, String ackId, boolean exactlyOnceDeliveryEnabled) {
     if (messageWrapper == null || messageWrapper.getPubsubMessage() == null) {
       return " Ack ID: "
@@ -45,7 +82,7 @@ final class LoggingUtil {
     return sb.toString();
   }
 
-  static String getPublisherLogPrefix(PubsubMessageWrapper messageWrapper) {
+  private String getPublisherLogPrefix(PubsubMessageWrapper messageWrapper) {
     if (messageWrapper == null || messageWrapper.getPubsubMessage() == null) {
       return " (Message details not available)";
     }
@@ -60,5 +97,63 @@ final class LoggingUtil {
       sb.append(", Ordering Key: ").append(orderingKey);
     }
     return sb.toString();
+  }
+
+  public void logSubscriber(
+      SubSytem subSystem,
+      Level level,
+      String msg,
+      PubsubMessageWrapper messageWrapper,
+      String ackId,
+      boolean exactlyOnceDeliveryEnabled) {
+    Logger logger = subSystem.getLogger();
+    if (logger.isLoggable(level)) {
+      String prefix = getSubscriptionLogPrefix(messageWrapper, ackId, exactlyOnceDeliveryEnabled);
+      logger.log(level, prefix + " - " + msg);
+    }
+  }
+
+  public void logSubscriber(
+      SubSytem subSystem,
+      Level level,
+      String msg,
+      PubsubMessageWrapper messageWrapper,
+      String ackId,
+      boolean exactlyOnceDeliveryEnabled,
+      Throwable throwable) {
+    Logger logger = subSystem.getLogger();
+    if (logger.isLoggable(level)) {
+      String prefix = getSubscriptionLogPrefix(messageWrapper, ackId, exactlyOnceDeliveryEnabled);
+      logger.log(level, prefix + " - " + msg, throwable);
+    }
+  }
+
+  public void logPublisher(
+      SubSytem subSystem, Level level, String msg, PubsubMessageWrapper messageWrapper) {
+    Logger logger = subSystem.getLogger();
+    if (logger.isLoggable(level)) {
+      String prefix = getPublisherLogPrefix(messageWrapper);
+      logger.log(level, prefix + " - " + msg);
+    }
+  }
+
+  public void logPublisher(
+      SubSytem subSystem,
+      Level level,
+      String msg,
+      PubsubMessageWrapper messageWrapper,
+      Throwable throwable) {
+    Logger logger = subSystem.getLogger();
+    if (logger.isLoggable(level)) {
+      String prefix = getPublisherLogPrefix(messageWrapper);
+      logger.log(level, prefix + " - " + msg, throwable);
+    }
+  }
+
+  public void logEvent(SubSytem subSytem, Level level, String msg, Object... params) {
+    Logger logger = subSytem.getLogger();
+    if (logger.isLoggable(level)) {
+      logger.log(level, msg, params);
+    }
   }
 }

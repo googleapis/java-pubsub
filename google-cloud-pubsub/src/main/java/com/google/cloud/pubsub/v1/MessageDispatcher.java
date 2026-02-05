@@ -59,14 +59,7 @@ import java.util.logging.Logger;
  */
 class MessageDispatcher {
   private static final Logger logger = Logger.getLogger(MessageDispatcher.class.getName());
-  private static final Logger slowAckLogger = Logger.getLogger("slow-ack");
-  private static final Logger callbackDeliveryLogger = Logger.getLogger("callback-delivery");
-  private static final Logger expiryLogger = Logger.getLogger("expiry");
-  private static final Logger callbackExceptionsLogger = Logger.getLogger("callback-exceptions");
-  private static final Logger ackBatchLogger = Logger.getLogger("ack-batch");
-  private static final Logger subscriberFlowControlLogger =
-      Logger.getLogger("subscriber-flow-control");
-  private static final Logger ackNackLogger = Logger.getLogger("ack-nack");
+  private LoggingUtil loggingUtil = new LoggingUtil();
 
   @InternalApi static final double PERCENTILE_FOR_ACK_DEADLINE_UPDATES = 99.9;
   @InternalApi static final Duration PENDING_ACKS_SEND_DELAY = Duration.ofMillis(100);
@@ -167,15 +160,13 @@ class MessageDispatcher {
 
     @Override
     public void onFailure(Throwable t) {
-      if (callbackExceptionsLogger.isLoggable(Level.WARNING)) {
-        String prefix =
-            LoggingUtil.getLogPrefix(
-                this.ackRequestData.getMessageWrapper(),
-                this.getAckRequestData().getAckId(),
-                exactlyOnceDeliveryEnabled.get());
-        callbackExceptionsLogger.log(
-            Level.WARNING, "pubsub:callback-exceptions - MessageReceiver exception. " + prefix, t);
-      }
+      loggingUtil.logSubscriber(
+          LoggingUtil.SubSytem.CALLBACK_EXCEPTIONS,
+          Level.WARNING,
+          "MessageReceiver exception.",
+          this.ackRequestData.getMessageWrapper(),
+          this.ackRequestData.getAckId(),
+          exactlyOnceDeliveryEnabled.get());
       this.ackRequestData.setResponse(AckResponse.OTHER, false);
       pendingNacks.add(this.ackRequestData);
       tracer.endSubscribeProcessSpan(this.ackRequestData.getMessageWrapper(), "nack");
@@ -186,16 +177,15 @@ class MessageDispatcher {
     public void onSuccess(AckReply reply) {
       int ackLatency =
           Ints.saturatedCast((long) Math.ceil((clock.millisTime() - receivedTimeMillis) / 1000D));
-      String logPrefix = "";
-      if (slowAckLogger.isLoggable(Level.FINE) || ackNackLogger.isLoggable(Level.FINE)) {
-        logPrefix =
-            LoggingUtil.getLogPrefix(
-                this.ackRequestData.getMessageWrapper(),
-                this.ackRequestData.getAckId(),
-                exactlyOnceDeliveryEnabled.get());
-      }
       if (ackLatency >= ackLatencyDistribution.getPercentile(slowAckPercentile)) {
-        slowAckLogger.log(Level.FINE, "pubsub:slow-ack - " + logPrefix);
+        loggingUtil.logSubscriber(
+            LoggingUtil.SubSytem.SLOW_ACK,
+            Level.FINE,
+            String.format(
+                "Message ack duration of %d is higher than the p99 ack duration", ackLatency),
+            this.ackRequestData.getMessageWrapper(),
+            this.ackRequestData.getAckId(),
+            exactlyOnceDeliveryEnabled.get());
       }
 
       switch (reply) {
@@ -210,12 +200,24 @@ class MessageDispatcher {
             ackLatencyDistribution.record(ackLatency);
             tracer.endSubscribeProcessSpan(this.ackRequestData.getMessageWrapper(), "ack");
           }
-          ackNackLogger.log(Level.FINE, "pubsub:ack-nack - " + logPrefix + " - Action: ACK");
+          loggingUtil.logSubscriber(
+              LoggingUtil.SubSytem.ACK_NACK,
+              Level.FINE,
+              "Ack called on message.",
+              this.ackRequestData.getMessageWrapper(),
+              this.ackRequestData.getAckId(),
+              exactlyOnceDeliveryEnabled.get());
           break;
         case NACK:
           pendingNacks.add(this.ackRequestData);
           tracer.endSubscribeProcessSpan(this.ackRequestData.getMessageWrapper(), "nack");
-          ackNackLogger.log(Level.FINE, "pubsub:ack-nack - " + logPrefix + " - Action: NACK");
+          loggingUtil.logSubscriber(
+              LoggingUtil.SubSytem.ACK_NACK,
+              Level.FINE,
+              "Nack called on message.",
+              this.ackRequestData.getMessageWrapper(),
+              this.ackRequestData.getAckId(),
+              exactlyOnceDeliveryEnabled.get());
           break;
         default:
           throw new IllegalArgumentException(String.format("AckReply: %s not supported", reply));
@@ -593,33 +595,34 @@ class MessageDispatcher {
     for (OutstandingMessage message : batch) {
       // This is a blocking flow controller.  We have already incremented messagesWaiter, so
       // shutdown will block on processing of all these messages anyway.
-      String logPrefix = "";
-      if (subscriberFlowControlLogger.isLoggable(Level.FINE)) {
-        logPrefix =
-            LoggingUtil.getLogPrefix(
-                message.messageWrapper(),
-                message.messageWrapper().getAckId(),
-                exactlyOnceDeliveryEnabled.get());
-      }
       tracer.startSubscribeConcurrencyControlSpan(message.messageWrapper());
       try {
-        subscriberFlowControlLogger.log(
+        loggingUtil.logSubscriber(
+            LoggingUtil.SubSytem.SUBSCRIBER_FLOW_CONTROL,
             Level.FINE,
-            "pubsub:subscriber-flow-control - " + logPrefix + " - Flow controller is blocking.");
+            "Flow controller is blocking.",
+            message.messageWrapper(),
+            message.messageWrapper().getAckId(),
+            exactlyOnceDeliveryEnabled.get());
         flowController.reserve(1, message.messageWrapper().getPubsubMessage().getSerializedSize());
-        subscriberFlowControlLogger.log(
+        loggingUtil.logSubscriber(
+            LoggingUtil.SubSytem.SUBSCRIBER_FLOW_CONTROL,
             Level.FINE,
-            "pubsub:subscriber-flow-control - "
-                + logPrefix
-                + " - Flow controller is done blocking.");
+            "Flow controller is done blocking.",
+            message.messageWrapper(),
+            message.messageWrapper().getAckId(),
+            exactlyOnceDeliveryEnabled.get());
         tracer.endSubscribeConcurrencyControlSpan(message.messageWrapper());
       } catch (FlowControlException unexpectedException) {
         // This should be a blocking flow controller and never throw an exception.
-        subscriberFlowControlLogger.log(
+        loggingUtil.logSubscriber(
+            LoggingUtil.SubSytem.SUBSCRIBER_FLOW_CONTROL,
             Level.FINE,
-            "pubsub:subscriber-flow-control - "
-                + logPrefix
-                + " - Flow controller unexpected exception.");
+            "Flow controller unexpected exception.",
+            message.messageWrapper(),
+            message.messageWrapper().getAckId(),
+            exactlyOnceDeliveryEnabled.get(),
+            unexpectedException);
         tracer.setSubscribeConcurrencyControlSpanException(
             message.messageWrapper(), unexpectedException);
         throw new IllegalStateException("Flow control unexpected exception", unexpectedException);
@@ -658,15 +661,6 @@ class MessageDispatcher {
           @Override
           public void run() {
             try {
-              String logPrefix = "";
-              if (expiryLogger.isLoggable(Level.FINE)
-                  || callbackDeliveryLogger.isLoggable(Level.FINE)) {
-                logPrefix =
-                    LoggingUtil.getLogPrefix(
-                        messageWrapper,
-                        ackHandler.ackRequestData.getAckId(),
-                        exactlyOnceDeliveryEnabled.get());
-              }
               if (ackHandler
                   .totalExpiration
                   .plusSeconds(messageDeadlineSeconds.get())
@@ -676,11 +670,23 @@ class MessageDispatcher {
                 // Don't nack it either, because we'd be nacking someone else's message.
                 ackHandler.forget();
                 tracer.setSubscriberSpanExpirationResult(messageWrapper);
-                expiryLogger.log(Level.FINE, "pubsub:expiry - " + logPrefix);
+                loggingUtil.logSubscriber(
+                    LoggingUtil.SubSytem.EXPIRY,
+                    Level.FINE,
+                    "Message expired.",
+                    messageWrapper,
+                    ackHandler.ackRequestData.getAckId(),
+                    exactlyOnceDeliveryEnabled.get());
                 return;
               }
               tracer.startSubscribeProcessSpan(messageWrapper);
-              callbackDeliveryLogger.log(Level.FINE, "pubsub:callback-delivery - " + logPrefix);
+              loggingUtil.logSubscriber(
+                  LoggingUtil.SubSytem.CALLBACK_DELIVERY,
+                  Level.FINE,
+                  "Message delivered.",
+                  messageWrapper,
+                  ackHandler.ackRequestData.getAckId(),
+                  exactlyOnceDeliveryEnabled.get());
               if (shouldSetMessageFuture()) {
                 // This is the message future that is propagated to the user
                 SettableApiFuture<AckResponse> messageFuture =
@@ -798,13 +804,14 @@ class MessageDispatcher {
 
     List<AckRequestData> ackRequestDataList = new ArrayList<AckRequestData>();
     pendingAcks.drainTo(ackRequestDataList);
-    ackBatchLogger.log(
+    loggingUtil.logEvent(
+        LoggingUtil.SubSytem.ACK_BATCH,
         Level.FINE,
-        "pubsub:ack-batch - Sending {0} ACKs, {1} NACKs, {2} receipts. Exactly Once Delivery: {3}",
+        "Sending {0} ACKs, {1} NACKs, {2} receipts. Exactly Once Delivery: {3}",
         new Object[] {
           ackRequestDataList.size(),
           nackRequestDataList.size(),
-          ackRequestDataList.size(),
+          ackRequestDataReceipts.size(),
           exactlyOnceDeliveryEnabled.get()
         });
 
