@@ -160,13 +160,14 @@ class MessageDispatcher {
 
     @Override
     public void onFailure(Throwable t) {
-      loggingUtil.logSubscriber(
-          LoggingUtil.SubSytem.CALLBACK_EXCEPTIONS,
+      loggingUtil.logSubscriberWithThrowable(
+          LoggingUtil.SubSystem.CALLBACK_EXCEPTIONS,
           Level.WARNING,
           "MessageReceiver exception.",
           this.ackRequestData.getMessageWrapper(),
           this.ackRequestData.getAckId(),
-          exactlyOnceDeliveryEnabled.get());
+          exactlyOnceDeliveryEnabled.get(),
+          t);
       this.ackRequestData.setResponse(AckResponse.OTHER, false);
       pendingNacks.add(this.ackRequestData);
       tracer.endSubscribeProcessSpan(this.ackRequestData.getMessageWrapper(), "nack");
@@ -179,7 +180,7 @@ class MessageDispatcher {
           Ints.saturatedCast((long) Math.ceil((clock.millisTime() - receivedTimeMillis) / 1000D));
       if (ackLatency >= ackLatencyDistribution.getPercentile(slowAckPercentile)) {
         loggingUtil.logSubscriber(
-            LoggingUtil.SubSytem.SLOW_ACK,
+            LoggingUtil.SubSystem.SLOW_ACK,
             Level.FINE,
             String.format(
                 "Message ack duration of %d is higher than the p99 ack duration", ackLatency),
@@ -201,7 +202,7 @@ class MessageDispatcher {
             tracer.endSubscribeProcessSpan(this.ackRequestData.getMessageWrapper(), "ack");
           }
           loggingUtil.logSubscriber(
-              LoggingUtil.SubSytem.ACK_NACK,
+              LoggingUtil.SubSystem.ACK_NACK,
               Level.FINE,
               "Ack called on message.",
               this.ackRequestData.getMessageWrapper(),
@@ -212,7 +213,7 @@ class MessageDispatcher {
           pendingNacks.add(this.ackRequestData);
           tracer.endSubscribeProcessSpan(this.ackRequestData.getMessageWrapper(), "nack");
           loggingUtil.logSubscriber(
-              LoggingUtil.SubSytem.ACK_NACK,
+              LoggingUtil.SubSystem.ACK_NACK,
               Level.FINE,
               "Nack called on message.",
               this.ackRequestData.getMessageWrapper(),
@@ -598,7 +599,7 @@ class MessageDispatcher {
       tracer.startSubscribeConcurrencyControlSpan(message.messageWrapper());
       try {
         loggingUtil.logSubscriber(
-            LoggingUtil.SubSytem.SUBSCRIBER_FLOW_CONTROL,
+            LoggingUtil.SubSystem.SUBSCRIBER_FLOW_CONTROL,
             Level.FINE,
             "Flow controller is blocking.",
             message.messageWrapper(),
@@ -606,7 +607,7 @@ class MessageDispatcher {
             exactlyOnceDeliveryEnabled.get());
         flowController.reserve(1, message.messageWrapper().getPubsubMessage().getSerializedSize());
         loggingUtil.logSubscriber(
-            LoggingUtil.SubSytem.SUBSCRIBER_FLOW_CONTROL,
+            LoggingUtil.SubSystem.SUBSCRIBER_FLOW_CONTROL,
             Level.FINE,
             "Flow controller is done blocking.",
             message.messageWrapper(),
@@ -615,8 +616,8 @@ class MessageDispatcher {
         tracer.endSubscribeConcurrencyControlSpan(message.messageWrapper());
       } catch (FlowControlException unexpectedException) {
         // This should be a blocking flow controller and never throw an exception.
-        loggingUtil.logSubscriber(
-            LoggingUtil.SubSytem.SUBSCRIBER_FLOW_CONTROL,
+        loggingUtil.logSubscriberWithThrowable(
+            LoggingUtil.SubSystem.SUBSCRIBER_FLOW_CONTROL,
             Level.FINE,
             "Flow controller unexpected exception.",
             message.messageWrapper(),
@@ -671,7 +672,7 @@ class MessageDispatcher {
                 ackHandler.forget();
                 tracer.setSubscriberSpanExpirationResult(messageWrapper);
                 loggingUtil.logSubscriber(
-                    LoggingUtil.SubSytem.EXPIRY,
+                    LoggingUtil.SubSystem.EXPIRY,
                     Level.FINE,
                     "Message expired.",
                     messageWrapper,
@@ -681,7 +682,7 @@ class MessageDispatcher {
               }
               tracer.startSubscribeProcessSpan(messageWrapper);
               loggingUtil.logSubscriber(
-                  LoggingUtil.SubSytem.CALLBACK_DELIVERY,
+                  LoggingUtil.SubSystem.CALLBACK_DELIVERY,
                   Level.FINE,
                   "Message delivered.",
                   messageWrapper,
@@ -805,7 +806,7 @@ class MessageDispatcher {
     List<AckRequestData> ackRequestDataList = new ArrayList<AckRequestData>();
     pendingAcks.drainTo(ackRequestDataList);
     loggingUtil.logEvent(
-        LoggingUtil.SubSytem.ACK_BATCH,
+        LoggingUtil.SubSystem.ACK_BATCH,
         Level.FINE,
         "Sending {0} ACKs, {1} NACKs, {2} receipts. Exactly Once Delivery: {3}",
         new Object[] {

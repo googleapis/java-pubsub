@@ -512,7 +512,7 @@ public class Publisher implements PublisherInterface {
     }
 
     loggingUtil.logPublisher(
-        LoggingUtil.SubSytem.PUBLISH_BATCH,
+        LoggingUtil.SubSystem.PUBLISH_BATCH,
         Level.FINE,
         String.format("Attempting to batch publish %d messages", outstandingBatch.size()),
         outstandingBatch.getMessageWrappers().get(0));

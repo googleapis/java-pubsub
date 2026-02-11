@@ -34,7 +34,7 @@ public final class LoggingUtil {
   private static final Logger publishBatchLogger = Logger.getLogger("publish-batch");
   private static final Logger subscriberStreamsLogger = Logger.getLogger("subscriber-streams");
 
-  public enum SubSytem {
+  public enum SubSystem {
     SLOW_ACK(slowAckLogger),
     CALLBACK_DELIVERY(callbackDeliveryLogger),
     EXPIRY(expiryLogger),
@@ -47,7 +47,7 @@ public final class LoggingUtil {
 
     private final Logger logger;
 
-    SubSytem(Logger logger) {
+    SubSystem(Logger logger) {
       this.logger = logger;
     }
 
@@ -100,7 +100,7 @@ public final class LoggingUtil {
   }
 
   public void logSubscriber(
-      SubSytem subSystem,
+      SubSystem subSystem,
       Level level,
       String msg,
       PubsubMessageWrapper messageWrapper,
@@ -113,8 +113,8 @@ public final class LoggingUtil {
     }
   }
 
-  public void logSubscriber(
-      SubSytem subSystem,
+  public void logSubscriberWithThrowable(
+      SubSystem subSystem,
       Level level,
       String msg,
       PubsubMessageWrapper messageWrapper,
@@ -129,7 +129,7 @@ public final class LoggingUtil {
   }
 
   public void logPublisher(
-      SubSytem subSystem, Level level, String msg, PubsubMessageWrapper messageWrapper) {
+      SubSystem subSystem, Level level, String msg, PubsubMessageWrapper messageWrapper) {
     Logger logger = subSystem.getLogger();
     if (logger.isLoggable(level)) {
       String prefix = getPublisherLogPrefix(messageWrapper);
@@ -137,21 +137,8 @@ public final class LoggingUtil {
     }
   }
 
-  public void logPublisher(
-      SubSytem subSystem,
-      Level level,
-      String msg,
-      PubsubMessageWrapper messageWrapper,
-      Throwable throwable) {
+  public void logEvent(SubSystem subSystem, Level level, String msg, Object... params) {
     Logger logger = subSystem.getLogger();
-    if (logger.isLoggable(level)) {
-      String prefix = getPublisherLogPrefix(messageWrapper);
-      logger.log(level, prefix + " - " + msg, throwable);
-    }
-  }
-
-  public void logEvent(SubSytem subSytem, Level level, String msg, Object... params) {
-    Logger logger = subSytem.getLogger();
     if (logger.isLoggable(level)) {
       logger.log(level, msg, params);
     }

@@ -224,7 +224,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
   protected void doStart() {
     logger.config("Starting subscriber.");
     loggingUtil.logEvent(
-        LoggingUtil.SubSytem.SUBSCRIBER_STREAMS, Level.FINE, "Opening stream.", "");
+        LoggingUtil.SubSystem.SUBSCRIBER_STREAMS, Level.FINE, "Opening stream.", "");
     messageDispatcher.start();
     initialize();
     notifyStarted();
@@ -233,7 +233,7 @@ final class StreamingSubscriberConnection extends AbstractApiService implements 
   @Override
   protected void doStop() {
     loggingUtil.logEvent(
-        LoggingUtil.SubSytem.SUBSCRIBER_STREAMS, Level.FINE, "Closing stream.", "");
+        LoggingUtil.SubSystem.SUBSCRIBER_STREAMS, Level.FINE, "Closing stream.", "");
     lock.lock();
     try {
       clientStream.closeSendWithError(Status.CANCELLED.asException());
