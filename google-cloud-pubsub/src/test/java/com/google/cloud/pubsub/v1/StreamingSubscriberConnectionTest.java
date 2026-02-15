@@ -16,7 +16,9 @@
 
 package com.google.cloud.pubsub.v1;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.*;
@@ -51,16 +53,13 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestName;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 /** Tests for {@link StreamingSubscriberConnection}. */
 public class StreamingSubscriberConnectionTest {
-  @Rule public TestName testName = new TestName();
 
   private FakeScheduledExecutorService systemExecutor;
   private FakeScheduledExecutorService executor;
@@ -98,14 +97,14 @@ public class StreamingSubscriberConnectionTest {
   private static final Duration CLIENT_PING_INTERVAL = Duration.ofSeconds(30);
   private static final Duration MAX_ACK_EXTENSION_PERIOD = Duration.ofMinutes(60);
 
-  @Before
+  @BeforeEach
   public void setUp() {
     systemExecutor = new FakeScheduledExecutorService();
     clock = systemExecutor.getClock();
     mockSubscriberStub = mock(SubscriberStub.class, RETURNS_DEEP_STUBS);
   }
 
-  @After
+  @AfterEach
   public void tearDown() {
     systemExecutor.shutdown();
   }
