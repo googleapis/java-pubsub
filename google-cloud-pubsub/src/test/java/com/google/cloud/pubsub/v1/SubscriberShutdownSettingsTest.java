@@ -16,13 +16,14 @@
 
 package com.google.cloud.pubsub.v1;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.google.cloud.pubsub.v1.SubscriberShutdownSettings.ShutdownMode;
 import java.time.Duration;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class SubscriberShutdownSettingsTest {
 
@@ -88,13 +89,17 @@ public class SubscriberShutdownSettingsTest {
     assertTrue(settings.getTimeout().isZero());
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void testNullModeThrowsException() {
-    SubscriberShutdownSettings.newBuilder().setMode(null).build();
+    assertThrows(
+        NullPointerException.class,
+        () -> SubscriberShutdownSettings.newBuilder().setMode(null).build());
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void testNullTimeoutThrowsException() {
-    SubscriberShutdownSettings.newBuilder().setTimeout(null).build();
+    assertThrows(
+        NullPointerException.class,
+        () -> SubscriberShutdownSettings.newBuilder().setTimeout(null).build());
   }
 }
