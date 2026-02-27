@@ -27,15 +27,36 @@ source ${scriptDir}/common.sh
 mvn -version
 echo ${JOB_TYPE}
 
-# attempt to install 3 times with exponential backoff (starting with 10 seconds)
-retry_with_backoff 3 10 \
-  mvn install -B -V -ntp \
-    -DskipTests=true \
-    -Dclirr.skip=true \
-    -Denforcer.skip=true \
-    -Dmaven.javadoc.skip=true \
-    -Dgcloud.download.skip=true \
-    -T 1C
+# TODO: We'll change define this value in a different place later
+if [[ "${JOB_TYPE}" == "integration" ]]; then
+  SHARED_DEPS_OVERRIDE=3.45.2-SNAPSHOT
+fi
+if [ -n "${SHARED_DEPS_OVERRIDE}" ]; then
+  echo "Account used for Artifact Registry authentication"
+  echo "gcloud config get-value core/account:"
+  gcloud config get-value core/account
+  echo "wget a file from Artifact Registry:"
+  wget --quiet --header="Authorization: Bearer $(gcloud auth print-access-token)" \
+      --output-document=/dev/null \
+      https://us-maven.pkg.dev/suztomo-cloud-function-test/test-maven-repo/com/google/cloud/google-cloud-shared-dependencies/3.45.2-latest-deps-2024-0418-102802/google-cloud-shared-dependencies-3.45.2-latest-deps-2024-0418-102802.pom
+
+  # Tell the integration tests to use the specific shared dependencies available in the snapshot repository.
+  INTEGRATION_TEST_ARGS="${INTEGRATION_TEST_ARGS} -Dgoogle-cloud-shared-dependencies.version=${SHARED_DEPS_OVERRIDE} -Puse-snapshot-repo"
+  echo "Showing dependency tree"
+  mvn -B ${INTEGRATION_TEST_ARGS} -ntp dependency:tree
+  echo "End of dependency tree"
+fi
+
+mvn install -B -V -ntp \
+  ${INTEGRATION_TEST_ARGS} \
+  -DskipTests=true \
+  -Dclirr.skip=true \
+  -Denforcer.skip=true \
+  -Dcheckstyle.skip=true \
+  -Dmaven.javadoc.skip=true \
+  -Dgcloud.download.skip=true \
+  -T 1C
+echo "mvn instal succeeded"
 
 # if GOOGLE_APPLICATION_CREDENTIALS is specified as a relative path, prepend Kokoro root directory onto it
 if [[ ! -z "${GOOGLE_APPLICATION_CREDENTIALS}" && "${GOOGLE_APPLICATION_CREDENTIALS}" != /* ]]; then

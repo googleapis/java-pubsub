@@ -214,4 +214,21 @@
       </plugin>
     </plugins>
   </reporting>
+  <profiles>
+    <profile>
+      <id>use-snapshot-repo</id>
+      <repositories>
+        <repository>
+          <id>artifact-registry</id>
+          <url>artifactregistry://us-maven.pkg.dev/suztomo-cloud-function-test/test-maven-repo-snapshot</url>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+          </snapshots>
+        </repository>
+      </repositories>
+    </profile>
+  </profiles>
 </project>
