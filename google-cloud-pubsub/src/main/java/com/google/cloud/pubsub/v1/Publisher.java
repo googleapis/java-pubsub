@@ -873,8 +873,12 @@ public class Publisher implements PublisherInterface {
       Preconditions.checkNotNull(batchingSettings);
       Preconditions.checkNotNull(batchingSettings.getElementCountThreshold());
       Preconditions.checkArgument(batchingSettings.getElementCountThreshold() > 0);
+      Preconditions.checkArgument(
+          batchingSettings.getElementCountThreshold() <= getApiMaxRequestElementCount());
       Preconditions.checkNotNull(batchingSettings.getRequestByteThreshold());
       Preconditions.checkArgument(batchingSettings.getRequestByteThreshold() > 0);
+      Preconditions.checkArgument(
+          batchingSettings.getRequestByteThreshold() <= getApiMaxRequestBytes());
       Preconditions.checkNotNull(batchingSettings.getDelayThreshold());
       Preconditions.checkArgument(batchingSettings.getDelayThreshold().toMillis() > 0);
       FlowControlSettings flowControlSettings = batchingSettings.getFlowControlSettings();
