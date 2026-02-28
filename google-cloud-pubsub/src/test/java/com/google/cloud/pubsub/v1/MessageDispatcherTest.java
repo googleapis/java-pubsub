@@ -17,7 +17,10 @@
 package com.google.cloud.pubsub.v1;
 
 import static com.google.common.truth.Truth.assertThat;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
@@ -32,8 +35,8 @@ import com.google.pubsub.v1.ReceivedMessage;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.*;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
@@ -90,7 +93,7 @@ public class MessageDispatcherTest {
   private LinkedBlockingQueue<AckReplyConsumer> consumers;
   private LinkedBlockingQueue<AckReplyConsumerWithResponse> consumersWithResponse;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     systemExecutor = new FakeScheduledExecutorService();
     clock = new FakeClock();

@@ -20,9 +20,9 @@ import static com.google.cloud.pubsub.v1.OpenCensusUtil.MESSAGE_RECEIVER_SPAN_NA
 import static com.google.cloud.pubsub.v1.OpenCensusUtil.OPEN_CENSUS_MESSAGE_TRANSFORM;
 import static com.google.cloud.pubsub.v1.OpenCensusUtil.TAG_CONTEXT_KEY;
 import static com.google.cloud.pubsub.v1.OpenCensusUtil.TRACE_CONTEXT_KEY;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import com.google.common.base.Stopwatch;
 import com.google.protobuf.ByteString;
@@ -43,8 +43,8 @@ import io.opencensus.trace.export.SpanData;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 /** Tests for {@link OpenCensusUtil}. */
 public class OpenCensusUtilTest {
@@ -54,7 +54,7 @@ public class OpenCensusUtilTest {
   private static final TagValue TEST_TAG_VAL = TagValue.create("TEST_TAG_VAL");
   private static final String TEST_PARENT_LINK_NAME = "TEST_PARENT_LINK";
 
-  @BeforeClass
+  @BeforeAll
   public static void configureOpenCensus() {
     Tracing.getExportComponent().getRunningSpanStore().setMaxNumberOfSpans(5);
   }

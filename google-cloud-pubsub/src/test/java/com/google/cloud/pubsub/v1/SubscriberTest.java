@@ -16,7 +16,10 @@
 
 package com.google.cloud.pubsub.v1;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import com.google.api.gax.batching.FlowControlSettings;
 import com.google.api.gax.core.ExecutorProvider;
@@ -35,13 +38,13 @@ import io.grpc.Status;
 import io.grpc.StatusException;
 import io.grpc.inprocess.InProcessChannelBuilder;
 import io.grpc.inprocess.InProcessServerBuilder;
+import java.lang.reflect.Method;
 import java.time.Duration;
 import java.util.concurrent.*;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestName;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 
 /** Tests for {@link Subscriber}. */
 public class SubscriberTest {
@@ -64,15 +67,20 @@ public class SubscriberTest {
         }
       };
 
-  @Rule public TestName testName = new TestName();
-
-  @Before
-  public void setUp() throws Exception {
+  @BeforeEach
+  public void setUp(TestInfo testInfo) throws Exception {
     consumersWithResponse = new LinkedBlockingQueue<>();
-    InProcessServerBuilder serverBuilder = InProcessServerBuilder.forName(testName.getMethodName());
+
+    String methodName =
+        testInfo
+            .getTestMethod()
+            .map(Method::getName)
+            .orElseThrow(() -> new IllegalStateException("Test method not available"));
+
+    InProcessServerBuilder serverBuilder = InProcessServerBuilder.forName(methodName);
     fakeSubscriberServiceImpl = new FakeSubscriberServiceImpl();
     fakeExecutor = new FakeScheduledExecutorService();
-    testChannel = InProcessChannelBuilder.forName(testName.getMethodName()).build();
+    testChannel = InProcessChannelBuilder.forName(methodName).build();
     serverBuilder.addService(fakeSubscriberServiceImpl);
     testServer = serverBuilder.build();
     testServer.start();
@@ -88,7 +96,7 @@ public class SubscriberTest {
         };
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
     testServer.shutdownNow().awaitTermination();
     testChannel.shutdown();
@@ -172,7 +180,7 @@ public class SubscriberTest {
     }
   }
 
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void testFailedChannel_fatalError_subscriberFails() throws Exception {
     Subscriber subscriber =
         startSubscriber(
@@ -184,7 +192,7 @@ public class SubscriberTest {
     fakeSubscriberServiceImpl.sendError(new StatusException(Status.INVALID_ARGUMENT));
 
     try {
-      subscriber.awaitTerminated();
+      assertThrows(IllegalStateException.class, () -> subscriber.awaitTerminated());
     } finally {
       // The subscriber must finish with an state error because its FAILED status.
       assertEquals(Subscriber.State.FAILED, subscriber.state());
@@ -200,7 +208,7 @@ public class SubscriberTest {
     }
   }
 
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void testFailedChannel_shutdownBackgroundResources() throws Exception {
     ExecutorProvider provider =
         new ExecutorProvider() {
@@ -222,7 +230,7 @@ public class SubscriberTest {
     fakeSubscriberServiceImpl.sendError(new StatusException(Status.INVALID_ARGUMENT));
 
     try {
-      subscriber.awaitTerminated();
+      assertThrows(IllegalStateException.class, () -> subscriber.awaitTerminated());
     } finally {
       // The subscriber must finish with an state error because its FAILED status.
       assertEquals(Subscriber.State.FAILED, subscriber.state());

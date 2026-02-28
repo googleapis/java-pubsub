@@ -19,6 +19,9 @@ package com.google.cloud.pubsub.v1;
 import static com.google.cloud.pubsub.v1.TopicAdminClient.ListTopicSnapshotsPagedResponse;
 import static com.google.cloud.pubsub.v1.TopicAdminClient.ListTopicSubscriptionsPagedResponse;
 import static com.google.cloud.pubsub.v1.TopicAdminClient.ListTopicsPagedResponse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import com.google.api.gax.core.NoCredentialsProvider;
 import com.google.api.gax.httpjson.GaxHttpJsonProperties;
@@ -66,19 +69,18 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import javax.annotation.Generated;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 @Generated("by gapic-generator-java")
 public class TopicAdminClientHttpJsonTest {
   private static MockHttpService mockService;
   private static TopicAdminClient client;
 
-  @BeforeClass
+  @BeforeAll
   public static void startStaticServer() throws IOException {
     mockService =
         new MockHttpService(
@@ -94,15 +96,15 @@ public class TopicAdminClientHttpJsonTest {
     client = TopicAdminClient.create(settings);
   }
 
-  @AfterClass
+  @AfterAll
   public static void stopServer() {
     client.close();
   }
 
-  @Before
+  @BeforeEach
   public void setUp() {}
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
     mockService.reset();
   }
@@ -129,10 +131,10 @@ public class TopicAdminClientHttpJsonTest {
     TopicName name = TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]");
 
     Topic actualResponse = client.createTopic(name);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<String> actualRequests = mockService.getRequestPaths();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
 
     String apiClientHeaderKey =
         mockService
@@ -140,7 +142,7 @@ public class TopicAdminClientHttpJsonTest {
             .get(ApiClientHeaderProvider.getDefaultApiClientHeaderKey())
             .iterator()
             .next();
-    Assert.assertTrue(
+    assertTrue(
         GaxHttpJsonProperties.getDefaultApiClientHeaderPattern()
             .matcher(apiClientHeaderKey)
             .matches());
@@ -156,7 +158,7 @@ public class TopicAdminClientHttpJsonTest {
     try {
       TopicName name = TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]");
       client.createTopic(name);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -184,10 +186,10 @@ public class TopicAdminClientHttpJsonTest {
     String name = "projects/project-7550/topics/topic-7550";
 
     Topic actualResponse = client.createTopic(name);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<String> actualRequests = mockService.getRequestPaths();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
 
     String apiClientHeaderKey =
         mockService
@@ -195,7 +197,7 @@ public class TopicAdminClientHttpJsonTest {
             .get(ApiClientHeaderProvider.getDefaultApiClientHeaderKey())
             .iterator()
             .next();
-    Assert.assertTrue(
+    assertTrue(
         GaxHttpJsonProperties.getDefaultApiClientHeaderPattern()
             .matcher(apiClientHeaderKey)
             .matches());
@@ -211,7 +213,7 @@ public class TopicAdminClientHttpJsonTest {
     try {
       String name = "projects/project-7550/topics/topic-7550";
       client.createTopic(name);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -254,10 +256,10 @@ public class TopicAdminClientHttpJsonTest {
     FieldMask updateMask = FieldMask.newBuilder().build();
 
     Topic actualResponse = client.updateTopic(topic, updateMask);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<String> actualRequests = mockService.getRequestPaths();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
 
     String apiClientHeaderKey =
         mockService
@@ -265,7 +267,7 @@ public class TopicAdminClientHttpJsonTest {
             .get(ApiClientHeaderProvider.getDefaultApiClientHeaderKey())
             .iterator()
             .next();
-    Assert.assertTrue(
+    assertTrue(
         GaxHttpJsonProperties.getDefaultApiClientHeaderPattern()
             .matcher(apiClientHeaderKey)
             .matches());
@@ -296,7 +298,7 @@ public class TopicAdminClientHttpJsonTest {
               .build();
       FieldMask updateMask = FieldMask.newBuilder().build();
       client.updateTopic(topic, updateMask);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -312,10 +314,10 @@ public class TopicAdminClientHttpJsonTest {
     List<PubsubMessage> messages = new ArrayList<>();
 
     PublishResponse actualResponse = client.publish(topic, messages);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<String> actualRequests = mockService.getRequestPaths();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
 
     String apiClientHeaderKey =
         mockService
@@ -323,7 +325,7 @@ public class TopicAdminClientHttpJsonTest {
             .get(ApiClientHeaderProvider.getDefaultApiClientHeaderKey())
             .iterator()
             .next();
-    Assert.assertTrue(
+    assertTrue(
         GaxHttpJsonProperties.getDefaultApiClientHeaderPattern()
             .matcher(apiClientHeaderKey)
             .matches());
@@ -340,7 +342,7 @@ public class TopicAdminClientHttpJsonTest {
       TopicName topic = TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]");
       List<PubsubMessage> messages = new ArrayList<>();
       client.publish(topic, messages);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -356,10 +358,10 @@ public class TopicAdminClientHttpJsonTest {
     List<PubsubMessage> messages = new ArrayList<>();
 
     PublishResponse actualResponse = client.publish(topic, messages);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<String> actualRequests = mockService.getRequestPaths();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
 
     String apiClientHeaderKey =
         mockService
@@ -367,7 +369,7 @@ public class TopicAdminClientHttpJsonTest {
             .get(ApiClientHeaderProvider.getDefaultApiClientHeaderKey())
             .iterator()
             .next();
-    Assert.assertTrue(
+    assertTrue(
         GaxHttpJsonProperties.getDefaultApiClientHeaderPattern()
             .matcher(apiClientHeaderKey)
             .matches());
@@ -384,7 +386,7 @@ public class TopicAdminClientHttpJsonTest {
       String topic = "projects/project-2486/topics/topic-2486";
       List<PubsubMessage> messages = new ArrayList<>();
       client.publish(topic, messages);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -412,10 +414,10 @@ public class TopicAdminClientHttpJsonTest {
     TopicName topic = TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]");
 
     Topic actualResponse = client.getTopic(topic);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<String> actualRequests = mockService.getRequestPaths();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
 
     String apiClientHeaderKey =
         mockService
@@ -423,7 +425,7 @@ public class TopicAdminClientHttpJsonTest {
             .get(ApiClientHeaderProvider.getDefaultApiClientHeaderKey())
             .iterator()
             .next();
-    Assert.assertTrue(
+    assertTrue(
         GaxHttpJsonProperties.getDefaultApiClientHeaderPattern()
             .matcher(apiClientHeaderKey)
             .matches());
@@ -439,7 +441,7 @@ public class TopicAdminClientHttpJsonTest {
     try {
       TopicName topic = TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]");
       client.getTopic(topic);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -467,10 +469,10 @@ public class TopicAdminClientHttpJsonTest {
     String topic = "projects/project-2486/topics/topic-2486";
 
     Topic actualResponse = client.getTopic(topic);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<String> actualRequests = mockService.getRequestPaths();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
 
     String apiClientHeaderKey =
         mockService
@@ -478,7 +480,7 @@ public class TopicAdminClientHttpJsonTest {
             .get(ApiClientHeaderProvider.getDefaultApiClientHeaderKey())
             .iterator()
             .next();
-    Assert.assertTrue(
+    assertTrue(
         GaxHttpJsonProperties.getDefaultApiClientHeaderPattern()
             .matcher(apiClientHeaderKey)
             .matches());
@@ -494,7 +496,7 @@ public class TopicAdminClientHttpJsonTest {
     try {
       String topic = "projects/project-2486/topics/topic-2486";
       client.getTopic(topic);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -516,11 +518,11 @@ public class TopicAdminClientHttpJsonTest {
 
     List<Topic> resources = Lists.newArrayList(pagedListResponse.iterateAll());
 
-    Assert.assertEquals(1, resources.size());
-    Assert.assertEquals(expectedResponse.getTopicsList().get(0), resources.get(0));
+    assertEquals(1, resources.size());
+    assertEquals(expectedResponse.getTopicsList().get(0), resources.get(0));
 
     List<String> actualRequests = mockService.getRequestPaths();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
 
     String apiClientHeaderKey =
         mockService
@@ -528,7 +530,7 @@ public class TopicAdminClientHttpJsonTest {
             .get(ApiClientHeaderProvider.getDefaultApiClientHeaderKey())
             .iterator()
             .next();
-    Assert.assertTrue(
+    assertTrue(
         GaxHttpJsonProperties.getDefaultApiClientHeaderPattern()
             .matcher(apiClientHeaderKey)
             .matches());
@@ -544,7 +546,7 @@ public class TopicAdminClientHttpJsonTest {
     try {
       ProjectName project = ProjectName.of("[PROJECT]");
       client.listTopics(project);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -566,11 +568,11 @@ public class TopicAdminClientHttpJsonTest {
 
     List<Topic> resources = Lists.newArrayList(pagedListResponse.iterateAll());
 
-    Assert.assertEquals(1, resources.size());
-    Assert.assertEquals(expectedResponse.getTopicsList().get(0), resources.get(0));
+    assertEquals(1, resources.size());
+    assertEquals(expectedResponse.getTopicsList().get(0), resources.get(0));
 
     List<String> actualRequests = mockService.getRequestPaths();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
 
     String apiClientHeaderKey =
         mockService
@@ -578,7 +580,7 @@ public class TopicAdminClientHttpJsonTest {
             .get(ApiClientHeaderProvider.getDefaultApiClientHeaderKey())
             .iterator()
             .next();
-    Assert.assertTrue(
+    assertTrue(
         GaxHttpJsonProperties.getDefaultApiClientHeaderPattern()
             .matcher(apiClientHeaderKey)
             .matches());
@@ -594,7 +596,7 @@ public class TopicAdminClientHttpJsonTest {
     try {
       String project = "projects/project-7934";
       client.listTopics(project);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -616,11 +618,11 @@ public class TopicAdminClientHttpJsonTest {
 
     List<String> resources = Lists.newArrayList(pagedListResponse.iterateAll());
 
-    Assert.assertEquals(1, resources.size());
-    Assert.assertEquals(expectedResponse.getSubscriptionsList().get(0), resources.get(0));
+    assertEquals(1, resources.size());
+    assertEquals(expectedResponse.getSubscriptionsList().get(0), resources.get(0));
 
     List<String> actualRequests = mockService.getRequestPaths();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
 
     String apiClientHeaderKey =
         mockService
@@ -628,7 +630,7 @@ public class TopicAdminClientHttpJsonTest {
             .get(ApiClientHeaderProvider.getDefaultApiClientHeaderKey())
             .iterator()
             .next();
-    Assert.assertTrue(
+    assertTrue(
         GaxHttpJsonProperties.getDefaultApiClientHeaderPattern()
             .matcher(apiClientHeaderKey)
             .matches());
@@ -644,7 +646,7 @@ public class TopicAdminClientHttpJsonTest {
     try {
       TopicName topic = TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]");
       client.listTopicSubscriptions(topic);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -666,11 +668,11 @@ public class TopicAdminClientHttpJsonTest {
 
     List<String> resources = Lists.newArrayList(pagedListResponse.iterateAll());
 
-    Assert.assertEquals(1, resources.size());
-    Assert.assertEquals(expectedResponse.getSubscriptionsList().get(0), resources.get(0));
+    assertEquals(1, resources.size());
+    assertEquals(expectedResponse.getSubscriptionsList().get(0), resources.get(0));
 
     List<String> actualRequests = mockService.getRequestPaths();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
 
     String apiClientHeaderKey =
         mockService
@@ -678,7 +680,7 @@ public class TopicAdminClientHttpJsonTest {
             .get(ApiClientHeaderProvider.getDefaultApiClientHeaderKey())
             .iterator()
             .next();
-    Assert.assertTrue(
+    assertTrue(
         GaxHttpJsonProperties.getDefaultApiClientHeaderPattern()
             .matcher(apiClientHeaderKey)
             .matches());
@@ -694,7 +696,7 @@ public class TopicAdminClientHttpJsonTest {
     try {
       String topic = "projects/project-2486/topics/topic-2486";
       client.listTopicSubscriptions(topic);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -716,11 +718,11 @@ public class TopicAdminClientHttpJsonTest {
 
     List<String> resources = Lists.newArrayList(pagedListResponse.iterateAll());
 
-    Assert.assertEquals(1, resources.size());
-    Assert.assertEquals(expectedResponse.getSnapshotsList().get(0), resources.get(0));
+    assertEquals(1, resources.size());
+    assertEquals(expectedResponse.getSnapshotsList().get(0), resources.get(0));
 
     List<String> actualRequests = mockService.getRequestPaths();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
 
     String apiClientHeaderKey =
         mockService
@@ -728,7 +730,7 @@ public class TopicAdminClientHttpJsonTest {
             .get(ApiClientHeaderProvider.getDefaultApiClientHeaderKey())
             .iterator()
             .next();
-    Assert.assertTrue(
+    assertTrue(
         GaxHttpJsonProperties.getDefaultApiClientHeaderPattern()
             .matcher(apiClientHeaderKey)
             .matches());
@@ -744,7 +746,7 @@ public class TopicAdminClientHttpJsonTest {
     try {
       TopicName topic = TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]");
       client.listTopicSnapshots(topic);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -766,11 +768,11 @@ public class TopicAdminClientHttpJsonTest {
 
     List<String> resources = Lists.newArrayList(pagedListResponse.iterateAll());
 
-    Assert.assertEquals(1, resources.size());
-    Assert.assertEquals(expectedResponse.getSnapshotsList().get(0), resources.get(0));
+    assertEquals(1, resources.size());
+    assertEquals(expectedResponse.getSnapshotsList().get(0), resources.get(0));
 
     List<String> actualRequests = mockService.getRequestPaths();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
 
     String apiClientHeaderKey =
         mockService
@@ -778,7 +780,7 @@ public class TopicAdminClientHttpJsonTest {
             .get(ApiClientHeaderProvider.getDefaultApiClientHeaderKey())
             .iterator()
             .next();
-    Assert.assertTrue(
+    assertTrue(
         GaxHttpJsonProperties.getDefaultApiClientHeaderPattern()
             .matcher(apiClientHeaderKey)
             .matches());
@@ -794,7 +796,7 @@ public class TopicAdminClientHttpJsonTest {
     try {
       String topic = "projects/project-2486/topics/topic-2486";
       client.listTopicSnapshots(topic);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -810,7 +812,7 @@ public class TopicAdminClientHttpJsonTest {
     client.deleteTopic(topic);
 
     List<String> actualRequests = mockService.getRequestPaths();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
 
     String apiClientHeaderKey =
         mockService
@@ -818,7 +820,7 @@ public class TopicAdminClientHttpJsonTest {
             .get(ApiClientHeaderProvider.getDefaultApiClientHeaderKey())
             .iterator()
             .next();
-    Assert.assertTrue(
+    assertTrue(
         GaxHttpJsonProperties.getDefaultApiClientHeaderPattern()
             .matcher(apiClientHeaderKey)
             .matches());
@@ -834,7 +836,7 @@ public class TopicAdminClientHttpJsonTest {
     try {
       TopicName topic = TopicName.ofProjectTopicName("[PROJECT]", "[TOPIC]");
       client.deleteTopic(topic);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -850,7 +852,7 @@ public class TopicAdminClientHttpJsonTest {
     client.deleteTopic(topic);
 
     List<String> actualRequests = mockService.getRequestPaths();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
 
     String apiClientHeaderKey =
         mockService
@@ -858,7 +860,7 @@ public class TopicAdminClientHttpJsonTest {
             .get(ApiClientHeaderProvider.getDefaultApiClientHeaderKey())
             .iterator()
             .next();
-    Assert.assertTrue(
+    assertTrue(
         GaxHttpJsonProperties.getDefaultApiClientHeaderPattern()
             .matcher(apiClientHeaderKey)
             .matches());
@@ -874,7 +876,7 @@ public class TopicAdminClientHttpJsonTest {
     try {
       String topic = "projects/project-2486/topics/topic-2486";
       client.deleteTopic(topic);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -891,10 +893,10 @@ public class TopicAdminClientHttpJsonTest {
             .build();
 
     DetachSubscriptionResponse actualResponse = client.detachSubscription(request);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<String> actualRequests = mockService.getRequestPaths();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
 
     String apiClientHeaderKey =
         mockService
@@ -902,7 +904,7 @@ public class TopicAdminClientHttpJsonTest {
             .get(ApiClientHeaderProvider.getDefaultApiClientHeaderKey())
             .iterator()
             .next();
-    Assert.assertTrue(
+    assertTrue(
         GaxHttpJsonProperties.getDefaultApiClientHeaderPattern()
             .matcher(apiClientHeaderKey)
             .matches());
@@ -921,7 +923,7 @@ public class TopicAdminClientHttpJsonTest {
               .setSubscription(SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
               .build();
       client.detachSubscription(request);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -946,10 +948,10 @@ public class TopicAdminClientHttpJsonTest {
             .build();
 
     Policy actualResponse = client.setIamPolicy(request);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<String> actualRequests = mockService.getRequestPaths();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
 
     String apiClientHeaderKey =
         mockService
@@ -957,7 +959,7 @@ public class TopicAdminClientHttpJsonTest {
             .get(ApiClientHeaderProvider.getDefaultApiClientHeaderKey())
             .iterator()
             .next();
-    Assert.assertTrue(
+    assertTrue(
         GaxHttpJsonProperties.getDefaultApiClientHeaderPattern()
             .matcher(apiClientHeaderKey)
             .matches());
@@ -978,7 +980,7 @@ public class TopicAdminClientHttpJsonTest {
               .setUpdateMask(FieldMask.newBuilder().build())
               .build();
       client.setIamPolicy(request);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -1002,10 +1004,10 @@ public class TopicAdminClientHttpJsonTest {
             .build();
 
     Policy actualResponse = client.getIamPolicy(request);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<String> actualRequests = mockService.getRequestPaths();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
 
     String apiClientHeaderKey =
         mockService
@@ -1013,7 +1015,7 @@ public class TopicAdminClientHttpJsonTest {
             .get(ApiClientHeaderProvider.getDefaultApiClientHeaderKey())
             .iterator()
             .next();
-    Assert.assertTrue(
+    assertTrue(
         GaxHttpJsonProperties.getDefaultApiClientHeaderPattern()
             .matcher(apiClientHeaderKey)
             .matches());
@@ -1033,7 +1035,7 @@ public class TopicAdminClientHttpJsonTest {
               .setOptions(GetPolicyOptions.newBuilder().build())
               .build();
       client.getIamPolicy(request);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -1052,10 +1054,10 @@ public class TopicAdminClientHttpJsonTest {
             .build();
 
     TestIamPermissionsResponse actualResponse = client.testIamPermissions(request);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<String> actualRequests = mockService.getRequestPaths();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
 
     String apiClientHeaderKey =
         mockService
@@ -1063,7 +1065,7 @@ public class TopicAdminClientHttpJsonTest {
             .get(ApiClientHeaderProvider.getDefaultApiClientHeaderKey())
             .iterator()
             .next();
-    Assert.assertTrue(
+    assertTrue(
         GaxHttpJsonProperties.getDefaultApiClientHeaderPattern()
             .matcher(apiClientHeaderKey)
             .matches());
@@ -1083,7 +1085,7 @@ public class TopicAdminClientHttpJsonTest {
               .addAllPermissions(new ArrayList<String>())
               .build();
       client.testIamPermissions(request);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
