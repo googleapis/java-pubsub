@@ -53,8 +53,6 @@ public class OpenTelemetryPubsubTracer {
       "messaging.gcp_pubsub.message.exactly_once_delivery";
   private static final String MESSAGE_DELIVERY_ATTEMPT_ATTR_KEY =
       "messaging.gcp_pubsub.message.delivery_attempt";
-  private static final String ACK_DEADLINE_ATTR_KEY = "messaging.gcp_pubsub.message.ack_deadline";
-  private static final String RECEIPT_MODACK_ATTR_KEY = "messaging.gcp_pubsub.is_receipt_modack";
   private static final String PROJECT_ATTR_KEY = "gcp.project_id";
   private static final String PUBLISH_RPC_SPAN_SUFFIX = " publish";
 
@@ -371,20 +369,21 @@ public class OpenTelemetryPubsubTracer {
     if (!enabled) {
       return null;
     }
-    String codeFunction = rpcOperation == "ack" ? "sendAckOperations" : "sendModAckOperations";
+
+    // Get the appropriate handler for the operation
+    RpcOperationHandler handler = getHandler(rpcOperation);
+
     AttributesBuilder attributesBuilder =
         createCommonSpanAttributesBuilder(
                 subscriptionName.getSubscription(),
                 subscriptionName.getProject(),
-                codeFunction,
+                handler.getCodeFunction(),
                 rpcOperation)
             .put(MESSAGING_BATCH_MESSAGE_COUNT_ATTR_KEY, messages.size());
 
     // Ack deadline and receipt modack are specific to the modack operation
     if (rpcOperation == "modack") {
-      attributesBuilder
-          .put(ACK_DEADLINE_ATTR_KEY, ackDeadline)
-          .put(RECEIPT_MODACK_ATTR_KEY, isReceiptModack);
+      handler.addAttributes(attributesBuilder, ackDeadline, isReceiptModack);
     }
 
     SpanBuilder rpcSpanBuilder =
@@ -404,20 +403,23 @@ public class OpenTelemetryPubsubTracer {
     for (PubsubMessageWrapper message : messages) {
       if (rpcSpan.getSpanContext().isSampled()) {
         message.getSubscriberSpan().addLink(rpcSpan.getSpanContext(), linkAttributes);
-        switch (rpcOperation) {
-          case "ack":
-            message.addAckStartEvent();
-            break;
-          case "modack":
-            message.addModAckStartEvent();
-            break;
-          case "nack":
-            message.addNackStartEvent();
-            break;
-        }
+        handler.addEvent(message);
       }
     }
     return rpcSpan;
+  }
+
+  private RpcOperationHandler getHandler(String rpcOperation) {
+    switch (rpcOperation) {
+      case "ack":
+        return new AckHandler();
+      case "modack":
+        return new ModAckHandler();
+      case "nack":
+        return new NackHandler();
+      default:
+        throw new IllegalArgumentException("Unknown RPC operation: " + rpcOperation);
+    }
   }
 
   /** Ends the given subscribe RPC span if it exists. */
