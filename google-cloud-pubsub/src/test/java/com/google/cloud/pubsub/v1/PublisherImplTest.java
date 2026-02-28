@@ -512,9 +512,6 @@ public class PublisherImplTest {
    *   <li>publish with key orderA, which should now succeed
    * </ol>
    */
-  /*
-  Temporarily disabled due to https://github.com/googleapis/java-pubsub/issues/1861.
-  TODO(maitrimangal): Enable once resolved.
   @Test
   public void testResumePublish() throws Exception {
     Publisher publisher =
@@ -576,8 +573,8 @@ public class PublisherImplTest {
     testPublisherServiceImpl.addPublishResponse(
         PublishResponse.newBuilder().addMessageIds("5").addMessageIds("6"));
 
-    Assert.assertEquals("5", future5.get());
-    Assert.assertEquals("6", future6.get());
+    assertEquals("5", future5.get());
+    assertEquals("6", future6.get());
 
     // Resume publishing of "orderA", which should now succeed
     publisher.resumePublish("orderA");
@@ -588,8 +585,8 @@ public class PublisherImplTest {
     testPublisherServiceImpl.addPublishResponse(
         PublishResponse.newBuilder().addMessageIds("7").addMessageIds("8"));
 
-    Assert.assertEquals("7", future7.get());
-    Assert.assertEquals("8", future8.get());
+    assertEquals("7", future7.get());
+    assertEquals("8", future8.get());
 
     shutdownTestPublisher(publisher);
   }
@@ -634,6 +631,7 @@ public class PublisherImplTest {
     } catch (ExecutionException e) {
       assertEquals(SequentialExecutorService.CallbackExecutor.CANCELLATION_EXCEPTION, e.getCause());
     }
+    fakeExecutor.advanceTime(Duration.ZERO);
 
     // A subsequent attempt fails immediately.
     ApiFuture<String> publishFuture4 = sendTestMessageWithOrderingKey(publisher, "D", "a");
@@ -644,7 +642,6 @@ public class PublisherImplTest {
       assertEquals(SequentialExecutorService.CallbackExecutor.CANCELLATION_EXCEPTION, e.getCause());
     }
   }
-  */
 
   private ApiFuture<String> sendTestMessageWithOrderingKey(
       Publisher publisher, String data, String orderingKey) {
