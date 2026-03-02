@@ -67,7 +67,7 @@ jobs:
     - uses: actions/setup-java@v4
       with:
         distribution: temurin
-        java-version: 8
+        java-version: 17
     - run: java -version
     - run: .kokoro/build.bat
       env:
@@ -116,7 +116,7 @@ jobs:
     - uses: actions/setup-java@v4
       with:
         distribution: temurin
-        java-version: 8
+        java-version: 17
     - run: java -version
     - run: .kokoro/build.sh
       env:
