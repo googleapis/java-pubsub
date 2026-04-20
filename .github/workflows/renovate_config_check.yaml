@@ -4,7 +4,6 @@ on:
   pull_request:
     paths:
       - 'renovate.json'
-      - '.github/workflows/renovate_config_check.yaml'
 
 jobs:
   renovate_bot_config_validation:
@@ -19,6 +18,8 @@ jobs:
       with:
         node-version: '22'
 
-    - name: Run Renovate Config Validator
+    - name: Install Renovate and Config Validator
       run: |
-        npx --package renovate@42.99.0 renovate-config-validator
+        npm install -g npm@latest
+        npm install --global renovate
+        renovate-config-validator
