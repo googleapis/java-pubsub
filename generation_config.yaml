@@ -1,6 +1,6 @@
 gapic_generator_version: 2.71.0
-googleapis_commitish: 62e4ecb2f4390728990514fea14aad0431881a52
-libraries_bom_version: 26.79.0
+googleapis_commitish: a78b5838b801428bfe5b85758727a46d830b7f39
+libraries_bom_version: 26.80.0
 libraries:
   - api_shortname: pubsub
     name_pretty: Cloud Pub/Sub
