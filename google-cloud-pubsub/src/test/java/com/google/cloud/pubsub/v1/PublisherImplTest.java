@@ -17,11 +17,12 @@
 package com.google.cloud.pubsub.v1;
 
 import static com.google.common.truth.Truth.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import com.google.api.core.ApiFuture;
 import com.google.api.gax.batching.BatchingSettings;
@@ -62,13 +63,10 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import org.easymock.EasyMock;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-@RunWith(JUnit4.class)
 public class PublisherImplTest {
 
   private static final ProjectTopicName TEST_TOPIC =
@@ -93,7 +91,7 @@ public class PublisherImplTest {
 
   private Server testServer;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     testPublisherServiceImpl = new FakePublisherServiceImpl();
 
@@ -106,7 +104,7 @@ public class PublisherImplTest {
     fakeExecutor = new FakeScheduledExecutorService();
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
     testServer.shutdownNow().awaitTermination();
     testChannel.shutdown();
@@ -162,7 +160,6 @@ public class PublisherImplTest {
     ApiFuture<String> publishFuture3 = sendTestMessage(publisher, "C");
 
     // Note we are not advancing time but message should still get published
-
     assertEquals("1", publishFuture1.get());
     assertEquals("2", publishFuture2.get());
 
@@ -698,7 +695,7 @@ public class PublisherImplTest {
     shutdownTestPublisher(publisher);
   }
 
-  @Test(expected = ExecutionException.class)
+  @Test
   public void testPublishFailureRetries_retriesDisabled() throws Exception {
     Publisher publisher =
         getTestPublisherBuilder()
@@ -715,7 +712,7 @@ public class PublisherImplTest {
     ApiFuture<String> publishFuture1 = sendTestMessage(publisher, "A");
 
     try {
-      publishFuture1.get();
+      assertThrows(ExecutionException.class, () -> publishFuture1.get());
     } finally {
       assertSame(testPublisherServiceImpl.getCapturedRequests().size(), 1);
       shutdownTestPublisher(publisher);
@@ -771,7 +768,7 @@ public class PublisherImplTest {
     assertTrue(publisher.awaitTermination(1, TimeUnit.MINUTES));
   }
 
-  @Test(expected = ExecutionException.class)
+  @Test
   public void testPublishFailureRetries_nonRetryableFailsImmediately() throws Exception {
     Publisher publisher =
         getTestPublisherBuilder()
@@ -791,7 +788,7 @@ public class PublisherImplTest {
     ApiFuture<String> publishFuture1 = sendTestMessage(publisher, "A");
 
     try {
-      publishFuture1.get();
+      assertThrows(ExecutionException.class, () -> publishFuture1.get());
     } finally {
       assertTrue(testPublisherServiceImpl.getCapturedRequests().size() >= 1);
       publisher.shutdown();

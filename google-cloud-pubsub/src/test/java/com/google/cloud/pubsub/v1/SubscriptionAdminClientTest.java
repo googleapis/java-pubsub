@@ -18,6 +18,9 @@ package com.google.cloud.pubsub.v1;
 
 import static com.google.cloud.pubsub.v1.SubscriptionAdminClient.ListSnapshotsPagedResponse;
 import static com.google.cloud.pubsub.v1.SubscriptionAdminClient.ListSubscriptionsPagedResponse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import com.google.api.gax.core.NoCredentialsProvider;
 import com.google.api.gax.grpc.GaxGrpcProperties;
@@ -90,12 +93,11 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import javax.annotation.Generated;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 @Generated("by gapic-generator-java")
 public class SubscriptionAdminClientTest {
@@ -105,7 +107,7 @@ public class SubscriptionAdminClientTest {
   private LocalChannelProvider channelProvider;
   private SubscriptionAdminClient client;
 
-  @BeforeClass
+  @BeforeAll
   public static void startStaticServer() {
     mockSubscriber = new MockSubscriber();
     mockIAMPolicy = new MockIAMPolicy();
@@ -116,12 +118,12 @@ public class SubscriptionAdminClientTest {
     mockServiceHelper.start();
   }
 
-  @AfterClass
+  @AfterAll
   public static void stopServer() {
     mockServiceHelper.stop();
   }
 
-  @Before
+  @BeforeEach
   public void setUp() throws IOException {
     mockServiceHelper.reset();
     channelProvider = mockServiceHelper.createChannelProvider();
@@ -133,7 +135,7 @@ public class SubscriptionAdminClientTest {
     client = SubscriptionAdminClient.create(settings);
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
     client.close();
   }
@@ -174,17 +176,17 @@ public class SubscriptionAdminClientTest {
 
     Subscription actualResponse =
         client.createSubscription(name, topic, pushConfig, ackDeadlineSeconds);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<AbstractMessage> actualRequests = mockSubscriber.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     Subscription actualRequest = ((Subscription) actualRequests.get(0));
 
-    Assert.assertEquals(name.toString(), actualRequest.getName());
-    Assert.assertEquals(topic.toString(), actualRequest.getTopic());
-    Assert.assertEquals(pushConfig, actualRequest.getPushConfig());
-    Assert.assertEquals(ackDeadlineSeconds, actualRequest.getAckDeadlineSeconds());
-    Assert.assertTrue(
+    assertEquals(name.toString(), actualRequest.getName());
+    assertEquals(topic.toString(), actualRequest.getTopic());
+    assertEquals(pushConfig, actualRequest.getPushConfig());
+    assertEquals(ackDeadlineSeconds, actualRequest.getAckDeadlineSeconds());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -201,7 +203,7 @@ public class SubscriptionAdminClientTest {
       PushConfig pushConfig = PushConfig.newBuilder().build();
       int ackDeadlineSeconds = 2135351438;
       client.createSubscription(name, topic, pushConfig, ackDeadlineSeconds);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -243,17 +245,17 @@ public class SubscriptionAdminClientTest {
 
     Subscription actualResponse =
         client.createSubscription(name, topic, pushConfig, ackDeadlineSeconds);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<AbstractMessage> actualRequests = mockSubscriber.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     Subscription actualRequest = ((Subscription) actualRequests.get(0));
 
-    Assert.assertEquals(name.toString(), actualRequest.getName());
-    Assert.assertEquals(topic, actualRequest.getTopic());
-    Assert.assertEquals(pushConfig, actualRequest.getPushConfig());
-    Assert.assertEquals(ackDeadlineSeconds, actualRequest.getAckDeadlineSeconds());
-    Assert.assertTrue(
+    assertEquals(name.toString(), actualRequest.getName());
+    assertEquals(topic, actualRequest.getTopic());
+    assertEquals(pushConfig, actualRequest.getPushConfig());
+    assertEquals(ackDeadlineSeconds, actualRequest.getAckDeadlineSeconds());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -270,7 +272,7 @@ public class SubscriptionAdminClientTest {
       PushConfig pushConfig = PushConfig.newBuilder().build();
       int ackDeadlineSeconds = 2135351438;
       client.createSubscription(name, topic, pushConfig, ackDeadlineSeconds);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -312,17 +314,17 @@ public class SubscriptionAdminClientTest {
 
     Subscription actualResponse =
         client.createSubscription(name, topic, pushConfig, ackDeadlineSeconds);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<AbstractMessage> actualRequests = mockSubscriber.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     Subscription actualRequest = ((Subscription) actualRequests.get(0));
 
-    Assert.assertEquals(name, actualRequest.getName());
-    Assert.assertEquals(topic.toString(), actualRequest.getTopic());
-    Assert.assertEquals(pushConfig, actualRequest.getPushConfig());
-    Assert.assertEquals(ackDeadlineSeconds, actualRequest.getAckDeadlineSeconds());
-    Assert.assertTrue(
+    assertEquals(name, actualRequest.getName());
+    assertEquals(topic.toString(), actualRequest.getTopic());
+    assertEquals(pushConfig, actualRequest.getPushConfig());
+    assertEquals(ackDeadlineSeconds, actualRequest.getAckDeadlineSeconds());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -339,7 +341,7 @@ public class SubscriptionAdminClientTest {
       PushConfig pushConfig = PushConfig.newBuilder().build();
       int ackDeadlineSeconds = 2135351438;
       client.createSubscription(name, topic, pushConfig, ackDeadlineSeconds);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -381,17 +383,17 @@ public class SubscriptionAdminClientTest {
 
     Subscription actualResponse =
         client.createSubscription(name, topic, pushConfig, ackDeadlineSeconds);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<AbstractMessage> actualRequests = mockSubscriber.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     Subscription actualRequest = ((Subscription) actualRequests.get(0));
 
-    Assert.assertEquals(name, actualRequest.getName());
-    Assert.assertEquals(topic, actualRequest.getTopic());
-    Assert.assertEquals(pushConfig, actualRequest.getPushConfig());
-    Assert.assertEquals(ackDeadlineSeconds, actualRequest.getAckDeadlineSeconds());
-    Assert.assertTrue(
+    assertEquals(name, actualRequest.getName());
+    assertEquals(topic, actualRequest.getTopic());
+    assertEquals(pushConfig, actualRequest.getPushConfig());
+    assertEquals(ackDeadlineSeconds, actualRequest.getAckDeadlineSeconds());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -408,7 +410,7 @@ public class SubscriptionAdminClientTest {
       PushConfig pushConfig = PushConfig.newBuilder().build();
       int ackDeadlineSeconds = 2135351438;
       client.createSubscription(name, topic, pushConfig, ackDeadlineSeconds);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -446,14 +448,14 @@ public class SubscriptionAdminClientTest {
     SubscriptionName subscription = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
 
     Subscription actualResponse = client.getSubscription(subscription);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<AbstractMessage> actualRequests = mockSubscriber.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     GetSubscriptionRequest actualRequest = ((GetSubscriptionRequest) actualRequests.get(0));
 
-    Assert.assertEquals(subscription.toString(), actualRequest.getSubscription());
-    Assert.assertTrue(
+    assertEquals(subscription.toString(), actualRequest.getSubscription());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -467,7 +469,7 @@ public class SubscriptionAdminClientTest {
     try {
       SubscriptionName subscription = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
       client.getSubscription(subscription);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -505,14 +507,14 @@ public class SubscriptionAdminClientTest {
     String subscription = "subscription341203229";
 
     Subscription actualResponse = client.getSubscription(subscription);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<AbstractMessage> actualRequests = mockSubscriber.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     GetSubscriptionRequest actualRequest = ((GetSubscriptionRequest) actualRequests.get(0));
 
-    Assert.assertEquals(subscription, actualRequest.getSubscription());
-    Assert.assertTrue(
+    assertEquals(subscription, actualRequest.getSubscription());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -526,7 +528,7 @@ public class SubscriptionAdminClientTest {
     try {
       String subscription = "subscription341203229";
       client.getSubscription(subscription);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -565,15 +567,15 @@ public class SubscriptionAdminClientTest {
     FieldMask updateMask = FieldMask.newBuilder().build();
 
     Subscription actualResponse = client.updateSubscription(subscription, updateMask);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<AbstractMessage> actualRequests = mockSubscriber.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     UpdateSubscriptionRequest actualRequest = ((UpdateSubscriptionRequest) actualRequests.get(0));
 
-    Assert.assertEquals(subscription, actualRequest.getSubscription());
-    Assert.assertEquals(updateMask, actualRequest.getUpdateMask());
-    Assert.assertTrue(
+    assertEquals(subscription, actualRequest.getSubscription());
+    assertEquals(updateMask, actualRequest.getUpdateMask());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -588,7 +590,7 @@ public class SubscriptionAdminClientTest {
       Subscription subscription = Subscription.newBuilder().build();
       FieldMask updateMask = FieldMask.newBuilder().build();
       client.updateSubscription(subscription, updateMask);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -610,15 +612,15 @@ public class SubscriptionAdminClientTest {
 
     List<Subscription> resources = Lists.newArrayList(pagedListResponse.iterateAll());
 
-    Assert.assertEquals(1, resources.size());
-    Assert.assertEquals(expectedResponse.getSubscriptionsList().get(0), resources.get(0));
+    assertEquals(1, resources.size());
+    assertEquals(expectedResponse.getSubscriptionsList().get(0), resources.get(0));
 
     List<AbstractMessage> actualRequests = mockSubscriber.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     ListSubscriptionsRequest actualRequest = ((ListSubscriptionsRequest) actualRequests.get(0));
 
-    Assert.assertEquals(project.toString(), actualRequest.getProject());
-    Assert.assertTrue(
+    assertEquals(project.toString(), actualRequest.getProject());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -632,7 +634,7 @@ public class SubscriptionAdminClientTest {
     try {
       ProjectName project = ProjectName.of("[PROJECT]");
       client.listSubscriptions(project);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -654,15 +656,15 @@ public class SubscriptionAdminClientTest {
 
     List<Subscription> resources = Lists.newArrayList(pagedListResponse.iterateAll());
 
-    Assert.assertEquals(1, resources.size());
-    Assert.assertEquals(expectedResponse.getSubscriptionsList().get(0), resources.get(0));
+    assertEquals(1, resources.size());
+    assertEquals(expectedResponse.getSubscriptionsList().get(0), resources.get(0));
 
     List<AbstractMessage> actualRequests = mockSubscriber.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     ListSubscriptionsRequest actualRequest = ((ListSubscriptionsRequest) actualRequests.get(0));
 
-    Assert.assertEquals(project, actualRequest.getProject());
-    Assert.assertTrue(
+    assertEquals(project, actualRequest.getProject());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -676,7 +678,7 @@ public class SubscriptionAdminClientTest {
     try {
       String project = "project-309310695";
       client.listSubscriptions(project);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -692,11 +694,11 @@ public class SubscriptionAdminClientTest {
     client.deleteSubscription(subscription);
 
     List<AbstractMessage> actualRequests = mockSubscriber.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     DeleteSubscriptionRequest actualRequest = ((DeleteSubscriptionRequest) actualRequests.get(0));
 
-    Assert.assertEquals(subscription.toString(), actualRequest.getSubscription());
-    Assert.assertTrue(
+    assertEquals(subscription.toString(), actualRequest.getSubscription());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -710,7 +712,7 @@ public class SubscriptionAdminClientTest {
     try {
       SubscriptionName subscription = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
       client.deleteSubscription(subscription);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -726,11 +728,11 @@ public class SubscriptionAdminClientTest {
     client.deleteSubscription(subscription);
 
     List<AbstractMessage> actualRequests = mockSubscriber.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     DeleteSubscriptionRequest actualRequest = ((DeleteSubscriptionRequest) actualRequests.get(0));
 
-    Assert.assertEquals(subscription, actualRequest.getSubscription());
-    Assert.assertTrue(
+    assertEquals(subscription, actualRequest.getSubscription());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -744,7 +746,7 @@ public class SubscriptionAdminClientTest {
     try {
       String subscription = "subscription341203229";
       client.deleteSubscription(subscription);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -762,13 +764,13 @@ public class SubscriptionAdminClientTest {
     client.modifyAckDeadline(subscription, ackIds, ackDeadlineSeconds);
 
     List<AbstractMessage> actualRequests = mockSubscriber.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     ModifyAckDeadlineRequest actualRequest = ((ModifyAckDeadlineRequest) actualRequests.get(0));
 
-    Assert.assertEquals(subscription.toString(), actualRequest.getSubscription());
-    Assert.assertEquals(ackIds, actualRequest.getAckIdsList());
-    Assert.assertEquals(ackDeadlineSeconds, actualRequest.getAckDeadlineSeconds());
-    Assert.assertTrue(
+    assertEquals(subscription.toString(), actualRequest.getSubscription());
+    assertEquals(ackIds, actualRequest.getAckIdsList());
+    assertEquals(ackDeadlineSeconds, actualRequest.getAckDeadlineSeconds());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -784,7 +786,7 @@ public class SubscriptionAdminClientTest {
       List<String> ackIds = new ArrayList<>();
       int ackDeadlineSeconds = 2135351438;
       client.modifyAckDeadline(subscription, ackIds, ackDeadlineSeconds);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -802,13 +804,13 @@ public class SubscriptionAdminClientTest {
     client.modifyAckDeadline(subscription, ackIds, ackDeadlineSeconds);
 
     List<AbstractMessage> actualRequests = mockSubscriber.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     ModifyAckDeadlineRequest actualRequest = ((ModifyAckDeadlineRequest) actualRequests.get(0));
 
-    Assert.assertEquals(subscription, actualRequest.getSubscription());
-    Assert.assertEquals(ackIds, actualRequest.getAckIdsList());
-    Assert.assertEquals(ackDeadlineSeconds, actualRequest.getAckDeadlineSeconds());
-    Assert.assertTrue(
+    assertEquals(subscription, actualRequest.getSubscription());
+    assertEquals(ackIds, actualRequest.getAckIdsList());
+    assertEquals(ackDeadlineSeconds, actualRequest.getAckDeadlineSeconds());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -824,7 +826,7 @@ public class SubscriptionAdminClientTest {
       List<String> ackIds = new ArrayList<>();
       int ackDeadlineSeconds = 2135351438;
       client.modifyAckDeadline(subscription, ackIds, ackDeadlineSeconds);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -841,12 +843,12 @@ public class SubscriptionAdminClientTest {
     client.acknowledge(subscription, ackIds);
 
     List<AbstractMessage> actualRequests = mockSubscriber.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     AcknowledgeRequest actualRequest = ((AcknowledgeRequest) actualRequests.get(0));
 
-    Assert.assertEquals(subscription.toString(), actualRequest.getSubscription());
-    Assert.assertEquals(ackIds, actualRequest.getAckIdsList());
-    Assert.assertTrue(
+    assertEquals(subscription.toString(), actualRequest.getSubscription());
+    assertEquals(ackIds, actualRequest.getAckIdsList());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -861,7 +863,7 @@ public class SubscriptionAdminClientTest {
       SubscriptionName subscription = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
       List<String> ackIds = new ArrayList<>();
       client.acknowledge(subscription, ackIds);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -878,12 +880,12 @@ public class SubscriptionAdminClientTest {
     client.acknowledge(subscription, ackIds);
 
     List<AbstractMessage> actualRequests = mockSubscriber.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     AcknowledgeRequest actualRequest = ((AcknowledgeRequest) actualRequests.get(0));
 
-    Assert.assertEquals(subscription, actualRequest.getSubscription());
-    Assert.assertEquals(ackIds, actualRequest.getAckIdsList());
-    Assert.assertTrue(
+    assertEquals(subscription, actualRequest.getSubscription());
+    assertEquals(ackIds, actualRequest.getAckIdsList());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -898,7 +900,7 @@ public class SubscriptionAdminClientTest {
       String subscription = "subscription341203229";
       List<String> ackIds = new ArrayList<>();
       client.acknowledge(subscription, ackIds);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -914,15 +916,15 @@ public class SubscriptionAdminClientTest {
     int maxMessages = 496131527;
 
     PullResponse actualResponse = client.pull(subscription, maxMessages);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<AbstractMessage> actualRequests = mockSubscriber.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     PullRequest actualRequest = ((PullRequest) actualRequests.get(0));
 
-    Assert.assertEquals(subscription.toString(), actualRequest.getSubscription());
-    Assert.assertEquals(maxMessages, actualRequest.getMaxMessages());
-    Assert.assertTrue(
+    assertEquals(subscription.toString(), actualRequest.getSubscription());
+    assertEquals(maxMessages, actualRequest.getMaxMessages());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -937,7 +939,7 @@ public class SubscriptionAdminClientTest {
       SubscriptionName subscription = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
       int maxMessages = 496131527;
       client.pull(subscription, maxMessages);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -953,15 +955,15 @@ public class SubscriptionAdminClientTest {
     int maxMessages = 496131527;
 
     PullResponse actualResponse = client.pull(subscription, maxMessages);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<AbstractMessage> actualRequests = mockSubscriber.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     PullRequest actualRequest = ((PullRequest) actualRequests.get(0));
 
-    Assert.assertEquals(subscription, actualRequest.getSubscription());
-    Assert.assertEquals(maxMessages, actualRequest.getMaxMessages());
-    Assert.assertTrue(
+    assertEquals(subscription, actualRequest.getSubscription());
+    assertEquals(maxMessages, actualRequest.getMaxMessages());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -976,7 +978,7 @@ public class SubscriptionAdminClientTest {
       String subscription = "subscription341203229";
       int maxMessages = 496131527;
       client.pull(subscription, maxMessages);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -993,16 +995,16 @@ public class SubscriptionAdminClientTest {
     int maxMessages = 496131527;
 
     PullResponse actualResponse = client.pull(subscription, returnImmediately, maxMessages);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<AbstractMessage> actualRequests = mockSubscriber.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     PullRequest actualRequest = ((PullRequest) actualRequests.get(0));
 
-    Assert.assertEquals(subscription.toString(), actualRequest.getSubscription());
-    Assert.assertEquals(returnImmediately, actualRequest.getReturnImmediately());
-    Assert.assertEquals(maxMessages, actualRequest.getMaxMessages());
-    Assert.assertTrue(
+    assertEquals(subscription.toString(), actualRequest.getSubscription());
+    assertEquals(returnImmediately, actualRequest.getReturnImmediately());
+    assertEquals(maxMessages, actualRequest.getMaxMessages());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -1018,7 +1020,7 @@ public class SubscriptionAdminClientTest {
       boolean returnImmediately = true;
       int maxMessages = 496131527;
       client.pull(subscription, returnImmediately, maxMessages);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -1035,16 +1037,16 @@ public class SubscriptionAdminClientTest {
     int maxMessages = 496131527;
 
     PullResponse actualResponse = client.pull(subscription, returnImmediately, maxMessages);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<AbstractMessage> actualRequests = mockSubscriber.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     PullRequest actualRequest = ((PullRequest) actualRequests.get(0));
 
-    Assert.assertEquals(subscription, actualRequest.getSubscription());
-    Assert.assertEquals(returnImmediately, actualRequest.getReturnImmediately());
-    Assert.assertEquals(maxMessages, actualRequest.getMaxMessages());
-    Assert.assertTrue(
+    assertEquals(subscription, actualRequest.getSubscription());
+    assertEquals(returnImmediately, actualRequest.getReturnImmediately());
+    assertEquals(maxMessages, actualRequest.getMaxMessages());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -1060,7 +1062,7 @@ public class SubscriptionAdminClientTest {
       boolean returnImmediately = true;
       int maxMessages = 496131527;
       client.pull(subscription, returnImmediately, maxMessages);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -1103,8 +1105,8 @@ public class SubscriptionAdminClientTest {
     requestObserver.onCompleted();
 
     List<StreamingPullResponse> actualResponses = responseObserver.future().get();
-    Assert.assertEquals(1, actualResponses.size());
-    Assert.assertEquals(expectedResponse, actualResponses.get(0));
+    assertEquals(1, actualResponses.size());
+    assertEquals(expectedResponse, actualResponses.get(0));
   }
 
   @Test
@@ -1135,11 +1137,11 @@ public class SubscriptionAdminClientTest {
 
     try {
       List<StreamingPullResponse> actualResponses = responseObserver.future().get();
-      Assert.fail("No exception thrown");
+      fail("No exception thrown");
     } catch (ExecutionException e) {
-      Assert.assertTrue(e.getCause() instanceof InvalidArgumentException);
+      assertTrue(e.getCause() instanceof InvalidArgumentException);
       InvalidArgumentException apiException = ((InvalidArgumentException) e.getCause());
-      Assert.assertEquals(StatusCode.Code.INVALID_ARGUMENT, apiException.getStatusCode().getCode());
+      assertEquals(StatusCode.Code.INVALID_ARGUMENT, apiException.getStatusCode().getCode());
     }
   }
 
@@ -1154,12 +1156,12 @@ public class SubscriptionAdminClientTest {
     client.modifyPushConfig(subscription, pushConfig);
 
     List<AbstractMessage> actualRequests = mockSubscriber.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     ModifyPushConfigRequest actualRequest = ((ModifyPushConfigRequest) actualRequests.get(0));
 
-    Assert.assertEquals(subscription.toString(), actualRequest.getSubscription());
-    Assert.assertEquals(pushConfig, actualRequest.getPushConfig());
-    Assert.assertTrue(
+    assertEquals(subscription.toString(), actualRequest.getSubscription());
+    assertEquals(pushConfig, actualRequest.getPushConfig());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -1174,7 +1176,7 @@ public class SubscriptionAdminClientTest {
       SubscriptionName subscription = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
       PushConfig pushConfig = PushConfig.newBuilder().build();
       client.modifyPushConfig(subscription, pushConfig);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -1191,12 +1193,12 @@ public class SubscriptionAdminClientTest {
     client.modifyPushConfig(subscription, pushConfig);
 
     List<AbstractMessage> actualRequests = mockSubscriber.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     ModifyPushConfigRequest actualRequest = ((ModifyPushConfigRequest) actualRequests.get(0));
 
-    Assert.assertEquals(subscription, actualRequest.getSubscription());
-    Assert.assertEquals(pushConfig, actualRequest.getPushConfig());
-    Assert.assertTrue(
+    assertEquals(subscription, actualRequest.getSubscription());
+    assertEquals(pushConfig, actualRequest.getPushConfig());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -1211,7 +1213,7 @@ public class SubscriptionAdminClientTest {
       String subscription = "subscription341203229";
       PushConfig pushConfig = PushConfig.newBuilder().build();
       client.modifyPushConfig(subscription, pushConfig);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -1231,14 +1233,14 @@ public class SubscriptionAdminClientTest {
     SnapshotName snapshot = SnapshotName.of("[PROJECT]", "[SNAPSHOT]");
 
     Snapshot actualResponse = client.getSnapshot(snapshot);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<AbstractMessage> actualRequests = mockSubscriber.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     GetSnapshotRequest actualRequest = ((GetSnapshotRequest) actualRequests.get(0));
 
-    Assert.assertEquals(snapshot.toString(), actualRequest.getSnapshot());
-    Assert.assertTrue(
+    assertEquals(snapshot.toString(), actualRequest.getSnapshot());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -1252,7 +1254,7 @@ public class SubscriptionAdminClientTest {
     try {
       SnapshotName snapshot = SnapshotName.of("[PROJECT]", "[SNAPSHOT]");
       client.getSnapshot(snapshot);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -1272,14 +1274,14 @@ public class SubscriptionAdminClientTest {
     String snapshot = "snapshot284874180";
 
     Snapshot actualResponse = client.getSnapshot(snapshot);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<AbstractMessage> actualRequests = mockSubscriber.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     GetSnapshotRequest actualRequest = ((GetSnapshotRequest) actualRequests.get(0));
 
-    Assert.assertEquals(snapshot, actualRequest.getSnapshot());
-    Assert.assertTrue(
+    assertEquals(snapshot, actualRequest.getSnapshot());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -1293,7 +1295,7 @@ public class SubscriptionAdminClientTest {
     try {
       String snapshot = "snapshot284874180";
       client.getSnapshot(snapshot);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -1315,15 +1317,15 @@ public class SubscriptionAdminClientTest {
 
     List<Snapshot> resources = Lists.newArrayList(pagedListResponse.iterateAll());
 
-    Assert.assertEquals(1, resources.size());
-    Assert.assertEquals(expectedResponse.getSnapshotsList().get(0), resources.get(0));
+    assertEquals(1, resources.size());
+    assertEquals(expectedResponse.getSnapshotsList().get(0), resources.get(0));
 
     List<AbstractMessage> actualRequests = mockSubscriber.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     ListSnapshotsRequest actualRequest = ((ListSnapshotsRequest) actualRequests.get(0));
 
-    Assert.assertEquals(project.toString(), actualRequest.getProject());
-    Assert.assertTrue(
+    assertEquals(project.toString(), actualRequest.getProject());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -1337,7 +1339,7 @@ public class SubscriptionAdminClientTest {
     try {
       ProjectName project = ProjectName.of("[PROJECT]");
       client.listSnapshots(project);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -1359,15 +1361,15 @@ public class SubscriptionAdminClientTest {
 
     List<Snapshot> resources = Lists.newArrayList(pagedListResponse.iterateAll());
 
-    Assert.assertEquals(1, resources.size());
-    Assert.assertEquals(expectedResponse.getSnapshotsList().get(0), resources.get(0));
+    assertEquals(1, resources.size());
+    assertEquals(expectedResponse.getSnapshotsList().get(0), resources.get(0));
 
     List<AbstractMessage> actualRequests = mockSubscriber.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     ListSnapshotsRequest actualRequest = ((ListSnapshotsRequest) actualRequests.get(0));
 
-    Assert.assertEquals(project, actualRequest.getProject());
-    Assert.assertTrue(
+    assertEquals(project, actualRequest.getProject());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -1381,7 +1383,7 @@ public class SubscriptionAdminClientTest {
     try {
       String project = "project-309310695";
       client.listSnapshots(project);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -1402,15 +1404,15 @@ public class SubscriptionAdminClientTest {
     SubscriptionName subscription = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
 
     Snapshot actualResponse = client.createSnapshot(name, subscription);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<AbstractMessage> actualRequests = mockSubscriber.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     CreateSnapshotRequest actualRequest = ((CreateSnapshotRequest) actualRequests.get(0));
 
-    Assert.assertEquals(name.toString(), actualRequest.getName());
-    Assert.assertEquals(subscription.toString(), actualRequest.getSubscription());
-    Assert.assertTrue(
+    assertEquals(name.toString(), actualRequest.getName());
+    assertEquals(subscription.toString(), actualRequest.getSubscription());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -1425,7 +1427,7 @@ public class SubscriptionAdminClientTest {
       SnapshotName name = SnapshotName.of("[PROJECT]", "[SNAPSHOT]");
       SubscriptionName subscription = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
       client.createSnapshot(name, subscription);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -1446,15 +1448,15 @@ public class SubscriptionAdminClientTest {
     String subscription = "subscription341203229";
 
     Snapshot actualResponse = client.createSnapshot(name, subscription);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<AbstractMessage> actualRequests = mockSubscriber.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     CreateSnapshotRequest actualRequest = ((CreateSnapshotRequest) actualRequests.get(0));
 
-    Assert.assertEquals(name.toString(), actualRequest.getName());
-    Assert.assertEquals(subscription, actualRequest.getSubscription());
-    Assert.assertTrue(
+    assertEquals(name.toString(), actualRequest.getName());
+    assertEquals(subscription, actualRequest.getSubscription());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -1469,7 +1471,7 @@ public class SubscriptionAdminClientTest {
       SnapshotName name = SnapshotName.of("[PROJECT]", "[SNAPSHOT]");
       String subscription = "subscription341203229";
       client.createSnapshot(name, subscription);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -1490,15 +1492,15 @@ public class SubscriptionAdminClientTest {
     SubscriptionName subscription = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
 
     Snapshot actualResponse = client.createSnapshot(name, subscription);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<AbstractMessage> actualRequests = mockSubscriber.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     CreateSnapshotRequest actualRequest = ((CreateSnapshotRequest) actualRequests.get(0));
 
-    Assert.assertEquals(name, actualRequest.getName());
-    Assert.assertEquals(subscription.toString(), actualRequest.getSubscription());
-    Assert.assertTrue(
+    assertEquals(name, actualRequest.getName());
+    assertEquals(subscription.toString(), actualRequest.getSubscription());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -1513,7 +1515,7 @@ public class SubscriptionAdminClientTest {
       String name = "name3373707";
       SubscriptionName subscription = SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]");
       client.createSnapshot(name, subscription);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -1534,15 +1536,15 @@ public class SubscriptionAdminClientTest {
     String subscription = "subscription341203229";
 
     Snapshot actualResponse = client.createSnapshot(name, subscription);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<AbstractMessage> actualRequests = mockSubscriber.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     CreateSnapshotRequest actualRequest = ((CreateSnapshotRequest) actualRequests.get(0));
 
-    Assert.assertEquals(name, actualRequest.getName());
-    Assert.assertEquals(subscription, actualRequest.getSubscription());
-    Assert.assertTrue(
+    assertEquals(name, actualRequest.getName());
+    assertEquals(subscription, actualRequest.getSubscription());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -1557,7 +1559,7 @@ public class SubscriptionAdminClientTest {
       String name = "name3373707";
       String subscription = "subscription341203229";
       client.createSnapshot(name, subscription);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -1578,15 +1580,15 @@ public class SubscriptionAdminClientTest {
     FieldMask updateMask = FieldMask.newBuilder().build();
 
     Snapshot actualResponse = client.updateSnapshot(snapshot, updateMask);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<AbstractMessage> actualRequests = mockSubscriber.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     UpdateSnapshotRequest actualRequest = ((UpdateSnapshotRequest) actualRequests.get(0));
 
-    Assert.assertEquals(snapshot, actualRequest.getSnapshot());
-    Assert.assertEquals(updateMask, actualRequest.getUpdateMask());
-    Assert.assertTrue(
+    assertEquals(snapshot, actualRequest.getSnapshot());
+    assertEquals(updateMask, actualRequest.getUpdateMask());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -1601,7 +1603,7 @@ public class SubscriptionAdminClientTest {
       Snapshot snapshot = Snapshot.newBuilder().build();
       FieldMask updateMask = FieldMask.newBuilder().build();
       client.updateSnapshot(snapshot, updateMask);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -1617,11 +1619,11 @@ public class SubscriptionAdminClientTest {
     client.deleteSnapshot(snapshot);
 
     List<AbstractMessage> actualRequests = mockSubscriber.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     DeleteSnapshotRequest actualRequest = ((DeleteSnapshotRequest) actualRequests.get(0));
 
-    Assert.assertEquals(snapshot.toString(), actualRequest.getSnapshot());
-    Assert.assertTrue(
+    assertEquals(snapshot.toString(), actualRequest.getSnapshot());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -1635,7 +1637,7 @@ public class SubscriptionAdminClientTest {
     try {
       SnapshotName snapshot = SnapshotName.of("[PROJECT]", "[SNAPSHOT]");
       client.deleteSnapshot(snapshot);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -1651,11 +1653,11 @@ public class SubscriptionAdminClientTest {
     client.deleteSnapshot(snapshot);
 
     List<AbstractMessage> actualRequests = mockSubscriber.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     DeleteSnapshotRequest actualRequest = ((DeleteSnapshotRequest) actualRequests.get(0));
 
-    Assert.assertEquals(snapshot, actualRequest.getSnapshot());
-    Assert.assertTrue(
+    assertEquals(snapshot, actualRequest.getSnapshot());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -1669,7 +1671,7 @@ public class SubscriptionAdminClientTest {
     try {
       String snapshot = "snapshot284874180";
       client.deleteSnapshot(snapshot);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -1686,16 +1688,16 @@ public class SubscriptionAdminClientTest {
             .build();
 
     SeekResponse actualResponse = client.seek(request);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<AbstractMessage> actualRequests = mockSubscriber.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     SeekRequest actualRequest = ((SeekRequest) actualRequests.get(0));
 
-    Assert.assertEquals(request.getSubscription(), actualRequest.getSubscription());
-    Assert.assertEquals(request.getTime(), actualRequest.getTime());
-    Assert.assertEquals(request.getSnapshot(), actualRequest.getSnapshot());
-    Assert.assertTrue(
+    assertEquals(request.getSubscription(), actualRequest.getSubscription());
+    assertEquals(request.getTime(), actualRequest.getTime());
+    assertEquals(request.getSnapshot(), actualRequest.getSnapshot());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -1712,7 +1714,7 @@ public class SubscriptionAdminClientTest {
               .setSubscription(SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
               .build();
       client.seek(request);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -1737,16 +1739,16 @@ public class SubscriptionAdminClientTest {
             .build();
 
     Policy actualResponse = client.setIamPolicy(request);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<AbstractMessage> actualRequests = mockIAMPolicy.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     SetIamPolicyRequest actualRequest = ((SetIamPolicyRequest) actualRequests.get(0));
 
-    Assert.assertEquals(request.getResource(), actualRequest.getResource());
-    Assert.assertEquals(request.getPolicy(), actualRequest.getPolicy());
-    Assert.assertEquals(request.getUpdateMask(), actualRequest.getUpdateMask());
-    Assert.assertTrue(
+    assertEquals(request.getResource(), actualRequest.getResource());
+    assertEquals(request.getPolicy(), actualRequest.getPolicy());
+    assertEquals(request.getUpdateMask(), actualRequest.getUpdateMask());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -1765,7 +1767,7 @@ public class SubscriptionAdminClientTest {
               .setUpdateMask(FieldMask.newBuilder().build())
               .build();
       client.setIamPolicy(request);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -1789,15 +1791,15 @@ public class SubscriptionAdminClientTest {
             .build();
 
     Policy actualResponse = client.getIamPolicy(request);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<AbstractMessage> actualRequests = mockIAMPolicy.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     GetIamPolicyRequest actualRequest = ((GetIamPolicyRequest) actualRequests.get(0));
 
-    Assert.assertEquals(request.getResource(), actualRequest.getResource());
-    Assert.assertEquals(request.getOptions(), actualRequest.getOptions());
-    Assert.assertTrue(
+    assertEquals(request.getResource(), actualRequest.getResource());
+    assertEquals(request.getOptions(), actualRequest.getOptions());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -1815,7 +1817,7 @@ public class SubscriptionAdminClientTest {
               .setOptions(GetPolicyOptions.newBuilder().build())
               .build();
       client.getIamPolicy(request);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
@@ -1834,15 +1836,15 @@ public class SubscriptionAdminClientTest {
             .build();
 
     TestIamPermissionsResponse actualResponse = client.testIamPermissions(request);
-    Assert.assertEquals(expectedResponse, actualResponse);
+    assertEquals(expectedResponse, actualResponse);
 
     List<AbstractMessage> actualRequests = mockIAMPolicy.getRequests();
-    Assert.assertEquals(1, actualRequests.size());
+    assertEquals(1, actualRequests.size());
     TestIamPermissionsRequest actualRequest = ((TestIamPermissionsRequest) actualRequests.get(0));
 
-    Assert.assertEquals(request.getResource(), actualRequest.getResource());
-    Assert.assertEquals(request.getPermissionsList(), actualRequest.getPermissionsList());
-    Assert.assertTrue(
+    assertEquals(request.getResource(), actualRequest.getResource());
+    assertEquals(request.getPermissionsList(), actualRequest.getPermissionsList());
+    assertTrue(
         channelProvider.isHeaderSent(
             ApiClientHeaderProvider.getDefaultApiClientHeaderKey(),
             GaxGrpcProperties.getDefaultApiClientHeaderPattern()));
@@ -1860,7 +1862,7 @@ public class SubscriptionAdminClientTest {
               .addAllPermissions(new ArrayList<String>())
               .build();
       client.testIamPermissions(request);
-      Assert.fail("No exception raised");
+      fail("No exception raised");
     } catch (InvalidArgumentException e) {
       // Expected exception.
     }
