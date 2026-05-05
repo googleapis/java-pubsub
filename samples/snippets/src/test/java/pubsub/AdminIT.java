@@ -33,6 +33,7 @@ import com.google.cloud.bigquery.TableId;
 import com.google.cloud.bigquery.TableInfo;
 import com.google.cloud.pubsub.v1.SubscriptionAdminClient;
 import com.google.cloud.pubsub.v1.TopicAdminClient;
+import com.google.protobuf.Duration;
 import com.google.pubsub.v1.SubscriptionName;
 import com.google.pubsub.v1.TopicName;
 import java.io.ByteArrayOutputStream;
@@ -52,11 +53,20 @@ public class AdminIT {
   private static final String projectId = System.getenv("GOOGLE_CLOUD_PROJECT");
   private static final String _suffix = UUID.randomUUID().toString();
   private static final String topicId = "iam-topic-" + _suffix;
-  private static final String ingestionTopicId = "ingestion-topic-" + _suffix;
+  private static final String kinesisIngestionTopicId = "kinesis-ingestion-topic-" + _suffix;
+  private static final String cloudStorageIngestionTopicId =
+      "cloud-storage-ingestion-topic-" + _suffix;
+  private static final String awsMskIngestionTopicId = "aws-msk-ingestion-topic-" + _suffix;
+  private static final String confluentCloudIngestionTopicId =
+      "confluent-cloud-ingestion-topic-" + _suffix;
+  private static final String azureEventHubsIngestionTopicId =
+      "azure-event-hubs-ingestion-topic-" + _suffix;
+  private static final String smtTopicId = "smt-topic-" + _suffix;
   private static final String pullSubscriptionId = "iam-pull-subscription-" + _suffix;
   private static final String pushSubscriptionId = "iam-push-subscription-" + _suffix;
   private static final String orderedSubscriptionId = "iam-ordered-subscription-" + _suffix;
   private static final String filteredSubscriptionId = "iam-filtered-subscription-" + _suffix;
+  private static final String smtSubscriptionId = "smt-subscription-" + _suffix;
   private static final String exactlyOnceSubscriptionId =
       "iam-exactly-once-subscription-" + _suffix;
   private static final String pushEndpoint = "https://my-test-project.appspot.com/push";
@@ -64,6 +74,15 @@ public class AdminIT {
       "java_samples_data_set" + _suffix.replace("-", "_");
   private static final String bigquerySubscriptionId = "iam-bigquery-subscription-" + _suffix;
   private static final String bigqueryTableId = "java_samples_table_" + _suffix;
+  private static final String cloudStorageSubscriptionId =
+      "iam-cloud-storage-subscription-" + _suffix;
+  private static final String cloudStorageFilenamePrefix = "log_events_";
+  private static final String cloudStorageFilenameSuffix = ".txt";
+  private static final Duration cloudStorageMaxDuration =
+      Duration.newBuilder().setSeconds(300).build();
+  private static final String gcpServiceAccount =
+      "fake-service-account@fake-gcp-project.iam.gserviceaccount.com";
+  // AWS Kinesis ingestion settings.
   private static final String streamArn =
       "arn:aws:kinesis:us-west-2:111111111111:stream/fake-stream-name";
   private static final String consumerArn =
@@ -73,11 +92,42 @@ public class AdminIT {
       "arn:aws:kinesis:us-west-2:111111111111:stream/fake-stream-name/"
           + "consumer/consumer-2:2222222222";
   private static final String awsRoleArn = "arn:aws:iam::111111111111:role/fake-role-name";
-  private static final String gcpServiceAccount =
-      "fake-service-account@fake-gcp-project.iam.gserviceaccount.com";
+  // GCS ingestion settings.
+  private static final String cloudStorageBucket = "pubsub-cloud-storage-bucket";
+  private static final String cloudStorageInputFormat = "text";
+  private static final String cloudStorageTextDelimiter = ",";
+  private static final String cloudStorageMatchGlob = "**.txt";
+  private static final String cloudStorageMinimumObjectCreateTime = "1970-01-01T00:00:01Z";
+  private static final String cloudStorageMinimumObjectCreateTimeSeconds = "seconds: 1";
+  // AWS MSK ingestion settings.
+  String clusterArn =
+      "arn:aws:kafka:us-east-1:111111111111:cluster/fake-cluster-name/11111111-1111-1";
+  String mskTopic = "fake-msk-topic-name";
+  // Confluent Cloud ingestion settings.
+  String bootstrapServer = "fake-bootstrap-server-id.us-south1.gcp.confluent.cloud:9092";
+  String clusterId = "fake-cluster-id";
+  String confluentTopic = "fake-confluent-topic-name";
+  String identityPoolId = "fake-pool-id";
+  // Azure Event Hubs ingestion settings.
+  String resourceGroup = "fake-resource-group";
+  String namespace = "fake-namespace";
+  String eventHub = "fake-event-hub";
+  String clientId = "11111111-1111-1111-1111-111111111111";
+  String tenantId = "22222222-2222-2222-2222-222222222222";
+  String subscriptionId = "33333333-3333-3333-3333-333333333333";
 
   private static final TopicName topicName = TopicName.of(projectId, topicId);
-  private static final TopicName ingestionTopicName = TopicName.of(projectId, ingestionTopicId);
+  private static final TopicName kinesisIngestionTopicName =
+      TopicName.of(projectId, kinesisIngestionTopicId);
+  private static final TopicName cloudStorageIngestionTopicName =
+      TopicName.of(projectId, cloudStorageIngestionTopicId);
+  private static final TopicName awsMskIngestionTopicName =
+      TopicName.of(projectId, awsMskIngestionTopicId);
+  private static final TopicName confluentCloudIngestionTopicName =
+      TopicName.of(projectId, confluentCloudIngestionTopicId);
+  private static final TopicName azureEventHubsIngestionTopicName =
+      TopicName.of(projectId, azureEventHubsIngestionTopicId);
+  private static final TopicName smtTopicName = TopicName.of(projectId, smtTopicId);
   private static final SubscriptionName pullSubscriptionName =
       SubscriptionName.of(projectId, pullSubscriptionId);
   private static final SubscriptionName pushSubscriptionName =
@@ -88,6 +138,8 @@ public class AdminIT {
       SubscriptionName.of(projectId, filteredSubscriptionId);
   private static final SubscriptionName exactlyOnceSubscriptionName =
       SubscriptionName.of(projectId, exactlyOnceSubscriptionId);
+  private static final SubscriptionName smtSubscriptionName =
+      SubscriptionName.of(projectId, smtSubscriptionId);
 
   private static void requireEnvVar(String varName) {
     assertNotNull(
@@ -278,12 +330,29 @@ public class AdminIT {
     assertThat(bout.toString()).contains(bigqueryTablePath);
 
     bout.reset();
+    // Test create a Cloud Storage subscription.
+    CreateCloudStorageSubscriptionExample.createCloudStorageSubscription(
+        projectId,
+        topicId,
+        cloudStorageSubscriptionId,
+        cloudStorageBucket,
+        cloudStorageFilenamePrefix,
+        cloudStorageFilenameSuffix,
+        cloudStorageMaxDuration);
+    assertThat(bout.toString()).contains("Created a CloudStorage subscription:");
+    assertThat(bout.toString()).contains(cloudStorageBucket);
+    assertThat(bout.toString()).contains(cloudStorageFilenamePrefix);
+    assertThat(bout.toString()).contains(cloudStorageFilenameSuffix);
+    assertThat(bout.toString()).contains(Long.toString(cloudStorageMaxDuration.getSeconds()));
+
+    bout.reset();
     // Test delete subscription.
     DeleteSubscriptionExample.deleteSubscriptionExample(projectId, pullSubscriptionId);
     DeleteSubscriptionExample.deleteSubscriptionExample(projectId, pushSubscriptionId);
     DeleteSubscriptionExample.deleteSubscriptionExample(projectId, orderedSubscriptionId);
     DeleteSubscriptionExample.deleteSubscriptionExample(projectId, exactlyOnceSubscriptionId);
     DeleteSubscriptionExample.deleteSubscriptionExample(projectId, bigquerySubscriptionId);
+    DeleteSubscriptionExample.deleteSubscriptionExample(projectId, cloudStorageSubscriptionId);
     assertThat(bout.toString()).contains("Deleted subscription.");
 
     bout.reset();
@@ -304,9 +373,9 @@ public class AdminIT {
     bout.reset();
     // Test create topic with Kinesis ingestion settings.
     CreateTopicWithKinesisIngestionExample.createTopicWithKinesisIngestionExample(
-        projectId, ingestionTopicId, streamArn, consumerArn, awsRoleArn, gcpServiceAccount);
+        projectId, kinesisIngestionTopicId, streamArn, consumerArn, awsRoleArn, gcpServiceAccount);
     assertThat(bout.toString())
-        .contains("google.pubsub.v1.Topic.name=" + ingestionTopicName.toString());
+        .contains("google.pubsub.v1.Topic.name=" + kinesisIngestionTopicName.toString());
     assertThat(bout.toString()).contains(streamArn);
     assertThat(bout.toString()).contains(consumerArn);
     assertThat(bout.toString()).contains(awsRoleArn);
@@ -315,9 +384,9 @@ public class AdminIT {
     bout.reset();
     // Test update existing Kinesis ingestion settings.
     UpdateTopicTypeExample.updateTopicTypeExample(
-        projectId, ingestionTopicId, streamArn, consumerArn2, awsRoleArn, gcpServiceAccount);
+        projectId, kinesisIngestionTopicId, streamArn, consumerArn2, awsRoleArn, gcpServiceAccount);
     assertThat(bout.toString())
-        .contains("google.pubsub.v1.Topic.name=" + ingestionTopicName.toString());
+        .contains("google.pubsub.v1.Topic.name=" + kinesisIngestionTopicName.toString());
     assertThat(bout.toString()).contains(streamArn);
     assertThat(bout.toString()).contains(consumerArn2);
     assertThat(bout.toString()).contains(awsRoleArn);
@@ -325,7 +394,111 @@ public class AdminIT {
 
     bout.reset();
     // Test delete Kinesis ingestion topic.
-    DeleteTopicExample.deleteTopicExample(projectId, ingestionTopicId);
+    DeleteTopicExample.deleteTopicExample(projectId, kinesisIngestionTopicId);
     assertThat(bout.toString()).contains("Deleted topic.");
+
+    bout.reset();
+    // Test create topic with Cloud Storage ingestion settings.
+    CreateTopicWithCloudStorageIngestionExample.createTopicWithCloudStorageIngestionExample(
+        projectId,
+        cloudStorageIngestionTopicId,
+        cloudStorageBucket,
+        cloudStorageInputFormat,
+        cloudStorageTextDelimiter,
+        cloudStorageMatchGlob,
+        cloudStorageMinimumObjectCreateTime);
+    assertThat(bout.toString())
+        .contains("google.pubsub.v1.Topic.name=" + cloudStorageIngestionTopicName.toString());
+    assertThat(bout.toString()).contains(cloudStorageBucket);
+    assertThat(bout.toString()).contains(cloudStorageInputFormat);
+    assertThat(bout.toString()).contains(cloudStorageTextDelimiter);
+    assertThat(bout.toString()).contains(cloudStorageMatchGlob);
+    assertThat(bout.toString()).contains(cloudStorageMinimumObjectCreateTimeSeconds);
+
+    bout.reset();
+    // Test delete Cloud Storage ingestion topic.
+    DeleteTopicExample.deleteTopicExample(projectId, cloudStorageIngestionTopicId);
+    assertThat(bout.toString()).contains("Deleted topic.");
+
+    bout.reset();
+    // Test create topic with AWS MSK ingestion settings.
+    CreateTopicWithAwsMskIngestionExample.createTopicWithAwsMskIngestionExample(
+        projectId, awsMskIngestionTopicId, clusterArn, mskTopic, awsRoleArn, gcpServiceAccount);
+    assertThat(bout.toString())
+        .contains("google.pubsub.v1.Topic.name=" + awsMskIngestionTopicName.toString());
+    assertThat(bout.toString()).contains(clusterArn);
+    assertThat(bout.toString()).contains(mskTopic);
+    assertThat(bout.toString()).contains(awsRoleArn);
+    assertThat(bout.toString()).contains(gcpServiceAccount);
+
+    bout.reset();
+    // Test delete AWS MSK ingestion topic.
+    DeleteTopicExample.deleteTopicExample(projectId, awsMskIngestionTopicId);
+    assertThat(bout.toString()).contains("Deleted topic.");
+
+    bout.reset();
+    // Test create topic with Confluent Cloud ingestion settings.
+    CreateTopicWithConfluentCloudIngestionExample.createTopicWithConfluentCloudIngestionExample(
+        projectId,
+        confluentCloudIngestionTopicId,
+        bootstrapServer,
+        clusterId,
+        confluentTopic,
+        identityPoolId,
+        gcpServiceAccount);
+    assertThat(bout.toString())
+        .contains("google.pubsub.v1.Topic.name=" + confluentCloudIngestionTopicName.toString());
+    assertThat(bout.toString()).contains(bootstrapServer);
+    assertThat(bout.toString()).contains(clusterId);
+    assertThat(bout.toString()).contains(confluentTopic);
+    assertThat(bout.toString()).contains(identityPoolId);
+    assertThat(bout.toString()).contains(gcpServiceAccount);
+
+    bout.reset();
+    // Test delete Confluent Cloud ingestion topic.
+    DeleteTopicExample.deleteTopicExample(projectId, confluentCloudIngestionTopicId);
+    assertThat(bout.toString()).contains("Deleted topic.");
+
+    bout.reset();
+    // Test create topic with Azure Event Hubs ingestion settings.
+    CreateTopicWithAzureEventHubsIngestionExample.createTopicWithAzureEventHubsIngestionExample(
+        projectId,
+        azureEventHubsIngestionTopicId,
+        resourceGroup,
+        namespace,
+        eventHub,
+        clientId,
+        tenantId,
+        subscriptionId,
+        gcpServiceAccount);
+    assertThat(bout.toString())
+        .contains("google.pubsub.v1.Topic.name=" + azureEventHubsIngestionTopicName.toString());
+    assertThat(bout.toString()).contains(resourceGroup);
+    assertThat(bout.toString()).contains(namespace);
+    assertThat(bout.toString()).contains(eventHub);
+    assertThat(bout.toString()).contains(clientId);
+    assertThat(bout.toString()).contains(tenantId);
+    assertThat(bout.toString()).contains(subscriptionId);
+    assertThat(bout.toString()).contains(gcpServiceAccount);
+
+    bout.reset();
+    // Test delete Azure Event Hubs ingestion topic.
+    DeleteTopicExample.deleteTopicExample(projectId, azureEventHubsIngestionTopicId);
+    assertThat(bout.toString()).contains("Deleted topic.");
+
+    bout.reset();
+    // Test create topic with an SMT.
+    CreateTopicWithSmtExample.createTopicWithSmtExample(projectId, smtTopicId);
+    assertThat(bout.toString()).contains("Created topic with SMT: " + smtTopicName.toString());
+
+    bout.reset();
+    // Test create topic with an SMT.
+    CreateSubscriptionWithSmtExample.createSubscriptionWithSmtExample(
+        projectId, smtTopicId, smtSubscriptionId);
+    assertThat(bout.toString()).contains("Created subscription with SMT");
+    assertThat(bout.toString()).contains(smtSubscriptionName.toString());
+    assertThat(bout.toString()).contains("redactSSN");
+    DeleteSubscriptionExample.deleteSubscriptionExample(projectId, smtSubscriptionId);
+    DeleteTopicExample.deleteTopicExample(projectId, smtTopicId);
   }
 }

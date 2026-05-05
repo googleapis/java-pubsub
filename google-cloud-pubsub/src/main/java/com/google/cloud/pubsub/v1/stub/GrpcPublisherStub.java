@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,6 +68,7 @@ public class GrpcPublisherStub extends PublisherStub {
           .setFullMethodName("google.pubsub.v1.Publisher/CreateTopic")
           .setRequestMarshaller(ProtoUtils.marshaller(Topic.getDefaultInstance()))
           .setResponseMarshaller(ProtoUtils.marshaller(Topic.getDefaultInstance()))
+          .setSampledToLocalTracing(true)
           .build();
 
   private static final MethodDescriptor<UpdateTopicRequest, Topic> updateTopicMethodDescriptor =
@@ -76,6 +77,7 @@ public class GrpcPublisherStub extends PublisherStub {
           .setFullMethodName("google.pubsub.v1.Publisher/UpdateTopic")
           .setRequestMarshaller(ProtoUtils.marshaller(UpdateTopicRequest.getDefaultInstance()))
           .setResponseMarshaller(ProtoUtils.marshaller(Topic.getDefaultInstance()))
+          .setSampledToLocalTracing(true)
           .build();
 
   private static final MethodDescriptor<PublishRequest, PublishResponse> publishMethodDescriptor =
@@ -84,6 +86,7 @@ public class GrpcPublisherStub extends PublisherStub {
           .setFullMethodName("google.pubsub.v1.Publisher/Publish")
           .setRequestMarshaller(ProtoUtils.marshaller(PublishRequest.getDefaultInstance()))
           .setResponseMarshaller(ProtoUtils.marshaller(PublishResponse.getDefaultInstance()))
+          .setSampledToLocalTracing(true)
           .build();
 
   private static final MethodDescriptor<GetTopicRequest, Topic> getTopicMethodDescriptor =
@@ -92,6 +95,7 @@ public class GrpcPublisherStub extends PublisherStub {
           .setFullMethodName("google.pubsub.v1.Publisher/GetTopic")
           .setRequestMarshaller(ProtoUtils.marshaller(GetTopicRequest.getDefaultInstance()))
           .setResponseMarshaller(ProtoUtils.marshaller(Topic.getDefaultInstance()))
+          .setSampledToLocalTracing(true)
           .build();
 
   private static final MethodDescriptor<ListTopicsRequest, ListTopicsResponse>
@@ -101,6 +105,7 @@ public class GrpcPublisherStub extends PublisherStub {
               .setFullMethodName("google.pubsub.v1.Publisher/ListTopics")
               .setRequestMarshaller(ProtoUtils.marshaller(ListTopicsRequest.getDefaultInstance()))
               .setResponseMarshaller(ProtoUtils.marshaller(ListTopicsResponse.getDefaultInstance()))
+              .setSampledToLocalTracing(true)
               .build();
 
   private static final MethodDescriptor<
@@ -114,6 +119,7 @@ public class GrpcPublisherStub extends PublisherStub {
                   ProtoUtils.marshaller(ListTopicSubscriptionsRequest.getDefaultInstance()))
               .setResponseMarshaller(
                   ProtoUtils.marshaller(ListTopicSubscriptionsResponse.getDefaultInstance()))
+              .setSampledToLocalTracing(true)
               .build();
 
   private static final MethodDescriptor<ListTopicSnapshotsRequest, ListTopicSnapshotsResponse>
@@ -125,6 +131,7 @@ public class GrpcPublisherStub extends PublisherStub {
                   ProtoUtils.marshaller(ListTopicSnapshotsRequest.getDefaultInstance()))
               .setResponseMarshaller(
                   ProtoUtils.marshaller(ListTopicSnapshotsResponse.getDefaultInstance()))
+              .setSampledToLocalTracing(true)
               .build();
 
   private static final MethodDescriptor<DeleteTopicRequest, Empty> deleteTopicMethodDescriptor =
@@ -133,6 +140,7 @@ public class GrpcPublisherStub extends PublisherStub {
           .setFullMethodName("google.pubsub.v1.Publisher/DeleteTopic")
           .setRequestMarshaller(ProtoUtils.marshaller(DeleteTopicRequest.getDefaultInstance()))
           .setResponseMarshaller(ProtoUtils.marshaller(Empty.getDefaultInstance()))
+          .setSampledToLocalTracing(true)
           .build();
 
   private static final MethodDescriptor<DetachSubscriptionRequest, DetachSubscriptionResponse>
@@ -144,6 +152,7 @@ public class GrpcPublisherStub extends PublisherStub {
                   ProtoUtils.marshaller(DetachSubscriptionRequest.getDefaultInstance()))
               .setResponseMarshaller(
                   ProtoUtils.marshaller(DetachSubscriptionResponse.getDefaultInstance()))
+              .setSampledToLocalTracing(true)
               .build();
 
   private static final MethodDescriptor<SetIamPolicyRequest, Policy> setIamPolicyMethodDescriptor =
@@ -152,6 +161,7 @@ public class GrpcPublisherStub extends PublisherStub {
           .setFullMethodName("google.iam.v1.IAMPolicy/SetIamPolicy")
           .setRequestMarshaller(ProtoUtils.marshaller(SetIamPolicyRequest.getDefaultInstance()))
           .setResponseMarshaller(ProtoUtils.marshaller(Policy.getDefaultInstance()))
+          .setSampledToLocalTracing(true)
           .build();
 
   private static final MethodDescriptor<GetIamPolicyRequest, Policy> getIamPolicyMethodDescriptor =
@@ -160,6 +170,7 @@ public class GrpcPublisherStub extends PublisherStub {
           .setFullMethodName("google.iam.v1.IAMPolicy/GetIamPolicy")
           .setRequestMarshaller(ProtoUtils.marshaller(GetIamPolicyRequest.getDefaultInstance()))
           .setResponseMarshaller(ProtoUtils.marshaller(Policy.getDefaultInstance()))
+          .setSampledToLocalTracing(true)
           .build();
 
   private static final MethodDescriptor<TestIamPermissionsRequest, TestIamPermissionsResponse>
@@ -171,6 +182,7 @@ public class GrpcPublisherStub extends PublisherStub {
                   ProtoUtils.marshaller(TestIamPermissionsRequest.getDefaultInstance()))
               .setResponseMarshaller(
                   ProtoUtils.marshaller(TestIamPermissionsResponse.getDefaultInstance()))
+              .setSampledToLocalTracing(true)
               .build();
 
   private final UnaryCallable<Topic, Topic> createTopicCallable;
@@ -245,6 +257,7 @@ public class GrpcPublisherStub extends PublisherStub {
                   builder.add("name", String.valueOf(request.getName()));
                   return builder.build();
                 })
+            .setResourceNameExtractor(request -> request.getName())
             .build();
     GrpcCallSettings<UpdateTopicRequest, Topic> updateTopicTransportSettings =
         GrpcCallSettings.<UpdateTopicRequest, Topic>newBuilder()
@@ -265,6 +278,7 @@ public class GrpcPublisherStub extends PublisherStub {
                   builder.add("topic", String.valueOf(request.getTopic()));
                   return builder.build();
                 })
+            .setResourceNameExtractor(request -> request.getTopic())
             .build();
     GrpcCallSettings<GetTopicRequest, Topic> getTopicTransportSettings =
         GrpcCallSettings.<GetTopicRequest, Topic>newBuilder()
@@ -275,6 +289,7 @@ public class GrpcPublisherStub extends PublisherStub {
                   builder.add("topic", String.valueOf(request.getTopic()));
                   return builder.build();
                 })
+            .setResourceNameExtractor(request -> request.getTopic())
             .build();
     GrpcCallSettings<ListTopicsRequest, ListTopicsResponse> listTopicsTransportSettings =
         GrpcCallSettings.<ListTopicsRequest, ListTopicsResponse>newBuilder()
@@ -285,6 +300,7 @@ public class GrpcPublisherStub extends PublisherStub {
                   builder.add("project", String.valueOf(request.getProject()));
                   return builder.build();
                 })
+            .setResourceNameExtractor(request -> request.getProject())
             .build();
     GrpcCallSettings<ListTopicSubscriptionsRequest, ListTopicSubscriptionsResponse>
         listTopicSubscriptionsTransportSettings =
@@ -297,6 +313,7 @@ public class GrpcPublisherStub extends PublisherStub {
                       builder.add("topic", String.valueOf(request.getTopic()));
                       return builder.build();
                     })
+                .setResourceNameExtractor(request -> request.getTopic())
                 .build();
     GrpcCallSettings<ListTopicSnapshotsRequest, ListTopicSnapshotsResponse>
         listTopicSnapshotsTransportSettings =
@@ -308,6 +325,7 @@ public class GrpcPublisherStub extends PublisherStub {
                       builder.add("topic", String.valueOf(request.getTopic()));
                       return builder.build();
                     })
+                .setResourceNameExtractor(request -> request.getTopic())
                 .build();
     GrpcCallSettings<DeleteTopicRequest, Empty> deleteTopicTransportSettings =
         GrpcCallSettings.<DeleteTopicRequest, Empty>newBuilder()
@@ -318,6 +336,7 @@ public class GrpcPublisherStub extends PublisherStub {
                   builder.add("topic", String.valueOf(request.getTopic()));
                   return builder.build();
                 })
+            .setResourceNameExtractor(request -> request.getTopic())
             .build();
     GrpcCallSettings<DetachSubscriptionRequest, DetachSubscriptionResponse>
         detachSubscriptionTransportSettings =
@@ -329,6 +348,7 @@ public class GrpcPublisherStub extends PublisherStub {
                       builder.add("subscription", String.valueOf(request.getSubscription()));
                       return builder.build();
                     })
+                .setResourceNameExtractor(request -> request.getSubscription())
                 .build();
     GrpcCallSettings<SetIamPolicyRequest, Policy> setIamPolicyTransportSettings =
         GrpcCallSettings.<SetIamPolicyRequest, Policy>newBuilder()
@@ -339,6 +359,7 @@ public class GrpcPublisherStub extends PublisherStub {
                   builder.add("resource", String.valueOf(request.getResource()));
                   return builder.build();
                 })
+            .setResourceNameExtractor(request -> request.getResource())
             .build();
     GrpcCallSettings<GetIamPolicyRequest, Policy> getIamPolicyTransportSettings =
         GrpcCallSettings.<GetIamPolicyRequest, Policy>newBuilder()
@@ -349,6 +370,7 @@ public class GrpcPublisherStub extends PublisherStub {
                   builder.add("resource", String.valueOf(request.getResource()));
                   return builder.build();
                 })
+            .setResourceNameExtractor(request -> request.getResource())
             .build();
     GrpcCallSettings<TestIamPermissionsRequest, TestIamPermissionsResponse>
         testIamPermissionsTransportSettings =
@@ -360,6 +382,7 @@ public class GrpcPublisherStub extends PublisherStub {
                       builder.add("resource", String.valueOf(request.getResource()));
                       return builder.build();
                     })
+                .setResourceNameExtractor(request -> request.getResource())
                 .build();
 
     this.createTopicCallable =

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,6 +47,7 @@ import com.google.protobuf.FieldMask;
 import com.google.protobuf.Timestamp;
 import com.google.pubsub.v1.AcknowledgeRequest;
 import com.google.pubsub.v1.BigQueryConfig;
+import com.google.pubsub.v1.BigtableConfig;
 import com.google.pubsub.v1.CloudStorageConfig;
 import com.google.pubsub.v1.CreateSnapshotRequest;
 import com.google.pubsub.v1.DeadLetterPolicy;
@@ -59,6 +60,7 @@ import com.google.pubsub.v1.ListSnapshotsRequest;
 import com.google.pubsub.v1.ListSnapshotsResponse;
 import com.google.pubsub.v1.ListSubscriptionsRequest;
 import com.google.pubsub.v1.ListSubscriptionsResponse;
+import com.google.pubsub.v1.MessageTransform;
 import com.google.pubsub.v1.ModifyAckDeadlineRequest;
 import com.google.pubsub.v1.ModifyPushConfigRequest;
 import com.google.pubsub.v1.ProjectName;
@@ -145,6 +147,7 @@ public class SubscriptionAdminClientTest {
             .setPushConfig(PushConfig.newBuilder().build())
             .setBigqueryConfig(BigQueryConfig.newBuilder().build())
             .setCloudStorageConfig(CloudStorageConfig.newBuilder().build())
+            .setBigtableConfig(BigtableConfig.newBuilder().build())
             .setAckDeadlineSeconds(2135351438)
             .setRetainAckedMessages(true)
             .setMessageRetentionDuration(Duration.newBuilder().build())
@@ -157,6 +160,10 @@ public class SubscriptionAdminClientTest {
             .setDetached(true)
             .setEnableExactlyOnceDelivery(true)
             .setTopicMessageRetentionDuration(Duration.newBuilder().build())
+            .setAnalyticsHubSubscriptionInfo(
+                Subscription.AnalyticsHubSubscriptionInfo.newBuilder().build())
+            .addAllMessageTransforms(new ArrayList<MessageTransform>())
+            .putAllTags(new HashMap<String, String>())
             .build();
     mockSubscriber.addResponse(expectedResponse);
 
@@ -209,6 +216,7 @@ public class SubscriptionAdminClientTest {
             .setPushConfig(PushConfig.newBuilder().build())
             .setBigqueryConfig(BigQueryConfig.newBuilder().build())
             .setCloudStorageConfig(CloudStorageConfig.newBuilder().build())
+            .setBigtableConfig(BigtableConfig.newBuilder().build())
             .setAckDeadlineSeconds(2135351438)
             .setRetainAckedMessages(true)
             .setMessageRetentionDuration(Duration.newBuilder().build())
@@ -221,6 +229,10 @@ public class SubscriptionAdminClientTest {
             .setDetached(true)
             .setEnableExactlyOnceDelivery(true)
             .setTopicMessageRetentionDuration(Duration.newBuilder().build())
+            .setAnalyticsHubSubscriptionInfo(
+                Subscription.AnalyticsHubSubscriptionInfo.newBuilder().build())
+            .addAllMessageTransforms(new ArrayList<MessageTransform>())
+            .putAllTags(new HashMap<String, String>())
             .build();
     mockSubscriber.addResponse(expectedResponse);
 
@@ -273,6 +285,7 @@ public class SubscriptionAdminClientTest {
             .setPushConfig(PushConfig.newBuilder().build())
             .setBigqueryConfig(BigQueryConfig.newBuilder().build())
             .setCloudStorageConfig(CloudStorageConfig.newBuilder().build())
+            .setBigtableConfig(BigtableConfig.newBuilder().build())
             .setAckDeadlineSeconds(2135351438)
             .setRetainAckedMessages(true)
             .setMessageRetentionDuration(Duration.newBuilder().build())
@@ -285,6 +298,10 @@ public class SubscriptionAdminClientTest {
             .setDetached(true)
             .setEnableExactlyOnceDelivery(true)
             .setTopicMessageRetentionDuration(Duration.newBuilder().build())
+            .setAnalyticsHubSubscriptionInfo(
+                Subscription.AnalyticsHubSubscriptionInfo.newBuilder().build())
+            .addAllMessageTransforms(new ArrayList<MessageTransform>())
+            .putAllTags(new HashMap<String, String>())
             .build();
     mockSubscriber.addResponse(expectedResponse);
 
@@ -337,6 +354,7 @@ public class SubscriptionAdminClientTest {
             .setPushConfig(PushConfig.newBuilder().build())
             .setBigqueryConfig(BigQueryConfig.newBuilder().build())
             .setCloudStorageConfig(CloudStorageConfig.newBuilder().build())
+            .setBigtableConfig(BigtableConfig.newBuilder().build())
             .setAckDeadlineSeconds(2135351438)
             .setRetainAckedMessages(true)
             .setMessageRetentionDuration(Duration.newBuilder().build())
@@ -349,6 +367,10 @@ public class SubscriptionAdminClientTest {
             .setDetached(true)
             .setEnableExactlyOnceDelivery(true)
             .setTopicMessageRetentionDuration(Duration.newBuilder().build())
+            .setAnalyticsHubSubscriptionInfo(
+                Subscription.AnalyticsHubSubscriptionInfo.newBuilder().build())
+            .addAllMessageTransforms(new ArrayList<MessageTransform>())
+            .putAllTags(new HashMap<String, String>())
             .build();
     mockSubscriber.addResponse(expectedResponse);
 
@@ -401,6 +423,7 @@ public class SubscriptionAdminClientTest {
             .setPushConfig(PushConfig.newBuilder().build())
             .setBigqueryConfig(BigQueryConfig.newBuilder().build())
             .setCloudStorageConfig(CloudStorageConfig.newBuilder().build())
+            .setBigtableConfig(BigtableConfig.newBuilder().build())
             .setAckDeadlineSeconds(2135351438)
             .setRetainAckedMessages(true)
             .setMessageRetentionDuration(Duration.newBuilder().build())
@@ -413,6 +436,10 @@ public class SubscriptionAdminClientTest {
             .setDetached(true)
             .setEnableExactlyOnceDelivery(true)
             .setTopicMessageRetentionDuration(Duration.newBuilder().build())
+            .setAnalyticsHubSubscriptionInfo(
+                Subscription.AnalyticsHubSubscriptionInfo.newBuilder().build())
+            .addAllMessageTransforms(new ArrayList<MessageTransform>())
+            .putAllTags(new HashMap<String, String>())
             .build();
     mockSubscriber.addResponse(expectedResponse);
 
@@ -455,6 +482,7 @@ public class SubscriptionAdminClientTest {
             .setPushConfig(PushConfig.newBuilder().build())
             .setBigqueryConfig(BigQueryConfig.newBuilder().build())
             .setCloudStorageConfig(CloudStorageConfig.newBuilder().build())
+            .setBigtableConfig(BigtableConfig.newBuilder().build())
             .setAckDeadlineSeconds(2135351438)
             .setRetainAckedMessages(true)
             .setMessageRetentionDuration(Duration.newBuilder().build())
@@ -467,6 +495,10 @@ public class SubscriptionAdminClientTest {
             .setDetached(true)
             .setEnableExactlyOnceDelivery(true)
             .setTopicMessageRetentionDuration(Duration.newBuilder().build())
+            .setAnalyticsHubSubscriptionInfo(
+                Subscription.AnalyticsHubSubscriptionInfo.newBuilder().build())
+            .addAllMessageTransforms(new ArrayList<MessageTransform>())
+            .putAllTags(new HashMap<String, String>())
             .build();
     mockSubscriber.addResponse(expectedResponse);
 
@@ -509,6 +541,7 @@ public class SubscriptionAdminClientTest {
             .setPushConfig(PushConfig.newBuilder().build())
             .setBigqueryConfig(BigQueryConfig.newBuilder().build())
             .setCloudStorageConfig(CloudStorageConfig.newBuilder().build())
+            .setBigtableConfig(BigtableConfig.newBuilder().build())
             .setAckDeadlineSeconds(2135351438)
             .setRetainAckedMessages(true)
             .setMessageRetentionDuration(Duration.newBuilder().build())
@@ -521,6 +554,10 @@ public class SubscriptionAdminClientTest {
             .setDetached(true)
             .setEnableExactlyOnceDelivery(true)
             .setTopicMessageRetentionDuration(Duration.newBuilder().build())
+            .setAnalyticsHubSubscriptionInfo(
+                Subscription.AnalyticsHubSubscriptionInfo.newBuilder().build())
+            .addAllMessageTransforms(new ArrayList<MessageTransform>())
+            .putAllTags(new HashMap<String, String>())
             .build();
     mockSubscriber.addResponse(expectedResponse);
 
@@ -1052,6 +1089,7 @@ public class SubscriptionAdminClientTest {
             .setClientId("clientId908408390")
             .setMaxOutstandingMessages(-1315266996)
             .setMaxOutstandingBytes(-2103098517)
+            .setProtocolVersion(-1161610703)
             .build();
 
     MockStreamObserver<StreamingPullResponse> responseObserver = new MockStreamObserver<>();
@@ -1083,6 +1121,7 @@ public class SubscriptionAdminClientTest {
             .setClientId("clientId908408390")
             .setMaxOutstandingMessages(-1315266996)
             .setMaxOutstandingBytes(-2103098517)
+            .setProtocolVersion(-1161610703)
             .build();
 
     MockStreamObserver<StreamingPullResponse> responseObserver = new MockStreamObserver<>();

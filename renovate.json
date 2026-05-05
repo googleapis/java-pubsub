@@ -1,4 +1,6 @@
+
 {
+
   "extends": [
     ":separateMajorReleases",
     ":combinePatchMinorReleases",
@@ -21,19 +23,12 @@
     {
       "customType": "regex",
       "fileMatch": [
-        "^.kokoro/presubmit/graalvm-native.*.cfg$"
-      ],
-      "matchStrings": ["value: \"gcr.io/cloud-devrel-public-resources/graalvm.*:(?<currentValue>.*?)\""],
-      "depNameTemplate": "com.google.cloud:sdk-platform-java-config",
-      "datasourceTemplate": "maven"
-    },
-    {
-      "customType": "regex",
-      "fileMatch": [
         "^.github/workflows/unmanaged_dependency_check.yaml$"
       ],
-      "matchStrings": ["uses: googleapis/sdk-platform-java/java-shared-dependencies/unmanaged-dependency-check@google-cloud-shared-dependencies/v(?<currentValue>.+?)\\n"],
-      "depNameTemplate": "com.google.cloud:sdk-platform-java-config",
+      "matchStrings": [
+        "uses: googleapis/google-cloud-java/sdk-platform-java/java-shared-dependencies/unmanaged-dependency-check@v(?<currentValue>.+?)\\n"
+      ],
+      "depNameTemplate": "com.google.cloud:gapic-libraries-bom",
       "datasourceTemplate": "maven"
     }
   ],
@@ -57,7 +52,6 @@
         "^org.jacoco:",
         "^org.codehaus.mojo:",
         "^org.sonatype.plugins:",
-        "^com.coveo:",
         "^com.google.cloud:google-cloud-shared-config"
       ],
       "semanticCommitType": "build",
@@ -98,5 +92,7 @@
     }
   ],
   "semanticCommits": true,
-  "dependencyDashboard": true
+  "dependencyDashboard": true,
+  "prConcurrentLimit": 0,
+  "prHourlyLimit": 0
 }

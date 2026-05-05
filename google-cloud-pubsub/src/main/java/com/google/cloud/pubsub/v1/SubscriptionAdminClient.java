@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -266,7 +266,7 @@ import javax.annotation.Generated;
  *    </tr>
  *    <tr>
  *      <td><p> StreamingPull</td>
- *      <td><p> Establishes a stream with the server, which sends messages down to the client. The client streams acknowledgements and ack deadline modifications back to the server. The server will close the stream and return the status on any error. The server may close the stream with status `UNAVAILABLE` to reassign server-side resources, in which case, the client should re-establish the stream. Flow control can be achieved by configuring the underlying RPC channel.</td>
+ *      <td><p> Establishes a stream with the server, which sends messages down to the client. The client streams acknowledgments and ack deadline modifications back to the server. The server will close the stream and return the status on any error. The server may close the stream with status `UNAVAILABLE` to reassign server-side resources, in which case, the client should re-establish the stream. Flow control can be achieved by configuring the underlying RPC channel.</td>
  *      <td>
  *      <p>Callable method variants take no parameters and return an immutable API callable object, which can be used to initiate calls to the service.</p>
  *      <ul>
@@ -588,7 +588,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    * }
    * }</pre>
    *
-   * @param name Required. The name of the subscription. It must have the format
+   * @param name Required. Identifier. The name of the subscription. It must have the format
    *     `"projects/{project}/subscriptions/{subscription}"`. `{subscription}` must start with a
    *     letter, and contain only letters (`[A-Za-z]`), numbers (`[0-9]`), dashes (`-`), underscores
    *     (`_`), periods (`.`), tildes (`~`), plus (`+`) or percent signs (`%`). It must be between 3
@@ -658,7 +658,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    * }
    * }</pre>
    *
-   * @param name Required. The name of the subscription. It must have the format
+   * @param name Required. Identifier. The name of the subscription. It must have the format
    *     `"projects/{project}/subscriptions/{subscription}"`. `{subscription}` must start with a
    *     letter, and contain only letters (`[A-Za-z]`), numbers (`[0-9]`), dashes (`-`), underscores
    *     (`_`), periods (`.`), tildes (`~`), plus (`+`) or percent signs (`%`). It must be between 3
@@ -728,7 +728,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    * }
    * }</pre>
    *
-   * @param name Required. The name of the subscription. It must have the format
+   * @param name Required. Identifier. The name of the subscription. It must have the format
    *     `"projects/{project}/subscriptions/{subscription}"`. `{subscription}` must start with a
    *     letter, and contain only letters (`[A-Za-z]`), numbers (`[0-9]`), dashes (`-`), underscores
    *     (`_`), periods (`.`), tildes (`~`), plus (`+`) or percent signs (`%`). It must be between 3
@@ -798,7 +798,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    * }
    * }</pre>
    *
-   * @param name Required. The name of the subscription. It must have the format
+   * @param name Required. Identifier. The name of the subscription. It must have the format
    *     `"projects/{project}/subscriptions/{subscription}"`. `{subscription}` must start with a
    *     letter, and contain only letters (`[A-Za-z]`), numbers (`[0-9]`), dashes (`-`), underscores
    *     (`_`), periods (`.`), tildes (`~`), plus (`+`) or percent signs (`%`). It must be between 3
@@ -866,6 +866,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *           .setPushConfig(PushConfig.newBuilder().build())
    *           .setBigqueryConfig(BigQueryConfig.newBuilder().build())
    *           .setCloudStorageConfig(CloudStorageConfig.newBuilder().build())
+   *           .setBigtableConfig(BigtableConfig.newBuilder().build())
    *           .setAckDeadlineSeconds(2135351438)
    *           .setRetainAckedMessages(true)
    *           .setMessageRetentionDuration(Duration.newBuilder().build())
@@ -878,6 +879,10 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *           .setDetached(true)
    *           .setEnableExactlyOnceDelivery(true)
    *           .setTopicMessageRetentionDuration(Duration.newBuilder().build())
+   *           .setAnalyticsHubSubscriptionInfo(
+   *               Subscription.AnalyticsHubSubscriptionInfo.newBuilder().build())
+   *           .addAllMessageTransforms(new ArrayList<MessageTransform>())
+   *           .putAllTags(new HashMap<String, String>())
    *           .build();
    *   Subscription response = subscriptionAdminClient.createSubscription(request);
    * }
@@ -1129,6 +1134,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *           .setPushConfig(PushConfig.newBuilder().build())
    *           .setBigqueryConfig(BigQueryConfig.newBuilder().build())
    *           .setCloudStorageConfig(CloudStorageConfig.newBuilder().build())
+   *           .setBigtableConfig(BigtableConfig.newBuilder().build())
    *           .setAckDeadlineSeconds(2135351438)
    *           .setRetainAckedMessages(true)
    *           .setMessageRetentionDuration(Duration.newBuilder().build())
@@ -1141,6 +1147,10 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *           .setDetached(true)
    *           .setEnableExactlyOnceDelivery(true)
    *           .setTopicMessageRetentionDuration(Duration.newBuilder().build())
+   *           .setAnalyticsHubSubscriptionInfo(
+   *               Subscription.AnalyticsHubSubscriptionInfo.newBuilder().build())
+   *           .addAllMessageTransforms(new ArrayList<MessageTransform>())
+   *           .putAllTags(new HashMap<String, String>())
    *           .build();
    *   ApiFuture<Subscription> future =
    *       subscriptionAdminClient.createSubscriptionCallable().futureCall(request);
@@ -2373,7 +2383,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
   // AUTO-GENERATED DOCUMENTATION AND METHOD.
   /**
    * Establishes a stream with the server, which sends messages down to the client. The client
-   * streams acknowledgements and ack deadline modifications back to the server. The server will
+   * streams acknowledgments and ack deadline modifications back to the server. The server will
    * close the stream and return the status on any error. The server may close the stream with
    * status `UNAVAILABLE` to reassign server-side resources, in which case, the client should
    * re-establish the stream. Flow control can be achieved by configuring the underlying RPC
@@ -2400,6 +2410,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *           .setClientId("clientId908408390")
    *           .setMaxOutstandingMessages(-1315266996)
    *           .setMaxOutstandingBytes(-2103098517)
+   *           .setProtocolVersion(-1161610703)
    *           .build();
    *   bidiStream.send(request);
    *   for (StreamingPullResponse response : bidiStream) {
@@ -3174,6 +3185,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *           .setName(SnapshotName.of("[PROJECT]", "[SNAPSHOT]").toString())
    *           .setSubscription(SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
    *           .putAllLabels(new HashMap<String, String>())
+   *           .putAllTags(new HashMap<String, String>())
    *           .build();
    *   Snapshot response = subscriptionAdminClient.createSnapshot(request);
    * }
@@ -3366,6 +3378,7 @@ public class SubscriptionAdminClient implements BackgroundResource {
    *           .setName(SnapshotName.of("[PROJECT]", "[SNAPSHOT]").toString())
    *           .setSubscription(SubscriptionName.of("[PROJECT]", "[SUBSCRIPTION]").toString())
    *           .putAllLabels(new HashMap<String, String>())
+   *           .putAllTags(new HashMap<String, String>())
    *           .build();
    *   ApiFuture<Snapshot> future =
    *       subscriptionAdminClient.createSnapshotCallable().futureCall(request);

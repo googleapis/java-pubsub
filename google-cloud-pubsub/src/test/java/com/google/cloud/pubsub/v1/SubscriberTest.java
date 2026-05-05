@@ -35,13 +35,13 @@ import io.grpc.Status;
 import io.grpc.StatusException;
 import io.grpc.inprocess.InProcessChannelBuilder;
 import io.grpc.inprocess.InProcessServerBuilder;
+import java.time.Duration;
 import java.util.concurrent.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
-import org.threeten.bp.Duration;
 
 /** Tests for {@link Subscriber}. */
 public class SubscriberTest {
@@ -241,7 +241,8 @@ public class SubscriberTest {
     Subscriber subscriber =
         startSubscriber(
             getTestSubscriberBuilder(testReceiver)
-                .setMaxDurationPerAckExtension(Duration.ofSeconds(maxDurationPerAckExtension)));
+                .setMaxDurationPerAckExtensionDuration(
+                    Duration.ofSeconds(maxDurationPerAckExtension)));
     assertEquals(
         expectedChannelCount, fakeSubscriberServiceImpl.waitForOpenedStreams(expectedChannelCount));
     assertEquals(
@@ -255,7 +256,8 @@ public class SubscriberTest {
     subscriber =
         startSubscriber(
             getTestSubscriberBuilder(testReceiver)
-                .setMaxDurationPerAckExtension(Duration.ofSeconds(maxDurationPerAckExtension)));
+                .setMaxDurationPerAckExtensionDuration(
+                    Duration.ofSeconds(maxDurationPerAckExtension)));
     assertEquals(
         expectedChannelCount, fakeSubscriberServiceImpl.waitForOpenedStreams(expectedChannelCount));
     assertEquals(
@@ -269,7 +271,8 @@ public class SubscriberTest {
     subscriber =
         startSubscriber(
             getTestSubscriberBuilder(testReceiver)
-                .setMaxDurationPerAckExtension(Duration.ofSeconds(maxDurationPerAckExtension)));
+                .setMaxDurationPerAckExtensionDuration(
+                    Duration.ofSeconds(maxDurationPerAckExtension)));
     assertEquals(
         expectedChannelCount, fakeSubscriberServiceImpl.waitForOpenedStreams(expectedChannelCount));
     assertEquals(
@@ -294,8 +297,7 @@ public class SubscriberTest {
     Subscriber subscriber =
         getTestSubscriberBuilder(testReceiver)
             .setFlowControlSettings(
-                Subscriber.Builder.DEFAULT_FLOW_CONTROL_SETTINGS
-                    .toBuilder()
+                Subscriber.Builder.DEFAULT_FLOW_CONTROL_SETTINGS.toBuilder()
                     .setMaxOutstandingElementCount(500L)
                     .build())
             .build();
@@ -307,8 +309,7 @@ public class SubscriberTest {
     subscriber =
         getTestSubscriberBuilder(testReceiver)
             .setFlowControlSettings(
-                Subscriber.Builder.DEFAULT_FLOW_CONTROL_SETTINGS
-                    .toBuilder()
+                Subscriber.Builder.DEFAULT_FLOW_CONTROL_SETTINGS.toBuilder()
                     .setMaxOutstandingRequestBytes(5_000_000_000L)
                     .build())
             .build();
@@ -317,6 +318,104 @@ public class SubscriberTest {
     assertEquals(
         subscriber.getFlowControlSettings().getMaxOutstandingElementCount(),
         Subscriber.Builder.DEFAULT_FLOW_CONTROL_SETTINGS.getMaxOutstandingElementCount());
+  }
+
+  @Test
+  public void testShutdown_waitForProcessing_indefinite() throws Exception {
+    final CountDownLatch messageReceived = new CountDownLatch(1);
+    final AckReplyConsumer[] consumer = new AckReplyConsumer[1];
+
+    MessageReceiver receiver =
+        new MessageReceiver() {
+          @Override
+          public void receiveMessage(PubsubMessage message, AckReplyConsumer c) {
+            consumer[0] = c;
+            messageReceived.countDown();
+          }
+        };
+
+    Subscriber subscriber =
+        startSubscriber(
+            getTestSubscriberBuilder(receiver)
+                .setSubscriberShutdownSettings(
+                    SubscriberShutdownSettings.newBuilder()
+                        .setMode(SubscriberShutdownSettings.ShutdownMode.WAIT_FOR_PROCESSING)
+                        .setTimeout(Duration.ofSeconds(-1))
+                        .build()));
+
+    // Send a message and wait for it to be received.
+    fakeSubscriberServiceImpl.sendMessages(1);
+    messageReceived.await(10, TimeUnit.SECONDS);
+
+    subscriber.stopAsync();
+
+    try {
+      subscriber.awaitTerminated(1, TimeUnit.SECONDS);
+      fail("Subscriber should not have terminated yet.");
+    } catch (TimeoutException e) {
+      // Expected
+    }
+
+    // Now, ack the message, which should allow the subscriber to terminate.
+    consumer[0].ack();
+    subscriber.awaitTerminated(10, TimeUnit.SECONDS);
+  }
+
+  @Test
+  public void testShutdown_waitForProcessing_withTimeout_success() throws Exception {
+    Subscriber subscriber =
+        startSubscriber(
+            getTestSubscriberBuilder(testReceiver)
+                .setSubscriberShutdownSettings(
+                    SubscriberShutdownSettings.newBuilder()
+                        .setMode(SubscriberShutdownSettings.ShutdownMode.WAIT_FOR_PROCESSING)
+                        .setTimeout(Duration.ofSeconds(10))
+                        .build()));
+    subscriber.stopAsync();
+    fakeExecutor.advanceTime(Duration.ofSeconds(5));
+    subscriber.awaitTerminated(1, TimeUnit.SECONDS); // Should terminate quickly now
+  }
+
+  @Test
+  public void testShutdown_waitForProcessing_withTimeout_failure() throws Exception {
+    Subscriber subscriber =
+        startSubscriber(
+            getTestSubscriberBuilder(testReceiver)
+                .setSubscriberShutdownSettings(
+                    SubscriberShutdownSettings.newBuilder()
+                        .setMode(SubscriberShutdownSettings.ShutdownMode.WAIT_FOR_PROCESSING)
+                        .setTimeout(Duration.ofSeconds(5))
+                        .build()));
+    subscriber.stopAsync();
+    fakeExecutor.advanceTime(Duration.ofSeconds(6));
+    subscriber.awaitTerminated(1, TimeUnit.SECONDS); // Should have timed out and terminated
+  }
+
+  @Test
+  public void testShutdown_waitForProcessing_zeroTimeout() throws Exception {
+    Subscriber subscriber =
+        startSubscriber(
+            getTestSubscriberBuilder(testReceiver)
+                .setSubscriberShutdownSettings(
+                    SubscriberShutdownSettings.newBuilder()
+                        .setMode(SubscriberShutdownSettings.ShutdownMode.WAIT_FOR_PROCESSING)
+                        .setTimeout(Duration.ZERO)
+                        .build()));
+    subscriber.stopAsync();
+    subscriber.awaitTerminated(1, TimeUnit.SECONDS); // Should terminate almost immediately
+  }
+
+  @Test
+  public void testShutdown_nackImmediately() throws Exception {
+    Subscriber subscriber =
+        startSubscriber(
+            getTestSubscriberBuilder(testReceiver)
+                .setSubscriberShutdownSettings(
+                    SubscriberShutdownSettings.newBuilder()
+                        .setMode(SubscriberShutdownSettings.ShutdownMode.NACK_IMMEDIATELY)
+                        .build()));
+    subscriber.stopAsync();
+    subscriber.awaitTerminated(1, TimeUnit.SECONDS); // Should terminate almost immediately
   }
 
   private Subscriber startSubscriber(Builder testSubscriberBuilder) {

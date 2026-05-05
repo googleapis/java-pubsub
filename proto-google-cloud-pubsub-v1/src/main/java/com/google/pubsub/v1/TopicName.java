@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -217,7 +217,8 @@ public class TopicName implements ResourceName {
     private Builder(TopicName topicName) {
       Preconditions.checkArgument(
           Objects.equals(topicName.pathTemplate, PROJECT_TOPIC),
-          "toBuilder is only supported when TopicName has the pattern of projects/{project}/topics/{topic}");
+          "toBuilder is only supported when TopicName has the pattern of"
+              + " projects/{project}/topics/{topic}");
       this.project = topicName.project;
       this.topic = topicName.topic;
     }

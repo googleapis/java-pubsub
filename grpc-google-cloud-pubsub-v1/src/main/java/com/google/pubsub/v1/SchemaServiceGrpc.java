@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,9 +24,6 @@ import static io.grpc.MethodDescriptor.generateFullMethodName;
  * Service for doing schema-related operations.
  * </pre>
  */
-@javax.annotation.Generated(
-    value = "by gRPC proto compiler",
-    comments = "Source: google/pubsub/v1/schema.proto")
 @io.grpc.stub.annotations.GrpcGenerated
 public final class SchemaServiceGrpc {
 
@@ -467,6 +464,19 @@ public final class SchemaServiceGrpc {
     return SchemaServiceStub.newStub(factory, channel);
   }
 
+  /** Creates a new blocking-style stub that supports all types of calls on the service */
+  public static SchemaServiceBlockingV2Stub newBlockingV2Stub(io.grpc.Channel channel) {
+    io.grpc.stub.AbstractStub.StubFactory<SchemaServiceBlockingV2Stub> factory =
+        new io.grpc.stub.AbstractStub.StubFactory<SchemaServiceBlockingV2Stub>() {
+          @java.lang.Override
+          public SchemaServiceBlockingV2Stub newStub(
+              io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
+            return new SchemaServiceBlockingV2Stub(channel, callOptions);
+          }
+        };
+    return SchemaServiceBlockingV2Stub.newStub(factory, channel);
+  }
+
   /**
    * Creates a new blocking-style stub that supports unary and streaming output calls on the service
    */
@@ -843,6 +853,156 @@ public final class SchemaServiceGrpc {
 
   /**
    * A stub to allow clients to do synchronous rpc calls to service SchemaService.
+   *
+   * <pre>
+   * Service for doing schema-related operations.
+   * </pre>
+   */
+  public static final class SchemaServiceBlockingV2Stub
+      extends io.grpc.stub.AbstractBlockingStub<SchemaServiceBlockingV2Stub> {
+    private SchemaServiceBlockingV2Stub(io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
+      super(channel, callOptions);
+    }
+
+    @java.lang.Override
+    protected SchemaServiceBlockingV2Stub build(
+        io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
+      return new SchemaServiceBlockingV2Stub(channel, callOptions);
+    }
+
+    /**
+     *
+     *
+     * <pre>
+     * Creates a schema.
+     * </pre>
+     */
+    public com.google.pubsub.v1.Schema createSchema(
+        com.google.pubsub.v1.CreateSchemaRequest request) throws io.grpc.StatusException {
+      return io.grpc.stub.ClientCalls.blockingV2UnaryCall(
+          getChannel(), getCreateSchemaMethod(), getCallOptions(), request);
+    }
+
+    /**
+     *
+     *
+     * <pre>
+     * Gets a schema.
+     * </pre>
+     */
+    public com.google.pubsub.v1.Schema getSchema(com.google.pubsub.v1.GetSchemaRequest request)
+        throws io.grpc.StatusException {
+      return io.grpc.stub.ClientCalls.blockingV2UnaryCall(
+          getChannel(), getGetSchemaMethod(), getCallOptions(), request);
+    }
+
+    /**
+     *
+     *
+     * <pre>
+     * Lists schemas in a project.
+     * </pre>
+     */
+    public com.google.pubsub.v1.ListSchemasResponse listSchemas(
+        com.google.pubsub.v1.ListSchemasRequest request) throws io.grpc.StatusException {
+      return io.grpc.stub.ClientCalls.blockingV2UnaryCall(
+          getChannel(), getListSchemasMethod(), getCallOptions(), request);
+    }
+
+    /**
+     *
+     *
+     * <pre>
+     * Lists all schema revisions for the named schema.
+     * </pre>
+     */
+    public com.google.pubsub.v1.ListSchemaRevisionsResponse listSchemaRevisions(
+        com.google.pubsub.v1.ListSchemaRevisionsRequest request) throws io.grpc.StatusException {
+      return io.grpc.stub.ClientCalls.blockingV2UnaryCall(
+          getChannel(), getListSchemaRevisionsMethod(), getCallOptions(), request);
+    }
+
+    /**
+     *
+     *
+     * <pre>
+     * Commits a new schema revision to an existing schema.
+     * </pre>
+     */
+    public com.google.pubsub.v1.Schema commitSchema(
+        com.google.pubsub.v1.CommitSchemaRequest request) throws io.grpc.StatusException {
+      return io.grpc.stub.ClientCalls.blockingV2UnaryCall(
+          getChannel(), getCommitSchemaMethod(), getCallOptions(), request);
+    }
+
+    /**
+     *
+     *
+     * <pre>
+     * Creates a new schema revision that is a copy of the provided revision_id.
+     * </pre>
+     */
+    public com.google.pubsub.v1.Schema rollbackSchema(
+        com.google.pubsub.v1.RollbackSchemaRequest request) throws io.grpc.StatusException {
+      return io.grpc.stub.ClientCalls.blockingV2UnaryCall(
+          getChannel(), getRollbackSchemaMethod(), getCallOptions(), request);
+    }
+
+    /**
+     *
+     *
+     * <pre>
+     * Deletes a specific schema revision.
+     * </pre>
+     */
+    public com.google.pubsub.v1.Schema deleteSchemaRevision(
+        com.google.pubsub.v1.DeleteSchemaRevisionRequest request) throws io.grpc.StatusException {
+      return io.grpc.stub.ClientCalls.blockingV2UnaryCall(
+          getChannel(), getDeleteSchemaRevisionMethod(), getCallOptions(), request);
+    }
+
+    /**
+     *
+     *
+     * <pre>
+     * Deletes a schema.
+     * </pre>
+     */
+    public com.google.protobuf.Empty deleteSchema(com.google.pubsub.v1.DeleteSchemaRequest request)
+        throws io.grpc.StatusException {
+      return io.grpc.stub.ClientCalls.blockingV2UnaryCall(
+          getChannel(), getDeleteSchemaMethod(), getCallOptions(), request);
+    }
+
+    /**
+     *
+     *
+     * <pre>
+     * Validates a schema.
+     * </pre>
+     */
+    public com.google.pubsub.v1.ValidateSchemaResponse validateSchema(
+        com.google.pubsub.v1.ValidateSchemaRequest request) throws io.grpc.StatusException {
+      return io.grpc.stub.ClientCalls.blockingV2UnaryCall(
+          getChannel(), getValidateSchemaMethod(), getCallOptions(), request);
+    }
+
+    /**
+     *
+     *
+     * <pre>
+     * Validates a message against a schema.
+     * </pre>
+     */
+    public com.google.pubsub.v1.ValidateMessageResponse validateMessage(
+        com.google.pubsub.v1.ValidateMessageRequest request) throws io.grpc.StatusException {
+      return io.grpc.stub.ClientCalls.blockingV2UnaryCall(
+          getChannel(), getValidateMessageMethod(), getCallOptions(), request);
+    }
+  }
+
+  /**
+   * A stub to allow clients to do limited synchronous rpc calls to service SchemaService.
    *
    * <pre>
    * Service for doing schema-related operations.

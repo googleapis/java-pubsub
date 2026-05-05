@@ -5,8 +5,8 @@ jobs:
   unmanaged_dependency_check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: 11
@@ -17,6 +17,6 @@ jobs:
           # repository
           .kokoro/build.sh
       - name: Unmanaged dependency check
-        uses: googleapis/sdk-platform-java/java-shared-dependencies/unmanaged-dependency-check@google-cloud-shared-dependencies/v3.32.0
+        uses: googleapis/google-cloud-java/sdk-platform-java/java-shared-dependencies/unmanaged-dependency-check@v1.85.0
         with:
           bom-path: google-cloud-pubsub-bom/pom.xml

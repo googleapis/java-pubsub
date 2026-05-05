@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,6 +68,7 @@ public class GrpcSchemaServiceStub extends SchemaServiceStub {
           .setFullMethodName("google.pubsub.v1.SchemaService/CreateSchema")
           .setRequestMarshaller(ProtoUtils.marshaller(CreateSchemaRequest.getDefaultInstance()))
           .setResponseMarshaller(ProtoUtils.marshaller(Schema.getDefaultInstance()))
+          .setSampledToLocalTracing(true)
           .build();
 
   private static final MethodDescriptor<GetSchemaRequest, Schema> getSchemaMethodDescriptor =
@@ -76,6 +77,7 @@ public class GrpcSchemaServiceStub extends SchemaServiceStub {
           .setFullMethodName("google.pubsub.v1.SchemaService/GetSchema")
           .setRequestMarshaller(ProtoUtils.marshaller(GetSchemaRequest.getDefaultInstance()))
           .setResponseMarshaller(ProtoUtils.marshaller(Schema.getDefaultInstance()))
+          .setSampledToLocalTracing(true)
           .build();
 
   private static final MethodDescriptor<ListSchemasRequest, ListSchemasResponse>
@@ -86,6 +88,7 @@ public class GrpcSchemaServiceStub extends SchemaServiceStub {
               .setRequestMarshaller(ProtoUtils.marshaller(ListSchemasRequest.getDefaultInstance()))
               .setResponseMarshaller(
                   ProtoUtils.marshaller(ListSchemasResponse.getDefaultInstance()))
+              .setSampledToLocalTracing(true)
               .build();
 
   private static final MethodDescriptor<ListSchemaRevisionsRequest, ListSchemaRevisionsResponse>
@@ -97,6 +100,7 @@ public class GrpcSchemaServiceStub extends SchemaServiceStub {
                   ProtoUtils.marshaller(ListSchemaRevisionsRequest.getDefaultInstance()))
               .setResponseMarshaller(
                   ProtoUtils.marshaller(ListSchemaRevisionsResponse.getDefaultInstance()))
+              .setSampledToLocalTracing(true)
               .build();
 
   private static final MethodDescriptor<CommitSchemaRequest, Schema> commitSchemaMethodDescriptor =
@@ -105,6 +109,7 @@ public class GrpcSchemaServiceStub extends SchemaServiceStub {
           .setFullMethodName("google.pubsub.v1.SchemaService/CommitSchema")
           .setRequestMarshaller(ProtoUtils.marshaller(CommitSchemaRequest.getDefaultInstance()))
           .setResponseMarshaller(ProtoUtils.marshaller(Schema.getDefaultInstance()))
+          .setSampledToLocalTracing(true)
           .build();
 
   private static final MethodDescriptor<RollbackSchemaRequest, Schema>
@@ -115,6 +120,7 @@ public class GrpcSchemaServiceStub extends SchemaServiceStub {
               .setRequestMarshaller(
                   ProtoUtils.marshaller(RollbackSchemaRequest.getDefaultInstance()))
               .setResponseMarshaller(ProtoUtils.marshaller(Schema.getDefaultInstance()))
+              .setSampledToLocalTracing(true)
               .build();
 
   private static final MethodDescriptor<DeleteSchemaRevisionRequest, Schema>
@@ -125,6 +131,7 @@ public class GrpcSchemaServiceStub extends SchemaServiceStub {
               .setRequestMarshaller(
                   ProtoUtils.marshaller(DeleteSchemaRevisionRequest.getDefaultInstance()))
               .setResponseMarshaller(ProtoUtils.marshaller(Schema.getDefaultInstance()))
+              .setSampledToLocalTracing(true)
               .build();
 
   private static final MethodDescriptor<DeleteSchemaRequest, Empty> deleteSchemaMethodDescriptor =
@@ -133,6 +140,7 @@ public class GrpcSchemaServiceStub extends SchemaServiceStub {
           .setFullMethodName("google.pubsub.v1.SchemaService/DeleteSchema")
           .setRequestMarshaller(ProtoUtils.marshaller(DeleteSchemaRequest.getDefaultInstance()))
           .setResponseMarshaller(ProtoUtils.marshaller(Empty.getDefaultInstance()))
+          .setSampledToLocalTracing(true)
           .build();
 
   private static final MethodDescriptor<ValidateSchemaRequest, ValidateSchemaResponse>
@@ -144,6 +152,7 @@ public class GrpcSchemaServiceStub extends SchemaServiceStub {
                   ProtoUtils.marshaller(ValidateSchemaRequest.getDefaultInstance()))
               .setResponseMarshaller(
                   ProtoUtils.marshaller(ValidateSchemaResponse.getDefaultInstance()))
+              .setSampledToLocalTracing(true)
               .build();
 
   private static final MethodDescriptor<ValidateMessageRequest, ValidateMessageResponse>
@@ -155,6 +164,7 @@ public class GrpcSchemaServiceStub extends SchemaServiceStub {
                   ProtoUtils.marshaller(ValidateMessageRequest.getDefaultInstance()))
               .setResponseMarshaller(
                   ProtoUtils.marshaller(ValidateMessageResponse.getDefaultInstance()))
+              .setSampledToLocalTracing(true)
               .build();
 
   private static final MethodDescriptor<SetIamPolicyRequest, Policy> setIamPolicyMethodDescriptor =
@@ -163,6 +173,7 @@ public class GrpcSchemaServiceStub extends SchemaServiceStub {
           .setFullMethodName("google.iam.v1.IAMPolicy/SetIamPolicy")
           .setRequestMarshaller(ProtoUtils.marshaller(SetIamPolicyRequest.getDefaultInstance()))
           .setResponseMarshaller(ProtoUtils.marshaller(Policy.getDefaultInstance()))
+          .setSampledToLocalTracing(true)
           .build();
 
   private static final MethodDescriptor<GetIamPolicyRequest, Policy> getIamPolicyMethodDescriptor =
@@ -171,6 +182,7 @@ public class GrpcSchemaServiceStub extends SchemaServiceStub {
           .setFullMethodName("google.iam.v1.IAMPolicy/GetIamPolicy")
           .setRequestMarshaller(ProtoUtils.marshaller(GetIamPolicyRequest.getDefaultInstance()))
           .setResponseMarshaller(ProtoUtils.marshaller(Policy.getDefaultInstance()))
+          .setSampledToLocalTracing(true)
           .build();
 
   private static final MethodDescriptor<TestIamPermissionsRequest, TestIamPermissionsResponse>
@@ -182,6 +194,7 @@ public class GrpcSchemaServiceStub extends SchemaServiceStub {
                   ProtoUtils.marshaller(TestIamPermissionsRequest.getDefaultInstance()))
               .setResponseMarshaller(
                   ProtoUtils.marshaller(TestIamPermissionsResponse.getDefaultInstance()))
+              .setSampledToLocalTracing(true)
               .build();
 
   private final UnaryCallable<CreateSchemaRequest, Schema> createSchemaCallable;
@@ -256,6 +269,7 @@ public class GrpcSchemaServiceStub extends SchemaServiceStub {
                   builder.add("parent", String.valueOf(request.getParent()));
                   return builder.build();
                 })
+            .setResourceNameExtractor(request -> request.getParent())
             .build();
     GrpcCallSettings<GetSchemaRequest, Schema> getSchemaTransportSettings =
         GrpcCallSettings.<GetSchemaRequest, Schema>newBuilder()
@@ -266,6 +280,7 @@ public class GrpcSchemaServiceStub extends SchemaServiceStub {
                   builder.add("name", String.valueOf(request.getName()));
                   return builder.build();
                 })
+            .setResourceNameExtractor(request -> request.getName())
             .build();
     GrpcCallSettings<ListSchemasRequest, ListSchemasResponse> listSchemasTransportSettings =
         GrpcCallSettings.<ListSchemasRequest, ListSchemasResponse>newBuilder()
@@ -276,6 +291,7 @@ public class GrpcSchemaServiceStub extends SchemaServiceStub {
                   builder.add("parent", String.valueOf(request.getParent()));
                   return builder.build();
                 })
+            .setResourceNameExtractor(request -> request.getParent())
             .build();
     GrpcCallSettings<ListSchemaRevisionsRequest, ListSchemaRevisionsResponse>
         listSchemaRevisionsTransportSettings =
@@ -287,6 +303,7 @@ public class GrpcSchemaServiceStub extends SchemaServiceStub {
                       builder.add("name", String.valueOf(request.getName()));
                       return builder.build();
                     })
+                .setResourceNameExtractor(request -> request.getName())
                 .build();
     GrpcCallSettings<CommitSchemaRequest, Schema> commitSchemaTransportSettings =
         GrpcCallSettings.<CommitSchemaRequest, Schema>newBuilder()
@@ -297,6 +314,7 @@ public class GrpcSchemaServiceStub extends SchemaServiceStub {
                   builder.add("name", String.valueOf(request.getName()));
                   return builder.build();
                 })
+            .setResourceNameExtractor(request -> request.getName())
             .build();
     GrpcCallSettings<RollbackSchemaRequest, Schema> rollbackSchemaTransportSettings =
         GrpcCallSettings.<RollbackSchemaRequest, Schema>newBuilder()
@@ -307,6 +325,7 @@ public class GrpcSchemaServiceStub extends SchemaServiceStub {
                   builder.add("name", String.valueOf(request.getName()));
                   return builder.build();
                 })
+            .setResourceNameExtractor(request -> request.getName())
             .build();
     GrpcCallSettings<DeleteSchemaRevisionRequest, Schema> deleteSchemaRevisionTransportSettings =
         GrpcCallSettings.<DeleteSchemaRevisionRequest, Schema>newBuilder()
@@ -317,6 +336,7 @@ public class GrpcSchemaServiceStub extends SchemaServiceStub {
                   builder.add("name", String.valueOf(request.getName()));
                   return builder.build();
                 })
+            .setResourceNameExtractor(request -> request.getName())
             .build();
     GrpcCallSettings<DeleteSchemaRequest, Empty> deleteSchemaTransportSettings =
         GrpcCallSettings.<DeleteSchemaRequest, Empty>newBuilder()
@@ -327,6 +347,7 @@ public class GrpcSchemaServiceStub extends SchemaServiceStub {
                   builder.add("name", String.valueOf(request.getName()));
                   return builder.build();
                 })
+            .setResourceNameExtractor(request -> request.getName())
             .build();
     GrpcCallSettings<ValidateSchemaRequest, ValidateSchemaResponse>
         validateSchemaTransportSettings =
@@ -338,6 +359,7 @@ public class GrpcSchemaServiceStub extends SchemaServiceStub {
                       builder.add("parent", String.valueOf(request.getParent()));
                       return builder.build();
                     })
+                .setResourceNameExtractor(request -> request.getParent())
                 .build();
     GrpcCallSettings<ValidateMessageRequest, ValidateMessageResponse>
         validateMessageTransportSettings =
@@ -349,6 +371,7 @@ public class GrpcSchemaServiceStub extends SchemaServiceStub {
                       builder.add("parent", String.valueOf(request.getParent()));
                       return builder.build();
                     })
+                .setResourceNameExtractor(request -> request.getParent())
                 .build();
     GrpcCallSettings<SetIamPolicyRequest, Policy> setIamPolicyTransportSettings =
         GrpcCallSettings.<SetIamPolicyRequest, Policy>newBuilder()
@@ -359,6 +382,7 @@ public class GrpcSchemaServiceStub extends SchemaServiceStub {
                   builder.add("resource", String.valueOf(request.getResource()));
                   return builder.build();
                 })
+            .setResourceNameExtractor(request -> request.getResource())
             .build();
     GrpcCallSettings<GetIamPolicyRequest, Policy> getIamPolicyTransportSettings =
         GrpcCallSettings.<GetIamPolicyRequest, Policy>newBuilder()
@@ -369,6 +393,7 @@ public class GrpcSchemaServiceStub extends SchemaServiceStub {
                   builder.add("resource", String.valueOf(request.getResource()));
                   return builder.build();
                 })
+            .setResourceNameExtractor(request -> request.getResource())
             .build();
     GrpcCallSettings<TestIamPermissionsRequest, TestIamPermissionsResponse>
         testIamPermissionsTransportSettings =
@@ -380,6 +405,7 @@ public class GrpcSchemaServiceStub extends SchemaServiceStub {
                       builder.add("resource", String.valueOf(request.getResource()));
                       return builder.build();
                     })
+                .setResourceNameExtractor(request -> request.getResource())
                 .build();
 
     this.createSchemaCallable =

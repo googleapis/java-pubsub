@@ -16,12 +16,15 @@
 
 package com.google.cloud.pubsub.v1;
 
+import static com.google.api.gax.util.TimeConversionUtils.toJavaTimeDuration;
+
 import com.google.api.core.AbstractApiService;
 import com.google.api.core.ApiClock;
 import com.google.api.core.ApiService;
 import com.google.api.core.BetaApi;
 import com.google.api.core.CurrentMillisClock;
 import com.google.api.core.InternalApi;
+import com.google.api.core.ObsoleteApi;
 import com.google.api.gax.batching.FlowControlSettings;
 import com.google.api.gax.batching.FlowController;
 import com.google.api.gax.batching.FlowController.LimitExceededBehavior;
@@ -43,6 +46,8 @@ import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.pubsub.v1.ProjectSubscriptionName;
 import com.google.pubsub.v1.PubsubMessage;
+import io.opentelemetry.api.OpenTelemetry;
+import io.opentelemetry.api.trace.Tracer;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +58,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Nullable;
-import org.threeten.bp.Duration;
 
 /**
  * A Cloud Pub/Sub <a href="https://cloud.google.com/pubsub/docs/subscriber">subscriber</a> that is
@@ -96,41 +100,58 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
   private static final int MAX_INBOUND_METADATA_SIZE =
       4 * 1024 * 1024; // 4MB API maximum metadata size
 
-  @InternalApi static final Duration DEFAULT_MAX_ACK_EXTENSION_PERIOD = Duration.ofMinutes(60);
+  @InternalApi
+  static final java.time.Duration DEFAULT_MAX_ACK_EXTENSION_PERIOD =
+      java.time.Duration.ofMinutes(60);
 
   @InternalApi
-  static final Duration DEFAULT_MIN_ACK_DEADLINE_EXTENSION_EXACTLY_ONCE_DELIVERY =
-      Duration.ofMinutes(1);
-
-  @InternalApi static final Duration DEFAULT_MIN_ACK_DEADLINE_EXTENSION = Duration.ofMinutes(0);
-  @InternalApi static final Duration DEFAULT_MAX_ACK_DEADLINE_EXTENSION = Duration.ofSeconds(0);
-
-  @InternalApi static final Duration MIN_STREAM_ACK_DEADLINE = Duration.ofSeconds(10);
-  @InternalApi static final Duration MAX_STREAM_ACK_DEADLINE = Duration.ofSeconds(600);
-
-  @InternalApi static final Duration STREAM_ACK_DEADLINE_DEFAULT = Duration.ofSeconds(60);
+  static final java.time.Duration DEFAULT_MIN_ACK_DEADLINE_EXTENSION_EXACTLY_ONCE_DELIVERY =
+      java.time.Duration.ofMinutes(1);
 
   @InternalApi
-  static final Duration STREAM_ACK_DEADLINE_EXACTLY_ONCE_DELIVERY_DEFAULT = Duration.ofSeconds(60);
+  static final java.time.Duration DEFAULT_MIN_ACK_DEADLINE_EXTENSION =
+      java.time.Duration.ofMinutes(0);
 
-  @InternalApi static final Duration ACK_EXPIRATION_PADDING_DEFAULT = Duration.ofSeconds(5);
+  @InternalApi
+  static final java.time.Duration DEFAULT_MAX_ACK_DEADLINE_EXTENSION =
+      java.time.Duration.ofSeconds(0);
+
+  @InternalApi
+  static final java.time.Duration MIN_STREAM_ACK_DEADLINE = java.time.Duration.ofSeconds(10);
+
+  @InternalApi
+  static final java.time.Duration MAX_STREAM_ACK_DEADLINE = java.time.Duration.ofSeconds(600);
+
+  @InternalApi
+  static final java.time.Duration STREAM_ACK_DEADLINE_DEFAULT = java.time.Duration.ofSeconds(60);
+
+  @InternalApi
+  static final java.time.Duration STREAM_ACK_DEADLINE_EXACTLY_ONCE_DELIVERY_DEFAULT =
+      java.time.Duration.ofSeconds(60);
+
+  @InternalApi
+  static final java.time.Duration ACK_EXPIRATION_PADDING_DEFAULT = java.time.Duration.ofSeconds(5);
 
   private static final Logger logger = Logger.getLogger(Subscriber.class.getName());
+
+  private static final String OPEN_TELEMETRY_TRACER_NAME = "com.google.cloud.pubsub.v1";
 
   private final String subscriptionName;
   private final FlowControlSettings flowControlSettings;
   private final boolean useLegacyFlowControl;
-  private final Duration maxAckExtensionPeriod;
-  private final Duration maxDurationPerAckExtension;
+  private final java.time.Duration maxAckExtensionPeriod;
+  private final java.time.Duration maxDurationPerAckExtension;
   private final boolean maxDurationPerAckExtensionDefaultUsed;
-  private final Duration minDurationPerAckExtension;
+  private final java.time.Duration minDurationPerAckExtension;
   private final boolean minDurationPerAckExtensionDefaultUsed;
+  private final long protocolVersion = 1L;
 
   // The ExecutorProvider used to generate executors for processing messages.
   private final ExecutorProvider executorProvider;
   // An instantiation of the SystemExecutorProvider used for processing acks
   // and other system actions.
   @Nullable private final ScheduledExecutorService alarmsExecutor;
+
   private final Distribution ackLatencyDistribution =
       new Distribution(Math.toIntExact(MAX_STREAM_ACK_DEADLINE.getSeconds()) + 1);
 
@@ -144,6 +165,11 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
   private final List<StreamingSubscriberConnection> streamingSubscriberConnections;
   private final ApiClock clock;
   private final List<BackgroundResource> backgroundResources = new ArrayList<>();
+
+  private final boolean enableOpenTelemetryTracing;
+  private final OpenTelemetry openTelemetry;
+  private OpenTelemetryPubsubTracer tracer = new OpenTelemetryPubsubTracer(null, false);
+  private final SubscriberShutdownSettings subscriberShutdownSettings;
 
   private Subscriber(Builder builder) {
     receiver = builder.receiver;
@@ -162,9 +188,7 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
 
     flowController =
         new FlowController(
-            builder
-                .flowControlSettings
-                .toBuilder()
+            builder.flowControlSettings.toBuilder()
                 .setLimitExceededBehavior(LimitExceededBehavior.Block)
                 .build());
 
@@ -197,6 +221,17 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
       // TODO(pongad): what about internal header??
     } catch (Exception e) {
       throw new IllegalStateException(e);
+    }
+
+    this.enableOpenTelemetryTracing = builder.enableOpenTelemetryTracing;
+    this.openTelemetry = builder.openTelemetry;
+    this.subscriberShutdownSettings = builder.subscriberShutdownSettings;
+    if (this.openTelemetry != null && this.enableOpenTelemetryTracing) {
+      Tracer openTelemetryTracer = builder.openTelemetry.getTracer(OPEN_TELEMETRY_TRACER_NAME);
+      if (openTelemetryTracer != null) {
+        this.tracer =
+            new OpenTelemetryPubsubTracer(openTelemetryTracer, this.enableOpenTelemetryTracing);
+      }
     }
 
     streamingSubscriberConnections = new ArrayList<StreamingSubscriberConnection>(numPullers);
@@ -334,7 +369,6 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
               @Override
               public void run() {
                 try {
-                  // stop connection is no-op if connections haven't been started.
                   runShutdown();
                   notifyStopped();
                 } catch (Exception e) {
@@ -346,7 +380,13 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
   }
 
   private void runShutdown() {
-    stopAllStreamingConnections();
+    java.time.Duration timeout = subscriberShutdownSettings.getTimeout();
+    long deadlineMillis = -1;
+    if (!timeout.isNegative()) {
+      deadlineMillis = clock.millisTime() + timeout.toMillis();
+    }
+
+    stopAllStreamingConnections(deadlineMillis);
     shutdownBackgroundResources();
     subscriberStub.shutdownNow();
   }
@@ -386,6 +426,10 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
                 .setExecutor(executor)
                 .setSystemExecutor(alarmsExecutor)
                 .setClock(clock)
+                .setEnableOpenTelemetryTracing(enableOpenTelemetryTracing)
+                .setTracer(tracer)
+                .setSubscriberShutdownSettings(subscriberShutdownSettings)
+                .setProtocolVersion(protocolVersion)
                 .build();
 
         streamingSubscriberConnections.add(streamingSubscriberConnection);
@@ -411,8 +455,8 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
     }
   }
 
-  private void stopAllStreamingConnections() {
-    stopConnections(streamingSubscriberConnections);
+  private void stopAllStreamingConnections(long deadlineMillis) {
+    stopConnections(streamingSubscriberConnections, deadlineMillis);
   }
 
   private void shutdownBackgroundResources() {
@@ -432,7 +476,7 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
     }
   }
 
-  private void stopConnections(List<? extends ApiService> connections) {
+  private void stopConnections(List<? extends ApiService> connections, long deadlineMillis) {
     ArrayList<ApiService> liveConnections;
     synchronized (connections) {
       liveConnections = new ArrayList<ApiService>(connections);
@@ -443,11 +487,19 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
     }
     for (ApiService subscriber : liveConnections) {
       try {
-        subscriber.awaitTerminated();
-      } catch (IllegalStateException e) {
-        // If the service fails, awaitTerminated will throw an exception.
-        // However, we could be stopping services because at least one
-        // has already failed, so we just ignore this exception.
+        if (deadlineMillis < 0) {
+          // Wait indefinitely
+          subscriber.awaitTerminated();
+        } else {
+          long remaining = deadlineMillis - clock.millisTime();
+          if (remaining < 0) {
+            remaining = 0;
+          }
+          subscriber.awaitTerminated(remaining, java.util.concurrent.TimeUnit.MILLISECONDS);
+        }
+      } catch (Exception e) {
+        logger.log(Level.FINE, "Exception while waiting for a connection to terminate", e);
+        break; // Stop waiting for other connections.
       }
     }
   }
@@ -470,10 +522,10 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
     private MessageReceiver receiver;
     private MessageReceiverWithAckResponse receiverWithAckResponse;
 
-    private Duration maxAckExtensionPeriod = DEFAULT_MAX_ACK_EXTENSION_PERIOD;
-    private Duration minDurationPerAckExtension = DEFAULT_MIN_ACK_DEADLINE_EXTENSION;
+    private java.time.Duration maxAckExtensionPeriod = DEFAULT_MAX_ACK_EXTENSION_PERIOD;
+    private java.time.Duration minDurationPerAckExtension = DEFAULT_MIN_ACK_DEADLINE_EXTENSION;
     private boolean minDurationPerAckExtensionDefaultUsed = true;
-    private Duration maxDurationPerAckExtension = DEFAULT_MAX_ACK_DEADLINE_EXTENSION;
+    private java.time.Duration maxDurationPerAckExtension = DEFAULT_MAX_ACK_DEADLINE_EXTENSION;
     private boolean maxDurationPerAckExtensionDefaultUsed = true;
 
     private boolean useLegacyFlowControl = false;
@@ -485,7 +537,7 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
         SubscriptionAdminSettings.defaultGrpcTransportProviderBuilder()
             .setMaxInboundMessageSize(MAX_INBOUND_MESSAGE_SIZE)
             .setMaxInboundMetadataSize(MAX_INBOUND_METADATA_SIZE)
-            .setKeepAliveTime(Duration.ofMinutes(5))
+            .setKeepAliveTimeDuration(java.time.Duration.ofMinutes(5))
             .build();
     private HeaderProvider headerProvider = new NoHeaderProvider();
     private CredentialsProvider credentialsProvider =
@@ -494,6 +546,12 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
     private int parallelPullCount = 1;
     private String endpoint = null;
     private String universeDomain = null;
+
+    private boolean enableOpenTelemetryTracing = false;
+    private OpenTelemetry openTelemetry = null;
+
+    private SubscriberShutdownSettings subscriberShutdownSettings =
+        SubscriberShutdownSettings.newBuilder().build();
 
     Builder(String subscription, MessageReceiver receiver) {
       this.subscription = subscription;
@@ -574,6 +632,15 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
     }
 
     /**
+     * This method is obsolete. Use {@link #setMaxAckExtensionPeriodDuration(java.time.Duration)}
+     * instead.
+     */
+    @ObsoleteApi("Use setMaxAckExtensionPeriodDuration(java.time.Duration) instead")
+    public Builder setMaxAckExtensionPeriod(org.threeten.bp.Duration maxAckExtensionPeriod) {
+      return setMaxAckExtensionPeriodDuration(toJavaTimeDuration(maxAckExtensionPeriod));
+    }
+
+    /**
      * Set the maximum period a message ack deadline will be extended. Defaults to one hour.
      *
      * <p>It is recommended to set this value to a reasonable upper bound of the subscriber time to
@@ -582,10 +649,20 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
      *
      * <p>A zero duration effectively disables auto deadline extensions.
      */
-    public Builder setMaxAckExtensionPeriod(Duration maxAckExtensionPeriod) {
+    public Builder setMaxAckExtensionPeriodDuration(java.time.Duration maxAckExtensionPeriod) {
       Preconditions.checkArgument(maxAckExtensionPeriod.toMillis() >= 0);
       this.maxAckExtensionPeriod = maxAckExtensionPeriod;
       return this;
+    }
+
+    /**
+     * This method is obsolete. Use {@link
+     * #setMaxDurationPerAckExtensionDuration(java.time.Duration)} instead.
+     */
+    @ObsoleteApi("Use setMaxDurationPerAckExtensionDuration(java.time.Duration) instead")
+    public Builder setMaxDurationPerAckExtension(
+        org.threeten.bp.Duration maxDurationPerAckExtension) {
+      return setMaxDurationPerAckExtensionDuration(toJavaTimeDuration(maxDurationPerAckExtension));
     }
 
     /**
@@ -598,7 +675,8 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
      *
      * <p>MaxDurationPerAckExtension configuration can be disabled by specifying a zero duration.
      */
-    public Builder setMaxDurationPerAckExtension(Duration maxDurationPerAckExtension) {
+    public Builder setMaxDurationPerAckExtensionDuration(
+        java.time.Duration maxDurationPerAckExtension) {
       // If a non-default min is set, make sure min is less than max
       Preconditions.checkArgument(
           maxDurationPerAckExtension.toMillis() >= 0
@@ -611,6 +689,16 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
     }
 
     /**
+     * This method is obsolete. Use {@link
+     * #setMinDurationPerAckExtensionDuration(java.time.Duration)} instead.
+     */
+    @ObsoleteApi("Use setMinDurationPerAckExtensionDuration(java.time.Duration) instead")
+    public Builder setMinDurationPerAckExtension(
+        org.threeten.bp.Duration minDurationPerAckExtension) {
+      return setMinDurationPerAckExtensionDuration(toJavaTimeDuration(minDurationPerAckExtension));
+    }
+
+    /**
      * Set the lower bound for a single mod ack extention period.
      *
      * <p>The ack deadline will continue to be extended by up to this duration until
@@ -620,7 +708,8 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
      *
      * <p>MinDurationPerAckExtension configuration can be disabled by specifying a zero duration.
      */
-    public Builder setMinDurationPerAckExtension(Duration minDurationPerAckExtension) {
+    public Builder setMinDurationPerAckExtensionDuration(
+        java.time.Duration minDurationPerAckExtension) {
       // If a non-default max is set, make sure min is less than max
       Preconditions.checkArgument(
           minDurationPerAckExtension.toMillis() >= 0
@@ -681,6 +770,39 @@ public class Subscriber extends AbstractApiService implements SubscriberInterfac
     /** Gives the ability to set a custom clock. */
     Builder setClock(ApiClock clock) {
       this.clock = Optional.of(clock);
+      return this;
+    }
+
+    /**
+     * OpenTelemetry will be enabled if setEnableOpenTelemetry is true and and instance of
+     * OpenTelemetry has been provied. Warning: traces are subject to change. The name and
+     * attributes of a span might change without notice. Only use run traces interactively. Don't
+     * use in automation. Running non-interactive traces can cause problems if the underlying trace
+     * architecture changes without notice.
+     */
+
+    /** Gives the ability to enable Open Telemetry Tracing */
+    public Builder setEnableOpenTelemetryTracing(boolean enableOpenTelemetryTracing) {
+      this.enableOpenTelemetryTracing = enableOpenTelemetryTracing;
+      return this;
+    }
+
+    /** Sets the instance of OpenTelemetry for the Publisher class. */
+    public Builder setOpenTelemetry(OpenTelemetry openTelemetry) {
+      this.openTelemetry = openTelemetry;
+      return this;
+    }
+
+    /**
+     * Sets the shutdown settings for the subscriber. Defaults to {@link
+     * SubscriberShutdownSettings#newBuilder() default settings}.
+     */
+    @BetaApi(
+        "The surface for SubscriberShutdownSettings is not stable yet and may be changed in the"
+            + " future.")
+    public Builder setSubscriberShutdownSettings(
+        SubscriberShutdownSettings subscriberShutdownSettings) {
+      this.subscriberShutdownSettings = Preconditions.checkNotNull(subscriberShutdownSettings);
       return this;
     }
 

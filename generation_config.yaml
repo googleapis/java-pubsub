@@ -1,6 +1,6 @@
-gapic_generator_version: 2.42.0
-googleapis_commitish: 7976ffadc0f21ee9149708c0c97ef000e15de1eb
-libraries_bom_version: 26.42.0
+gapic_generator_version: 2.71.0
+googleapis_commitish: 62e4ecb2f4390728990514fea14aad0431881a52
+libraries_bom_version: 26.79.0
 libraries:
   - api_shortname: pubsub
     name_pretty: Cloud Pub/Sub
@@ -14,7 +14,7 @@ libraries:
     repo: googleapis/java-pubsub
     repo_short: java-pubsub
     distribution_name: com.google.cloud:google-cloud-pubsub
-    codeowner_team: '@googleapis/api-pubsub'
+    codeowner_team: '@googleapis/pubsub-team'
     api_id: pubsub.googleapis.com
     library_type: GAPIC_COMBO
     requires_billing: true

@@ -17,7 +17,10 @@
 package com.google.cloud.pubsub.v1;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
+import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -49,5 +52,70 @@ public class WaiterTest {
     t.join();
 
     assertEquals(0, waiter.pendingCount());
+  }
+
+  @Test
+  public void testTryWait_Completes() throws Exception {
+    final Waiter waiter = new Waiter();
+    waiter.incrementPendingCount(1);
+    final FakeClock clock = new FakeClock();
+
+    final Thread mainThread = Thread.currentThread();
+    Thread t =
+        new Thread(
+            new Runnable() {
+              @Override
+              public void run() {
+                while (mainThread.getState() == Thread.State.NEW) {
+                  Thread.yield();
+                }
+                waiter.incrementPendingCount(-1);
+              }
+            });
+    t.start();
+
+    assertTrue(waiter.tryWait(500, clock));
+    t.join();
+
+    assertEquals(0, waiter.pendingCount());
+  }
+
+  @Test
+  public void testTryWait_TimesOut() throws Exception {
+    final Waiter waiter = new Waiter();
+    waiter.incrementPendingCount(1);
+    final FakeClock clock = new FakeClock();
+
+    final Thread mainThread = Thread.currentThread();
+    Thread t =
+        new Thread(
+            new Runnable() {
+              @Override
+              public void run() {
+                while (mainThread.getState() == Thread.State.NEW) {
+                  Thread.yield();
+                }
+                try {
+                  // Waits some additional time to ensure that the waiter is actually waiting.
+                  Thread.sleep(100);
+                  clock.advance(200, TimeUnit.MILLISECONDS);
+                } catch (InterruptedException e) {
+                  // Ignored.
+                }
+              }
+            });
+    t.start();
+
+    assertFalse(waiter.tryWait(100, clock));
+    t.join();
+
+    assertEquals(1, waiter.pendingCount());
+  }
+
+  @Test
+  public void testTryWait_NoPending() {
+    final Waiter waiter = new Waiter();
+    final FakeClock clock = new FakeClock();
+    assertTrue(waiter.tryWait(100, clock));
   }
 }
