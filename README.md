@@ -1,6 +1,3 @@
-**_THIS REPOSITORY IS DEPRECATED. ALL OF ITS CONTENT AND HISTORY HAS BEEN MOVED TO [GOOGLE-CLOUD-JAVA](https://github.com/googleapis/google-cloud-java/tree/main/java-pubsub)_**
-
-
 # Google Cloud Pub/Sub Client for Java
 
 Java idiomatic client for [Cloud Pub/Sub][product-docs].
